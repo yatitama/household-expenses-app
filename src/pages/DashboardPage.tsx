@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Wallet, ArrowRight, CreditCard, Building2, Smartphone, Banknote, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -18,6 +18,9 @@ const PAYMENT_METHOD_ICONS: Record<PaymentMethod, React.ReactNode> = {
 
 export const DashboardPage = () => {
   const [currentMonth, setCurrentMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // データ取得
   const accounts = accountService.getAll();
@@ -31,6 +34,45 @@ export const DashboardPage = () => {
   const handleNextMonth = () => {
     setCurrentMonth(format(addMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
   };
+
+  // スワイプ操作
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      touchEndX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+      const diffX = touchStartX.current - touchEndX.current;
+      const minSwipeDistance = 50;
+
+      if (Math.abs(diffX) > minSwipeDistance) {
+        if (diffX > 0) {
+          // 左スワイプ: 次の月へ
+          handleNextMonth();
+        } else {
+          // 右スワイプ: 前の月へ
+          handlePrevMonth();
+        }
+      }
+    };
+
+    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchmove', handleTouchMove);
+    container.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [currentMonth]);
 
   // 収支計算
   const income = transactions
@@ -73,7 +115,7 @@ export const DashboardPage = () => {
   const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
 
   return (
-    <div className="p-4 space-y-4">
+    <div ref={containerRef} className="p-4 space-y-4">
       {/* 月表示 */}
       <div className="flex items-center justify-between">
         <button onClick={handlePrevMonth} className="p-2 text-gray-600 hover:text-gray-900 active:bg-gray-100 rounded-lg">
@@ -193,7 +235,7 @@ export const DashboardPage = () => {
       <div className="bg-white rounded-xl shadow-sm p-4">
         <div className="flex justify-between items-center mb-3">
           <h3 className="font-bold text-gray-800">最近の取引</h3>
-          <Link to="/transactions" className="text-blue-600 text-sm flex items-center gap-1">
+          <Link to={`/transactions?month=${currentMonth}`} className="text-blue-600 text-sm flex items-center gap-1">
             すべて表示 <ArrowRight size={14} />
           </Link>
         </div>

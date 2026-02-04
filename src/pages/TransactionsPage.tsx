@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Trash2, Edit2, Check } from 'lucide-react';
 import { format, addMonths, subMonths, parseISO } from 'date-fns';
 import { accountService, transactionService, categoryService, memberService } from '../services/storage';
@@ -7,12 +8,17 @@ import { getCategoryIcon } from '../utils/categoryIcons';
 import type { Transaction, TransactionType, TransactionInput } from '../types';
 
 export const TransactionsPage = () => {
-  const [currentMonth, setCurrentMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [searchParams] = useSearchParams();
+  const initialMonth = searchParams.get('month') || format(new Date(), 'yyyy-MM');
+  const [currentMonth, setCurrentMonth] = useState(initialMonth);
   const [filterType, setFilterType] = useState<TransactionType | 'all'>('all');
   const [transactions, setTransactions] = useState<Transaction[]>(() =>
     transactionService.getAll()
   );
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const accounts = accountService.getAll();
   const categories = categoryService.getAll();
@@ -29,6 +35,45 @@ export const TransactionsPage = () => {
   const handleNextMonth = () => {
     setCurrentMonth(format(addMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
   };
+
+  // スワイプ操作
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      touchEndX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+      const diffX = touchStartX.current - touchEndX.current;
+      const minSwipeDistance = 50;
+
+      if (Math.abs(diffX) > minSwipeDistance) {
+        if (diffX > 0) {
+          // 左スワイプ: 次の月へ
+          handleNextMonth();
+        } else {
+          // 右スワイプ: 前の月へ
+          handlePrevMonth();
+        }
+      }
+    };
+
+    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchmove', handleTouchMove);
+    container.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [currentMonth]);
 
   const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction);
@@ -114,7 +159,7 @@ export const TransactionsPage = () => {
   const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
 
   return (
-    <div className="flex flex-col h-full">
+    <div ref={containerRef} className="flex flex-col h-full">
       {/* スティッキーヘッダー */}
       <div className="sticky top-0 bg-gray-50 z-10 px-4 pt-4 pb-2 space-y-3 border-b border-gray-200">
         {/* 月選択と集計 */}
@@ -428,7 +473,8 @@ const EditTransactionModal = ({
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 max-w-full"
+              style={{ minWidth: 0 }}
             />
           </div>
 

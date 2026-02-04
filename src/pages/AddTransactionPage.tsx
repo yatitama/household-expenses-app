@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Check, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { accountService, transactionService, categoryService, memberService } from '../services/storage';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import type { TransactionType, TransactionInput } from '../types';
 
 export const AddTransactionPage = () => {
-  const navigate = useNavigate();
   const accounts = accountService.getAll();
   const categories = categoryService.getAll();
   const members = memberService.getAll();
@@ -18,7 +16,6 @@ export const AddTransactionPage = () => {
   const [accountId, setAccountId] = useState(accounts[0]?.id || '');
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [memo, setMemo] = useState('');
-  const [continueAdding, setContinueAdding] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const filteredCategories = categories.filter((c) => c.type === type);
@@ -57,17 +54,12 @@ export const AddTransactionPage = () => {
       accountService.update(accountId, { balance: newBalance });
     }
 
-    if (continueAdding) {
-      // 連続追加モード: フォームをリセットして成功メッセージを表示
-      resetForm();
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 2000);
-      // 画面上部へスクロール
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      // 通常モード: ホームに戻る
-      navigate('/');
-    }
+    // 連続追加モード: フォームをリセットして成功メッセージを表示
+    resetForm();
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
+    // 画面上部へスクロール
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
@@ -195,7 +187,7 @@ export const AddTransactionPage = () => {
                     />
                     <span className="font-medium text-gray-900">{account.name}</span>
                   </div>
-                  {accountId === account.id && <Check size={18} className="text-blue-500" />}
+                  {accountId === account.id && <CheckCircle size={18} className="text-blue-500" />}
                 </button>
               ))}
             </div>
@@ -223,19 +215,6 @@ export const AddTransactionPage = () => {
             placeholder="メモを入力"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </div>
-
-        {/* 連続追加オプション */}
-        <div className="bg-white rounded-xl shadow-sm p-4">
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={continueAdding}
-              onChange={(e) => setContinueAdding(e.target.checked)}
-              className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">連続して入力する</span>
-          </label>
         </div>
 
         {/* 登録ボタン */}

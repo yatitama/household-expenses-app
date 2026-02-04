@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
-import { Plus, Edit2, Trash2, Wallet, CreditCard, Building2, Smartphone, Banknote } from 'lucide-react';
-import { accountService, memberService } from '../services/storage';
-import { formatCurrency } from '../utils/formatters';
+import { Plus, Edit2, Trash2, Wallet, CreditCard, Building2, Smartphone, Banknote, X } from 'lucide-react';
+import { accountService, memberService, transactionService, categoryService } from '../services/storage';
+import { formatCurrency, formatDate } from '../utils/formatters';
+import { getCategoryIcon } from '../utils/categoryIcons';
 import { COMMON_MEMBER_ID } from '../types';
 import type { Account, PaymentMethod, AccountInput, Member } from '../types';
 
@@ -31,6 +32,7 @@ export const AccountsPage = () => {
   const members = memberService.getAll();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const [viewingAccount, setViewingAccount] = useState<Account | null>(null);
 
   const refreshAccounts = useCallback(() => {
     setAccounts(accountService.getAll());
@@ -44,6 +46,10 @@ export const AccountsPage = () => {
   const handleEdit = (account: Account) => {
     setEditingAccount(account);
     setIsModalOpen(true);
+  };
+
+  const handleView = (account: Account) => {
+    setViewingAccount(account);
   };
 
   const handleDelete = (id: string) => {
@@ -127,6 +133,7 @@ export const AccountsPage = () => {
                     <AccountCard
                       key={account.id}
                       account={account}
+                      onView={() => handleView(account)}
                       onEdit={() => handleEdit(account)}
                       onDelete={() => handleDelete(account.id)}
                     />
@@ -147,21 +154,30 @@ export const AccountsPage = () => {
           onClose={() => setIsModalOpen(false)}
         />
       )}
+
+      {/* 取引履歴モーダル */}
+      {viewingAccount && (
+        <AccountTransactionsModal
+          account={viewingAccount}
+          onClose={() => setViewingAccount(null)}
+        />
+      )}
     </div>
   );
 };
 
 interface AccountCardProps {
   account: Account;
+  onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-const AccountCard = ({ account, onEdit, onDelete }: AccountCardProps) => {
+const AccountCard = ({ account, onView, onEdit, onDelete }: AccountCardProps) => {
   return (
     <div className="bg-white rounded-xl shadow-sm p-4">
       <div className="flex justify-between items-start">
-        <div className="flex items-center gap-3">
+        <button onClick={onView} className="flex items-center gap-3 flex-1 text-left">
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center text-white"
             style={{ backgroundColor: account.color }}
@@ -172,8 +188,8 @@ const AccountCard = ({ account, onEdit, onDelete }: AccountCardProps) => {
             <p className="font-medium text-gray-900">{account.name}</p>
             <p className="text-xs text-gray-500">{PAYMENT_METHOD_LABELS[account.paymentMethod]}</p>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
+        </button>
+        <div className="flex items-center gap-2 flex-shrink-0">
           <button onClick={onEdit} className="p-2 text-gray-400 hover:text-gray-600">
             <Edit2 size={16} />
           </button>
@@ -182,9 +198,9 @@ const AccountCard = ({ account, onEdit, onDelete }: AccountCardProps) => {
           </button>
         </div>
       </div>
-      <div className="mt-3 text-right">
+      <button onClick={onView} className="mt-3 text-right w-full">
         <p className="text-xl font-bold text-gray-900">{formatCurrency(account.balance)}</p>
-      </div>
+      </button>
     </div>
   );
 };
@@ -322,6 +338,102 @@ const AccountModal = ({ account, members, onSave, onClose }: AccountModalProps) 
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+};
+
+interface AccountTransactionsModalProps {
+  account: Account;
+  onClose: () => void;
+}
+
+const AccountTransactionsModal = ({ account, onClose }: AccountTransactionsModalProps) => {
+  const transactions = transactionService.getAll()
+    .filter((t) => t.accountId === account.id)
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  const categories = categoryService.getAll();
+  const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
+
+  // 日付でグループ化
+  const groupedByDate: Record<string, typeof transactions> = {};
+  transactions.forEach((t) => {
+    if (!groupedByDate[t.date]) {
+      groupedByDate[t.date] = [];
+    }
+    groupedByDate[t.date].push(t);
+  });
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
+      <div
+        className="bg-white w-full sm:max-w-2xl sm:rounded-xl rounded-t-xl max-h-[85vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* ヘッダー */}
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center text-white"
+              style={{ backgroundColor: account.color }}
+            >
+              {PAYMENT_METHOD_ICONS[account.paymentMethod]}
+            </div>
+            <div>
+              <h3 className="text-lg font-bold">{account.name}</h3>
+              <p className="text-sm text-gray-500">取引履歴</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600">
+            <X size={24} />
+          </button>
+        </div>
+
+        {/* 取引一覧 */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {transactions.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">取引がありません</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {Object.entries(groupedByDate).map(([date, dayTransactions]) => (
+                <div key={date}>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">{formatDate(date)}</h4>
+                  <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+                    {dayTransactions.map((transaction) => {
+                      const category = getCategory(transaction.categoryId);
+                      const isExpense = transaction.type === 'expense';
+                      return (
+                        <div key={transaction.id} className="flex justify-between items-center p-3">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-10 h-10 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                            >
+                              {getCategoryIcon(category?.icon || '', 20)}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{category?.name || '不明'}</p>
+                              {transaction.memo && (
+                                <p className="text-xs text-gray-400 mt-1">{transaction.memo}</p>
+                              )}
+                            </div>
+                          </div>
+                          <p className={`font-bold ${isExpense ? 'text-red-600' : 'text-green-600'}`}>
+                            {isExpense ? '-' : '+'}
+                            {formatCurrency(transaction.amount)}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
