@@ -1,9 +1,17 @@
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { TrendingUp, TrendingDown, Wallet, ArrowRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, ArrowRight, CreditCard, Building2, Smartphone, Banknote } from 'lucide-react';
 import { accountService, transactionService, categoryService } from '../services/storage';
 import { formatCurrency, formatDate, getCurrentMonth, formatMonth } from '../utils/formatters';
-import type { Transaction } from '../types';
+import type { Transaction, PaymentMethod } from '../types';
+
+const PAYMENT_METHOD_ICONS: Record<PaymentMethod, React.ReactNode> = {
+  cash: <Banknote size={14} />,
+  bank: <Building2 size={14} />,
+  credit_card: <CreditCard size={14} />,
+  debit_card: <CreditCard size={14} />,
+  emoney: <Smartphone size={14} />,
+};
 
 export const DashboardPage = () => {
   const currentMonth = getCurrentMonth();
@@ -102,10 +110,15 @@ export const DashboardPage = () => {
         ) : (
           <>
             <div className="space-y-2 mb-3">
-              {accounts.slice(0, 3).map((account) => (
+              {accounts.slice(0, 4).map((account) => (
                 <div key={account.id} className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: account.color }} />
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-white"
+                      style={{ backgroundColor: account.color }}
+                    >
+                      {PAYMENT_METHOD_ICONS[account.paymentMethod]}
+                    </div>
                     <span className="text-sm text-gray-700">{account.name}</span>
                   </div>
                   <span className="font-medium">{formatCurrency(account.balance)}</span>
