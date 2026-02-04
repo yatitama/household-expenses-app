@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Check, CheckCircle } from 'lucide-react';
 import { accountService, transactionService, categoryService, memberService } from '../services/storage';
+import { getCategoryIcon } from '../utils/categoryIcons';
 import type { TransactionType, TransactionInput } from '../types';
 
 export const AddTransactionPage = () => {
@@ -150,9 +151,9 @@ export const AddTransactionPage = () => {
                   >
                     <div
                       className="w-8 h-8 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: `${category.color}20` }}
+                      style={{ backgroundColor: `${category.color}20`, color: category.color }}
                     >
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: category.color }} />
+                      {getCategoryIcon(category.icon, 18)}
                     </div>
                     <span className="text-xs text-gray-700 truncate w-full text-center">
                       {category.name}

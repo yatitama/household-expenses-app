@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Wallet, ArrowRight, CreditCard, Building2, Smartphone, Banknote } from 'lucide-react';
 import { accountService, transactionService, categoryService } from '../services/storage';
 import { formatCurrency, formatDate, getCurrentMonth, formatMonth } from '../utils/formatters';
+import { getCategoryIcon } from '../utils/categoryIcons';
 import type { Transaction, PaymentMethod } from '../types';
 
 const PAYMENT_METHOD_ICONS: Record<PaymentMethod, React.ReactNode> = {
@@ -193,6 +194,7 @@ export const DashboardPage = () => {
                   transaction={transaction}
                   categoryName={category?.name || '不明'}
                   categoryColor={category?.color || '#6b7280'}
+                  categoryIcon={category?.icon || ''}
                   accountName={account?.name || '不明'}
                 />
               );
@@ -208,17 +210,18 @@ interface TransactionItemProps {
   transaction: Transaction;
   categoryName: string;
   categoryColor: string;
+  categoryIcon: string;
   accountName: string;
 }
 
-const TransactionItem = ({ transaction, categoryName, categoryColor, accountName }: TransactionItemProps) => {
+const TransactionItem = ({ transaction, categoryName, categoryColor, categoryIcon, accountName }: TransactionItemProps) => {
   const isExpense = transaction.type === 'expense';
 
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: `${categoryColor}20` }}>
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: categoryColor }} />
+        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: `${categoryColor}20`, color: categoryColor }}>
+          {getCategoryIcon(categoryIcon, 20)}
         </div>
         <div>
           <p className="font-medium text-gray-900">{categoryName}</p>

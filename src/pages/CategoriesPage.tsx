@@ -1,33 +1,15 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  ArrowLeft, Plus, Edit2, Trash2, Tag,
-  Utensils, ShoppingBag, Zap, Wifi, Home,
-  GraduationCap, Heart, Car, Gamepad2, Shirt,
-  Gift, PiggyBank, Briefcase, Coffee, Film,
-  Music, Book, Plane, MoreHorizontal, Banknote,
-  Train, Bus, Bike, Baby, Dog, Cat, Pill,
-  Stethoscope, Scissors, Sparkles, Dumbbell,
-} from 'lucide-react';
+import { ArrowLeft, Plus, Edit2, Trash2, Tag } from 'lucide-react';
 import { categoryService, memberService } from '../services/storage';
 import { COMMON_MEMBER_ID } from '../types';
+import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import type { Category, CategoryInput, TransactionType } from '../types';
 
 const COLORS = [
   '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6',
   '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e',
 ];
-
-const ICON_COMPONENTS: Record<string, React.ComponentType<{ size?: number }>> = {
-  Utensils, ShoppingBag, Zap, Wifi, Home,
-  GraduationCap, Heart, Car, Gamepad2, Shirt,
-  Gift, PiggyBank, Briefcase, Coffee, Film,
-  Music, Book, Plane, MoreHorizontal, Banknote,
-  Train, Bus, Bike, Baby, Dog, Cat, Pill,
-  Stethoscope, Scissors, Sparkles, Dumbbell,
-};
-
-const ICONS = Object.keys(ICON_COMPONENTS);
 
 export const CategoriesPage = () => {
   const navigate = useNavigate();
@@ -126,9 +108,9 @@ export const CategoriesPage = () => {
                 <div className="flex items-center gap-3">
                   <div
                     className="w-10 h-10 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: `${category.color}20` }}
+                    style={{ backgroundColor: `${category.color}20`, color: category.color }}
                   >
-                    <div className="w-4 h-4 rounded-full" style={{ backgroundColor: category.color }} />
+                    {getCategoryIcon(category.icon, 20)}
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">{category.name}</p>
@@ -175,7 +157,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
   const [name, setName] = useState(category?.name || '');
   const [memberId, setMemberId] = useState(category?.memberId || COMMON_MEMBER_ID);
   const [color, setColor] = useState(category?.color || COLORS[0]);
-  const [icon, setIcon] = useState(category?.icon || ICONS[0]);
+  const [icon, setIcon] = useState(category?.icon || ICON_NAMES[0]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,7 +232,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">アイコン</label>
             <div className="grid grid-cols-6 gap-2">
-              {ICONS.map((i) => {
+              {ICON_NAMES.map((i) => {
                 const IconComponent = ICON_COMPONENTS[i];
                 return (
                   <button
