@@ -1,14 +1,9 @@
 import { useState, useCallback } from 'react';
 import { Plus, Edit2, Trash2, Wallet, CreditCard, Building2, Smartphone, Banknote } from 'lucide-react';
-import { accountService } from '../services/storage';
+import { accountService, memberService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
-import type { Account, AccountType, PaymentMethod, AccountInput } from '../types';
-
-const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
-  husband_personal: '夫個人',
-  wife_personal: '妻個人',
-  family_common: '家族共通',
-};
+import { COMMON_MEMBER_ID } from '../types';
+import type { Account, PaymentMethod, AccountInput, Member } from '../types';
 
 const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   cash: '現金',
@@ -33,6 +28,7 @@ const COLORS = [
 
 export const AccountsPage = () => {
   const [accounts, setAccounts] = useState<Account[]>(() => accountService.getAll());
+  const members = memberService.getAll();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
 
@@ -69,14 +65,17 @@ export const AccountsPage = () => {
 
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
 
-  // 口座タイプ別にグループ化
-  const groupedAccounts = accounts.reduce<Record<AccountType, Account[]>>(
-    (acc, account) => {
-      acc[account.type].push(account);
-      return acc;
-    },
-    { husband_personal: [], wife_personal: [], family_common: [] }
-  );
+  // メンバー別にグループ化
+  const groupedAccounts = accounts.reduce<Record<string, Account[]>>((acc, account) => {
+    const memberId = account.memberId;
+    if (!acc[memberId]) {
+      acc[memberId] = [];
+    }
+    acc[memberId].push(account);
+    return acc;
+  }, {});
+
+  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   return (
     <div className="p-4 space-y-4">
@@ -115,26 +114,27 @@ export const AccountsPage = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          {(Object.entries(groupedAccounts) as [AccountType, Account[]][]).map(
-            ([type, typeAccounts]) =>
-              typeAccounts.length > 0 && (
-                <div key={type}>
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">
-                    {ACCOUNT_TYPE_LABELS[type]}
-                  </h3>
-                  <div className="space-y-2">
-                    {typeAccounts.map((account) => (
-                      <AccountCard
-                        key={account.id}
-                        account={account}
-                        onEdit={() => handleEdit(account)}
-                        onDelete={() => handleDelete(account.id)}
-                      />
-                    ))}
-                  </div>
+          {Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
+            const member = getMember(memberId);
+            return (
+              <div key={memberId}>
+                <h3 className="text-sm font-medium text-gray-500 mb-2 flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member?.color || '#6b7280' }} />
+                  {member?.name || '不明'}
+                </h3>
+                <div className="space-y-2">
+                  {memberAccounts.map((account) => (
+                    <AccountCard
+                      key={account.id}
+                      account={account}
+                      onEdit={() => handleEdit(account)}
+                      onDelete={() => handleDelete(account.id)}
+                    />
+                  ))}
                 </div>
-              )
-          )}
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -142,6 +142,7 @@ export const AccountsPage = () => {
       {isModalOpen && (
         <AccountModal
           account={editingAccount}
+          members={members}
           onSave={handleSave}
           onClose={() => setIsModalOpen(false)}
         />
@@ -190,13 +191,14 @@ const AccountCard = ({ account, onEdit, onDelete }: AccountCardProps) => {
 
 interface AccountModalProps {
   account: Account | null;
+  members: Member[];
   onSave: (input: AccountInput) => void;
   onClose: () => void;
 }
 
-const AccountModal = ({ account, onSave, onClose }: AccountModalProps) => {
+const AccountModal = ({ account, members, onSave, onClose }: AccountModalProps) => {
   const [name, setName] = useState(account?.name || '');
-  const [type, setType] = useState<AccountType>(account?.type || 'family_common');
+  const [memberId, setMemberId] = useState(account?.memberId || COMMON_MEMBER_ID);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(account?.paymentMethod || 'bank');
   const [balance, setBalance] = useState(account?.balance.toString() || '0');
   const [color, setColor] = useState(account?.color || COLORS[0]);
@@ -205,7 +207,7 @@ const AccountModal = ({ account, onSave, onClose }: AccountModalProps) => {
     e.preventDefault();
     onSave({
       name,
-      type,
+      memberId,
       paymentMethod,
       balance: parseInt(balance, 10) || 0,
       color,
@@ -230,22 +232,23 @@ const AccountModal = ({ account, onSave, onClose }: AccountModalProps) => {
             />
           </div>
 
-          {/* タイプ */}
+          {/* メンバー */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">所有者</label>
-            <div className="grid grid-cols-3 gap-2">
-              {(Object.entries(ACCOUNT_TYPE_LABELS) as [AccountType, string][]).map(([value, label]) => (
+            <div className="flex flex-wrap gap-2">
+              {members.map((member) => (
                 <button
-                  key={value}
+                  key={member.id}
                   type="button"
-                  onClick={() => setType(value)}
-                  className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
-                    type === value
+                  onClick={() => setMemberId(member.id)}
+                  className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                    memberId === member.id
                       ? 'bg-blue-600 text-white border-blue-600'
                       : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
                   }`}
                 >
-                  {label}
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
+                  {member.name}
                 </button>
               ))}
             </div>
