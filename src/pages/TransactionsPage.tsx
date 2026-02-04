@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Trash2, Edit2, Check } from 'lucide-react';
 import { format, addMonths, subMonths, parseISO } from 'date-fns';
 import { accountService, transactionService, categoryService, memberService } from '../services/storage';
 import { formatCurrency, formatDate, formatMonth } from '../utils/formatters';
+import { getCategoryIcon } from '../utils/categoryIcons';
 import type { Transaction, TransactionType, TransactionInput } from '../types';
 
 export const TransactionsPage = () => {
@@ -177,6 +178,7 @@ export const TransactionsPage = () => {
                       transaction={transaction}
                       categoryName={category?.name || '不明'}
                       categoryColor={category?.color || '#6b7280'}
+                      categoryIcon={category?.icon || ''}
                       accountName={account?.name || '不明'}
                       onEdit={() => handleEdit(transaction)}
                       onDelete={() => handleDelete(transaction)}
@@ -208,6 +210,7 @@ interface TransactionItemProps {
   transaction: Transaction;
   categoryName: string;
   categoryColor: string;
+  categoryIcon: string;
   accountName: string;
   onEdit: () => void;
   onDelete: () => void;
@@ -217,6 +220,7 @@ const TransactionItem = ({
   transaction,
   categoryName,
   categoryColor,
+  categoryIcon,
   accountName,
   onEdit,
   onDelete,
@@ -228,9 +232,9 @@ const TransactionItem = ({
       <button onClick={onEdit} className="flex items-center gap-3 flex-1 text-left min-w-0">
         <div
           className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ backgroundColor: `${categoryColor}20` }}
+          style={{ backgroundColor: `${categoryColor}20`, color: categoryColor }}
         >
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: categoryColor }} />
+          {getCategoryIcon(categoryIcon, 20)}
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-medium text-gray-900 truncate">{categoryName}</p>
@@ -257,7 +261,7 @@ const TransactionItem = ({
 interface EditTransactionModalProps {
   transaction: Transaction;
   accounts: { id: string; name: string; color: string }[];
-  categories: { id: string; name: string; type: TransactionType; color: string; memberId: string }[];
+  categories: { id: string; name: string; type: TransactionType; color: string; icon: string; memberId: string }[];
   members: { id: string; name: string; color: string }[];
   onSave: (input: TransactionInput) => void;
   onClose: () => void;
@@ -371,9 +375,9 @@ const EditTransactionModal = ({
                   >
                     <div
                       className="w-7 h-7 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: `${category.color}20` }}
+                      style={{ backgroundColor: `${category.color}20`, color: category.color }}
                     >
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: category.color }} />
+                      {getCategoryIcon(category.icon, 16)}
                     </div>
                     <span className="text-[11px] text-gray-700 truncate w-full text-center leading-tight">
                       {category.name}
@@ -417,27 +421,27 @@ const EditTransactionModal = ({
             </div>
           </div>
 
-          {/* 日付・メモ */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">日付</label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">メモ</label>
-              <input
-                type="text"
-                value={memo}
-                onChange={(e) => setMemo(e.target.value)}
-                placeholder="任意"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+          {/* 日付 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">日付</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* メモ */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">メモ</label>
+            <input
+              type="text"
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              placeholder="任意"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
           {/* ボタン */}
