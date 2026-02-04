@@ -1,9 +1,12 @@
 import type {
+  Member,
+  MemberInput,
   Account,
   AccountInput,
   Transaction,
   TransactionInput,
   Category,
+  CategoryInput,
   Budget,
   BudgetInput,
   CardBilling,
@@ -11,6 +14,7 @@ import type {
 } from '../types';
 
 const STORAGE_KEYS = {
+  MEMBERS: 'household_members',
   ACCOUNTS: 'household_accounts',
   TRANSACTIONS: 'household_transactions',
   CATEGORIES: 'household_categories',
@@ -40,6 +44,56 @@ const getItems = <T>(key: string): T[] => {
 
 const setItems = <T>(key: string, items: T[]): void => {
   localStorage.setItem(key, JSON.stringify(items));
+};
+
+// Member 操作
+export const memberService = {
+  getAll: (): Member[] => {
+    return getItems<Member>(STORAGE_KEYS.MEMBERS);
+  },
+
+  getById: (id: string): Member | undefined => {
+    return memberService.getAll().find((m) => m.id === id);
+  },
+
+  setAll: (members: Member[]): void => {
+    setItems(STORAGE_KEYS.MEMBERS, members);
+  },
+
+  create: (input: MemberInput): Member => {
+    const members = memberService.getAll();
+    const newMember: Member = {
+      ...input,
+      id: generateId(),
+    };
+    members.push(newMember);
+    setItems(STORAGE_KEYS.MEMBERS, members);
+    return newMember;
+  },
+
+  update: (id: string, input: Partial<MemberInput>): Member | undefined => {
+    const members = memberService.getAll();
+    const index = members.findIndex((m) => m.id === id);
+    if (index === -1) return undefined;
+
+    const updated: Member = {
+      ...members[index],
+      ...input,
+    };
+    members[index] = updated;
+    setItems(STORAGE_KEYS.MEMBERS, members);
+    return updated;
+  },
+
+  delete: (id: string): boolean => {
+    const members = memberService.getAll();
+    const member = members.find((m) => m.id === id);
+    // デフォルトメンバーは削除不可
+    if (!member || member.isDefault) return false;
+    const filtered = members.filter((m) => m.id !== id);
+    setItems(STORAGE_KEYS.MEMBERS, filtered);
+    return true;
+  },
 };
 
 // Account 操作
@@ -160,11 +214,29 @@ export const categoryService = {
     setItems(STORAGE_KEYS.CATEGORIES, categories);
   },
 
-  create: (category: Category): Category => {
+  create: (input: CategoryInput): Category => {
     const categories = categoryService.getAll();
-    categories.push(category);
+    const newCategory: Category = {
+      ...input,
+      id: generateId(),
+    };
+    categories.push(newCategory);
     setItems(STORAGE_KEYS.CATEGORIES, categories);
-    return category;
+    return newCategory;
+  },
+
+  update: (id: string, input: Partial<CategoryInput>): Category | undefined => {
+    const categories = categoryService.getAll();
+    const index = categories.findIndex((c) => c.id === id);
+    if (index === -1) return undefined;
+
+    const updated: Category = {
+      ...categories[index],
+      ...input,
+    };
+    categories[index] = updated;
+    setItems(STORAGE_KEYS.CATEGORIES, categories);
+    return updated;
   },
 
   delete: (id: string): boolean => {

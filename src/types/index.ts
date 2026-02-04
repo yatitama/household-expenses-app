@@ -1,5 +1,10 @@
-// 口座タイプ
-export type AccountType = 'husband_personal' | 'wife_personal' | 'family_common';
+// メンバー（家族構成員）
+export interface Member {
+  id: string;
+  name: string;
+  color: string;
+  isDefault?: boolean;
+}
 
 // 支払い方法
 export type PaymentMethod = 'cash' | 'bank' | 'credit_card' | 'debit_card' | 'emoney';
@@ -8,7 +13,7 @@ export type PaymentMethod = 'cash' | 'bank' | 'credit_card' | 'debit_card' | 'em
 export interface Account {
   id: string;
   name: string;
-  type: AccountType;
+  memberId: string; // メンバーID（'common'は共通）
   paymentMethod: PaymentMethod;
   balance: number;
   color: string;
@@ -33,15 +38,12 @@ export interface Transaction {
   updatedAt: string;
 }
 
-// カテゴリスコープ
-export type CategoryScope = 'common' | 'husband' | 'wife';
-
 // カテゴリ情報
 export interface Category {
   id: string;
   name: string;
   type: TransactionType;
-  scope: CategoryScope;
+  memberId: string; // メンバーID（'common'は共通）
   color: string;
   icon: string;
 }
@@ -66,7 +68,12 @@ export interface CardBilling {
 }
 
 // 新規作成時の入力型（id, createdAt, updatedAtを除く）
+export type MemberInput = Omit<Member, 'id'>;
 export type AccountInput = Omit<Account, 'id' | 'createdAt' | 'updatedAt'>;
 export type TransactionInput = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>;
+export type CategoryInput = Omit<Category, 'id'>;
 export type BudgetInput = Omit<Budget, 'id'>;
 export type CardBillingInput = Omit<CardBilling, 'id'>;
+
+// 共通メンバーID（削除不可）
+export const COMMON_MEMBER_ID = 'common';

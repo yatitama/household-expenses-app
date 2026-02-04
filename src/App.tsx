@@ -6,6 +6,8 @@ import { AddTransactionPage } from './pages/AddTransactionPage';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { AccountsPage } from './pages/AccountsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { MembersPage } from './pages/MembersPage';
+import { CategoriesPage } from './pages/CategoriesPage';
 import { initializeDefaultData } from './services/initialData';
 
 export const App = () => {
@@ -21,6 +23,8 @@ export const App = () => {
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="accounts" element={<AccountsPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="settings/members" element={<MembersPage />} />
+        <Route path="settings/categories" element={<CategoriesPage />} />
       </Route>
     </Routes>
   );
