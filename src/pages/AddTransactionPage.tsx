@@ -61,6 +61,8 @@ export const AddTransactionPage = () => {
       resetForm();
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
+      // 画面上部へスクロール
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       // 通常モード: ホームに戻る
       navigate('/');

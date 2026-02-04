@@ -1,6 +1,14 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Edit2, Trash2, Tag } from 'lucide-react';
+import {
+  ArrowLeft, Plus, Edit2, Trash2, Tag,
+  Utensils, ShoppingBag, Zap, Wifi, Home,
+  GraduationCap, Heart, Car, Gamepad2, Shirt,
+  Gift, PiggyBank, Briefcase, Coffee, Film,
+  Music, Book, Plane, MoreHorizontal, Banknote,
+  Train, Bus, Bike, Baby, Dog, Cat, Pill,
+  Stethoscope, Scissors, Sparkles, Dumbbell,
+} from 'lucide-react';
 import { categoryService, memberService } from '../services/storage';
 import { COMMON_MEMBER_ID } from '../types';
 import type { Category, CategoryInput, TransactionType } from '../types';
@@ -10,12 +18,16 @@ const COLORS = [
   '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e',
 ];
 
-const ICONS = [
-  'Utensils', 'ShoppingBag', 'Zap', 'Wifi', 'Home',
-  'GraduationCap', 'Heart', 'Car', 'Gamepad2', 'Shirt',
-  'Gift', 'PiggyBank', 'Briefcase', 'Coffee', 'Film',
-  'Music', 'Book', 'Plane', 'MoreHorizontal',
-];
+const ICON_COMPONENTS: Record<string, React.ComponentType<{ size?: number }>> = {
+  Utensils, ShoppingBag, Zap, Wifi, Home,
+  GraduationCap, Heart, Car, Gamepad2, Shirt,
+  Gift, PiggyBank, Briefcase, Coffee, Film,
+  Music, Book, Plane, MoreHorizontal, Banknote,
+  Train, Bus, Bike, Baby, Dog, Cat, Pill,
+  Stethoscope, Scissors, Sparkles, Dumbbell,
+};
+
+const ICONS = Object.keys(ICON_COMPONENTS);
 
 export const CategoriesPage = () => {
   const navigate = useNavigate();
@@ -237,21 +249,24 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
           {/* アイコン */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">アイコン</label>
-            <div className="flex gap-2 flex-wrap">
-              {ICONS.map((i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => setIcon(i)}
-                  className={`w-10 h-10 rounded-lg border text-xs flex items-center justify-center transition-colors ${
-                    icon === i
-                      ? 'border-blue-500 bg-blue-50 text-blue-600'
-                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                  }`}
-                >
-                  {i.slice(0, 2)}
-                </button>
-              ))}
+            <div className="grid grid-cols-6 gap-2">
+              {ICONS.map((i) => {
+                const IconComponent = ICON_COMPONENTS[i];
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setIcon(i)}
+                    className={`w-10 h-10 rounded-lg border flex items-center justify-center transition-colors ${
+                      icon === i
+                        ? 'border-blue-500 bg-blue-50 text-blue-600'
+                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <IconComponent size={20} />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
