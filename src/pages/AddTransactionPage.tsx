@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Check } from 'lucide-react';
-import { accountService, transactionService, categoryService } from '../services/storage';
+import { Check, CheckCircle } from 'lucide-react';
+import { accountService, transactionService, categoryService, memberService } from '../services/storage';
 import type { TransactionType, TransactionInput } from '../types';
 
 export const AddTransactionPage = () => {
   const navigate = useNavigate();
   const accounts = accountService.getAll();
   const categories = categoryService.getAll();
+  const members = memberService.getAll();
 
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
@@ -16,8 +17,17 @@ export const AddTransactionPage = () => {
   const [accountId, setAccountId] = useState(accounts[0]?.id || '');
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [memo, setMemo] = useState('');
+  const [continueAdding, setContinueAdding] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const filteredCategories = categories.filter((c) => c.type === type);
+
+  const resetForm = () => {
+    setAmount('');
+    setCategoryId('');
+    setMemo('');
+    // 日付と口座は維持する（連続入力しやすいように）
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,12 +56,30 @@ export const AddTransactionPage = () => {
       accountService.update(accountId, { balance: newBalance });
     }
 
-    navigate('/');
+    if (continueAdding) {
+      // 連続追加モード: フォームをリセットして成功メッセージを表示
+      resetForm();
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
+    } else {
+      // 通常モード: ホームに戻る
+      navigate('/');
+    }
   };
+
+  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold text-gray-800 mb-4">取引を追加</h2>
+
+      {/* 成功メッセージ */}
+      {showSuccess && (
+        <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-2 text-green-700">
+          <CheckCircle size={20} />
+          <span className="font-medium">登録しました！続けて入力できます。</span>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* 収入/支出の切り替え */}
@@ -105,28 +133,34 @@ export const AddTransactionPage = () => {
             <p className="text-gray-500 text-sm">カテゴリがありません</p>
           ) : (
             <div className="grid grid-cols-4 gap-2">
-              {filteredCategories.map((category) => (
-                <button
-                  key={category.id}
-                  type="button"
-                  onClick={() => setCategoryId(category.id)}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-colors ${
-                    categoryId === category.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: `${category.color}20` }}
+              {filteredCategories.map((category) => {
+                const member = getMember(category.memberId);
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => setCategoryId(category.id)}
+                    className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-colors ${
+                      categoryId === category.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
                   >
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: category.color }} />
-                  </div>
-                  <span className="text-xs text-gray-700 truncate w-full text-center">
-                    {category.name}
-                  </span>
-                </button>
-              ))}
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${category.color}20` }}
+                    >
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: category.color }} />
+                    </div>
+                    <span className="text-xs text-gray-700 truncate w-full text-center">
+                      {category.name}
+                    </span>
+                    {member && member.id !== 'common' && (
+                      <span className="text-[10px] text-gray-400">{member.name}</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -186,6 +220,19 @@ export const AddTransactionPage = () => {
             placeholder="メモを入力"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+
+        {/* 連続追加オプション */}
+        <div className="bg-white rounded-xl shadow-sm p-4">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={continueAdding}
+              onChange={(e) => setContinueAdding(e.target.checked)}
+              className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm text-gray-700">連続して入力する</span>
+          </label>
         </div>
 
         {/* 登録ボタン */}
