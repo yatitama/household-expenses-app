@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { TrendingUp, TrendingDown, Wallet, ArrowRight, CreditCard, Building2, Smartphone, Banknote } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, ArrowRight, CreditCard, Building2, Smartphone, Banknote, ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, addMonths, subMonths, parseISO } from 'date-fns';
 import { accountService, transactionService, categoryService } from '../services/storage';
-import { formatCurrency, formatDate, getCurrentMonth, formatMonth } from '../utils/formatters';
+import { formatCurrency, formatDate, formatMonth } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import type { Transaction, PaymentMethod } from '../types';
 
@@ -15,12 +17,20 @@ const PAYMENT_METHOD_ICONS: Record<PaymentMethod, React.ReactNode> = {
 };
 
 export const DashboardPage = () => {
-  const currentMonth = getCurrentMonth();
+  const [currentMonth, setCurrentMonth] = useState(format(new Date(), 'yyyy-MM'));
 
   // データ取得
   const accounts = accountService.getAll();
   const transactions = transactionService.getByMonth(currentMonth);
   const categories = categoryService.getAll();
+
+  const handlePrevMonth = () => {
+    setCurrentMonth(format(subMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(format(addMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
+  };
 
   // 収支計算
   const income = transactions
@@ -65,8 +75,14 @@ export const DashboardPage = () => {
   return (
     <div className="p-4 space-y-4">
       {/* 月表示 */}
-      <div className="text-center">
+      <div className="flex items-center justify-between">
+        <button onClick={handlePrevMonth} className="p-2 text-gray-600 hover:text-gray-900 active:bg-gray-100 rounded-lg">
+          <ChevronLeft size={24} />
+        </button>
         <h2 className="text-xl font-bold text-gray-800">{formatMonth(currentMonth)}</h2>
+        <button onClick={handleNextMonth} className="p-2 text-gray-600 hover:text-gray-900 active:bg-gray-100 rounded-lg">
+          <ChevronRight size={24} />
+        </button>
       </div>
 
       {/* 収支サマリー */}
