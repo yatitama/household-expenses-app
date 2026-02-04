@@ -18,6 +18,7 @@ const PAYMENT_METHOD_ICONS: Record<PaymentMethod, React.ReactNode> = {
 
 export const DashboardPage = () => {
   const [currentMonth, setCurrentMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -28,12 +29,24 @@ export const DashboardPage = () => {
   const categories = categoryService.getAll();
 
   const handlePrevMonth = () => {
+    setSlideDirection('right');
     setCurrentMonth(format(subMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
   };
 
   const handleNextMonth = () => {
+    setSlideDirection('left');
     setCurrentMonth(format(addMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
   };
+
+  // アニメーション終了後にリセット
+  useEffect(() => {
+    if (slideDirection) {
+      const timer = setTimeout(() => {
+        setSlideDirection(null);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [slideDirection, currentMonth]);
 
   // スワイプ操作
   useEffect(() => {
@@ -114,8 +127,17 @@ export const DashboardPage = () => {
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
   const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
 
+  const getAnimationClass = () => {
+    if (!slideDirection) return '';
+    if (slideDirection === 'left') {
+      return 'animate-slide-in-left';
+    }
+    return 'animate-slide-in-right';
+  };
+
   return (
-    <div ref={containerRef} className="p-4 space-y-4">
+    <div ref={containerRef} className="p-4 space-y-4 overflow-hidden">
+      <div key={currentMonth} className={getAnimationClass()}>
       {/* 月表示 */}
       <div className="flex items-center justify-between">
         <button onClick={handlePrevMonth} className="p-2 text-gray-600 hover:text-gray-900 active:bg-gray-100 rounded-lg">
@@ -259,6 +281,7 @@ export const DashboardPage = () => {
             })}
           </div>
         )}
+      </div>
       </div>
     </div>
   );
