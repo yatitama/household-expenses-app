@@ -11,6 +11,7 @@ export const TransactionsPage = () => {
   const [searchParams] = useSearchParams();
   const initialMonth = searchParams.get('month') || format(new Date(), 'yyyy-MM');
   const [currentMonth, setCurrentMonth] = useState(initialMonth);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [filterType, setFilterType] = useState<TransactionType | 'all'>('all');
   const [transactions, setTransactions] = useState<Transaction[]>(() =>
     transactionService.getAll()
@@ -29,12 +30,24 @@ export const TransactionsPage = () => {
   }, []);
 
   const handlePrevMonth = () => {
+    setSlideDirection('right');
     setCurrentMonth(format(subMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
   };
 
   const handleNextMonth = () => {
+    setSlideDirection('left');
     setCurrentMonth(format(addMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
   };
+
+  // アニメーション終了後にリセット
+  useEffect(() => {
+    if (slideDirection) {
+      const timer = setTimeout(() => {
+        setSlideDirection(null);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [slideDirection, currentMonth]);
 
   // スワイプ操作
   useEffect(() => {
@@ -158,8 +171,16 @@ export const TransactionsPage = () => {
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
   const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
 
+  const getAnimationClass = () => {
+    if (!slideDirection) return '';
+    if (slideDirection === 'left') {
+      return 'animate-slide-in-left';
+    }
+    return 'animate-slide-in-right';
+  };
+
   return (
-    <div ref={containerRef} className="flex flex-col h-full">
+    <div ref={containerRef} className="flex flex-col h-full overflow-hidden">
       {/* スティッキーヘッダー */}
       <div className="sticky top-0 bg-gray-50 z-10 px-4 pt-4 pb-2 space-y-3 border-b border-gray-200">
         {/* 月選択と集計 */}
@@ -205,6 +226,7 @@ export const TransactionsPage = () => {
 
       {/* 取引一覧 */}
       <div className="flex-1 overflow-auto p-4 space-y-4">
+        <div key={currentMonth} className={getAnimationClass()}>
         {filteredTransactions.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm p-8 text-center">
             <p className="text-gray-500">取引がありません</p>
@@ -234,6 +256,7 @@ export const TransactionsPage = () => {
             </div>
           ))
         )}
+        </div>
       </div>
 
       {/* 編集モーダル */}
