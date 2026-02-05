@@ -1,11 +1,12 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Wallet, ArrowRight, CreditCard, Building2, Smartphone, Banknote, ChevronLeft, ChevronRight } from 'lucide-react';
-import { format, addMonths, subMonths, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { accountService, transactionService, categoryService } from '../services/storage';
 import { formatCurrency, formatDate, formatMonth } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
+import { useSwipeMonth } from '../hooks/useSwipeMonth';
 import type { Transaction, PaymentMethod } from '../types';
 
 const PAYMENT_METHOD_ICONS: Record<PaymentMethod, React.ReactNode> = {
@@ -18,80 +19,18 @@ const PAYMENT_METHOD_ICONS: Record<PaymentMethod, React.ReactNode> = {
 
 export const DashboardPage = () => {
   const [currentMonth, setCurrentMonth] = useState(format(new Date(), 'yyyy-MM'));
-  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
-  const touchStartX = useRef<number>(0);
-  const touchEndX = useRef<number>(0);
-  const touchStartY = useRef<number>(0);
-  const touchEndY = useRef<number>(0);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const {
+    containerRef,
+    contentRef,
+    handlePrevMonth,
+    handleNextMonth,
+    getAnimationClass,
+  } = useSwipeMonth(currentMonth, setCurrentMonth);
 
   // データ取得
   const accounts = accountService.getAll();
   const transactions = transactionService.getByMonth(currentMonth);
   const categories = categoryService.getAll();
-
-  const handlePrevMonth = () => {
-    setSlideDirection('right');
-    setCurrentMonth(format(subMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
-  };
-
-  const handleNextMonth = () => {
-    setSlideDirection('left');
-    setCurrentMonth(format(addMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
-  };
-
-  // アニメーション終了後にリセット
-  useEffect(() => {
-    if (slideDirection) {
-      const timer = setTimeout(() => {
-        setSlideDirection(null);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [slideDirection, currentMonth]);
-
-  // スワイプ操作
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartX.current = e.touches[0].clientX;
-      touchStartY.current = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      touchEndX.current = e.touches[0].clientX;
-      touchEndY.current = e.touches[0].clientY;
-    };
-
-    const handleTouchEnd = () => {
-      const diffX = touchStartX.current - touchEndX.current;
-      const diffY = touchStartY.current - touchEndY.current;
-      const minSwipeDistance = 50;
-
-      // 横方向の動きが縦方向より大きい場合のみスワイプとして処理
-      if (Math.abs(diffX) > minSwipeDistance && Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX > 0) {
-          // 左スワイプ: 次の月へ
-          handleNextMonth();
-        } else {
-          // 右スワイプ: 前の月へ
-          handlePrevMonth();
-        }
-      }
-    };
-
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchmove', handleTouchMove, { passive: true });
-    container.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-    return () => {
-      container.removeEventListener('touchstart', handleTouchStart);
-      container.removeEventListener('touchmove', handleTouchMove);
-      container.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [currentMonth]);
 
   // 収支計算
   const income = transactions
@@ -133,17 +72,9 @@ export const DashboardPage = () => {
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
   const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
 
-  const getAnimationClass = () => {
-    if (!slideDirection) return '';
-    if (slideDirection === 'left') {
-      return 'animate-slide-in-left';
-    }
-    return 'animate-slide-in-right';
-  };
-
   return (
-    <div ref={containerRef} className="p-4 overflow-hidden">
-      <div key={currentMonth} className={`space-y-4 ${getAnimationClass()}`}>
+    <div ref={containerRef} className="min-h-full p-4 overflow-hidden">
+      <div ref={contentRef} key={currentMonth} className={`space-y-4 ${getAnimationClass()}`}>
       {/* 月表示 */}
       <div className="flex items-center justify-between">
         <button onClick={handlePrevMonth} className="p-2 text-gray-600 hover:text-gray-900 active:bg-gray-100 rounded-lg">
