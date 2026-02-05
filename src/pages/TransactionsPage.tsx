@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Trash2, Edit2, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2, Edit2, Check, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
-import { accountService, transactionService, categoryService, memberService } from '../services/storage';
+import { accountService, transactionService, categoryService, memberService, paymentMethodService } from '../services/storage';
 import { formatCurrency, formatDate, formatMonth } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { useSwipeMonth } from '../hooks/useSwipeMonth';
@@ -27,6 +27,7 @@ export const TransactionsPage = () => {
   } = useSwipeMonth(currentMonth, setCurrentMonth);
 
   const accounts = accountService.getAll();
+  const paymentMethods = paymentMethodService.getAll();
   const categories = categoryService.getAll();
   const members = memberService.getAll();
 
@@ -42,33 +43,66 @@ export const TransactionsPage = () => {
     if (!editingTransaction) return;
 
     const oldTransaction = editingTransaction;
-    const oldAccount = accountService.getById(oldTransaction.accountId);
-    const newAccount = accountService.getById(input.accountId);
 
-    // 古い取引の残高を戻す
-    if (oldAccount) {
-      const revertBalance =
-        oldTransaction.type === 'expense'
+    // 古い取引の残高影響を戻す
+    if (oldTransaction.paymentMethodId) {
+      const oldPM = paymentMethodService.getById(oldTransaction.paymentMethodId);
+      if (oldPM && oldPM.billingType === 'immediate' && oldTransaction.accountId) {
+        const oldAccount = accountService.getById(oldTransaction.accountId);
+        if (oldAccount) {
+          const revertBalance = oldTransaction.type === 'expense'
+            ? oldAccount.balance + oldTransaction.amount
+            : oldAccount.balance - oldTransaction.amount;
+          accountService.update(oldAccount.id, { balance: revertBalance });
+        }
+      }
+      // monthly かつ settled の場合も戻す
+      if (oldPM && oldPM.billingType === 'monthly' && oldTransaction.settledAt && oldTransaction.accountId) {
+        const oldAccount = accountService.getById(oldTransaction.accountId);
+        if (oldAccount) {
+          const revertBalance = oldTransaction.type === 'expense'
+            ? oldAccount.balance + oldTransaction.amount
+            : oldAccount.balance - oldTransaction.amount;
+          accountService.update(oldAccount.id, { balance: revertBalance });
+        }
+      }
+    } else if (oldTransaction.accountId) {
+      const oldAccount = accountService.getById(oldTransaction.accountId);
+      if (oldAccount) {
+        const revertBalance = oldTransaction.type === 'expense'
           ? oldAccount.balance + oldTransaction.amount
           : oldAccount.balance - oldTransaction.amount;
-      accountService.update(oldAccount.id, { balance: revertBalance });
+        accountService.update(oldAccount.id, { balance: revertBalance });
+      }
     }
 
     // 新しい取引の残高を適用
-    if (newAccount) {
-      const currentBalance = oldAccount?.id === newAccount.id
-        ? (oldTransaction.type === 'expense'
-            ? oldAccount.balance + oldTransaction.amount
-            : oldAccount.balance - oldTransaction.amount)
-        : newAccount.balance;
-      const newBalance =
-        input.type === 'expense'
-          ? currentBalance - input.amount
-          : currentBalance + input.amount;
-      accountService.update(newAccount.id, { balance: newBalance });
+    if (input.paymentMethodId) {
+      const newPM = paymentMethodService.getById(input.paymentMethodId);
+      if (newPM && newPM.billingType === 'immediate' && input.accountId) {
+        const newAccount = accountService.getById(input.accountId);
+        if (newAccount) {
+          const newBalance = input.type === 'expense'
+            ? newAccount.balance - input.amount
+            : newAccount.balance + input.amount;
+          accountService.update(newAccount.id, { balance: newBalance });
+        }
+      }
+      // monthly は口座残高を変更しない
+    } else if (input.accountId) {
+      const newAccount = accountService.getById(input.accountId);
+      if (newAccount) {
+        const newBalance = input.type === 'expense'
+          ? newAccount.balance - input.amount
+          : newAccount.balance + input.amount;
+        accountService.update(newAccount.id, { balance: newBalance });
+      }
     }
 
-    transactionService.update(editingTransaction.id, input);
+    transactionService.update(editingTransaction.id, {
+      ...input,
+      settledAt: input.paymentMethodId ? undefined : undefined, // reset settled status on edit
+    });
     refreshTransactions();
     setEditingTransaction(null);
   };
@@ -76,13 +110,34 @@ export const TransactionsPage = () => {
   const handleDelete = (transaction: Transaction) => {
     if (confirm('この取引を削除しますか？')) {
       // 口座残高を戻す
-      const account = accountService.getById(transaction.accountId);
-      if (account) {
-        const newBalance =
-          transaction.type === 'expense'
+      if (transaction.paymentMethodId) {
+        const pm = paymentMethodService.getById(transaction.paymentMethodId);
+        if (pm && pm.billingType === 'immediate' && transaction.accountId) {
+          const account = accountService.getById(transaction.accountId);
+          if (account) {
+            const newBalance = transaction.type === 'expense'
+              ? account.balance + transaction.amount
+              : account.balance - transaction.amount;
+            accountService.update(transaction.accountId, { balance: newBalance });
+          }
+        }
+        if (pm && pm.billingType === 'monthly' && transaction.settledAt && transaction.accountId) {
+          const account = accountService.getById(transaction.accountId);
+          if (account) {
+            const newBalance = transaction.type === 'expense'
+              ? account.balance + transaction.amount
+              : account.balance - transaction.amount;
+            accountService.update(transaction.accountId, { balance: newBalance });
+          }
+        }
+      } else if (transaction.accountId) {
+        const account = accountService.getById(transaction.accountId);
+        if (account) {
+          const newBalance = transaction.type === 'expense'
             ? account.balance + transaction.amount
             : account.balance - transaction.amount;
-        accountService.update(transaction.accountId, { balance: newBalance });
+          accountService.update(transaction.accountId, { balance: newBalance });
+        }
       }
 
       transactionService.delete(transaction.id);
@@ -116,12 +171,12 @@ export const TransactionsPage = () => {
 
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
   const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
+  const getPM = (pmId?: string) => pmId ? paymentMethods.find((p) => p.id === pmId) : undefined;
 
   return (
     <div ref={containerRef} className="min-h-screen flex flex-col overflow-hidden">
       {/* スティッキーヘッダー */}
       <div className="sticky top-0 bg-gray-50 z-10 px-4 pt-4 pb-2 space-y-3 border-b border-gray-200">
-        {/* 月選択と集計 */}
         <div className="bg-white rounded-xl shadow-sm p-3">
           <div className="flex items-center justify-between mb-2">
             <button onClick={handlePrevMonth} className="p-2 -ml-2 text-gray-600 hover:text-gray-900 active:bg-gray-100 rounded-lg">
@@ -144,7 +199,6 @@ export const TransactionsPage = () => {
           </div>
         </div>
 
-        {/* フィルター */}
         <div className="flex gap-2">
           {(['all', 'expense', 'income'] as const).map((t) => (
             <button
@@ -177,6 +231,7 @@ export const TransactionsPage = () => {
                 {dayTransactions.map((transaction) => {
                   const category = getCategory(transaction.categoryId);
                   const account = getAccount(transaction.accountId);
+                  const pm = getPM(transaction.paymentMethodId);
                   return (
                     <TransactionItem
                       key={transaction.id}
@@ -184,7 +239,8 @@ export const TransactionsPage = () => {
                       categoryName={category?.name || '不明'}
                       categoryColor={category?.color || '#6b7280'}
                       categoryIcon={category?.icon || ''}
-                      accountName={account?.name || '不明'}
+                      accountName={account?.name || ''}
+                      paymentMethodName={pm?.name}
                       onEdit={() => handleEdit(transaction)}
                       onDelete={() => handleDelete(transaction)}
                     />
@@ -202,6 +258,7 @@ export const TransactionsPage = () => {
         <EditTransactionModal
           transaction={editingTransaction}
           accounts={accounts}
+          paymentMethods={paymentMethods}
           categories={categories}
           members={members}
           onSave={handleSaveEdit}
@@ -218,6 +275,7 @@ interface TransactionItemProps {
   categoryColor: string;
   categoryIcon: string;
   accountName: string;
+  paymentMethodName?: string;
   onEdit: () => void;
   onDelete: () => void;
 }
@@ -228,10 +286,12 @@ const TransactionItem = ({
   categoryColor,
   categoryIcon,
   accountName,
+  paymentMethodName,
   onEdit,
   onDelete,
 }: TransactionItemProps) => {
   const isExpense = transaction.type === 'expense';
+  const displayName = paymentMethodName || accountName || '不明';
 
   return (
     <div className="flex justify-between items-center p-4">
@@ -244,7 +304,10 @@ const TransactionItem = ({
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-medium text-gray-900 truncate">{categoryName}</p>
-          <p className="text-xs text-gray-500 truncate">{accountName}</p>
+          <div className="flex items-center gap-1">
+            {paymentMethodName && <CreditCard size={10} className="text-purple-400 flex-shrink-0" />}
+            <p className="text-xs text-gray-500 truncate">{displayName}</p>
+          </div>
           {transaction.memo && <p className="text-xs text-gray-400 mt-1 truncate">{transaction.memo}</p>}
         </div>
       </button>
@@ -267,6 +330,7 @@ const TransactionItem = ({
 interface EditTransactionModalProps {
   transaction: Transaction;
   accounts: { id: string; name: string; color: string }[];
+  paymentMethods: { id: string; name: string; color: string; linkedAccountId: string }[];
   categories: { id: string; name: string; type: TransactionType; color: string; icon: string; memberId: string }[];
   members: { id: string; name: string; color: string }[];
   onSave: (input: TransactionInput) => void;
@@ -276,6 +340,7 @@ interface EditTransactionModalProps {
 const EditTransactionModal = ({
   transaction,
   accounts,
+  paymentMethods,
   categories,
   members,
   onSave,
@@ -285,16 +350,30 @@ const EditTransactionModal = ({
   const [amount, setAmount] = useState(transaction.amount.toString());
   const [categoryId, setCategoryId] = useState(transaction.categoryId);
   const [accountId, setAccountId] = useState(transaction.accountId);
+  const [pmId, setPmId] = useState<string | undefined>(transaction.paymentMethodId);
   const [date, setDate] = useState(transaction.date);
   const [memo, setMemo] = useState(transaction.memo || '');
 
   const filteredCategories = categories.filter((c) => c.type === type);
 
+  const handleSelectAccount = (id: string) => {
+    setAccountId(id);
+    setPmId(undefined);
+  };
+
+  const handleSelectPM = (id: string) => {
+    const pm = paymentMethods.find((p) => p.id === id);
+    if (pm) {
+      setPmId(id);
+      setAccountId(pm.linkedAccountId);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!amount || !categoryId || !accountId) {
-      alert('金額、カテゴリ、口座を入力してください');
+    if (!amount || !categoryId || (!accountId && !pmId)) {
+      alert('金額、カテゴリ、支払い元を入力してください');
       return;
     }
 
@@ -303,6 +382,7 @@ const EditTransactionModal = ({
       amount: parseInt(amount, 10),
       categoryId,
       accountId,
+      paymentMethodId: pmId,
       date,
       memo: memo || undefined,
     });
@@ -338,6 +418,7 @@ const EditTransactionModal = ({
               onClick={() => {
                 setType('income');
                 setCategoryId('');
+                setPmId(undefined);
               }}
               className={`flex-1 py-2.5 font-medium transition-colors ${
                 type === 'income' ? 'bg-green-500 text-white' : 'bg-white text-gray-700'
@@ -397,33 +478,71 @@ const EditTransactionModal = ({
             </div>
           </div>
 
-          {/* 口座選択 */}
+          {/* 支払い元選択 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {type === 'expense' ? '支払い元' : '入金先'}
             </label>
-            <div className="space-y-1.5 max-h-32 overflow-y-auto">
-              {accounts.map((account) => (
-                <button
-                  key={account.id}
-                  type="button"
-                  onClick={() => setAccountId(account.id)}
-                  className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-colors ${
-                    accountId === account.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-3.5 h-3.5 rounded-full"
-                      style={{ backgroundColor: account.color }}
-                    />
-                    <span className="font-medium text-gray-900 text-sm">{account.name}</span>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {/* 口座 */}
+              {accounts.length > 0 && (
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium mb-1">口座</p>
+                  <div className="space-y-1">
+                    {accounts.map((account) => (
+                      <button
+                        key={account.id}
+                        type="button"
+                        onClick={() => handleSelectAccount(account.id)}
+                        className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-colors ${
+                          accountId === account.id && !pmId
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: account.color }} />
+                          <span className="font-medium text-gray-900 text-sm">{account.name}</span>
+                        </div>
+                        {accountId === account.id && !pmId && <Check size={16} className="text-blue-500" />}
+                      </button>
+                    ))}
                   </div>
-                  {accountId === account.id && <Check size={16} className="text-blue-500" />}
-                </button>
-              ))}
+                </div>
+              )}
+
+              {/* 支払い手段（支出時のみ） */}
+              {type === 'expense' && paymentMethods.length > 0 && (
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium mb-1">支払い手段</p>
+                  <div className="space-y-1">
+                    {paymentMethods.map((pm) => {
+                      const linkedAccount = accounts.find((a) => a.id === pm.linkedAccountId);
+                      return (
+                        <button
+                          key={pm.id}
+                          type="button"
+                          onClick={() => handleSelectPM(pm.id)}
+                          className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-colors ${
+                            pmId === pm.id
+                              ? 'border-purple-500 bg-purple-50'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: pm.color }} />
+                            <div className="text-left">
+                              <span className="font-medium text-gray-900 text-sm">{pm.name}</span>
+                              {linkedAccount && <p className="text-[9px] text-gray-400">→ {linkedAccount.name}</p>}
+                            </div>
+                          </div>
+                          {pmId === pm.id && <Check size={16} className="text-purple-500" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -462,7 +581,7 @@ const EditTransactionModal = ({
             </button>
             <button
               type="submit"
-              disabled={!amount || !categoryId || !accountId}
+              disabled={!amount || !categoryId || (!accountId && !pmId)}
               className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium disabled:opacity-50"
             >
               保存

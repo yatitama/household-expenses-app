@@ -9,10 +9,14 @@ import { SettingsPage } from './pages/SettingsPage';
 import { MembersPage } from './pages/MembersPage';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { initializeDefaultData } from './services/initialData';
+import { runMigrations } from './services/storage';
+import { settleOverdueTransactions } from './utils/billingUtils';
 
 export const App = () => {
   useEffect(() => {
+    runMigrations();
     initializeDefaultData();
+    settleOverdueTransactions();
   }, []);
 
   return (

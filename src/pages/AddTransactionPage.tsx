@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { CheckCircle } from 'lucide-react';
-import { accountService, transactionService, categoryService, memberService } from '../services/storage';
+import { accountService, transactionService, categoryService, memberService, paymentMethodService } from '../services/storage';
 import { getCategoryIcon } from '../utils/categoryIcons';
+import { formatCurrency } from '../utils/formatters';
 import type { TransactionType, TransactionInput } from '../types';
 
 export const AddTransactionPage = () => {
   const accounts = accountService.getAll();
+  const paymentMethods = paymentMethodService.getAll();
   const categories = categoryService.getAll();
   const members = memberService.getAll();
 
@@ -14,6 +16,7 @@ export const AddTransactionPage = () => {
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [accountId, setAccountId] = useState(accounts[0]?.id || '');
+  const [paymentMethodId, setPaymentMethodId] = useState<string | undefined>(undefined);
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [memo, setMemo] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
@@ -24,41 +27,77 @@ export const AddTransactionPage = () => {
     setAmount('');
     setCategoryId('');
     setMemo('');
-    // 日付と口座は維持する（連続入力しやすいように）
+  };
+
+  const handleSelectAccount = (id: string) => {
+    setAccountId(id);
+    setPaymentMethodId(undefined);
+  };
+
+  const handleSelectPaymentMethod = (pmId: string) => {
+    const pm = paymentMethods.find((p) => p.id === pmId);
+    if (pm) {
+      setPaymentMethodId(pmId);
+      setAccountId(pm.linkedAccountId);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!amount || !categoryId || !accountId) {
-      alert('金額、カテゴリ、口座を入力してください');
+    if (!amount || !categoryId || (!accountId && !paymentMethodId)) {
+      alert('金額、カテゴリ、支払い元を入力してください');
       return;
     }
 
+    const parsedAmount = parseInt(amount, 10);
+
     const input: TransactionInput = {
       type,
-      amount: parseInt(amount, 10),
+      amount: parsedAmount,
       categoryId,
       accountId,
+      paymentMethodId,
       date,
       memo: memo || undefined,
     };
 
     transactionService.create(input);
 
-    // 口座残高を更新
-    const account = accountService.getById(accountId);
-    if (account) {
-      const newBalance =
-        type === 'expense' ? account.balance - input.amount : account.balance + input.amount;
-      accountService.update(accountId, { balance: newBalance });
+    // 口座残高の更新
+    if (paymentMethodId) {
+      const pm = paymentMethods.find((p) => p.id === paymentMethodId);
+      if (pm && pm.billingType === 'immediate' && pm.linkedAccountId) {
+        // 即時精算: 口座残高を即時更新
+        const account = accountService.getById(pm.linkedAccountId);
+        if (account) {
+          const newBalance = type === 'expense'
+            ? account.balance - parsedAmount
+            : account.balance + parsedAmount;
+          accountService.update(pm.linkedAccountId, { balance: newBalance });
+        }
+        // settledAtを設定
+        const allTx = transactionService.getAll();
+        const lastTx = allTx[allTx.length - 1];
+        if (lastTx) {
+          transactionService.update(lastTx.id, { settledAt: new Date().toISOString() });
+        }
+      }
+      // monthly の場合は口座残高を変更しない（精算時に変更）
+    } else if (accountId) {
+      // 直接口座からの支払い
+      const account = accountService.getById(accountId);
+      if (account) {
+        const newBalance = type === 'expense'
+          ? account.balance - parsedAmount
+          : account.balance + parsedAmount;
+        accountService.update(accountId, { balance: newBalance });
+      }
     }
 
-    // 連続追加モード: フォームをリセットして成功メッセージを表示
     resetForm();
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 2000);
-    // 画面上部へスクロール
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -68,7 +107,6 @@ export const AddTransactionPage = () => {
     <div className="p-4">
       <h2 className="text-xl font-bold text-gray-800 mb-4">取引を追加</h2>
 
-      {/* 成功メッセージ */}
       {showSuccess && (
         <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-2 text-green-700">
           <CheckCircle size={20} />
@@ -96,6 +134,8 @@ export const AddTransactionPage = () => {
             onClick={() => {
               setType('income');
               setCategoryId('');
+              setPaymentMethodId(undefined);
+              if (!accountId && accounts.length > 0) setAccountId(accounts[0].id);
             }}
             className={`flex-1 py-3 font-medium transition-colors ${
               type === 'income' ? 'bg-green-500 text-white' : 'bg-white text-gray-700'
@@ -160,36 +200,90 @@ export const AddTransactionPage = () => {
           )}
         </div>
 
-        {/* 口座選択 */}
+        {/* 支払い元選択 */}
         <div className="bg-white rounded-xl shadow-sm p-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {type === 'expense' ? '支払い元' : '入金先'}
           </label>
-          {accounts.length === 0 ? (
+
+          {accounts.length === 0 && paymentMethods.length === 0 ? (
             <p className="text-gray-500 text-sm">口座を登録してください</p>
           ) : (
-            <div className="space-y-2">
-              {accounts.map((account) => (
-                <button
-                  key={account.id}
-                  type="button"
-                  onClick={() => setAccountId(account.id)}
-                  className={`w-full flex items-center justify-between p-3 rounded-lg border transition-colors ${
-                    accountId === account.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-4 h-4 rounded-full"
-                      style={{ backgroundColor: account.color }}
-                    />
-                    <span className="font-medium text-gray-900">{account.name}</span>
+            <div className="space-y-3">
+              {/* 口座リスト */}
+              {accounts.length > 0 && (
+                <div>
+                  <p className="text-xs text-gray-400 font-medium mb-1.5">口座</p>
+                  <div className="space-y-1.5">
+                    {accounts.map((account) => (
+                      <button
+                        key={account.id}
+                        type="button"
+                        onClick={() => handleSelectAccount(account.id)}
+                        className={`w-full flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                          accountId === account.id && !paymentMethodId
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-4 h-4 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: account.color }}
+                          />
+                          <span className="font-medium text-gray-900 text-sm">{account.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-400">{formatCurrency(account.balance)}</span>
+                          {accountId === account.id && !paymentMethodId && (
+                            <CheckCircle size={18} className="text-blue-500" />
+                          )}
+                        </div>
+                      </button>
+                    ))}
                   </div>
-                  {accountId === account.id && <CheckCircle size={18} className="text-blue-500" />}
-                </button>
-              ))}
+                </div>
+              )}
+
+              {/* 支払い手段リスト（支出時のみ表示） */}
+              {type === 'expense' && paymentMethods.length > 0 && (
+                <div>
+                  <p className="text-xs text-gray-400 font-medium mb-1.5">支払い手段</p>
+                  <div className="space-y-1.5">
+                    {paymentMethods.map((pm) => {
+                      const linkedAccount = accounts.find((a) => a.id === pm.linkedAccountId);
+                      return (
+                        <button
+                          key={pm.id}
+                          type="button"
+                          onClick={() => handleSelectPaymentMethod(pm.id)}
+                          className={`w-full flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                            paymentMethodId === pm.id
+                              ? 'border-purple-500 bg-purple-50'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-4 h-4 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: pm.color }}
+                            />
+                            <div className="text-left">
+                              <span className="font-medium text-gray-900 text-sm">{pm.name}</span>
+                              {linkedAccount && (
+                                <p className="text-[10px] text-gray-400">→ {linkedAccount.name}</p>
+                              )}
+                            </div>
+                          </div>
+                          {paymentMethodId === pm.id && (
+                            <CheckCircle size={18} className="text-purple-500" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -223,7 +317,7 @@ export const AddTransactionPage = () => {
         {/* 登録ボタン */}
         <button
           type="submit"
-          disabled={!amount || !categoryId || !accountId}
+          disabled={!amount || !categoryId || (!accountId && !paymentMethodId)}
           className={`w-full py-4 rounded-xl font-bold text-white text-lg transition-colors ${
             type === 'expense' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
           } disabled:opacity-50 disabled:cursor-not-allowed`}

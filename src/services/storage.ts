@@ -3,6 +3,9 @@ import type {
   MemberInput,
   Account,
   AccountInput,
+  AccountType,
+  PaymentMethod,
+  PaymentMethodInput,
   Transaction,
   TransactionInput,
   Category,
@@ -16,11 +19,15 @@ import type {
 const STORAGE_KEYS = {
   MEMBERS: 'household_members',
   ACCOUNTS: 'household_accounts',
+  PAYMENT_METHODS: 'household_payment_methods',
   TRANSACTIONS: 'household_transactions',
   CATEGORIES: 'household_categories',
   BUDGETS: 'household_budgets',
   CARD_BILLINGS: 'household_card_billings',
+  MIGRATION_VERSION: 'household_migration_version',
 } as const;
+
+const CURRENT_MIGRATION_VERSION = 2;
 
 // ユーティリティ関数
 const generateId = (): string => {
@@ -44,6 +51,108 @@ const getItems = <T>(key: string): T[] => {
 
 const setItems = <T>(key: string, items: T[]): void => {
   localStorage.setItem(key, JSON.stringify(items));
+};
+
+// マイグレーション: v1 → v2（口座と支払い手段の分離）
+const migrateV1ToV2 = (): void => {
+  interface OldAccount {
+    id: string;
+    name: string;
+    memberId: string;
+    paymentMethod: string;
+    balance: number;
+    color: string;
+    icon?: string;
+    createdAt: string;
+    updatedAt: string;
+  }
+
+  const rawData = localStorage.getItem(STORAGE_KEYS.ACCOUNTS);
+  if (!rawData) return;
+
+  let oldAccounts: OldAccount[];
+  try {
+    oldAccounts = JSON.parse(rawData) as OldAccount[];
+  } catch {
+    return;
+  }
+
+  // 旧フォーマットかチェック（paymentMethodフィールドがあるか）
+  if (oldAccounts.length === 0) return;
+  const firstAccount = oldAccounts[0] as unknown as Record<string, unknown>;
+  if (!('paymentMethod' in firstAccount)) return;
+
+  const now = getTimestamp();
+  const newAccounts: Account[] = [];
+  const newPaymentMethods: PaymentMethod[] = [];
+  const accountIdMapping: Record<string, string> = {}; // old account ID → new PM ID
+
+  for (const old of oldAccounts) {
+    if (old.paymentMethod === 'credit_card' || old.paymentMethod === 'debit_card') {
+      // クレジットカード/デビットカード → PaymentMethodに変換
+      const pmId = generateId();
+      accountIdMapping[old.id] = pmId;
+      newPaymentMethods.push({
+        id: pmId,
+        name: old.name,
+        memberId: old.memberId,
+        type: old.paymentMethod as 'credit_card' | 'debit_card',
+        linkedAccountId: '',
+        billingType: old.paymentMethod === 'credit_card' ? 'monthly' : 'immediate',
+        closingDay: old.paymentMethod === 'credit_card' ? 15 : undefined,
+        paymentDay: old.paymentMethod === 'credit_card' ? 10 : undefined,
+        paymentMonthOffset: old.paymentMethod === 'credit_card' ? 1 : undefined,
+        color: old.color,
+        icon: old.icon,
+        createdAt: old.createdAt,
+        updatedAt: now,
+      });
+    } else {
+      // 現金/銀行/電子マネー → Accountに変換
+      const accountType = old.paymentMethod as AccountType;
+      newAccounts.push({
+        id: old.id,
+        name: old.name,
+        memberId: old.memberId,
+        type: accountType,
+        balance: old.balance,
+        color: old.color,
+        icon: old.icon,
+        createdAt: old.createdAt,
+        updatedAt: now,
+      });
+    }
+  }
+
+  // トランザクションの更新
+  const transactions = getItems<Transaction & { accountId: string }>(STORAGE_KEYS.TRANSACTIONS);
+  const updatedTransactions = transactions.map((t) => {
+    if (accountIdMapping[t.accountId]) {
+      return {
+        ...t,
+        paymentMethodId: accountIdMapping[t.accountId],
+        accountId: '', // 紐づき先口座未設定
+        updatedAt: now,
+      };
+    }
+    return t;
+  });
+
+  // 保存
+  setItems(STORAGE_KEYS.ACCOUNTS, newAccounts);
+  setItems(STORAGE_KEYS.PAYMENT_METHODS, newPaymentMethods);
+  setItems(STORAGE_KEYS.TRANSACTIONS, updatedTransactions);
+};
+
+export const runMigrations = (): void => {
+  const versionStr = localStorage.getItem(STORAGE_KEYS.MIGRATION_VERSION);
+  const currentVersion = versionStr ? parseInt(versionStr, 10) : 1;
+
+  if (currentVersion < 2) {
+    migrateV1ToV2();
+  }
+
+  localStorage.setItem(STORAGE_KEYS.MIGRATION_VERSION, CURRENT_MIGRATION_VERSION.toString());
 };
 
 // Member 操作
@@ -144,6 +253,54 @@ export const accountService = {
   },
 };
 
+// PaymentMethod 操作
+export const paymentMethodService = {
+  getAll: (): PaymentMethod[] => {
+    return getItems<PaymentMethod>(STORAGE_KEYS.PAYMENT_METHODS);
+  },
+
+  getById: (id: string): PaymentMethod | undefined => {
+    return paymentMethodService.getAll().find((pm) => pm.id === id);
+  },
+
+  create: (input: PaymentMethodInput): PaymentMethod => {
+    const methods = paymentMethodService.getAll();
+    const now = getTimestamp();
+    const newMethod: PaymentMethod = {
+      ...input,
+      id: generateId(),
+      createdAt: now,
+      updatedAt: now,
+    };
+    methods.push(newMethod);
+    setItems(STORAGE_KEYS.PAYMENT_METHODS, methods);
+    return newMethod;
+  },
+
+  update: (id: string, input: Partial<PaymentMethodInput>): PaymentMethod | undefined => {
+    const methods = paymentMethodService.getAll();
+    const index = methods.findIndex((pm) => pm.id === id);
+    if (index === -1) return undefined;
+
+    const updated: PaymentMethod = {
+      ...methods[index],
+      ...input,
+      updatedAt: getTimestamp(),
+    };
+    methods[index] = updated;
+    setItems(STORAGE_KEYS.PAYMENT_METHODS, methods);
+    return updated;
+  },
+
+  delete: (id: string): boolean => {
+    const methods = paymentMethodService.getAll();
+    const filtered = methods.filter((pm) => pm.id !== id);
+    if (filtered.length === methods.length) return false;
+    setItems(STORAGE_KEYS.PAYMENT_METHODS, filtered);
+    return true;
+  },
+};
+
 // Transaction 操作
 export const transactionService = {
   getAll: (): Transaction[] => {
@@ -172,7 +329,7 @@ export const transactionService = {
     return newTransaction;
   },
 
-  update: (id: string, input: Partial<TransactionInput>): Transaction | undefined => {
+  update: (id: string, input: Partial<TransactionInput & { settledAt?: string }>): Transaction | undefined => {
     const transactions = transactionService.getAll();
     const index = transactions.findIndex((t) => t.id === id);
     if (index === -1) return undefined;
