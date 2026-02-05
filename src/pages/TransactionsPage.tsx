@@ -118,7 +118,7 @@ export const TransactionsPage = () => {
   const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
 
   return (
-    <div ref={containerRef} className="min-h-full flex flex-col overflow-hidden">
+    <div ref={containerRef} className="min-h-screen flex flex-col overflow-hidden">
       {/* スティッキーヘッダー */}
       <div className="sticky top-0 bg-gray-50 z-10 px-4 pt-4 pb-2 space-y-3 border-b border-gray-200">
         {/* 月選択と集計 */}
@@ -428,14 +428,14 @@ const EditTransactionModal = ({
           </div>
 
           {/* 日付 */}
-          <div>
+          <div className="overflow-x-hidden">
             <label className="block text-sm font-medium text-gray-700 mb-1">日付</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 max-w-full"
-              style={{ minWidth: 0 }}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ minWidth: 0, maxWidth: '100%' }}
             />
           </div>
 
