@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Plus, Edit2, Trash2, Wallet, CreditCard, Building2, Smartphone, Banknote, X, AlertCircle, Link2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, Wallet, CreditCard, Building2, Smartphone, Banknote, X, AlertCircle, Link2, Info } from 'lucide-react';
 import { accountService, memberService, transactionService, categoryService, paymentMethodService } from '../services/storage';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
@@ -203,16 +203,20 @@ export const AccountsPage = () => {
                     {member?.name || '不明'}
                   </h4>
                   <div className="space-y-2">
-                    {memberAccounts.map((account) => (
-                      <AccountCard
-                        key={account.id}
-                        account={account}
-                        pendingAmount={pendingByAccount[account.id] || 0}
-                        onView={() => setViewingAccount(account)}
-                        onEdit={() => handleEditAccount(account)}
-                        onDelete={() => handleDeleteAccount(account.id)}
-                      />
-                    ))}
+                    {memberAccounts.map((account) => {
+                      const linkedPMs = paymentMethods.filter((pm) => pm.linkedAccountId === account.id);
+                      return (
+                        <AccountCard
+                          key={account.id}
+                          account={account}
+                          pendingAmount={pendingByAccount[account.id] || 0}
+                          linkedPaymentMethods={linkedPMs}
+                          onView={() => setViewingAccount(account)}
+                          onEdit={() => handleEditAccount(account)}
+                          onDelete={() => handleDeleteAccount(account.id)}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -308,12 +312,13 @@ export const AccountsPage = () => {
 interface AccountCardProps {
   account: Account;
   pendingAmount: number;
+  linkedPaymentMethods: PaymentMethod[];
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-const AccountCard = ({ account, pendingAmount, onView, onEdit, onDelete }: AccountCardProps) => {
+const AccountCard = ({ account, pendingAmount, linkedPaymentMethods, onView, onEdit, onDelete }: AccountCardProps) => {
   return (
     <div className="bg-white rounded-xl shadow-sm p-4">
       <div className="flex justify-between items-start">
@@ -346,6 +351,21 @@ const AccountCard = ({ account, pendingAmount, onView, onEdit, onDelete }: Accou
           </p>
         )}
       </button>
+      {linkedPaymentMethods.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-gray-100">
+          <p className="text-[10px] text-gray-400 font-medium mb-1.5">紐づき支払い手段</p>
+          <div className="flex flex-wrap gap-1.5">
+            {linkedPaymentMethods.map((pm) => (
+              <div key={pm.id} className="flex items-center gap-1 bg-gray-50 rounded-full px-2 py-0.5">
+                <div className="w-3 h-3 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: pm.color }}>
+                  <CreditCard size={7} />
+                </div>
+                <span className="text-[11px] text-gray-600">{pm.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -661,48 +681,68 @@ const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, onClose 
             </div>
           </div>
 
-          {billingType === 'monthly' && (
-            <div className="bg-gray-50 rounded-lg p-3 space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">締め日</label>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500">毎月</span>
-                  <input
-                    type="number"
-                    min="1"
-                    max="31"
-                    value={closingDay}
-                    onChange={(e) => setClosingDay(e.target.value)}
-                    className="w-16 border border-gray-300 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                  <span className="text-sm text-gray-500">日</span>
+          {billingType === 'monthly' && (() => {
+            const cd = parseInt(closingDay, 10) || 15;
+            const pd = parseInt(paymentDay, 10) || 10;
+            const offset = parseInt(paymentMonthOffset, 10) || 1;
+            const offsetLabel = offset === 0 ? '当月' : offset === 1 ? '翌月' : '翌々月';
+            // 締め日以前の取引例: 1月{cd}日 → 引き落とし月 = 1月 + offset
+            const payMonth1 = 1 + offset;
+            // 締め日翌日の取引例: 1月{cd+1}日 → 引き落とし月 = 2月 + offset
+            const payMonth2 = 2 + offset;
+            return (
+              <div className="bg-gray-50 rounded-lg p-3 space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">締め日</label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">毎月</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="31"
+                      value={closingDay}
+                      onChange={(e) => setClosingDay(e.target.value)}
+                      className="w-16 border border-gray-300 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                    <span className="text-sm text-gray-500">日</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">引き落とし日</label>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={paymentMonthOffset}
+                      onChange={(e) => setPaymentMonthOffset(e.target.value)}
+                      className="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                      <option value="0">当月</option>
+                      <option value="1">翌月</option>
+                      <option value="2">翌々月</option>
+                    </select>
+                    <input
+                      type="number"
+                      min="1"
+                      max="31"
+                      value={paymentDay}
+                      onChange={(e) => setPaymentDay(e.target.value)}
+                      className="w-16 border border-gray-300 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                    <span className="text-sm text-gray-500">日</span>
+                  </div>
+                </div>
+                <div className="bg-purple-50 rounded-lg p-2.5 mt-2">
+                  <div className="flex items-start gap-1.5">
+                    <Info size={14} className="text-purple-400 flex-shrink-0 mt-0.5" />
+                    <div className="text-xs text-purple-700 space-y-1">
+                      <p className="font-medium">引き落としの例（{cd}日締め・{offsetLabel}{pd}日払い）</p>
+                      <p>1月{cd}日の取引 → <span className="font-medium">{payMonth1}月{pd}日</span>に引き落とし</p>
+                      <p>1月{cd + 1}日の取引 → <span className="font-medium">{payMonth2}月{pd}日</span>に引き落とし</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">引き落とし日</label>
-                <div className="flex items-center gap-2">
-                  <select
-                    value={paymentMonthOffset}
-                    onChange={(e) => setPaymentMonthOffset(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  >
-                    <option value="0">当月</option>
-                    <option value="1">翌月</option>
-                    <option value="2">翌々月</option>
-                  </select>
-                  <input
-                    type="number"
-                    min="1"
-                    max="31"
-                    value={paymentDay}
-                    onChange={(e) => setPaymentDay(e.target.value)}
-                    className="w-16 border border-gray-300 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                  <span className="text-sm text-gray-500">日</span>
-                </div>
-              </div>
-            </div>
-          )}
+            );
+          })()}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">色</label>

@@ -1,12 +1,13 @@
 import { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Trash2, Edit2, Check, CreditCard } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2, Edit2, Check, CreditCard, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { accountService, transactionService, categoryService, memberService, paymentMethodService } from '../services/storage';
 import { formatCurrency, formatDate, formatMonth } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { useSwipeMonth } from '../hooks/useSwipeMonth';
-import type { Transaction, TransactionType, TransactionInput } from '../types';
+import { calculatePaymentDate } from '../utils/billingUtils';
+import type { Transaction, TransactionType, TransactionInput, PaymentMethod } from '../types';
 
 export const TransactionsPage = () => {
   const [searchParams] = useSearchParams();
@@ -241,6 +242,7 @@ export const TransactionsPage = () => {
                       categoryIcon={category?.icon || ''}
                       accountName={account?.name || ''}
                       paymentMethodName={pm?.name}
+                      paymentMethod={pm}
                       onEdit={() => handleEdit(transaction)}
                       onDelete={() => handleDelete(transaction)}
                     />
@@ -276,6 +278,7 @@ interface TransactionItemProps {
   categoryIcon: string;
   accountName: string;
   paymentMethodName?: string;
+  paymentMethod?: PaymentMethod;
   onEdit: () => void;
   onDelete: () => void;
 }
@@ -287,11 +290,17 @@ const TransactionItem = ({
   categoryIcon,
   accountName,
   paymentMethodName,
+  paymentMethod,
   onEdit,
   onDelete,
 }: TransactionItemProps) => {
   const isExpense = transaction.type === 'expense';
   const displayName = paymentMethodName || accountName || '不明';
+
+  // 引き落とし日を計算
+  const settlementDate = paymentMethod ? calculatePaymentDate(transaction.date, paymentMethod) : null;
+  const settlementLabel = settlementDate ? format(settlementDate, 'M/d') + '引落' : null;
+  const isSettled = !!transaction.settledAt;
 
   return (
     <div className="flex justify-between items-center p-4">
@@ -308,6 +317,14 @@ const TransactionItem = ({
             {paymentMethodName && <CreditCard size={10} className="text-purple-400 flex-shrink-0" />}
             <p className="text-xs text-gray-500 truncate">{displayName}</p>
           </div>
+          {settlementDate && (
+            <div className="flex items-center gap-1 mt-0.5">
+              <Calendar size={10} className={isSettled ? 'text-green-400' : 'text-orange-400'} />
+              <p className={`text-[11px] ${isSettled ? 'text-green-500' : 'text-orange-500'}`}>
+                {settlementLabel}{isSettled ? '（精算済）' : ''}
+              </p>
+            </div>
+          )}
           {transaction.memo && <p className="text-xs text-gray-400 mt-1 truncate">{transaction.memo}</p>}
         </div>
       </button>

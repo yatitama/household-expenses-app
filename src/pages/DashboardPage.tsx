@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Wallet, ArrowRight, Building2, Smartphone, Banknote, ChevronLeft, ChevronRight, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
-import { accountService, transactionService, categoryService, paymentMethodService } from '../services/storage';
+import { accountService, transactionService, categoryService, paymentMethodService, memberService } from '../services/storage';
 import { formatCurrency, formatDate, formatMonth } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { useSwipeMonth } from '../hooks/useSwipeMonth';
@@ -31,8 +31,18 @@ export const DashboardPage = () => {
   const paymentMethods = paymentMethodService.getAll();
   const transactions = transactionService.getByMonth(currentMonth);
   const categories = categoryService.getAll();
+  const members = memberService.getAll();
   const pendingByAccount = getPendingAmountByAccount();
   const pendingByPM = getPendingAmountByPaymentMethod();
+
+  // 所有者別に口座をグループ化
+  const groupedAccounts = accounts.reduce<Record<string, typeof accounts>>((acc, account) => {
+    const memberId = account.memberId;
+    if (!acc[memberId]) acc[memberId] = [];
+    acc[memberId].push(account);
+    return acc;
+  }, {});
+  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   // 収支計算
   const income = transactions
@@ -131,32 +141,55 @@ export const DashboardPage = () => {
           <p className="text-gray-500 text-sm text-center py-4">口座を登録してください</p>
         ) : (
           <>
-            <div className="space-y-2 mb-3">
-              {accounts.slice(0, 4).map((account) => {
-                const pending = pendingByAccount[account.id] || 0;
+            <div className="space-y-3 mb-3">
+              {Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
+                const member = getMember(memberId);
+                const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
+                const memberPending = memberAccounts.reduce((sum, a) => sum + (pendingByAccount[a.id] || 0), 0);
                 return (
-                  <div key={account.id} className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-white"
-                        style={{ backgroundColor: account.color }}
-                      >
-                        {ACCOUNT_TYPE_ICONS[account.type]}
+                  <div key={memberId}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: member?.color || '#6b7280' }} />
+                        <span className="text-xs font-medium text-gray-500">{member?.name || '不明'}</span>
                       </div>
-                      <span className="text-sm text-gray-700">{account.name}</span>
+                      <div className="text-right">
+                        <span className="text-xs font-bold text-gray-600">{formatCurrency(memberTotal)}</span>
+                        {memberPending > 0 && (
+                          <span className="text-[10px] text-gray-400 ml-1">（引落後: {formatCurrency(memberTotal - memberPending)}）</span>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className="font-medium">{formatCurrency(account.balance)}</span>
-                      {pending > 0 && (
-                        <p className="text-[10px] text-gray-400">引落後: {formatCurrency(account.balance - pending)}</p>
-                      )}
+                    <div className="space-y-1.5 pl-4">
+                      {memberAccounts.map((account) => {
+                        const pending = pendingByAccount[account.id] || 0;
+                        return (
+                          <div key={account.id} className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="w-6 h-6 rounded-full flex items-center justify-center text-white"
+                                style={{ backgroundColor: account.color }}
+                              >
+                                {ACCOUNT_TYPE_ICONS[account.type]}
+                              </div>
+                              <span className="text-sm text-gray-700">{account.name}</span>
+                            </div>
+                            <div className="text-right">
+                              <span className="font-medium text-sm">{formatCurrency(account.balance)}</span>
+                              {pending > 0 && (
+                                <p className="text-[10px] text-gray-400">引落後: {formatCurrency(account.balance - pending)}</p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 );
               })}
             </div>
             <div className="border-t pt-2 flex justify-between items-center">
-              <span className="text-sm text-gray-600">合計</span>
+              <span className="text-sm text-gray-600">総資産</span>
               <div className="text-right">
                 <span className="font-bold text-lg">{formatCurrency(totalBalance)}</span>
                 {totalPending > 0 && (
