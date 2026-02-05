@@ -1,19 +1,18 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { TrendingUp, TrendingDown, Wallet, ArrowRight, CreditCard, Building2, Smartphone, Banknote, ChevronLeft, ChevronRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, ArrowRight, Building2, Smartphone, Banknote, ChevronLeft, ChevronRight, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
-import { accountService, transactionService, categoryService } from '../services/storage';
+import { accountService, transactionService, categoryService, paymentMethodService } from '../services/storage';
 import { formatCurrency, formatDate, formatMonth } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { useSwipeMonth } from '../hooks/useSwipeMonth';
-import type { Transaction, PaymentMethod } from '../types';
+import { getPendingAmountByAccount, getPendingAmountByPaymentMethod } from '../utils/billingUtils';
+import type { Transaction, AccountType } from '../types';
 
-const PAYMENT_METHOD_ICONS: Record<PaymentMethod, React.ReactNode> = {
+const ACCOUNT_TYPE_ICONS: Record<AccountType, React.ReactNode> = {
   cash: <Banknote size={14} />,
   bank: <Building2 size={14} />,
-  credit_card: <CreditCard size={14} />,
-  debit_card: <CreditCard size={14} />,
   emoney: <Smartphone size={14} />,
 };
 
@@ -29,8 +28,11 @@ export const DashboardPage = () => {
 
   // データ取得
   const accounts = accountService.getAll();
+  const paymentMethods = paymentMethodService.getAll();
   const transactions = transactionService.getByMonth(currentMonth);
   const categories = categoryService.getAll();
+  const pendingByAccount = getPendingAmountByAccount();
+  const pendingByPM = getPendingAmountByPaymentMethod();
 
   // 収支計算
   const income = transactions
@@ -41,8 +43,9 @@ export const DashboardPage = () => {
     .reduce((sum, t) => sum + t.amount, 0);
   const balance = income - expense;
 
-  // 口座残高合計
+  // 口座残高合計（口座のみ = 資産のみ）
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
+  const totalPending = Object.values(pendingByAccount).reduce((sum, v) => sum + v, 0);
 
   // カテゴリ別支出
   const expenseTransactions = transactions.filter((t) => t.type === 'expense');
@@ -71,6 +74,7 @@ export const DashboardPage = () => {
 
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
   const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
+  const getPM = (pmId?: string) => pmId ? paymentMethods.find((p) => p.id === pmId) : undefined;
 
   return (
     <div ref={containerRef} className="min-h-screen p-4 overflow-hidden">
@@ -118,7 +122,7 @@ export const DashboardPage = () => {
       {/* 口座残高 */}
       <div className="bg-white rounded-xl shadow-sm p-4">
         <div className="flex justify-between items-center mb-3">
-          <h3 className="font-bold text-gray-800">口座残高</h3>
+          <h3 className="font-bold text-gray-800">資産残高</h3>
           <Link to="/accounts" className="text-blue-600 text-sm flex items-center gap-1">
             詳細 <ArrowRight size={14} />
           </Link>
@@ -128,28 +132,68 @@ export const DashboardPage = () => {
         ) : (
           <>
             <div className="space-y-2 mb-3">
-              {accounts.slice(0, 4).map((account) => (
-                <div key={account.id} className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-white"
-                      style={{ backgroundColor: account.color }}
-                    >
-                      {PAYMENT_METHOD_ICONS[account.paymentMethod]}
+              {accounts.slice(0, 4).map((account) => {
+                const pending = pendingByAccount[account.id] || 0;
+                return (
+                  <div key={account.id} className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-white"
+                        style={{ backgroundColor: account.color }}
+                      >
+                        {ACCOUNT_TYPE_ICONS[account.type]}
+                      </div>
+                      <span className="text-sm text-gray-700">{account.name}</span>
                     </div>
-                    <span className="text-sm text-gray-700">{account.name}</span>
+                    <div className="text-right">
+                      <span className="font-medium">{formatCurrency(account.balance)}</span>
+                      {pending > 0 && (
+                        <p className="text-[10px] text-gray-400">引落後: {formatCurrency(account.balance - pending)}</p>
+                      )}
+                    </div>
                   </div>
-                  <span className="font-medium">{formatCurrency(account.balance)}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
             <div className="border-t pt-2 flex justify-between items-center">
               <span className="text-sm text-gray-600">合計</span>
-              <span className="font-bold text-lg">{formatCurrency(totalBalance)}</span>
+              <div className="text-right">
+                <span className="font-bold text-lg">{formatCurrency(totalBalance)}</span>
+                {totalPending > 0 && (
+                  <p className="text-xs text-gray-400">引落後: {formatCurrency(totalBalance - totalPending)}</p>
+                )}
+              </div>
             </div>
           </>
         )}
       </div>
+
+      {/* 未精算カード利用額 */}
+      {paymentMethods.length > 0 && Object.keys(pendingByPM).length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm p-4">
+          <h3 className="font-bold text-gray-800 mb-3">未精算カード利用額</h3>
+          <div className="space-y-2">
+            {paymentMethods.map((pm) => {
+              const pending = pendingByPM[pm.id];
+              if (!pending || pending === 0) return null;
+              return (
+                <div key={pm.id} className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-white"
+                      style={{ backgroundColor: pm.color }}
+                    >
+                      <CreditCard size={14} />
+                    </div>
+                    <span className="text-sm text-gray-700">{pm.name}</span>
+                  </div>
+                  <span className="font-medium text-orange-600">{formatCurrency(pending)}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* カテゴリ別支出 */}
       {categoryExpenses.length > 0 && (
@@ -205,6 +249,7 @@ export const DashboardPage = () => {
             {recentTransactions.map((transaction) => {
               const category = getCategory(transaction.categoryId);
               const account = getAccount(transaction.accountId);
+              const pm = getPM(transaction.paymentMethodId);
               return (
                 <TransactionItem
                   key={transaction.id}
@@ -212,7 +257,8 @@ export const DashboardPage = () => {
                   categoryName={category?.name || '不明'}
                   categoryColor={category?.color || '#6b7280'}
                   categoryIcon={category?.icon || ''}
-                  accountName={account?.name || '不明'}
+                  accountName={account?.name || ''}
+                  paymentMethodName={pm?.name}
                 />
               );
             })}
@@ -230,10 +276,12 @@ interface TransactionItemProps {
   categoryColor: string;
   categoryIcon: string;
   accountName: string;
+  paymentMethodName?: string;
 }
 
-const TransactionItem = ({ transaction, categoryName, categoryColor, categoryIcon, accountName }: TransactionItemProps) => {
+const TransactionItem = ({ transaction, categoryName, categoryColor, categoryIcon, accountName, paymentMethodName }: TransactionItemProps) => {
   const isExpense = transaction.type === 'expense';
+  const displayName = paymentMethodName || accountName || '不明';
 
   return (
     <div className="flex justify-between items-center">
@@ -244,7 +292,7 @@ const TransactionItem = ({ transaction, categoryName, categoryColor, categoryIco
         <div>
           <p className="font-medium text-gray-900">{categoryName}</p>
           <p className="text-xs text-gray-500">
-            {formatDate(transaction.date)} • {accountName}
+            {formatDate(transaction.date)} • {displayName}
           </p>
         </div>
       </div>
