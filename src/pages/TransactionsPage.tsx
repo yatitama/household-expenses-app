@@ -1,27 +1,30 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Trash2, Edit2, Check } from 'lucide-react';
-import { format, addMonths, subMonths, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { accountService, transactionService, categoryService, memberService } from '../services/storage';
 import { formatCurrency, formatDate, formatMonth } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
+import { useSwipeMonth } from '../hooks/useSwipeMonth';
 import type { Transaction, TransactionType, TransactionInput } from '../types';
 
 export const TransactionsPage = () => {
   const [searchParams] = useSearchParams();
   const initialMonth = searchParams.get('month') || format(new Date(), 'yyyy-MM');
   const [currentMonth, setCurrentMonth] = useState(initialMonth);
-  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [filterType, setFilterType] = useState<TransactionType | 'all'>('all');
   const [transactions, setTransactions] = useState<Transaction[]>(() =>
     transactionService.getAll()
   );
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-  const touchStartX = useRef<number>(0);
-  const touchEndX = useRef<number>(0);
-  const touchStartY = useRef<number>(0);
-  const touchEndY = useRef<number>(0);
-  const containerRef = useRef<HTMLDivElement>(null);
+
+  const {
+    containerRef,
+    contentRef,
+    handlePrevMonth,
+    handleNextMonth,
+    getAnimationClass,
+  } = useSwipeMonth(currentMonth, setCurrentMonth);
 
   const accounts = accountService.getAll();
   const categories = categoryService.getAll();
@@ -30,69 +33,6 @@ export const TransactionsPage = () => {
   const refreshTransactions = useCallback(() => {
     setTransactions(transactionService.getAll());
   }, []);
-
-  const handlePrevMonth = () => {
-    setSlideDirection('right');
-    setCurrentMonth(format(subMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
-  };
-
-  const handleNextMonth = () => {
-    setSlideDirection('left');
-    setCurrentMonth(format(addMonths(parseISO(`${currentMonth}-01`), 1), 'yyyy-MM'));
-  };
-
-  // アニメーション終了後にリセット
-  useEffect(() => {
-    if (slideDirection) {
-      const timer = setTimeout(() => {
-        setSlideDirection(null);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [slideDirection, currentMonth]);
-
-  // スワイプ操作
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartX.current = e.touches[0].clientX;
-      touchStartY.current = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      touchEndX.current = e.touches[0].clientX;
-      touchEndY.current = e.touches[0].clientY;
-    };
-
-    const handleTouchEnd = () => {
-      const diffX = touchStartX.current - touchEndX.current;
-      const diffY = touchStartY.current - touchEndY.current;
-      const minSwipeDistance = 50;
-
-      // 横方向の動きが縦方向より大きい場合のみスワイプとして処理
-      if (Math.abs(diffX) > minSwipeDistance && Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX > 0) {
-          // 左スワイプ: 次の月へ
-          handleNextMonth();
-        } else {
-          // 右スワイプ: 前の月へ
-          handlePrevMonth();
-        }
-      }
-    };
-
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchmove', handleTouchMove, { passive: true });
-    container.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-    return () => {
-      container.removeEventListener('touchstart', handleTouchStart);
-      container.removeEventListener('touchmove', handleTouchMove);
-      container.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [currentMonth]);
 
   const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction);
@@ -177,16 +117,8 @@ export const TransactionsPage = () => {
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
   const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
 
-  const getAnimationClass = () => {
-    if (!slideDirection) return '';
-    if (slideDirection === 'left') {
-      return 'animate-slide-in-left';
-    }
-    return 'animate-slide-in-right';
-  };
-
   return (
-    <div ref={containerRef} className="flex flex-col h-full overflow-hidden">
+    <div ref={containerRef} className="min-h-full flex flex-col overflow-hidden">
       {/* スティッキーヘッダー */}
       <div className="sticky top-0 bg-gray-50 z-10 px-4 pt-4 pb-2 space-y-3 border-b border-gray-200">
         {/* 月選択と集計 */}
@@ -232,7 +164,7 @@ export const TransactionsPage = () => {
 
       {/* 取引一覧 */}
       <div className="flex-1 overflow-auto p-4">
-        <div key={currentMonth} className={`space-y-4 ${getAnimationClass()}`}>
+        <div ref={contentRef} key={currentMonth} className={`space-y-4 ${getAnimationClass()}`}>
         {filteredTransactions.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm p-8 text-center">
             <p className="text-gray-500">取引がありません</p>
