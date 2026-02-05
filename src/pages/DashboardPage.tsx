@@ -73,7 +73,7 @@ export const DashboardPage = () => {
   const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
 
   return (
-    <div ref={containerRef} className="min-h-full p-4 overflow-hidden">
+    <div ref={containerRef} className="min-h-screen p-4 overflow-hidden">
       <div ref={contentRef} key={currentMonth} className={`space-y-4 ${getAnimationClass()}`}>
       {/* 月表示 */}
       <div className="flex items-center justify-between">
