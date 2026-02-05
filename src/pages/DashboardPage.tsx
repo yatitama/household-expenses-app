@@ -21,6 +21,8 @@ export const DashboardPage = () => {
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
+  const touchEndY = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // データ取得
@@ -55,17 +57,21 @@ export const DashboardPage = () => {
 
     const handleTouchStart = (e: TouchEvent) => {
       touchStartX.current = e.touches[0].clientX;
+      touchStartY.current = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       touchEndX.current = e.touches[0].clientX;
+      touchEndY.current = e.touches[0].clientY;
     };
 
     const handleTouchEnd = () => {
       const diffX = touchStartX.current - touchEndX.current;
+      const diffY = touchStartY.current - touchEndY.current;
       const minSwipeDistance = 50;
 
-      if (Math.abs(diffX) > minSwipeDistance) {
+      // 横方向の動きが縦方向より大きい場合のみスワイプとして処理
+      if (Math.abs(diffX) > minSwipeDistance && Math.abs(diffX) > Math.abs(diffY)) {
         if (diffX > 0) {
           // 左スワイプ: 次の月へ
           handleNextMonth();
@@ -76,9 +82,9 @@ export const DashboardPage = () => {
       }
     };
 
-    container.addEventListener('touchstart', handleTouchStart);
-    container.addEventListener('touchmove', handleTouchMove);
-    container.addEventListener('touchend', handleTouchEnd);
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
       container.removeEventListener('touchstart', handleTouchStart);
@@ -136,8 +142,8 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div ref={containerRef} className="p-4 space-y-4 overflow-hidden">
-      <div key={currentMonth} className={getAnimationClass()}>
+    <div ref={containerRef} className="p-4 overflow-hidden">
+      <div key={currentMonth} className={`space-y-4 ${getAnimationClass()}`}>
       {/* 月表示 */}
       <div className="flex items-center justify-between">
         <button onClick={handlePrevMonth} className="p-2 text-gray-600 hover:text-gray-900 active:bg-gray-100 rounded-lg">

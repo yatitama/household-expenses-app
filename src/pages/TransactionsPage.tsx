@@ -19,6 +19,8 @@ export const TransactionsPage = () => {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
+  const touchEndY = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const accounts = accountService.getAll();
@@ -56,17 +58,21 @@ export const TransactionsPage = () => {
 
     const handleTouchStart = (e: TouchEvent) => {
       touchStartX.current = e.touches[0].clientX;
+      touchStartY.current = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       touchEndX.current = e.touches[0].clientX;
+      touchEndY.current = e.touches[0].clientY;
     };
 
     const handleTouchEnd = () => {
       const diffX = touchStartX.current - touchEndX.current;
+      const diffY = touchStartY.current - touchEndY.current;
       const minSwipeDistance = 50;
 
-      if (Math.abs(diffX) > minSwipeDistance) {
+      // 横方向の動きが縦方向より大きい場合のみスワイプとして処理
+      if (Math.abs(diffX) > minSwipeDistance && Math.abs(diffX) > Math.abs(diffY)) {
         if (diffX > 0) {
           // 左スワイプ: 次の月へ
           handleNextMonth();
@@ -77,9 +83,9 @@ export const TransactionsPage = () => {
       }
     };
 
-    container.addEventListener('touchstart', handleTouchStart);
-    container.addEventListener('touchmove', handleTouchMove);
-    container.addEventListener('touchend', handleTouchEnd);
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
       container.removeEventListener('touchstart', handleTouchStart);
@@ -225,8 +231,8 @@ export const TransactionsPage = () => {
       </div>
 
       {/* 取引一覧 */}
-      <div className="flex-1 overflow-auto p-4 space-y-4">
-        <div key={currentMonth} className={getAnimationClass()}>
+      <div className="flex-1 overflow-auto p-4">
+        <div key={currentMonth} className={`space-y-4 ${getAnimationClass()}`}>
         {filteredTransactions.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm p-8 text-center">
             <p className="text-gray-500">取引がありません</p>
