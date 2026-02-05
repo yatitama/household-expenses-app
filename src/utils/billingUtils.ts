@@ -12,7 +12,9 @@ export const calculatePaymentDate = (
   if (pm.billingType === 'immediate') return null;
   if (!pm.closingDay || !pm.paymentDay || pm.paymentMonthOffset === undefined) return null;
 
-  const txDate = new Date(transactionDate);
+  // 日付をローカルタイムゾーンで明示的に作成（タイムゾーンのずれを防ぐ）
+  const [year, month, day] = transactionDate.split('-').map(Number);
+  const txDate = new Date(year, month - 1, day);
   const txDay = txDate.getDate();
 
   // 締め月を決定
@@ -30,7 +32,7 @@ export const calculatePaymentDate = (
   const lastDay = lastDayOfMonth(paymentMonth).getDate();
   const actualPaymentDay = Math.min(pm.paymentDay, lastDay);
 
-  return setDate(paymentMonth, actualPaymentDay);
+  return startOfDay(setDate(paymentMonth, actualPaymentDay));
 };
 
 /**
@@ -120,7 +122,8 @@ export const settleOverdueTransactions = (): void => {
     const paymentDate = calculatePaymentDate(t.date, pm);
     if (!paymentDate) continue;
 
-    if (isBefore(startOfDay(paymentDate), today) || format(paymentDate, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd')) {
+    // 引き落とし日が今日以前の場合に精算する
+    if (!isBefore(today, paymentDate)) {
       const settleAmount = t.type === 'expense' ? t.amount : -t.amount;
       settlementByAccount[pm.linkedAccountId] = (settlementByAccount[pm.linkedAccountId] || 0) + settleAmount;
       transactionService.update(t.id, { settledAt: format(today, 'yyyy-MM-dd') });
