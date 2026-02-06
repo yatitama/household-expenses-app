@@ -16,6 +16,8 @@ import type {
   CardBillingInput,
   RecurringPayment,
   RecurringPaymentInput,
+  LinkedPaymentMethod,
+  LinkedPaymentMethodInput,
 } from '../types';
 
 const STORAGE_KEYS = {
@@ -27,6 +29,7 @@ const STORAGE_KEYS = {
   BUDGETS: 'household_budgets',
   CARD_BILLINGS: 'household_card_billings',
   RECURRING_PAYMENTS: 'household_recurring_payments',
+  LINKED_PAYMENT_METHODS: 'household_linked_payment_methods',
   MIGRATION_VERSION: 'household_migration_version',
   APP_SETTINGS: 'household_app_settings',
 } as const;
@@ -549,6 +552,62 @@ export const recurringPaymentService = {
     const filtered = items.filter((rp) => rp.id !== id);
     if (filtered.length === items.length) return false;
     setItems(STORAGE_KEYS.RECURRING_PAYMENTS, filtered);
+    return true;
+  },
+};
+
+// LinkedPaymentMethod 操作
+export const linkedPaymentMethodService = {
+  getAll: (): LinkedPaymentMethod[] => {
+    return getItems<LinkedPaymentMethod>(STORAGE_KEYS.LINKED_PAYMENT_METHODS);
+  },
+
+  getById: (id: string): LinkedPaymentMethod | undefined => {
+    return linkedPaymentMethodService.getAll().find((lpm) => lpm.id === id);
+  },
+
+  getByAccountId: (accountId: string): LinkedPaymentMethod[] => {
+    return linkedPaymentMethodService.getAll().filter((lpm) => lpm.accountId === accountId);
+  },
+
+  getByPaymentMethodId: (paymentMethodId: string): LinkedPaymentMethod[] => {
+    return linkedPaymentMethodService.getAll().filter((lpm) => lpm.paymentMethodId === paymentMethodId);
+  },
+
+  create: (input: LinkedPaymentMethodInput): LinkedPaymentMethod => {
+    const items = linkedPaymentMethodService.getAll();
+    const now = getTimestamp();
+    const newItem: LinkedPaymentMethod = {
+      ...input,
+      id: generateId(),
+      createdAt: now,
+      updatedAt: now,
+    };
+    items.push(newItem);
+    setItems(STORAGE_KEYS.LINKED_PAYMENT_METHODS, items);
+    return newItem;
+  },
+
+  update: (id: string, input: Partial<LinkedPaymentMethodInput>): LinkedPaymentMethod | undefined => {
+    const items = linkedPaymentMethodService.getAll();
+    const index = items.findIndex((lpm) => lpm.id === id);
+    if (index === -1) return undefined;
+
+    const updated: LinkedPaymentMethod = {
+      ...items[index],
+      ...input,
+      updatedAt: getTimestamp(),
+    };
+    items[index] = updated;
+    setItems(STORAGE_KEYS.LINKED_PAYMENT_METHODS, items);
+    return updated;
+  },
+
+  delete: (id: string): boolean => {
+    const items = linkedPaymentMethodService.getAll();
+    const filtered = items.filter((lpm) => lpm.id !== id);
+    if (filtered.length === items.length) return false;
+    setItems(STORAGE_KEYS.LINKED_PAYMENT_METHODS, filtered);
     return true;
   },
 };

@@ -113,6 +113,16 @@ export interface CardBilling {
   memo?: string;
 }
 
+// 紐付き手段（PaymentMethodと口座を紐付ける）
+export interface LinkedPaymentMethod {
+  id: string;
+  paymentMethodId: string;  // 紐付ける支払い手段
+  accountId: string;         // 紐付け先の口座
+  isActive: boolean;         // 有効/無効
+  createdAt: string;
+  updatedAt: string;
+}
+
 // 新規作成時の入力型（id, createdAt, updatedAtを除く）
 export type MemberInput = Omit<Member, 'id'>;
 export type AccountInput = Omit<Account, 'id' | 'createdAt' | 'updatedAt'>;
@@ -122,6 +132,7 @@ export type CategoryInput = Omit<Category, 'id'>;
 export type BudgetInput = Omit<Budget, 'id'>;
 export type CardBillingInput = Omit<CardBilling, 'id'>;
 export type RecurringPaymentInput = Omit<RecurringPayment, 'id' | 'createdAt' | 'updatedAt'>;
+export type LinkedPaymentMethodInput = Omit<LinkedPaymentMethod, 'id' | 'createdAt' | 'updatedAt'>;
 
 // 共通メンバーID（削除不可）
 export const COMMON_MEMBER_ID = 'common';
