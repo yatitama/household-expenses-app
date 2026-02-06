@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Edit2, Trash2, Users } from 'lucide-react';
 import { memberService } from '../services/storage';
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import type { Member, MemberInput } from '../types';
 
 const COLORS = [
@@ -18,6 +19,8 @@ export const MembersPage = () => {
   const refreshMembers = useCallback(() => {
     setMembers(memberService.getAll());
   }, []);
+
+  useBodyScrollLock(isModalOpen);
 
   const handleAdd = () => {
     setEditingMember(null);

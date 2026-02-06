@@ -28,6 +28,7 @@ const STORAGE_KEYS = {
   CARD_BILLINGS: 'household_card_billings',
   RECURRING_PAYMENTS: 'household_recurring_payments',
   MIGRATION_VERSION: 'household_migration_version',
+  APP_SETTINGS: 'household_app_settings',
 } as const;
 
 const CURRENT_MIGRATION_VERSION = 2;
@@ -549,5 +550,35 @@ export const recurringPaymentService = {
     if (filtered.length === items.length) return false;
     setItems(STORAGE_KEYS.RECURRING_PAYMENTS, filtered);
     return true;
+  },
+};
+
+// AppSettings 操作
+export interface AppSettings {
+  totalAssetGradientFrom: string;
+  totalAssetGradientTo: string;
+}
+
+const DEFAULT_APP_SETTINGS: AppSettings = {
+  totalAssetGradientFrom: '#3b82f6',
+  totalAssetGradientTo: '#2563eb',
+};
+
+export const appSettingsService = {
+  get: (): AppSettings => {
+    const data = localStorage.getItem(STORAGE_KEYS.APP_SETTINGS);
+    if (!data) return DEFAULT_APP_SETTINGS;
+    try {
+      return { ...DEFAULT_APP_SETTINGS, ...(JSON.parse(data) as Partial<AppSettings>) };
+    } catch {
+      return DEFAULT_APP_SETTINGS;
+    }
+  },
+
+  update: (input: Partial<AppSettings>): AppSettings => {
+    const current = appSettingsService.get();
+    const updated = { ...current, ...input };
+    localStorage.setItem(STORAGE_KEYS.APP_SETTINGS, JSON.stringify(updated));
+    return updated;
   },
 };
