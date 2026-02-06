@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { Home, PlusCircle, List, Wallet, Settings } from 'lucide-react';
+import { Wallet, Settings } from 'lucide-react';
 
 interface NavItemProps {
   to: string;
@@ -39,10 +39,7 @@ export const Layout = () => {
       {/* ボトムナビゲーション */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
         <div className="flex justify-around items-center max-w-lg mx-auto">
-          <NavItem to="/" icon={<Home size={20} />} label="ホーム" />
-          <NavItem to="/add" icon={<PlusCircle size={20} />} label="追加" />
-          <NavItem to="/transactions" icon={<List size={20} />} label="履歴" />
-          <NavItem to="/accounts" icon={<Wallet size={20} />} label="口座" />
+          <NavItem to="/" icon={<Wallet size={20} />} label="口座" />
           <NavItem to="/settings" icon={<Settings size={20} />} label="設定" />
         </div>
       </nav>

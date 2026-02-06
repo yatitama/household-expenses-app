@@ -1,11 +1,24 @@
 import { useState, useCallback } from 'react';
-import { Plus, Edit2, Trash2, Wallet, CreditCard, Building2, Smartphone, Banknote, X, AlertCircle, Link2, Info } from 'lucide-react';
-import { accountService, memberService, transactionService, categoryService, paymentMethodService } from '../services/storage';
+import { format } from 'date-fns';
+import {
+  Plus, Edit2, Trash2, Wallet, CreditCard, Building2, Smartphone, Banknote,
+  X, AlertCircle, Link2, Info, PlusCircle, Calendar, Check, CheckCircle,
+  RefreshCw, ToggleLeft, ToggleRight,
+} from 'lucide-react';
+import {
+  accountService, memberService, transactionService, categoryService,
+  paymentMethodService, recurringPaymentService,
+} from '../services/storage';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
-import { getPendingAmountByAccount, getPendingAmountByPaymentMethod } from '../utils/billingUtils';
+import { getPendingAmountByAccount, getPendingAmountByPaymentMethod, calculatePaymentDate } from '../utils/billingUtils';
 import { COMMON_MEMBER_ID } from '../types';
-import type { Account, AccountType, AccountInput, PaymentMethod, PaymentMethodType, PaymentMethodInput, BillingType, Member } from '../types';
+import type {
+  Account, AccountType, AccountInput,
+  PaymentMethod, PaymentMethodType, PaymentMethodInput, BillingType,
+  Member, Transaction, TransactionType, TransactionInput,
+  RecurringPayment, RecurringPaymentInput, RecurringFrequency,
+} from '../types';
 
 const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
   cash: '現金',
@@ -17,6 +30,12 @@ const ACCOUNT_TYPE_ICONS: Record<AccountType, React.ReactNode> = {
   cash: <Banknote size={20} />,
   bank: <Building2 size={20} />,
   emoney: <Smartphone size={20} />,
+};
+
+const ACCOUNT_TYPE_ICONS_SM: Record<AccountType, React.ReactNode> = {
+  cash: <Banknote size={14} />,
+  bank: <Building2 size={14} />,
+  emoney: <Smartphone size={14} />,
 };
 
 const PM_TYPE_LABELS: Record<PaymentMethodType, string> = {
@@ -39,17 +58,26 @@ const COLORS = [
   '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e',
 ];
 
+// ===== メインページ =====
 export const AccountsPage = () => {
   const [accounts, setAccounts] = useState<Account[]>(() => accountService.getAll());
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => paymentMethodService.getAll());
+  const [recurringPayments, setRecurringPayments] = useState<RecurringPayment[]>(() => recurringPaymentService.getAll());
   const members = memberService.getAll();
 
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [viewingAccount, setViewingAccount] = useState<Account | null>(null);
+  const [viewingPM, setViewingPM] = useState<PaymentMethod | null>(null);
 
   const [isPMModalOpen, setIsPMModalOpen] = useState(false);
   const [editingPM, setEditingPM] = useState<PaymentMethod | null>(null);
+
+  const [addTransactionTarget, setAddTransactionTarget] = useState<{ accountId?: string; paymentMethodId?: string } | null>(null);
+
+  const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
+  const [editingRecurring, setEditingRecurring] = useState<RecurringPayment | null>(null);
+  const [recurringTarget, setRecurringTarget] = useState<{ accountId?: string; paymentMethodId?: string } | null>(null);
 
   const pendingByAccount = getPendingAmountByAccount();
   const pendingByPM = getPendingAmountByPaymentMethod();
@@ -57,6 +85,7 @@ export const AccountsPage = () => {
   const refreshData = useCallback(() => {
     setAccounts(accountService.getAll());
     setPaymentMethods(paymentMethodService.getAll());
+    setRecurringPayments(recurringPaymentService.getAll());
   }, []);
 
   // 口座の操作
@@ -115,6 +144,41 @@ export const AccountsPage = () => {
     setIsPMModalOpen(false);
   };
 
+  // 定期支払いの操作
+  const handleAddRecurring = (target: { accountId?: string; paymentMethodId?: string }) => {
+    setEditingRecurring(null);
+    setRecurringTarget(target);
+    setIsRecurringModalOpen(true);
+  };
+
+  const handleEditRecurring = (rp: RecurringPayment) => {
+    setEditingRecurring(rp);
+    setRecurringTarget(null);
+    setIsRecurringModalOpen(true);
+  };
+
+  const handleDeleteRecurring = (id: string) => {
+    if (confirm('この定期支払いを削除しますか？')) {
+      recurringPaymentService.delete(id);
+      refreshData();
+    }
+  };
+
+  const handleSaveRecurring = (input: RecurringPaymentInput) => {
+    if (editingRecurring) {
+      recurringPaymentService.update(editingRecurring.id, input);
+    } else {
+      recurringPaymentService.create(input);
+    }
+    refreshData();
+    setIsRecurringModalOpen(false);
+  };
+
+  const handleToggleRecurring = (rp: RecurringPayment) => {
+    recurringPaymentService.update(rp.id, { isActive: !rp.isActive });
+    refreshData();
+  };
+
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
   const totalPending = Object.values(pendingByAccount).reduce((sum, v) => sum + v, 0);
 
@@ -136,17 +200,14 @@ export const AccountsPage = () => {
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
   const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
 
-  // 紐づき先未設定の支払い手段があるか
   const hasUnlinkedPMs = paymentMethods.some((pm) => !pm.linkedAccountId);
 
   return (
     <div className="p-4 space-y-4">
-      {/* ヘッダー */}
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">口座・支払い手段</h2>
       </div>
 
-      {/* 紐づき未設定の警告 */}
       {hasUnlinkedPMs && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
           <AlertCircle size={20} className="text-amber-600 flex-shrink-0 mt-0.5" />
@@ -157,7 +218,7 @@ export const AccountsPage = () => {
         </div>
       )}
 
-      {/* 合計残高 */}
+      {/* 総資産 & 所有者別残高 */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white">
         <div className="flex items-center gap-2 mb-1">
           <Wallet size={20} />
@@ -170,6 +231,60 @@ export const AccountsPage = () => {
           </p>
         )}
       </div>
+
+      {/* 所有者別残高サマリー */}
+      {accounts.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm p-4">
+          <h3 className="font-bold text-gray-800 mb-3">所有者別資産残高</h3>
+          <div className="space-y-3">
+            {Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
+              const member = getMember(memberId);
+              const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
+              const memberPending = memberAccounts.reduce((sum, a) => sum + (pendingByAccount[a.id] || 0), 0);
+              return (
+                <div key={memberId}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: member?.color || '#6b7280' }} />
+                      <span className="text-xs font-medium text-gray-500">{member?.name || '不明'}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-bold text-gray-600">{formatCurrency(memberTotal)}</span>
+                      {memberPending > 0 && (
+                        <span className="text-[10px] text-gray-400 ml-1">（引落後: {formatCurrency(memberTotal - memberPending)}）</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 pl-4">
+                    {memberAccounts.map((account) => {
+                      const pending = pendingByAccount[account.id] || 0;
+                      return (
+                        <div key={account.id} className="flex justify-between items-center">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-6 h-6 rounded-full flex items-center justify-center text-white"
+                              style={{ backgroundColor: account.color }}
+                            >
+                              {ACCOUNT_TYPE_ICONS_SM[account.type]}
+                            </div>
+                            <span className="text-sm text-gray-700">{account.name}</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="font-medium text-sm">{formatCurrency(account.balance)}</span>
+                            {pending > 0 && (
+                              <p className="text-[10px] text-gray-400">引落後: {formatCurrency(account.balance - pending)}</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ===== 口座セクション ===== */}
       <div>
@@ -205,15 +320,24 @@ export const AccountsPage = () => {
                   <div className="space-y-2">
                     {memberAccounts.map((account) => {
                       const linkedPMs = paymentMethods.filter((pm) => pm.linkedAccountId === account.id);
+                      const accountRecurrings = recurringPayments.filter(
+                        (rp) => rp.accountId === account.id && !rp.paymentMethodId
+                      );
                       return (
                         <AccountCard
                           key={account.id}
                           account={account}
                           pendingAmount={pendingByAccount[account.id] || 0}
                           linkedPaymentMethods={linkedPMs}
+                          recurringPayments={accountRecurrings}
                           onView={() => setViewingAccount(account)}
                           onEdit={() => handleEditAccount(account)}
                           onDelete={() => handleDeleteAccount(account.id)}
+                          onAddTransaction={() => setAddTransactionTarget({ accountId: account.id })}
+                          onAddRecurring={() => handleAddRecurring({ accountId: account.id })}
+                          onEditRecurring={handleEditRecurring}
+                          onDeleteRecurring={handleDeleteRecurring}
+                          onToggleRecurring={handleToggleRecurring}
                         />
                       );
                     })}
@@ -259,14 +383,22 @@ export const AccountsPage = () => {
                   <div className="space-y-2">
                     {memberPMs.map((pm) => {
                       const linkedAccount = getAccount(pm.linkedAccountId);
+                      const pmRecurrings = recurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
                       return (
                         <PaymentMethodCard
                           key={pm.id}
                           paymentMethod={pm}
                           linkedAccountName={linkedAccount?.name}
                           pendingAmount={pendingByPM[pm.id] || 0}
+                          recurringPayments={pmRecurrings}
+                          onView={() => setViewingPM(pm)}
                           onEdit={() => handleEditPM(pm)}
                           onDelete={() => handleDeletePM(pm.id)}
+                          onAddTransaction={() => setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
+                          onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
+                          onEditRecurring={handleEditRecurring}
+                          onDeleteRecurring={handleDeleteRecurring}
+                          onToggleRecurring={handleToggleRecurring}
                         />
                       );
                     })}
@@ -301,7 +433,35 @@ export const AccountsPage = () => {
       {viewingAccount && (
         <AccountTransactionsModal
           account={viewingAccount}
-          onClose={() => setViewingAccount(null)}
+          onClose={() => { setViewingAccount(null); refreshData(); }}
+        />
+      )}
+
+      {viewingPM && (
+        <PMTransactionsModal
+          paymentMethod={viewingPM}
+          onClose={() => { setViewingPM(null); refreshData(); }}
+        />
+      )}
+
+      {addTransactionTarget && (
+        <AddTransactionModal
+          defaultAccountId={addTransactionTarget.accountId}
+          defaultPaymentMethodId={addTransactionTarget.paymentMethodId}
+          onSaved={() => { setAddTransactionTarget(null); refreshData(); }}
+          onClose={() => setAddTransactionTarget(null)}
+        />
+      )}
+
+      {isRecurringModalOpen && (
+        <RecurringPaymentModal
+          recurringPayment={editingRecurring}
+          defaultAccountId={recurringTarget?.accountId}
+          defaultPaymentMethodId={recurringTarget?.paymentMethodId}
+          accounts={accounts}
+          paymentMethods={paymentMethods}
+          onSave={handleSaveRecurring}
+          onClose={() => setIsRecurringModalOpen(false)}
         />
       )}
     </div>
@@ -313,12 +473,25 @@ interface AccountCardProps {
   account: Account;
   pendingAmount: number;
   linkedPaymentMethods: PaymentMethod[];
+  recurringPayments: RecurringPayment[];
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onAddTransaction: () => void;
+  onAddRecurring: () => void;
+  onEditRecurring: (rp: RecurringPayment) => void;
+  onDeleteRecurring: (id: string) => void;
+  onToggleRecurring: (rp: RecurringPayment) => void;
 }
 
-const AccountCard = ({ account, pendingAmount, linkedPaymentMethods, onView, onEdit, onDelete }: AccountCardProps) => {
+const AccountCard = ({
+  account, pendingAmount, linkedPaymentMethods, recurringPayments,
+  onView, onEdit, onDelete, onAddTransaction, onAddRecurring,
+  onEditRecurring, onDeleteRecurring, onToggleRecurring,
+}: AccountCardProps) => {
+  const categories = categoryService.getAll();
+  const getCategory = (id: string) => categories.find((c) => c.id === id);
+
   return (
     <div className="bg-white rounded-xl shadow-sm p-4">
       <div className="flex justify-between items-start">
@@ -334,7 +507,10 @@ const AccountCard = ({ account, pendingAmount, linkedPaymentMethods, onView, onE
             <p className="text-xs text-gray-500">{ACCOUNT_TYPE_LABELS[account.type]}</p>
           </div>
         </button>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700" title="取引追加">
+            <PlusCircle size={18} />
+          </button>
           <button onClick={onEdit} className="p-2 text-gray-400 hover:text-gray-600">
             <Edit2 size={16} />
           </button>
@@ -366,6 +542,15 @@ const AccountCard = ({ account, pendingAmount, linkedPaymentMethods, onView, onE
           </div>
         </div>
       )}
+      {/* 定期支払い */}
+      <RecurringPaymentsList
+        items={recurringPayments}
+        onAdd={onAddRecurring}
+        onEdit={onEditRecurring}
+        onDelete={onDeleteRecurring}
+        onToggle={onToggleRecurring}
+        getCategory={getCategory}
+      />
     </div>
   );
 };
@@ -375,15 +560,29 @@ interface PaymentMethodCardProps {
   paymentMethod: PaymentMethod;
   linkedAccountName?: string;
   pendingAmount: number;
+  recurringPayments: RecurringPayment[];
+  onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onAddTransaction: () => void;
+  onAddRecurring: () => void;
+  onEditRecurring: (rp: RecurringPayment) => void;
+  onDeleteRecurring: (id: string) => void;
+  onToggleRecurring: (rp: RecurringPayment) => void;
 }
 
-const PaymentMethodCard = ({ paymentMethod, linkedAccountName, pendingAmount, onEdit, onDelete }: PaymentMethodCardProps) => {
+const PaymentMethodCard = ({
+  paymentMethod, linkedAccountName, pendingAmount, recurringPayments,
+  onView, onEdit, onDelete, onAddTransaction, onAddRecurring,
+  onEditRecurring, onDeleteRecurring, onToggleRecurring,
+}: PaymentMethodCardProps) => {
+  const categories = categoryService.getAll();
+  const getCategory = (id: string) => categories.find((c) => c.id === id);
+
   return (
     <div className="bg-white rounded-xl shadow-sm p-4">
       <div className="flex justify-between items-start">
-        <div className="flex items-center gap-3 flex-1">
+        <button onClick={onView} className="flex items-center gap-3 flex-1 text-left">
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center text-white"
             style={{ backgroundColor: paymentMethod.color }}
@@ -400,8 +599,11 @@ const PaymentMethodCard = ({ paymentMethod, linkedAccountName, pendingAmount, on
               </span>
             </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        </button>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <button onClick={onAddTransaction} className="p-2 text-purple-500 hover:text-purple-700" title="取引追加">
+            <PlusCircle size={18} />
+          </button>
           <button onClick={onEdit} className="p-2 text-gray-400 hover:text-gray-600">
             <Edit2 size={16} />
           </button>
@@ -413,6 +615,84 @@ const PaymentMethodCard = ({ paymentMethod, linkedAccountName, pendingAmount, on
       {pendingAmount > 0 && (
         <div className="mt-2 text-right">
           <p className="text-sm text-orange-600 font-medium">未精算: {formatCurrency(pendingAmount)}</p>
+        </div>
+      )}
+      {/* 定期支払い */}
+      <RecurringPaymentsList
+        items={recurringPayments}
+        onAdd={onAddRecurring}
+        onEdit={onEditRecurring}
+        onDelete={onDeleteRecurring}
+        onToggle={onToggleRecurring}
+        getCategory={getCategory}
+      />
+    </div>
+  );
+};
+
+// ===== 定期支払いリスト（カード内表示） =====
+interface RecurringPaymentsListProps {
+  items: RecurringPayment[];
+  onAdd: () => void;
+  onEdit: (rp: RecurringPayment) => void;
+  onDelete: (id: string) => void;
+  onToggle: (rp: RecurringPayment) => void;
+  getCategory: (id: string) => { name: string; color: string; icon: string } | undefined;
+}
+
+const RecurringPaymentsList = ({ items, onAdd, onEdit, onDelete, onToggle, getCategory }: RecurringPaymentsListProps) => {
+  return (
+    <div className="mt-3 pt-3 border-t border-gray-100">
+      <div className="flex justify-between items-center mb-1.5">
+        <p className="text-[10px] text-gray-400 font-medium flex items-center gap-1">
+          <RefreshCw size={10} />
+          定期支払い
+        </p>
+        <button onClick={onAdd} className="text-blue-500 hover:text-blue-700">
+          <Plus size={14} />
+        </button>
+      </div>
+      {items.length === 0 ? (
+        <p className="text-[11px] text-gray-300">定期支払いなし</p>
+      ) : (
+        <div className="space-y-1.5">
+          {items.map((rp) => {
+            const category = getCategory(rp.categoryId);
+            const freqLabel = rp.frequency === 'monthly'
+              ? `毎月${rp.dayOfMonth}日`
+              : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
+            return (
+              <div key={rp.id} className={`flex items-center justify-between text-xs ${rp.isActive ? '' : 'opacity-40'}`}>
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <button onClick={() => onToggle(rp)} className="flex-shrink-0">
+                    {rp.isActive
+                      ? <ToggleRight size={16} className="text-green-500" />
+                      : <ToggleLeft size={16} className="text-gray-300" />
+                    }
+                  </button>
+                  <div
+                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                  >
+                    {getCategoryIcon(category?.icon || '', 12)}
+                  </div>
+                  <span className="truncate text-gray-700">{rp.name}</span>
+                  <span className="text-gray-400 flex-shrink-0">{freqLabel}</span>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                  <span className={`font-medium ${rp.type === 'expense' ? 'text-red-600' : 'text-green-600'}`}>
+                    {formatCurrency(rp.amount)}
+                  </span>
+                  <button onClick={() => onEdit(rp)} className="p-1 text-gray-300 hover:text-gray-500">
+                    <Edit2 size={12} />
+                  </button>
+                  <button onClick={() => onDelete(rp.id)} className="p-1 text-gray-300 hover:text-red-500">
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -686,9 +966,7 @@ const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, onClose 
             const pd = parseInt(paymentDay, 10) || 10;
             const offset = parseInt(paymentMonthOffset, 10) || 1;
             const offsetLabel = offset === 0 ? '当月' : offset === 1 ? '翌月' : '翌々月';
-            // 締め日以前の取引例: 1月{cd}日 → 引き落とし月 = 1月 + offset
             const payMonth1 = 1 + offset;
-            // 締め日翌日の取引例: 1月{cd+1}日 → 引き落とし月 = 2月 + offset
             const payMonth2 = 2 + offset;
             return (
               <div className="bg-gray-50 rounded-lg p-3 space-y-3">
@@ -775,30 +1053,64 @@ const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, onClose 
   );
 };
 
-// ===== 取引履歴モーダル =====
+// ===== 取引履歴モーダル（口座用）=====
 interface AccountTransactionsModalProps {
   account: Account;
   onClose: () => void;
 }
 
 const AccountTransactionsModal = ({ account, onClose }: AccountTransactionsModalProps) => {
-  const allTransactions = transactionService.getAll();
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    const allTransactions = transactionService.getAll();
+    const allPMs = paymentMethodService.getAll();
+    const linkedPMIds = allPMs
+      .filter((pm) => pm.linkedAccountId === account.id)
+      .map((pm) => pm.id);
+    return allTransactions
+      .filter((t) => t.accountId === account.id || (t.paymentMethodId && linkedPMIds.includes(t.paymentMethodId)))
+      .sort((a, b) => b.date.localeCompare(a.date));
+  });
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+
   const allPMs = paymentMethodService.getAll();
-
-  // この口座に直接紐づく取引 + この口座にリンクされた支払い手段の取引
-  const linkedPMIds = allPMs
-    .filter((pm) => pm.linkedAccountId === account.id)
-    .map((pm) => pm.id);
-
-  const transactions = allTransactions
-    .filter((t) => t.accountId === account.id || (t.paymentMethodId && linkedPMIds.includes(t.paymentMethodId)))
-    .sort((a, b) => b.date.localeCompare(a.date));
-
+  const allAccounts = accountService.getAll();
   const categories = categoryService.getAll();
+  const members = memberService.getAll();
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
   const getPM = (pmId?: string) => pmId ? allPMs.find((p) => p.id === pmId) : undefined;
 
-  const groupedByDate: Record<string, typeof transactions> = {};
+  const refreshTransactions = () => {
+    const allTransactions = transactionService.getAll();
+    const linkedPMIds = allPMs
+      .filter((pm) => pm.linkedAccountId === account.id)
+      .map((pm) => pm.id);
+    setTransactions(
+      allTransactions
+        .filter((t) => t.accountId === account.id || (t.paymentMethodId && linkedPMIds.includes(t.paymentMethodId)))
+        .sort((a, b) => b.date.localeCompare(a.date))
+    );
+  };
+
+  const handleDelete = (transaction: Transaction) => {
+    if (!confirm('この取引を削除しますか？')) return;
+    revertTransactionBalance(transaction);
+    transactionService.delete(transaction.id);
+    refreshTransactions();
+  };
+
+  const handleSaveEdit = (input: TransactionInput) => {
+    if (!editingTransaction) return;
+    revertTransactionBalance(editingTransaction);
+    applyTransactionBalance(input);
+    transactionService.update(editingTransaction.id, {
+      ...input,
+      settledAt: undefined,
+    });
+    refreshTransactions();
+    setEditingTransaction(null);
+  };
+
+  const groupedByDate: Record<string, Transaction[]> = {};
   transactions.forEach((t) => {
     if (!groupedByDate[t.date]) groupedByDate[t.date] = [];
     groupedByDate[t.date].push(t);
@@ -840,28 +1152,49 @@ const AccountTransactionsModal = ({ account, onClose }: AccountTransactionsModal
                       const category = getCategory(transaction.categoryId);
                       const pm = getPM(transaction.paymentMethodId);
                       const isExpense = transaction.type === 'expense';
+                      const settlementDate = pm ? calculatePaymentDate(transaction.date, pm) : null;
+                      const settlementLabel = settlementDate ? format(settlementDate, 'M/d') + '引落' : null;
+                      const isSettled = !!transaction.settledAt;
                       return (
-                        <div key={transaction.id} className="flex justify-between items-center p-3">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className="w-10 h-10 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
-                            >
-                              {getCategoryIcon(category?.icon || '', 20)}
+                        <div key={transaction.id} className="p-3">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <div
+                                className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                                style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                              >
+                                {getCategoryIcon(category?.icon || '', 20)}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="font-medium text-gray-900">{category?.name || '不明'}</p>
+                                {pm && (
+                                  <div className="flex items-center gap-1">
+                                    <CreditCard size={10} className="text-purple-400 flex-shrink-0" />
+                                    <p className="text-xs text-purple-500 truncate">{pm.name}</p>
+                                  </div>
+                                )}
+                                {settlementDate && (
+                                  <div className="flex items-center gap-1 mt-0.5">
+                                    <Calendar size={10} className={isSettled ? 'text-green-400' : 'text-orange-400'} />
+                                    <p className={`text-[11px] ${isSettled ? 'text-green-500' : 'text-orange-500'}`}>
+                                      {settlementLabel}{isSettled ? '（精算済）' : ''}
+                                    </p>
+                                  </div>
+                                )}
+                                {transaction.memo && <p className="text-xs text-gray-400 mt-0.5 truncate">{transaction.memo}</p>}
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-medium text-gray-900">{category?.name || '不明'}</p>
-                              {pm && <p className="text-xs text-purple-500">{pm.name}</p>}
-                              {transaction.memo && <p className="text-xs text-gray-400 mt-0.5">{transaction.memo}</p>}
+                            <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                              <p className={`font-bold text-sm ${isExpense ? 'text-red-600' : 'text-green-600'}`}>
+                                {isExpense ? '-' : '+'}{formatCurrency(transaction.amount)}
+                              </p>
+                              <button onClick={() => setEditingTransaction(transaction)} className="p-1.5 text-gray-400 hover:text-blue-600">
+                                <Edit2 size={14} />
+                              </button>
+                              <button onClick={() => handleDelete(transaction)} className="p-1.5 text-gray-400 hover:text-red-600">
+                                <Trash2 size={14} />
+                              </button>
                             </div>
-                          </div>
-                          <div className="text-right">
-                            <p className={`font-bold ${isExpense ? 'text-red-600' : 'text-green-600'}`}>
-                              {isExpense ? '-' : '+'}{formatCurrency(transaction.amount)}
-                            </p>
-                            {pm && !transaction.settledAt && (
-                              <p className="text-[10px] text-orange-500">未精算</p>
-                            )}
                           </div>
                         </div>
                       );
@@ -872,6 +1205,1066 @@ const AccountTransactionsModal = ({ account, onClose }: AccountTransactionsModal
             </div>
           )}
         </div>
+      </div>
+
+      {editingTransaction && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <EditTransactionModal
+            transaction={editingTransaction}
+            accounts={allAccounts}
+            paymentMethods={allPMs}
+            categories={categories}
+            members={members}
+            onSave={handleSaveEdit}
+            onClose={() => setEditingTransaction(null)}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ===== 取引履歴モーダル（支払い手段用）=====
+interface PMTransactionsModalProps {
+  paymentMethod: PaymentMethod;
+  onClose: () => void;
+}
+
+const PMTransactionsModal = ({ paymentMethod, onClose }: PMTransactionsModalProps) => {
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    return transactionService.getAll()
+      .filter((t) => t.paymentMethodId === paymentMethod.id)
+      .sort((a, b) => b.date.localeCompare(a.date));
+  });
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+
+  const allPMs = paymentMethodService.getAll();
+  const allAccounts = accountService.getAll();
+  const categories = categoryService.getAll();
+  const members = memberService.getAll();
+  const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
+
+  const refreshTransactions = () => {
+    setTransactions(
+      transactionService.getAll()
+        .filter((t) => t.paymentMethodId === paymentMethod.id)
+        .sort((a, b) => b.date.localeCompare(a.date))
+    );
+  };
+
+  const handleDelete = (transaction: Transaction) => {
+    if (!confirm('この取引を削除しますか？')) return;
+    revertTransactionBalance(transaction);
+    transactionService.delete(transaction.id);
+    refreshTransactions();
+  };
+
+  const handleSaveEdit = (input: TransactionInput) => {
+    if (!editingTransaction) return;
+    revertTransactionBalance(editingTransaction);
+    applyTransactionBalance(input);
+    transactionService.update(editingTransaction.id, {
+      ...input,
+      settledAt: undefined,
+    });
+    refreshTransactions();
+    setEditingTransaction(null);
+  };
+
+  const groupedByDate: Record<string, Transaction[]> = {};
+  transactions.forEach((t) => {
+    if (!groupedByDate[t.date]) groupedByDate[t.date] = [];
+    groupedByDate[t.date].push(t);
+  });
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
+      <div
+        className="bg-white w-full sm:max-w-2xl sm:rounded-xl rounded-t-xl max-h-[85vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: paymentMethod.color }}>
+              {PM_TYPE_ICONS[paymentMethod.type]}
+            </div>
+            <div>
+              <h3 className="text-lg font-bold">{paymentMethod.name}</h3>
+              <p className="text-sm text-gray-500">取引履歴</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600">
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4">
+          {transactions.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">取引がありません</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {Object.entries(groupedByDate).map(([date, dayTransactions]) => (
+                <div key={date}>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">{formatDate(date)}</h4>
+                  <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+                    {dayTransactions.map((transaction) => {
+                      const category = getCategory(transaction.categoryId);
+                      const isExpense = transaction.type === 'expense';
+                      const settlementDate = calculatePaymentDate(transaction.date, paymentMethod);
+                      const settlementLabel = settlementDate ? format(settlementDate, 'M/d') + '引落' : null;
+                      const isSettled = !!transaction.settledAt;
+                      return (
+                        <div key={transaction.id} className="p-3">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <div
+                                className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                                style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                              >
+                                {getCategoryIcon(category?.icon || '', 20)}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="font-medium text-gray-900">{category?.name || '不明'}</p>
+                                {settlementDate && (
+                                  <div className="flex items-center gap-1 mt-0.5">
+                                    <Calendar size={10} className={isSettled ? 'text-green-400' : 'text-orange-400'} />
+                                    <p className={`text-[11px] ${isSettled ? 'text-green-500' : 'text-orange-500'}`}>
+                                      {settlementLabel}{isSettled ? '（精算済）' : ''}
+                                    </p>
+                                  </div>
+                                )}
+                                {transaction.memo && <p className="text-xs text-gray-400 mt-0.5 truncate">{transaction.memo}</p>}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                              <p className={`font-bold text-sm ${isExpense ? 'text-red-600' : 'text-green-600'}`}>
+                                {isExpense ? '-' : '+'}{formatCurrency(transaction.amount)}
+                              </p>
+                              <button onClick={() => setEditingTransaction(transaction)} className="p-1.5 text-gray-400 hover:text-blue-600">
+                                <Edit2 size={14} />
+                              </button>
+                              <button onClick={() => handleDelete(transaction)} className="p-1.5 text-gray-400 hover:text-red-600">
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {editingTransaction && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <EditTransactionModal
+            transaction={editingTransaction}
+            accounts={allAccounts}
+            paymentMethods={allPMs}
+            categories={categories}
+            members={members}
+            onSave={handleSaveEdit}
+            onClose={() => setEditingTransaction(null)}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ===== 残高操作ヘルパー =====
+const revertTransactionBalance = (transaction: Transaction) => {
+  if (transaction.paymentMethodId) {
+    const pm = paymentMethodService.getById(transaction.paymentMethodId);
+    if (pm && pm.billingType === 'immediate' && transaction.accountId) {
+      const acct = accountService.getById(transaction.accountId);
+      if (acct) {
+        const revert = transaction.type === 'expense' ? acct.balance + transaction.amount : acct.balance - transaction.amount;
+        accountService.update(acct.id, { balance: revert });
+      }
+    }
+    if (pm && pm.billingType === 'monthly' && transaction.settledAt && transaction.accountId) {
+      const acct = accountService.getById(transaction.accountId);
+      if (acct) {
+        const revert = transaction.type === 'expense' ? acct.balance + transaction.amount : acct.balance - transaction.amount;
+        accountService.update(acct.id, { balance: revert });
+      }
+    }
+  } else if (transaction.accountId) {
+    const acct = accountService.getById(transaction.accountId);
+    if (acct) {
+      const revert = transaction.type === 'expense' ? acct.balance + transaction.amount : acct.balance - transaction.amount;
+      accountService.update(acct.id, { balance: revert });
+    }
+  }
+};
+
+const applyTransactionBalance = (input: TransactionInput) => {
+  if (input.paymentMethodId) {
+    const pm = paymentMethodService.getById(input.paymentMethodId);
+    if (pm && pm.billingType === 'immediate' && input.accountId) {
+      const acct = accountService.getById(input.accountId);
+      if (acct) {
+        const newBal = input.type === 'expense' ? acct.balance - input.amount : acct.balance + input.amount;
+        accountService.update(acct.id, { balance: newBal });
+      }
+    }
+  } else if (input.accountId) {
+    const acct = accountService.getById(input.accountId);
+    if (acct) {
+      const newBal = input.type === 'expense' ? acct.balance - input.amount : acct.balance + input.amount;
+      accountService.update(acct.id, { balance: newBal });
+    }
+  }
+};
+
+// ===== 取引追加モーダル =====
+interface AddTransactionModalProps {
+  defaultAccountId?: string;
+  defaultPaymentMethodId?: string;
+  onSaved: () => void;
+  onClose: () => void;
+}
+
+const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, onSaved, onClose }: AddTransactionModalProps) => {
+  const accounts = accountService.getAll();
+  const paymentMethods = paymentMethodService.getAll();
+  const categories = categoryService.getAll();
+  const members = memberService.getAll();
+
+  const [type, setType] = useState<TransactionType>('expense');
+  const [amount, setAmount] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [accountId, setAccountId] = useState(defaultAccountId || '');
+  const [pmId, setPmId] = useState<string | undefined>(defaultPaymentMethodId);
+  const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [memo, setMemo] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const filteredCategories = categories.filter((c) => c.type === type);
+  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
+
+  const handleSelectAccount = (id: string) => {
+    setAccountId(id);
+    setPmId(undefined);
+  };
+
+  const handleSelectPM = (id: string) => {
+    const pm = paymentMethods.find((p) => p.id === id);
+    if (pm) {
+      setPmId(id);
+      setAccountId(pm.linkedAccountId);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!amount || !categoryId || (!accountId && !pmId)) {
+      alert('金額、カテゴリ、支払い元を入力してください');
+      return;
+    }
+
+    const parsedAmount = parseInt(amount, 10);
+    const input: TransactionInput = {
+      type,
+      amount: parsedAmount,
+      categoryId,
+      accountId,
+      paymentMethodId: pmId,
+      date,
+      memo: memo || undefined,
+    };
+
+    transactionService.create(input);
+
+    // 口座残高の更新
+    if (pmId) {
+      const pm = paymentMethods.find((p) => p.id === pmId);
+      if (pm && pm.billingType === 'immediate' && pm.linkedAccountId) {
+        const acct = accountService.getById(pm.linkedAccountId);
+        if (acct) {
+          const newBalance = type === 'expense' ? acct.balance - parsedAmount : acct.balance + parsedAmount;
+          accountService.update(pm.linkedAccountId, { balance: newBalance });
+        }
+        const allTx = transactionService.getAll();
+        const lastTx = allTx[allTx.length - 1];
+        if (lastTx) {
+          transactionService.update(lastTx.id, { settledAt: new Date().toISOString() });
+        }
+      }
+    } else if (accountId) {
+      const acct = accountService.getById(accountId);
+      if (acct) {
+        const newBalance = type === 'expense' ? acct.balance - parsedAmount : acct.balance + parsedAmount;
+        accountService.update(accountId, { balance: newBalance });
+      }
+    }
+
+    setShowSuccess(true);
+    setTimeout(() => {
+      setShowSuccess(false);
+      onSaved();
+    }, 1000);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
+      <div
+        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {showSuccess ? (
+          <div className="py-8 text-center">
+            <CheckCircle size={48} className="mx-auto text-green-500 mb-3" />
+            <p className="text-lg font-bold text-green-700">登録しました！</p>
+          </div>
+        ) : (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">取引を追加</h3>
+              <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600">
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* 収入/支出切り替え */}
+              <div className="flex rounded-lg overflow-hidden border border-gray-300">
+                <button
+                  type="button"
+                  onClick={() => { setType('expense'); setCategoryId(''); }}
+                  className={`flex-1 py-2.5 font-medium transition-colors ${
+                    type === 'expense' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'
+                  }`}
+                >
+                  支出
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
+                  className={`flex-1 py-2.5 font-medium transition-colors ${
+                    type === 'income' ? 'bg-green-500 text-white' : 'bg-white text-gray-700'
+                  }`}
+                >
+                  収入
+                </button>
+              </div>
+
+              {/* 金額 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">金額</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">¥</span>
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="0"
+                    className="w-full text-xl font-bold pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* カテゴリ */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">カテゴリ</label>
+                <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
+                  {filteredCategories.map((category) => {
+                    const member = getMember(category.memberId);
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        onClick={() => setCategoryId(category.id)}
+                        className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-colors ${
+                          categoryId === category.id
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div
+                          className="w-7 h-7 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                        >
+                          {getCategoryIcon(category.icon, 16)}
+                        </div>
+                        <span className="text-[11px] text-gray-700 truncate w-full text-center leading-tight">
+                          {category.name}
+                        </span>
+                        {member && member.id !== 'common' && (
+                          <span className="text-[9px] text-gray-400 leading-none">{member.name}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 支払い元 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {type === 'expense' ? '支払い元' : '入金先'}
+                </label>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {accounts.length > 0 && (
+                    <div>
+                      <p className="text-[10px] text-gray-400 font-medium mb-1">口座</p>
+                      <div className="space-y-1">
+                        {accounts.map((acct) => (
+                          <button
+                            key={acct.id}
+                            type="button"
+                            onClick={() => handleSelectAccount(acct.id)}
+                            className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-colors ${
+                              accountId === acct.id && !pmId
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
+                              <span className="font-medium text-gray-900 text-sm">{acct.name}</span>
+                            </div>
+                            {accountId === acct.id && !pmId && <Check size={16} className="text-blue-500" />}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {type === 'expense' && paymentMethods.length > 0 && (
+                    <div>
+                      <p className="text-[10px] text-gray-400 font-medium mb-1">支払い手段</p>
+                      <div className="space-y-1">
+                        {paymentMethods.map((pm) => {
+                          const linked = accounts.find((a) => a.id === pm.linkedAccountId);
+                          return (
+                            <button
+                              key={pm.id}
+                              type="button"
+                              onClick={() => handleSelectPM(pm.id)}
+                              className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-colors ${
+                                pmId === pm.id
+                                  ? 'border-purple-500 bg-purple-50'
+                                  : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: pm.color }} />
+                                <div className="text-left">
+                                  <span className="font-medium text-gray-900 text-sm">{pm.name}</span>
+                                  {linked && <p className="text-[9px] text-gray-400">→ {linked.name}</p>}
+                                </div>
+                              </div>
+                              {pmId === pm.id && <Check size={16} className="text-purple-500" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 日付 */}
+              <div className="overflow-x-hidden">
+                <label className="block text-sm font-medium text-gray-700 mb-1">日付</label>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{ minWidth: 0, maxWidth: '100%' }}
+                />
+              </div>
+
+              {/* メモ */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">メモ</label>
+                <input
+                  type="text"
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
+                  placeholder="任意"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-1">
+                <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 text-gray-700 font-medium">
+                  キャンセル
+                </button>
+                <button
+                  type="submit"
+                  disabled={!amount || !categoryId || (!accountId && !pmId)}
+                  className={`flex-1 py-2.5 px-4 rounded-lg text-white font-medium disabled:opacity-50 ${
+                    type === 'expense' ? 'bg-red-500' : 'bg-green-500'
+                  }`}
+                >
+                  {type === 'expense' ? '支出を登録' : '収入を登録'}
+                </button>
+              </div>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ===== 取引編集モーダル =====
+interface EditTransactionModalProps {
+  transaction: Transaction;
+  accounts: Account[];
+  paymentMethods: PaymentMethod[];
+  categories: { id: string; name: string; type: TransactionType; color: string; icon: string; memberId: string }[];
+  members: Member[];
+  onSave: (input: TransactionInput) => void;
+  onClose: () => void;
+}
+
+const EditTransactionModal = ({
+  transaction, accounts, paymentMethods, categories, members, onSave, onClose,
+}: EditTransactionModalProps) => {
+  const [type, setType] = useState<TransactionType>(transaction.type);
+  const [amount, setAmount] = useState(transaction.amount.toString());
+  const [categoryId, setCategoryId] = useState(transaction.categoryId);
+  const [accountId, setAccountId] = useState(transaction.accountId);
+  const [pmId, setPmId] = useState<string | undefined>(transaction.paymentMethodId);
+  const [date, setDate] = useState(transaction.date);
+  const [memo, setMemo] = useState(transaction.memo || '');
+
+  const filteredCategories = categories.filter((c) => c.type === type);
+  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
+
+  const handleSelectAccount = (id: string) => {
+    setAccountId(id);
+    setPmId(undefined);
+  };
+
+  const handleSelectPM = (id: string) => {
+    const pm = paymentMethods.find((p) => p.id === id);
+    if (pm) {
+      setPmId(id);
+      setAccountId(pm.linkedAccountId);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!amount || !categoryId || (!accountId && !pmId)) {
+      alert('金額、カテゴリ、支払い元を入力してください');
+      return;
+    }
+    onSave({
+      type,
+      amount: parseInt(amount, 10),
+      categoryId,
+      accountId,
+      paymentMethodId: pmId,
+      date,
+      memo: memo || undefined,
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[60]" onClick={onClose}>
+      <div
+        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[85vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-lg font-bold mb-4">取引を編集</h3>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex rounded-lg overflow-hidden border border-gray-300">
+            <button
+              type="button"
+              onClick={() => { setType('expense'); setCategoryId(''); }}
+              className={`flex-1 py-2.5 font-medium transition-colors ${
+                type === 'expense' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'
+              }`}
+            >
+              支出
+            </button>
+            <button
+              type="button"
+              onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
+              className={`flex-1 py-2.5 font-medium transition-colors ${
+                type === 'income' ? 'bg-green-500 text-white' : 'bg-white text-gray-700'
+              }`}
+            >
+              収入
+            </button>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">金額</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">¥</span>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full text-xl font-bold pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">カテゴリ</label>
+            <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto">
+              {filteredCategories.map((category) => {
+                const member = getMember(category.memberId);
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => setCategoryId(category.id)}
+                    className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-colors ${
+                      categoryId === category.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                    >
+                      {getCategoryIcon(category.icon, 16)}
+                    </div>
+                    <span className="text-[11px] text-gray-700 truncate w-full text-center leading-tight">
+                      {category.name}
+                    </span>
+                    {member && member.id !== 'common' && (
+                      <span className="text-[9px] text-gray-400 leading-none">{member.name}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {type === 'expense' ? '支払い元' : '入金先'}
+            </label>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {accounts.length > 0 && (
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium mb-1">口座</p>
+                  <div className="space-y-1">
+                    {accounts.map((acct) => (
+                      <button
+                        key={acct.id}
+                        type="button"
+                        onClick={() => handleSelectAccount(acct.id)}
+                        className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-colors ${
+                          accountId === acct.id && !pmId
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
+                          <span className="font-medium text-gray-900 text-sm">{acct.name}</span>
+                        </div>
+                        {accountId === acct.id && !pmId && <Check size={16} className="text-blue-500" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {type === 'expense' && paymentMethods.length > 0 && (
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium mb-1">支払い手段</p>
+                  <div className="space-y-1">
+                    {paymentMethods.map((pm) => {
+                      const linked = accounts.find((a) => a.id === pm.linkedAccountId);
+                      return (
+                        <button
+                          key={pm.id}
+                          type="button"
+                          onClick={() => handleSelectPM(pm.id)}
+                          className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-colors ${
+                            pmId === pm.id
+                              ? 'border-purple-500 bg-purple-50'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: pm.color }} />
+                            <div className="text-left">
+                              <span className="font-medium text-gray-900 text-sm">{pm.name}</span>
+                              {linked && <p className="text-[9px] text-gray-400">→ {linked.name}</p>}
+                            </div>
+                          </div>
+                          {pmId === pm.id && <Check size={16} className="text-purple-500" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="overflow-x-hidden">
+            <label className="block text-sm font-medium text-gray-700 mb-1">日付</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ minWidth: 0, maxWidth: '100%' }}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">メモ</label>
+            <input
+              type="text"
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              placeholder="任意"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-1">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 text-gray-700 font-medium">
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              disabled={!amount || !categoryId || (!accountId && !pmId)}
+              className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium disabled:opacity-50"
+            >
+              保存
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// ===== 定期支払い追加/編集モーダル =====
+interface RecurringPaymentModalProps {
+  recurringPayment: RecurringPayment | null;
+  defaultAccountId?: string;
+  defaultPaymentMethodId?: string;
+  accounts: Account[];
+  paymentMethods: PaymentMethod[];
+  onSave: (input: RecurringPaymentInput) => void;
+  onClose: () => void;
+}
+
+const RecurringPaymentModal = ({
+  recurringPayment, defaultAccountId, defaultPaymentMethodId,
+  accounts, paymentMethods, onSave, onClose,
+}: RecurringPaymentModalProps) => {
+  const categories = categoryService.getAll();
+  const members = memberService.getAll();
+
+  const [name, setName] = useState(recurringPayment?.name || '');
+  const [amount, setAmount] = useState(recurringPayment?.amount.toString() || '');
+  const [type, setType] = useState<TransactionType>(recurringPayment?.type || 'expense');
+  const [categoryId, setCategoryId] = useState(recurringPayment?.categoryId || '');
+  const [accountId, setAccountId] = useState(recurringPayment?.accountId || defaultAccountId || '');
+  const [pmId, setPmId] = useState<string | undefined>(recurringPayment?.paymentMethodId || defaultPaymentMethodId);
+  const [frequency, setFrequency] = useState<RecurringFrequency>(recurringPayment?.frequency || 'monthly');
+  const [dayOfMonth, setDayOfMonth] = useState(recurringPayment?.dayOfMonth.toString() || '1');
+  const [monthOfYear, setMonthOfYear] = useState(recurringPayment?.monthOfYear?.toString() || '1');
+  const [memo, setMemo] = useState(recurringPayment?.memo || '');
+  const [isActive, setIsActive] = useState(recurringPayment?.isActive ?? true);
+
+  const filteredCategories = categories.filter((c) => c.type === type);
+  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !amount || !categoryId || (!accountId && !pmId)) {
+      alert('名前、金額、カテゴリ、支払い元を入力してください');
+      return;
+    }
+    onSave({
+      name,
+      amount: parseInt(amount, 10),
+      type,
+      categoryId,
+      accountId,
+      paymentMethodId: pmId,
+      frequency,
+      dayOfMonth: parseInt(dayOfMonth, 10) || 1,
+      monthOfYear: frequency === 'yearly' ? parseInt(monthOfYear, 10) || 1 : undefined,
+      memo: memo || undefined,
+      isActive,
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
+      <div
+        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold">{recurringPayment ? '定期支払いを編集' : '定期支払いを追加'}</h3>
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600">
+            <X size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 名前 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">名前</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="例: 家賃、携帯料金、Netflix"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          {/* 収入/支出 */}
+          <div className="flex rounded-lg overflow-hidden border border-gray-300">
+            <button
+              type="button"
+              onClick={() => { setType('expense'); setCategoryId(''); }}
+              className={`flex-1 py-2 font-medium transition-colors ${
+                type === 'expense' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'
+              }`}
+            >
+              支出
+            </button>
+            <button
+              type="button"
+              onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
+              className={`flex-1 py-2 font-medium transition-colors ${
+                type === 'income' ? 'bg-green-500 text-white' : 'bg-white text-gray-700'
+              }`}
+            >
+              収入
+            </button>
+          </div>
+
+          {/* 金額 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">金額</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">¥</span>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0"
+                className="w-full text-lg font-bold pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+          </div>
+
+          {/* 頻度 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">頻度</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setFrequency('monthly')}
+                className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                  frequency === 'monthly'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300'
+                }`}
+              >
+                毎月
+              </button>
+              <button
+                type="button"
+                onClick={() => setFrequency('yearly')}
+                className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                  frequency === 'yearly'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300'
+                }`}
+              >
+                毎年
+              </button>
+            </div>
+          </div>
+
+          {/* 支払い日 */}
+          <div className="bg-gray-50 rounded-lg p-3">
+            {frequency === 'yearly' && (
+              <div className="mb-3">
+                <label className="block text-xs font-medium text-gray-600 mb-1">月</label>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={monthOfYear}
+                    onChange={(e) => setMonthOfYear(e.target.value)}
+                    className="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                      <option key={m} value={m}>{m}月</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">日</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min="1"
+                  max="31"
+                  value={dayOfMonth}
+                  onChange={(e) => setDayOfMonth(e.target.value)}
+                  className="w-16 border border-gray-300 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-500">日</span>
+              </div>
+            </div>
+          </div>
+
+          {/* カテゴリ */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">カテゴリ</label>
+            <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto">
+              {filteredCategories.map((category) => {
+                const member = getMember(category.memberId);
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => setCategoryId(category.id)}
+                    className={`flex flex-col items-center gap-1 p-1.5 rounded-lg border transition-colors ${
+                      categoryId === category.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div
+                      className="w-6 h-6 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                    >
+                      {getCategoryIcon(category.icon, 14)}
+                    </div>
+                    <span className="text-[10px] text-gray-700 truncate w-full text-center">{category.name}</span>
+                    {member && member.id !== 'common' && (
+                      <span className="text-[8px] text-gray-400 leading-none">{member.name}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 支払い元（変更可能にする） */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {type === 'expense' ? '支払い元' : '入金先'}
+            </label>
+            <div className="space-y-2 max-h-32 overflow-y-auto">
+              {accounts.length > 0 && (
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium mb-1">口座</p>
+                  <div className="space-y-1">
+                    {accounts.map((acct) => (
+                      <button
+                        key={acct.id}
+                        type="button"
+                        onClick={() => { setAccountId(acct.id); setPmId(undefined); }}
+                        className={`w-full flex items-center justify-between p-2 rounded-lg border transition-colors ${
+                          accountId === acct.id && !pmId
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: acct.color }} />
+                          <span className="text-sm text-gray-900">{acct.name}</span>
+                        </div>
+                        {accountId === acct.id && !pmId && <Check size={14} className="text-blue-500" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {type === 'expense' && paymentMethods.length > 0 && (
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium mb-1">支払い手段</p>
+                  <div className="space-y-1">
+                    {paymentMethods.map((pm) => (
+                      <button
+                        key={pm.id}
+                        type="button"
+                        onClick={() => { setPmId(pm.id); setAccountId(pm.linkedAccountId); }}
+                        className={`w-full flex items-center justify-between p-2 rounded-lg border transition-colors ${
+                          pmId === pm.id
+                            ? 'border-purple-500 bg-purple-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pm.color }} />
+                          <span className="text-sm text-gray-900">{pm.name}</span>
+                        </div>
+                        {pmId === pm.id && <Check size={14} className="text-purple-500" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* メモ */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">メモ</label>
+            <input
+              type="text"
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              placeholder="任意"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* 有効/無効 */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">有効</span>
+            <button type="button" onClick={() => setIsActive(!isActive)}>
+              {isActive
+                ? <ToggleRight size={28} className="text-green-500" />
+                : <ToggleLeft size={28} className="text-gray-300" />
+              }
+            </button>
+          </div>
+
+          <div className="flex gap-3 pt-1">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 text-gray-700 font-medium">
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              disabled={!name || !amount || !categoryId || (!accountId && !pmId)}
+              className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium disabled:opacity-50"
+            >
+              保存
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
