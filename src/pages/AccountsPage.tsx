@@ -190,17 +190,10 @@ export const AccountsPage = () => {
     return acc;
   }, {});
 
-  const groupedPMs = paymentMethods.reduce<Record<string, PaymentMethod[]>>((acc, pm) => {
-    const memberId = pm.memberId;
-    if (!acc[memberId]) acc[memberId] = [];
-    acc[memberId].push(pm);
-    return acc;
-  }, {});
-
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
-  const getAccount = (accountId: string) => accounts.find((a) => a.id === accountId);
 
-  const hasUnlinkedPMs = paymentMethods.some((pm) => !pm.linkedAccountId);
+  const unlinkedPMs = paymentMethods.filter((pm) => !pm.linkedAccountId);
+  const hasUnlinkedPMs = unlinkedPMs.length > 0;
 
   return (
     <div className="p-4 space-y-4">
@@ -218,7 +211,7 @@ export const AccountsPage = () => {
         </div>
       )}
 
-      {/* 総資産 & 所有者別残高 */}
+      {/* 総資産 & 所有者別残高（統合カード） */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white">
         <div className="flex items-center gap-2 mb-1">
           <Wallet size={20} />
@@ -230,73 +223,81 @@ export const AccountsPage = () => {
             引落後: {formatCurrency(totalBalance - totalPending)}
           </p>
         )}
+
+        {/* 所有者別内訳 */}
+        {accounts.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-white/20">
+            <p className="text-[10px] font-medium opacity-70 mb-2">所有者別内訳</p>
+            <div className="space-y-2.5">
+              {Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
+                const member = getMember(memberId);
+                const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
+                const memberPending = memberAccounts.reduce((sum, a) => sum + (pendingByAccount[a.id] || 0), 0);
+                return (
+                  <div key={memberId}>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: member?.color || '#d1d5db' }} />
+                        <span className="text-xs font-medium opacity-90">{member?.name || '不明'}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-bold">{formatCurrency(memberTotal)}</span>
+                        {memberPending > 0 && (
+                          <span className="text-[10px] opacity-70 ml-1">（引落後: {formatCurrency(memberTotal - memberPending)}）</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="space-y-1 pl-3.5">
+                      {memberAccounts.map((account) => {
+                        const pending = pendingByAccount[account.id] || 0;
+                        return (
+                          <div key={account.id} className="flex justify-between items-center">
+                            <div className="flex items-center gap-1.5">
+                              <div
+                                className="w-5 h-5 rounded-full flex items-center justify-center bg-white/20"
+                              >
+                                {ACCOUNT_TYPE_ICONS_SM[account.type]}
+                              </div>
+                              <span className="text-xs opacity-90">{account.name}</span>
+                            </div>
+                            <div className="text-right">
+                              <span className="font-medium text-xs">{formatCurrency(account.balance)}</span>
+                              {pending > 0 && (
+                                <p className="text-[10px] opacity-60">引落後: {formatCurrency(account.balance - pending)}</p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* 所有者別残高サマリー */}
-      {accounts.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm p-4">
-          <h3 className="font-bold text-gray-800 mb-3">所有者別資産残高</h3>
-          <div className="space-y-3">
-            {Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
-              const member = getMember(memberId);
-              const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
-              const memberPending = memberAccounts.reduce((sum, a) => sum + (pendingByAccount[a.id] || 0), 0);
-              return (
-                <div key={memberId}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: member?.color || '#6b7280' }} />
-                      <span className="text-xs font-medium text-gray-500">{member?.name || '不明'}</span>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-bold text-gray-600">{formatCurrency(memberTotal)}</span>
-                      {memberPending > 0 && (
-                        <span className="text-[10px] text-gray-400 ml-1">（引落後: {formatCurrency(memberTotal - memberPending)}）</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="space-y-1.5 pl-4">
-                    {memberAccounts.map((account) => {
-                      const pending = pendingByAccount[account.id] || 0;
-                      return (
-                        <div key={account.id} className="flex justify-between items-center">
-                          <div className="flex items-center gap-2">
-                            <div
-                              className="w-6 h-6 rounded-full flex items-center justify-center text-white"
-                              style={{ backgroundColor: account.color }}
-                            >
-                              {ACCOUNT_TYPE_ICONS_SM[account.type]}
-                            </div>
-                            <span className="text-sm text-gray-700">{account.name}</span>
-                          </div>
-                          <div className="text-right">
-                            <span className="font-medium text-sm">{formatCurrency(account.balance)}</span>
-                            {pending > 0 && (
-                              <p className="text-[10px] text-gray-400">引落後: {formatCurrency(account.balance - pending)}</p>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ===== 口座セクション ===== */}
+      {/* ===== 口座セクション（支払い手段をネスト表示） ===== */}
       <div>
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-base font-bold text-gray-700">口座</h3>
-          <button
-            onClick={handleAddAccount}
-            className="flex items-center gap-1 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium"
-          >
-            <Plus size={16} />
-            追加
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleAddPM}
+              className="flex items-center gap-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium"
+            >
+              <CreditCard size={14} />
+              支払い手段
+            </button>
+            <button
+              onClick={handleAddAccount}
+              className="flex items-center gap-1 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium"
+            >
+              <Plus size={16} />
+              口座
+            </button>
+          </div>
         </div>
 
         {accounts.length === 0 ? (
@@ -329,7 +330,9 @@ export const AccountsPage = () => {
                           account={account}
                           pendingAmount={pendingByAccount[account.id] || 0}
                           linkedPaymentMethods={linkedPMs}
+                          pendingByPM={pendingByPM}
                           recurringPayments={accountRecurrings}
+                          allRecurringPayments={recurringPayments}
                           onView={() => setViewingAccount(account)}
                           onEdit={() => handleEditAccount(account)}
                           onDelete={() => handleDeleteAccount(account.id)}
@@ -338,6 +341,11 @@ export const AccountsPage = () => {
                           onEditRecurring={handleEditRecurring}
                           onDeleteRecurring={handleDeleteRecurring}
                           onToggleRecurring={handleToggleRecurring}
+                          onViewPM={(pm) => setViewingPM(pm)}
+                          onEditPM={(pm) => handleEditPM(pm)}
+                          onDeletePM={(id) => handleDeletePM(id)}
+                          onAddPMTransaction={(pm) => setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
+                          onAddPMRecurring={(pm) => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
                         />
                       );
                     })}
@@ -349,66 +357,36 @@ export const AccountsPage = () => {
         )}
       </div>
 
-      {/* ===== 支払い手段セクション ===== */}
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-base font-bold text-gray-700">支払い手段</h3>
-          <button
-            onClick={handleAddPM}
-            className="flex items-center gap-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium"
-          >
-            <Plus size={16} />
-            追加
-          </button>
-        </div>
-
-        {paymentMethods.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-            <CreditCard size={40} className="mx-auto text-gray-300 mb-2" />
-            <p className="text-gray-500 text-sm">支払い手段がありません</p>
-            <button onClick={handleAddPM} className="mt-2 text-purple-600 font-medium text-sm">
-              支払い手段を追加する
-            </button>
+      {/* ===== 紐づきなし支払い手段 ===== */}
+      {unlinkedPMs.length > 0 && (
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-base font-bold text-gray-700">未紐づき支払い手段</h3>
           </div>
-        ) : (
-          <div className="space-y-3">
-            {Object.entries(groupedPMs).map(([memberId, memberPMs]) => {
-              const member = getMember(memberId);
+          <div className="space-y-2">
+            {unlinkedPMs.map((pm) => {
+              const pmRecurrings = recurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
               return (
-                <div key={memberId}>
-                  <h4 className="text-xs font-medium text-gray-500 mb-1.5 flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: member?.color || '#6b7280' }} />
-                    {member?.name || '不明'}
-                  </h4>
-                  <div className="space-y-2">
-                    {memberPMs.map((pm) => {
-                      const linkedAccount = getAccount(pm.linkedAccountId);
-                      const pmRecurrings = recurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
-                      return (
-                        <PaymentMethodCard
-                          key={pm.id}
-                          paymentMethod={pm}
-                          linkedAccountName={linkedAccount?.name}
-                          pendingAmount={pendingByPM[pm.id] || 0}
-                          recurringPayments={pmRecurrings}
-                          onView={() => setViewingPM(pm)}
-                          onEdit={() => handleEditPM(pm)}
-                          onDelete={() => handleDeletePM(pm.id)}
-                          onAddTransaction={() => setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
-                          onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
-                          onEditRecurring={handleEditRecurring}
-                          onDeleteRecurring={handleDeleteRecurring}
-                          onToggleRecurring={handleToggleRecurring}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
+                <PaymentMethodCard
+                  key={pm.id}
+                  paymentMethod={pm}
+                  linkedAccountName={undefined}
+                  pendingAmount={pendingByPM[pm.id] || 0}
+                  recurringPayments={pmRecurrings}
+                  onView={() => setViewingPM(pm)}
+                  onEdit={() => handleEditPM(pm)}
+                  onDelete={() => handleDeletePM(pm.id)}
+                  onAddTransaction={() => setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
+                  onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
+                  onEditRecurring={handleEditRecurring}
+                  onDeleteRecurring={handleDeleteRecurring}
+                  onToggleRecurring={handleToggleRecurring}
+                />
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* モーダル */}
       {isAccountModalOpen && (
@@ -473,7 +451,9 @@ interface AccountCardProps {
   account: Account;
   pendingAmount: number;
   linkedPaymentMethods: PaymentMethod[];
+  pendingByPM: Record<string, number>;
   recurringPayments: RecurringPayment[];
+  allRecurringPayments: RecurringPayment[];
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -482,12 +462,18 @@ interface AccountCardProps {
   onEditRecurring: (rp: RecurringPayment) => void;
   onDeleteRecurring: (id: string) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
+  onViewPM: (pm: PaymentMethod) => void;
+  onEditPM: (pm: PaymentMethod) => void;
+  onDeletePM: (id: string) => void;
+  onAddPMTransaction: (pm: PaymentMethod) => void;
+  onAddPMRecurring: (pm: PaymentMethod) => void;
 }
 
 const AccountCard = ({
-  account, pendingAmount, linkedPaymentMethods, recurringPayments,
+  account, pendingAmount, linkedPaymentMethods, pendingByPM, recurringPayments, allRecurringPayments,
   onView, onEdit, onDelete, onAddTransaction, onAddRecurring,
   onEditRecurring, onDeleteRecurring, onToggleRecurring,
+  onViewPM, onEditPM, onDeletePM, onAddPMTransaction, onAddPMRecurring,
 }: AccountCardProps) => {
   const categories = categoryService.getAll();
   const getCategory = (id: string) => categories.find((c) => c.id === id);
@@ -527,18 +513,63 @@ const AccountCard = ({
           </p>
         )}
       </button>
+      {/* 紐づき支払い手段（詳細表示） */}
       {linkedPaymentMethods.length > 0 && (
         <div className="mt-3 pt-3 border-t border-gray-100">
-          <p className="text-[10px] text-gray-400 font-medium mb-1.5">紐づき支払い手段</p>
-          <div className="flex flex-wrap gap-1.5">
-            {linkedPaymentMethods.map((pm) => (
-              <div key={pm.id} className="flex items-center gap-1 bg-gray-50 rounded-full px-2 py-0.5">
-                <div className="w-3 h-3 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: pm.color }}>
-                  <CreditCard size={7} />
+          <p className="text-[10px] text-gray-400 font-medium mb-2 flex items-center gap-1">
+            <CreditCard size={10} />
+            紐づき支払い手段
+          </p>
+          <div className="space-y-2">
+            {linkedPaymentMethods.map((pm) => {
+              const pmPending = pendingByPM[pm.id] || 0;
+              const pmRecurrings = allRecurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
+              return (
+                <div key={pm.id} className="bg-gray-50 rounded-lg p-3">
+                  <div className="flex justify-between items-start">
+                    <button onClick={() => onViewPM(pm)} className="flex items-center gap-2 flex-1 text-left">
+                      <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-white flex-shrink-0"
+                        style={{ backgroundColor: pm.color }}
+                      >
+                        <CreditCard size={14} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-gray-900">{pm.name}</p>
+                        <p className="text-[10px] text-gray-400">{PM_TYPE_LABELS[pm.type]} ・ {BILLING_TYPE_LABELS[pm.billingType]}</p>
+                      </div>
+                    </button>
+                    <div className="flex items-center gap-0.5 flex-shrink-0">
+                      <button onClick={() => onAddPMTransaction(pm)} className="p-1.5 text-purple-500 hover:text-purple-700" title="取引追加">
+                        <PlusCircle size={15} />
+                      </button>
+                      <button onClick={() => onEditPM(pm)} className="p-1.5 text-gray-400 hover:text-gray-600">
+                        <Edit2 size={13} />
+                      </button>
+                      <button onClick={() => onDeletePM(pm.id)} className="p-1.5 text-gray-400 hover:text-red-600">
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+                  {pmPending > 0 && (
+                    <div className="mt-1.5 text-right">
+                      <p className="text-xs text-orange-600 font-medium">未精算: {formatCurrency(pmPending)}</p>
+                    </div>
+                  )}
+                  {/* 支払い手段の定期支払い */}
+                  {pmRecurrings.length > 0 && (
+                    <RecurringPaymentsList
+                      items={pmRecurrings}
+                      onAdd={() => onAddPMRecurring(pm)}
+                      onEdit={onEditRecurring}
+                      onDelete={onDeleteRecurring}
+                      onToggle={onToggleRecurring}
+                      getCategory={getCategory}
+                    />
+                  )}
                 </div>
-                <span className="text-[11px] text-gray-600">{pm.name}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -968,6 +999,10 @@ const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, onClose 
             const offsetLabel = offset === 0 ? '当月' : offset === 1 ? '翌月' : '翌々月';
             const payMonth1 = 1 + offset;
             const payMonth2 = 2 + offset;
+            // 締め日の翌日を正しく計算（月末を考慮）
+            const nextDay = new Date(2025, 0, cd + 1); // 1月cd日の翌日
+            const nextDayMonth = nextDay.getMonth() + 1;
+            const nextDayDate = nextDay.getDate();
             return (
               <div className="bg-gray-50 rounded-lg p-3 space-y-3">
                 <div>
@@ -1014,7 +1049,7 @@ const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, onClose 
                     <div className="text-xs text-purple-700 space-y-1">
                       <p className="font-medium">引き落としの例（{cd}日締め・{offsetLabel}{pd}日払い）</p>
                       <p>1月{cd}日の取引 → <span className="font-medium">{payMonth1}月{pd}日</span>に引き落とし</p>
-                      <p>1月{cd + 1}日の取引 → <span className="font-medium">{payMonth2}月{pd}日</span>に引き落とし</p>
+                      <p>{nextDayMonth}月{nextDayDate}日の取引 → <span className="font-medium">{payMonth2}月{pd}日</span>に引き落とし</p>
                     </div>
                   </div>
                 </div>
@@ -1433,10 +1468,27 @@ interface AddTransactionModalProps {
 }
 
 const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, onSaved, onClose }: AddTransactionModalProps) => {
-  const accounts = accountService.getAll();
-  const paymentMethods = paymentMethodService.getAll();
+  const allAccounts = accountService.getAll();
+  const allPaymentMethods = paymentMethodService.getAll();
   const categories = categoryService.getAll();
   const members = memberService.getAll();
+
+  // 支払い元のフィルタリング：+ボタンを押した対象のみ表示
+  const isFromPM = !!defaultPaymentMethodId;
+  const isFromAccount = !!defaultAccountId && !defaultPaymentMethodId;
+
+  // 支払い手段から開いた場合：その支払い手段のみ
+  // 口座から開いた場合：その口座のみ（支払い手段は表示しない）
+  const accounts = isFromAccount
+    ? allAccounts.filter((a) => a.id === defaultAccountId)
+    : isFromPM
+      ? []
+      : allAccounts;
+  const paymentMethods = isFromPM
+    ? allPaymentMethods.filter((pm) => pm.id === defaultPaymentMethodId)
+    : isFromAccount
+      ? []
+      : allPaymentMethods;
 
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
@@ -1456,7 +1508,7 @@ const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, onSaved
   };
 
   const handleSelectPM = (id: string) => {
-    const pm = paymentMethods.find((p) => p.id === id);
+    const pm = allPaymentMethods.find((p) => p.id === id);
     if (pm) {
       setPmId(id);
       setAccountId(pm.linkedAccountId);
@@ -1485,7 +1537,7 @@ const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, onSaved
 
     // 口座残高の更新
     if (pmId) {
-      const pm = paymentMethods.find((p) => p.id === pmId);
+      const pm = allPaymentMethods.find((p) => p.id === pmId);
       if (pm && pm.billingType === 'immediate' && pm.linkedAccountId) {
         const acct = accountService.getById(pm.linkedAccountId);
         if (acct) {
@@ -1644,7 +1696,7 @@ const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, onSaved
                       <p className="text-[10px] text-gray-400 font-medium mb-1">支払い手段</p>
                       <div className="space-y-1">
                         {paymentMethods.map((pm) => {
-                          const linked = accounts.find((a) => a.id === pm.linkedAccountId);
+                          const linked = allAccounts.find((a) => a.id === pm.linkedAccountId);
                           return (
                             <button
                               key={pm.id}
