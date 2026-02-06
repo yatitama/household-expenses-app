@@ -215,7 +215,15 @@ export const memberService = {
 // Account 操作
 export const accountService = {
   getAll: (): Account[] => {
-    return getItems<Account>(STORAGE_KEYS.ACCOUNTS);
+    const accounts = getItems<Account>(STORAGE_KEYS.ACCOUNTS);
+    return accounts.sort((a, b) => {
+      if (a.order !== undefined && b.order !== undefined) {
+        return a.order - b.order;
+      }
+      if (a.order !== undefined) return -1;
+      if (b.order !== undefined) return 1;
+      return a.createdAt.localeCompare(b.createdAt);
+    });
   },
 
   getById: (id: string): Account | undefined => {
@@ -223,11 +231,13 @@ export const accountService = {
   },
 
   create: (input: AccountInput): Account => {
-    const accounts = accountService.getAll();
+    const accounts = getItems<Account>(STORAGE_KEYS.ACCOUNTS);
     const now = getTimestamp();
+    const maxOrder = accounts.reduce((max, a) => Math.max(max, a.order ?? -1), -1);
     const newAccount: Account = {
       ...input,
       id: generateId(),
+      order: maxOrder + 1,
       createdAt: now,
       updatedAt: now,
     };
@@ -237,7 +247,7 @@ export const accountService = {
   },
 
   update: (id: string, input: Partial<AccountInput>): Account | undefined => {
-    const accounts = accountService.getAll();
+    const accounts = getItems<Account>(STORAGE_KEYS.ACCOUNTS);
     const index = accounts.findIndex((a) => a.id === id);
     if (index === -1) return undefined;
 
@@ -251,8 +261,23 @@ export const accountService = {
     return updated;
   },
 
+  updateOrders: (orders: { id: string; order: number }[]): void => {
+    const accounts = getItems<Account>(STORAGE_KEYS.ACCOUNTS);
+    const orderMap = new Map(orders.map((o) => [o.id, o.order]));
+
+    const updated = accounts.map((account) => {
+      const newOrder = orderMap.get(account.id);
+      if (newOrder !== undefined) {
+        return { ...account, order: newOrder, updatedAt: getTimestamp() };
+      }
+      return account;
+    });
+
+    setItems(STORAGE_KEYS.ACCOUNTS, updated);
+  },
+
   delete: (id: string): boolean => {
-    const accounts = accountService.getAll();
+    const accounts = getItems<Account>(STORAGE_KEYS.ACCOUNTS);
     const filtered = accounts.filter((a) => a.id !== id);
     if (filtered.length === accounts.length) return false;
     setItems(STORAGE_KEYS.ACCOUNTS, filtered);

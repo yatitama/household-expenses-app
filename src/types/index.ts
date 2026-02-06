@@ -24,6 +24,7 @@ export interface Account {
   balance: number;
   color: string;
   icon?: string;
+  order?: number;
   createdAt: string;
   updatedAt: string;
 }
