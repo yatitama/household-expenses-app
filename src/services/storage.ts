@@ -14,6 +14,8 @@ import type {
   BudgetInput,
   CardBilling,
   CardBillingInput,
+  RecurringPayment,
+  RecurringPaymentInput,
 } from '../types';
 
 const STORAGE_KEYS = {
@@ -24,6 +26,7 @@ const STORAGE_KEYS = {
   CATEGORIES: 'household_categories',
   BUDGETS: 'household_budgets',
   CARD_BILLINGS: 'household_card_billings',
+  RECURRING_PAYMENTS: 'household_recurring_payments',
   MIGRATION_VERSION: 'household_migration_version',
 } as const;
 
@@ -489,6 +492,62 @@ export const cardBillingService = {
     const filtered = billings.filter((cb) => cb.id !== id);
     if (filtered.length === billings.length) return false;
     setItems(STORAGE_KEYS.CARD_BILLINGS, filtered);
+    return true;
+  },
+};
+
+// RecurringPayment 操作
+export const recurringPaymentService = {
+  getAll: (): RecurringPayment[] => {
+    return getItems<RecurringPayment>(STORAGE_KEYS.RECURRING_PAYMENTS);
+  },
+
+  getById: (id: string): RecurringPayment | undefined => {
+    return recurringPaymentService.getAll().find((rp) => rp.id === id);
+  },
+
+  getByAccountId: (accountId: string): RecurringPayment[] => {
+    return recurringPaymentService.getAll().filter((rp) => rp.accountId === accountId);
+  },
+
+  getByPaymentMethodId: (paymentMethodId: string): RecurringPayment[] => {
+    return recurringPaymentService.getAll().filter((rp) => rp.paymentMethodId === paymentMethodId);
+  },
+
+  create: (input: RecurringPaymentInput): RecurringPayment => {
+    const items = recurringPaymentService.getAll();
+    const now = getTimestamp();
+    const newItem: RecurringPayment = {
+      ...input,
+      id: generateId(),
+      createdAt: now,
+      updatedAt: now,
+    };
+    items.push(newItem);
+    setItems(STORAGE_KEYS.RECURRING_PAYMENTS, items);
+    return newItem;
+  },
+
+  update: (id: string, input: Partial<RecurringPaymentInput>): RecurringPayment | undefined => {
+    const items = recurringPaymentService.getAll();
+    const index = items.findIndex((rp) => rp.id === id);
+    if (index === -1) return undefined;
+
+    const updated: RecurringPayment = {
+      ...items[index],
+      ...input,
+      updatedAt: getTimestamp(),
+    };
+    items[index] = updated;
+    setItems(STORAGE_KEYS.RECURRING_PAYMENTS, items);
+    return updated;
+  },
+
+  delete: (id: string): boolean => {
+    const items = recurringPaymentService.getAll();
+    const filtered = items.filter((rp) => rp.id !== id);
+    if (filtered.length === items.length) return false;
+    setItems(STORAGE_KEYS.RECURRING_PAYMENTS, filtered);
     return true;
   },
 };

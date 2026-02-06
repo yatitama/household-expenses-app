@@ -81,6 +81,27 @@ export interface Budget {
   amount: number;
 }
 
+// 定期支払い頻度
+export type RecurringFrequency = 'monthly' | 'yearly';
+
+// 定期支払い
+export interface RecurringPayment {
+  id: string;
+  name: string;
+  amount: number;
+  type: TransactionType;
+  categoryId: string;
+  accountId: string;
+  paymentMethodId?: string;
+  frequency: RecurringFrequency;
+  dayOfMonth: number;
+  monthOfYear?: number; // yearlyの場合のみ（1-12）
+  memo?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // カード請求情報
 export interface CardBilling {
   id: string;
@@ -100,6 +121,7 @@ export type TransactionInput = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt
 export type CategoryInput = Omit<Category, 'id'>;
 export type BudgetInput = Omit<Budget, 'id'>;
 export type CardBillingInput = Omit<CardBilling, 'id'>;
+export type RecurringPaymentInput = Omit<RecurringPayment, 'id' | 'createdAt' | 'updatedAt'>;
 
 // 共通メンバーID（削除不可）
 export const COMMON_MEMBER_ID = 'common';
