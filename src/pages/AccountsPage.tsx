@@ -20,7 +20,7 @@ import type {
   PaymentMethod, PaymentMethodType, PaymentMethodInput, BillingType,
   Member, Transaction, TransactionType, TransactionInput,
   RecurringPayment, RecurringPaymentInput, RecurringFrequency,
-  LinkedPaymentMethod,
+  LinkedPaymentMethod, LinkedPaymentMethodInput,
 } from '../types';
 
 const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
@@ -82,6 +82,10 @@ export const AccountsPage = () => {
   const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
   const [editingRecurring, setEditingRecurring] = useState<RecurringPayment | null>(null);
   const [recurringTarget, setRecurringTarget] = useState<{ accountId?: string; paymentMethodId?: string } | null>(null);
+
+  const [isLinkedPMModalOpen, setIsLinkedPMModalOpen] = useState(false);
+  const [editingLinkedPM, setEditingLinkedPM] = useState<LinkedPaymentMethod | null>(null);
+  const [linkedPMTarget, setLinkedPMTarget] = useState<{ accountId: string } | null>(null);
 
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
   const [appSettings, setAppSettings] = useState<AppSettings>(() => appSettingsService.get());
@@ -195,7 +199,23 @@ export const AccountsPage = () => {
     refreshData();
   };
 
-  const isAnyModalOpen = isAccountModalOpen || isPMModalOpen || !!viewingAccount || !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isGradientPickerOpen;
+  const handleAddLinkedPM = (target: { accountId: string }) => {
+    setEditingLinkedPM(null);
+    setLinkedPMTarget(target);
+    setIsLinkedPMModalOpen(true);
+  };
+
+  const handleSaveLinkedPM = (input: LinkedPaymentMethodInput) => {
+    if (editingLinkedPM) {
+      linkedPaymentMethodService.update(editingLinkedPM.id, input);
+    } else {
+      linkedPaymentMethodService.create(input);
+    }
+    refreshData();
+    setIsLinkedPMModalOpen(false);
+  };
+
+  const isAnyModalOpen = isAccountModalOpen || isPMModalOpen || !!viewingAccount || !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isLinkedPMModalOpen || isGradientPickerOpen;
   useBodyScrollLock(isAnyModalOpen);
 
   const handleSaveGradient = (from: string, to: string) => {
@@ -399,11 +419,11 @@ export const AccountsPage = () => {
                           onEditRecurring={handleEditRecurring}
                           onDeleteRecurring={handleDeleteRecurring}
                           onToggleRecurring={handleToggleRecurring}
+                          onAddLinkedPM={() => handleAddLinkedPM({ accountId: account.id })}
                           onToggleLinkedPM={handleToggleLinkedPM}
                           onViewPM={(pm) => setViewingPM(pm)}
                           onEditPM={handleEditPM}
                           onDeletePM={handleDeletePM}
-                          onAddPMTransaction={(pm) => setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
                         />
                       );
                     })}
@@ -512,6 +532,17 @@ export const AccountsPage = () => {
         />
       )}
 
+      {isLinkedPMModalOpen && (
+        <LinkedPaymentMethodModal
+          linkedPaymentMethod={editingLinkedPM}
+          defaultAccountId={linkedPMTarget?.accountId}
+          accounts={accounts}
+          paymentMethods={paymentMethods}
+          onSave={handleSaveLinkedPM}
+          onClose={() => setIsLinkedPMModalOpen(false)}
+        />
+      )}
+
       {isGradientPickerOpen && (
         <GradientPickerModal
           currentFrom={appSettings.totalAssetGradientFrom}
@@ -546,19 +577,19 @@ interface AccountCardProps {
   onEditRecurring: (rp: RecurringPayment) => void;
   onDeleteRecurring: (id: string) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
+  onAddLinkedPM: () => void;
   onToggleLinkedPM: (lpm: LinkedPaymentMethod) => void;
   onViewPM: (pm: PaymentMethod) => void;
   onEditPM: (pm: PaymentMethod) => void;
   onDeletePM: (pmId: string) => void;
-  onAddPMTransaction: (pm: PaymentMethod) => void;
 }
 
 const AccountCard = ({
   account, pendingAmount, totalPendingData, linkedPaymentMethodsData, allPaymentMethods, pendingByPM, recurringPayments,
   onView, onEdit, onDelete, onAddTransaction, onAddRecurring,
   onEditRecurring, onDeleteRecurring, onToggleRecurring,
-  onToggleLinkedPM,
-  onViewPM, onEditPM, onDeletePM, onAddPMTransaction,
+  onAddLinkedPM, onToggleLinkedPM,
+  onViewPM, onEditPM, onDeletePM,
 }: AccountCardProps) => {
   const categories = categoryService.getAll();
   const getPaymentMethod = (id: string) => allPaymentMethods.find((pm) => pm.id === id);
@@ -618,11 +649,11 @@ const AccountCard = ({
         onEditRecurring={onEditRecurring}
         onDeleteRecurring={onDeleteRecurring}
         onToggleRecurring={onToggleRecurring}
+        onAddLinked={onAddLinkedPM}
         onToggleLinked={onToggleLinkedPM}
         onViewPM={onViewPM}
         onEditPM={onEditPM}
         onDeletePM={onDeletePM}
-        onAddPMTransaction={onAddPMTransaction}
         getCategory={getCategory}
         getPaymentMethod={getPaymentMethod}
         getUnsettledAmount={getUnsettledAmount}
@@ -783,11 +814,11 @@ interface RecurringAndLinkedListProps {
   onEditRecurring: (rp: RecurringPayment) => void;
   onDeleteRecurring: (id: string) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
+  onAddLinked: () => void;
   onToggleLinked: (lpm: LinkedPaymentMethod) => void;
   onViewPM: (pm: PaymentMethod) => void;
   onEditPM: (pm: PaymentMethod) => void;
   onDeletePM: (pmId: string) => void;
-  onAddPMTransaction: (pm: PaymentMethod) => void;
   getCategory: (id: string) => { name: string; color: string; icon: string } | undefined;
   getPaymentMethod: (id: string) => PaymentMethod | undefined;
   getUnsettledAmount: (paymentMethodId: string) => number;
@@ -796,8 +827,8 @@ interface RecurringAndLinkedListProps {
 const RecurringAndLinkedList = ({
   recurringItems, linkedItems,
   onAddRecurring, onEditRecurring, onDeleteRecurring, onToggleRecurring,
-  onToggleLinked,
-  onViewPM, onEditPM, onDeletePM, onAddPMTransaction,
+  onAddLinked, onToggleLinked,
+  onViewPM, onEditPM, onDeletePM,
   getCategory, getPaymentMethod, getUnsettledAmount,
 }: RecurringAndLinkedListProps) => {
   return (
@@ -865,6 +896,9 @@ const RecurringAndLinkedList = ({
             <CreditCard size={10} />
             支払い手段
           </p>
+          <button onClick={onAddLinked} className="text-blue-500 hover:text-blue-700">
+            <Plus size={14} />
+          </button>
         </div>
         {linkedItems.length === 0 ? (
           <p className="text-[11px] text-gray-300">支払い手段なし</p>
@@ -899,9 +933,6 @@ const RecurringAndLinkedList = ({
                     <span className="font-medium text-red-600">
                       {formatCurrency(unsettledAmount)}
                     </span>
-                    <button onClick={() => onAddPMTransaction(pm)} className="p-1 text-purple-500 hover:text-purple-700" title="取引追加">
-                      <PlusCircle size={12} />
-                    </button>
                     <button onClick={() => onEditPM(pm)} className="p-1 text-gray-300 hover:text-gray-500" title="支払い手段編集">
                       <Edit2 size={12} />
                     </button>
@@ -2571,6 +2602,149 @@ const RecurringPaymentModal = ({
               type="submit"
               disabled={!name || !amount || !categoryId || (!accountId && !pmId)}
               className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium disabled:opacity-50"
+            >
+              保存
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// ===== 支払い手段紐付けモーダル =====
+interface LinkedPaymentMethodModalProps {
+  linkedPaymentMethod: LinkedPaymentMethod | null;
+  defaultAccountId?: string;
+  accounts: Account[];
+  paymentMethods: PaymentMethod[];
+  onSave: (input: LinkedPaymentMethodInput) => void;
+  onClose: () => void;
+}
+
+const LinkedPaymentMethodModal = ({
+  linkedPaymentMethod,
+  defaultAccountId,
+  accounts,
+  paymentMethods,
+  onSave,
+  onClose,
+}: LinkedPaymentMethodModalProps) => {
+  const members = memberService.getAll();
+
+  const [paymentMethodId, setPaymentMethodId] = useState(linkedPaymentMethod?.paymentMethodId || '');
+  const [accountId, setAccountId] = useState(linkedPaymentMethod?.accountId || defaultAccountId || '');
+  const [isActive, setIsActive] = useState(linkedPaymentMethod?.isActive ?? true);
+
+  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
+
+  // 既に紐付けられている支払い手段を除外
+  const linkedPMs = linkedPaymentMethodService.getAll();
+  const linkedPMIds = linkedPaymentMethod
+    ? linkedPMs.filter((lpm) => lpm.id !== linkedPaymentMethod.id).map((lpm) => lpm.paymentMethodId)
+    : linkedPMs.map((lpm) => lpm.paymentMethodId);
+  const availablePaymentMethods = paymentMethods.filter((pm) => !linkedPMIds.includes(pm.id));
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!paymentMethodId || !accountId) {
+      alert('支払い手段と支払い口座を選択してください');
+      return;
+    }
+    onSave({
+      paymentMethodId,
+      accountId,
+      isActive,
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
+      <div
+        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold">{linkedPaymentMethod ? '支払い手段を編集' : '支払い手段を追加'}</h3>
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600">
+            <X size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 支払い手段選択 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">支払い手段</label>
+            <select
+              value={paymentMethodId}
+              onChange={(e) => setPaymentMethodId(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">選択してください</option>
+              {availablePaymentMethods.map((pm) => {
+                const member = getMember(pm.memberId);
+                return (
+                  <option key={pm.id} value={pm.id}>
+                    {pm.name} {member ? `(${member.name})` : ''}
+                  </option>
+                );
+              })}
+            </select>
+            {availablePaymentMethods.length === 0 && (
+              <p className="text-sm text-gray-500 mt-1">利用可能な支払い手段がありません</p>
+            )}
+          </div>
+
+          {/* 支払い口座選択 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">支払い口座</label>
+            <select
+              value={accountId}
+              onChange={(e) => setAccountId(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">選択してください</option>
+              {accounts.map((acc) => {
+                const member = getMember(acc.memberId);
+                return (
+                  <option key={acc.id} value={acc.id}>
+                    {acc.name} {member ? `(${member.name})` : ''} - {ACCOUNT_TYPE_LABELS[acc.type]}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          {/* 有効/無効 */}
+          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <span className="text-sm font-medium text-gray-700">有効</span>
+            <button
+              type="button"
+              onClick={() => setIsActive(!isActive)}
+              className="flex items-center gap-2"
+            >
+              {isActive ? (
+                <ToggleRight size={32} className="text-blue-600" />
+              ) : (
+                <ToggleLeft size={32} className="text-gray-400" />
+              )}
+            </button>
+          </div>
+
+          {/* ボタン */}
+          <div className="flex gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+            >
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
             >
               保存
             </button>
