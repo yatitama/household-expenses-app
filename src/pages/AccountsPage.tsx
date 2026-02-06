@@ -434,55 +434,44 @@ export const AccountsPage = () => {
             </button>
           </div>
         ) : (
-          <div className="space-y-3">
-            {Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
-              const member = getMember(memberId);
+          <div className="space-y-2">
+            {accounts.map((account) => {
+              const member = getMember(account.memberId);
+              const accountLinkedPMs = linkedPaymentMethods.filter((lpm) => lpm.accountId === account.id);
+              const accountRecurrings = recurringPayments.filter(
+                (rp) => rp.accountId === account.id && !rp.paymentMethodId
+              );
               return (
-                <div key={memberId}>
-                  <h4 className="text-xs font-medium text-gray-500 mb-1.5 flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: member?.color || '#6b7280' }} />
-                    {member?.name || '不明'}
-                  </h4>
-                  <div className="space-y-2">
-                    {memberAccounts.map((account) => {
-                      const accountLinkedPMs = linkedPaymentMethods.filter((lpm) => lpm.accountId === account.id);
-                      const accountRecurrings = recurringPayments.filter(
-                        (rp) => rp.accountId === account.id && !rp.paymentMethodId
-                      );
-                      return (
-                        <AccountCard
-                          key={account.id}
-                          account={account}
-                          pendingAmount={pendingByAccount[account.id] || 0}
-                          totalPendingData={totalPendingByAccount[account.id]}
-                          linkedPaymentMethodsData={accountLinkedPMs}
-                          allPaymentMethods={paymentMethods}
-                          pendingByPM={pendingByPM}
-                          recurringPayments={accountRecurrings}
-                          onView={() => setViewingAccount(account)}
-                          onEdit={() => handleEditAccount(account)}
-                          onDelete={() => handleDeleteAccount(account.id)}
-                          onAddTransaction={() => setAddTransactionTarget({ accountId: account.id })}
-                          onAddRecurring={() => handleAddRecurring({ accountId: account.id })}
-                          onEditRecurring={handleEditRecurring}
-                          onDeleteRecurring={handleDeleteRecurring}
-                          onToggleRecurring={handleToggleRecurring}
-                          onAddLinkedPM={() => handleAddLinkedPM({ accountId: account.id })}
-                          onToggleLinkedPM={handleToggleLinkedPM}
-                          onViewPM={(pm) => setViewingPM(pm)}
-                          onEditPM={handleEditPM}
-                          onDeletePM={handleDeletePM}
-                          isDragging={draggedAccountId === account.id}
-                          isDragOver={dragOverAccountId === account.id}
-                          onDragStart={() => handleDragStart(account.id)}
-                          onDragOver={(e) => handleDragOver(e, account.id)}
-                          onDrop={(e) => handleDrop(e, account.id)}
-                          onDragEnd={handleDragEnd}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
+                <AccountCard
+                  key={account.id}
+                  account={account}
+                  member={member}
+                  pendingAmount={pendingByAccount[account.id] || 0}
+                  totalPendingData={totalPendingByAccount[account.id]}
+                  linkedPaymentMethodsData={accountLinkedPMs}
+                  allPaymentMethods={paymentMethods}
+                  pendingByPM={pendingByPM}
+                  recurringPayments={accountRecurrings}
+                  onView={() => setViewingAccount(account)}
+                  onEdit={() => handleEditAccount(account)}
+                  onDelete={() => handleDeleteAccount(account.id)}
+                  onAddTransaction={() => setAddTransactionTarget({ accountId: account.id })}
+                  onAddRecurring={() => handleAddRecurring({ accountId: account.id })}
+                  onEditRecurring={handleEditRecurring}
+                  onDeleteRecurring={handleDeleteRecurring}
+                  onToggleRecurring={handleToggleRecurring}
+                  onAddLinkedPM={() => handleAddLinkedPM({ accountId: account.id })}
+                  onToggleLinkedPM={handleToggleLinkedPM}
+                  onViewPM={(pm) => setViewingPM(pm)}
+                  onEditPM={handleEditPM}
+                  onDeletePM={handleDeletePM}
+                  isDragging={draggedAccountId === account.id}
+                  isDragOver={dragOverAccountId === account.id}
+                  onDragStart={() => handleDragStart(account.id)}
+                  onDragOver={(e) => handleDragOver(e, account.id)}
+                  onDrop={(e) => handleDrop(e, account.id)}
+                  onDragEnd={handleDragEnd}
+                />
               );
             })}
           </div>
@@ -612,6 +601,7 @@ export const AccountsPage = () => {
 // ===== 口座カード =====
 interface AccountCardProps {
   account: Account;
+  member?: Member;
   pendingAmount: number;
   totalPendingData?: {
     cardPending: number;
@@ -645,7 +635,7 @@ interface AccountCardProps {
 }
 
 const AccountCard = ({
-  account, pendingAmount, totalPendingData, linkedPaymentMethodsData, allPaymentMethods, pendingByPM, recurringPayments,
+  account, member, pendingAmount, totalPendingData, linkedPaymentMethodsData, allPaymentMethods, pendingByPM, recurringPayments,
   onView, onEdit, onDelete, onAddTransaction, onAddRecurring,
   onEditRecurring, onDeleteRecurring, onToggleRecurring,
   onAddLinkedPM, onToggleLinkedPM,
@@ -686,7 +676,17 @@ const AccountCard = ({
               {ACCOUNT_TYPE_ICONS[account.type]}
             </div>
             <div>
-              <p className="font-medium text-gray-900">{account.name}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium text-gray-900">{account.name}</p>
+                {member && (
+                  <span
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium text-white"
+                    style={{ backgroundColor: member.color }}
+                  >
+                    {member.name}
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-gray-500">{ACCOUNT_TYPE_LABELS[account.type]}</p>
             </div>
           </button>
