@@ -2,8 +2,8 @@ import { useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import {
   Plus, Edit2, Trash2, Wallet, CreditCard, Building2, Smartphone, Banknote,
-  X, AlertCircle, Link2, Info, PlusCircle, Calendar, Check, CheckCircle,
-  RefreshCw, ToggleLeft, ToggleRight,
+  X, Link2, Info, PlusCircle, Calendar, Check, CheckCircle,
+  RefreshCw, ToggleLeft, ToggleRight, ChevronDown, ChevronUp,
 } from 'lucide-react';
 import {
   accountService, memberService, transactionService, categoryService,
@@ -78,6 +78,7 @@ export const AccountsPage = () => {
   const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
   const [editingRecurring, setEditingRecurring] = useState<RecurringPayment | null>(null);
   const [recurringTarget, setRecurringTarget] = useState<{ accountId?: string; paymentMethodId?: string } | null>(null);
+  const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
 
   const pendingByAccount = getPendingAmountByAccount();
   const pendingByPM = getPendingAmountByPaymentMethod();
@@ -193,24 +194,9 @@ export const AccountsPage = () => {
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   const unlinkedPMs = paymentMethods.filter((pm) => !pm.linkedAccountId);
-  const hasUnlinkedPMs = unlinkedPMs.length > 0;
 
   return (
     <div className="p-4 space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-gray-800">口座・支払い手段</h2>
-      </div>
-
-      {hasUnlinkedPMs && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
-          <AlertCircle size={20} className="text-amber-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-amber-800">
-            <p className="font-medium">引き落とし先が未設定の支払い手段があります</p>
-            <p className="text-amber-600 mt-1">支払い手段の編集から引き落とし先口座を設定してください。</p>
-          </div>
-        </div>
-      )}
-
       {/* 総資産 & 所有者別残高（統合カード） */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white">
         <div className="flex items-center gap-2 mb-1">
@@ -224,56 +210,64 @@ export const AccountsPage = () => {
           </p>
         )}
 
-        {/* 所有者別内訳 */}
+        {/* 内訳（トグル表示） */}
         {accounts.length > 0 && (
           <div className="mt-3 pt-3 border-t border-white/20">
-            <p className="text-[10px] font-medium opacity-70 mb-2">所有者別内訳</p>
-            <div className="space-y-2.5">
-              {Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
-                const member = getMember(memberId);
-                const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
-                const memberPending = memberAccounts.reduce((sum, a) => sum + (pendingByAccount[a.id] || 0), 0);
-                return (
-                  <div key={memberId}>
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: member?.color || '#d1d5db' }} />
-                        <span className="text-xs font-medium opacity-90">{member?.name || '不明'}</span>
+            <button
+              onClick={() => setIsBreakdownOpen(!isBreakdownOpen)}
+              className="flex items-center gap-1 text-[10px] font-medium opacity-70 mb-2"
+            >
+              {isBreakdownOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+              内訳
+            </button>
+            {isBreakdownOpen && (
+              <div className="space-y-2.5">
+                {Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
+                  const member = getMember(memberId);
+                  const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
+                  const memberPending = memberAccounts.reduce((sum, a) => sum + (pendingByAccount[a.id] || 0), 0);
+                  return (
+                    <div key={memberId}>
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: member?.color || '#d1d5db' }} />
+                          <span className="text-xs font-medium opacity-90">{member?.name || '不明'}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-xs font-bold">{formatCurrency(memberTotal)}</span>
+                          {memberPending > 0 && (
+                            <span className="text-[10px] opacity-70 ml-1">（引落後: {formatCurrency(memberTotal - memberPending)}）</span>
+                          )}
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <span className="text-xs font-bold">{formatCurrency(memberTotal)}</span>
-                        {memberPending > 0 && (
-                          <span className="text-[10px] opacity-70 ml-1">（引落後: {formatCurrency(memberTotal - memberPending)}）</span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-1 pl-3.5">
-                      {memberAccounts.map((account) => {
-                        const pending = pendingByAccount[account.id] || 0;
-                        return (
-                          <div key={account.id} className="flex justify-between items-center">
-                            <div className="flex items-center gap-1.5">
-                              <div
-                                className="w-5 h-5 rounded-full flex items-center justify-center bg-white/20"
-                              >
-                                {ACCOUNT_TYPE_ICONS_SM[account.type]}
+                      <div className="space-y-1 pl-3.5">
+                        {memberAccounts.map((account) => {
+                          const pending = pendingByAccount[account.id] || 0;
+                          return (
+                            <div key={account.id} className="flex justify-between items-center">
+                              <div className="flex items-center gap-1.5">
+                                <div
+                                  className="w-5 h-5 rounded-full flex items-center justify-center"
+                                >
+                                  {ACCOUNT_TYPE_ICONS_SM[account.type]}
+                                </div>
+                                <span className="text-xs opacity-90">{account.name}</span>
                               </div>
-                              <span className="text-xs opacity-90">{account.name}</span>
+                              <div className="text-right">
+                                <span className="font-medium text-xs">{formatCurrency(account.balance)}</span>
+                                {pending > 0 && (
+                                  <p className="text-[10px] opacity-60">引落後: {formatCurrency(account.balance - pending)}</p>
+                                )}
+                              </div>
                             </div>
-                            <div className="text-right">
-                              <span className="font-medium text-xs">{formatCurrency(account.balance)}</span>
-                              {pending > 0 && (
-                                <p className="text-[10px] opacity-60">引落後: {formatCurrency(account.balance - pending)}</p>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -287,7 +281,7 @@ export const AccountsPage = () => {
               onClick={handleAddPM}
               className="flex items-center gap-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium"
             >
-              <CreditCard size={14} />
+              <Plus size={16} />
               支払い手段
             </button>
             <button
@@ -361,7 +355,7 @@ export const AccountsPage = () => {
       {unlinkedPMs.length > 0 && (
         <div>
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-base font-bold text-gray-700">未紐づき支払い手段</h3>
+            <h3 className="text-base font-bold text-gray-700">引き落とし先未設定</h3>
           </div>
           <div className="space-y-2">
             {unlinkedPMs.map((pm) => {

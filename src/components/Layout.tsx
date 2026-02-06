@@ -26,11 +26,6 @@ const NavItem = ({ to, icon, label }: NavItemProps) => {
 export const Layout = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* ヘッダー */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3">
-        <h1 className="text-lg font-bold text-gray-900">家計簿</h1>
-      </header>
-
       {/* メインコンテンツ */}
       <main className="flex-1 overflow-auto pb-20">
         <Outlet />
