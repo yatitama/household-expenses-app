@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import {
   Plus, Edit2, Trash2, Wallet, CreditCard, Building2, Smartphone, Banknote,
   X, Link2, Info, PlusCircle, Calendar, Check, CheckCircle,
-  RefreshCw, ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Palette,
+  RefreshCw, ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Palette, GripVertical,
 } from 'lucide-react';
 import {
   accountService, memberService, transactionService, categoryService,
@@ -90,6 +90,8 @@ export const AccountsPage = () => {
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
   const [appSettings, setAppSettings] = useState<AppSettings>(() => appSettingsService.get());
   const [isGradientPickerOpen, setIsGradientPickerOpen] = useState(false);
+  const [draggedAccountId, setDraggedAccountId] = useState<string | null>(null);
+  const [dragOverAccountId, setDragOverAccountId] = useState<string | null>(null);
 
   const pendingByAccount = getPendingAmountByAccount();
   const pendingByPM = getPendingAmountByPaymentMethod();
@@ -213,6 +215,52 @@ export const AccountsPage = () => {
     }
     refreshData();
     setIsLinkedPMModalOpen(false);
+  };
+
+  // ドラッグ&ドロップの操作
+  const handleDragStart = (accountId: string) => {
+    setDraggedAccountId(accountId);
+  };
+
+  const handleDragOver = (e: React.DragEvent, accountId: string) => {
+    e.preventDefault();
+    if (draggedAccountId && draggedAccountId !== accountId) {
+      setDragOverAccountId(accountId);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, targetAccountId: string) => {
+    e.preventDefault();
+    if (!draggedAccountId || draggedAccountId === targetAccountId) {
+      setDraggedAccountId(null);
+      setDragOverAccountId(null);
+      return;
+    }
+
+    const allAccounts = [...accounts];
+    const draggedIndex = allAccounts.findIndex((a) => a.id === draggedAccountId);
+    const targetIndex = allAccounts.findIndex((a) => a.id === targetAccountId);
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      setDraggedAccountId(null);
+      setDragOverAccountId(null);
+      return;
+    }
+
+    const [removed] = allAccounts.splice(draggedIndex, 1);
+    allAccounts.splice(targetIndex, 0, removed);
+
+    const orders = allAccounts.map((account, index) => ({ id: account.id, order: index }));
+    accountService.updateOrders(orders);
+    refreshData();
+
+    setDraggedAccountId(null);
+    setDragOverAccountId(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedAccountId(null);
+    setDragOverAccountId(null);
   };
 
   const isAnyModalOpen = isAccountModalOpen || isPMModalOpen || !!viewingAccount || !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isLinkedPMModalOpen || isGradientPickerOpen;
@@ -424,6 +472,12 @@ export const AccountsPage = () => {
                           onViewPM={(pm) => setViewingPM(pm)}
                           onEditPM={handleEditPM}
                           onDeletePM={handleDeletePM}
+                          isDragging={draggedAccountId === account.id}
+                          isDragOver={dragOverAccountId === account.id}
+                          onDragStart={() => handleDragStart(account.id)}
+                          onDragOver={(e) => handleDragOver(e, account.id)}
+                          onDrop={(e) => handleDrop(e, account.id)}
+                          onDragEnd={handleDragEnd}
                         />
                       );
                     })}
@@ -582,6 +636,12 @@ interface AccountCardProps {
   onViewPM: (pm: PaymentMethod) => void;
   onEditPM: (pm: PaymentMethod) => void;
   onDeletePM: (pmId: string) => void;
+  isDragging?: boolean;
+  isDragOver?: boolean;
+  onDragStart: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent) => void;
+  onDragEnd: () => void;
 }
 
 const AccountCard = ({
@@ -590,6 +650,8 @@ const AccountCard = ({
   onEditRecurring, onDeleteRecurring, onToggleRecurring,
   onAddLinkedPM, onToggleLinkedPM,
   onViewPM, onEditPM, onDeletePM,
+  isDragging, isDragOver,
+  onDragStart, onDragOver, onDrop, onDragEnd,
 }: AccountCardProps) => {
   const categories = categoryService.getAll();
   const getPaymentMethod = (id: string) => allPaymentMethods.find((pm) => pm.id === id);
@@ -597,20 +659,38 @@ const AccountCard = ({
   const getCategory = (id: string) => categories.find((c) => c.id === id);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
+    <div
+      draggable
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      onDragEnd={onDragEnd}
+      className={`bg-white rounded-xl shadow-sm p-4 transition-all ${
+        isDragging ? 'opacity-50' : ''
+      } ${isDragOver ? 'border-2 border-blue-500' : ''}`}
+    >
       <div className="flex justify-between items-start">
-        <button onClick={onView} className="flex items-center gap-3 flex-1 text-left">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white"
-            style={{ backgroundColor: account.color }}
+        <div className="flex items-center gap-2 flex-1">
+          <button
+            onMouseDown={(e) => e.stopPropagation()}
+            className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600"
+            title="ドラッグして並び替え"
           >
-            {ACCOUNT_TYPE_ICONS[account.type]}
-          </div>
-          <div>
-            <p className="font-medium text-gray-900">{account.name}</p>
-            <p className="text-xs text-gray-500">{ACCOUNT_TYPE_LABELS[account.type]}</p>
-          </div>
-        </button>
+            <GripVertical size={18} />
+          </button>
+          <button onClick={onView} className="flex items-center gap-3 flex-1 text-left">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center text-white"
+              style={{ backgroundColor: account.color }}
+            >
+              {ACCOUNT_TYPE_ICONS[account.type]}
+            </div>
+            <div>
+              <p className="font-medium text-gray-900">{account.name}</p>
+              <p className="text-xs text-gray-500">{ACCOUNT_TYPE_LABELS[account.type]}</p>
+            </div>
+          </button>
+        </div>
         <div className="flex items-center gap-1 flex-shrink-0">
           <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700" title="取引追加">
             <PlusCircle size={18} />
