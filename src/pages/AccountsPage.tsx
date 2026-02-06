@@ -92,6 +92,8 @@ export const AccountsPage = () => {
   const [isGradientPickerOpen, setIsGradientPickerOpen] = useState(false);
   const [draggedAccountId, setDraggedAccountId] = useState<string | null>(null);
   const [dragOverAccountId, setDragOverAccountId] = useState<string | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [isDraggingTouch, setIsDraggingTouch] = useState(false);
 
   const pendingByAccount = getPendingAmountByAccount();
   const pendingByPM = getPendingAmountByPaymentMethod();
@@ -261,6 +263,67 @@ export const AccountsPage = () => {
   const handleDragEnd = () => {
     setDraggedAccountId(null);
     setDragOverAccountId(null);
+  };
+
+  // タッチイベントハンドラ（モバイル対応）
+  const handleTouchStart = (e: React.TouchEvent, accountId: string) => {
+    const touch = e.touches[0];
+    setTouchStartY(touch.clientY);
+    setDraggedAccountId(accountId);
+    setIsDraggingTouch(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!draggedAccountId || touchStartY === null) return;
+
+    const touch = e.touches[0];
+    const deltaY = Math.abs(touch.clientY - touchStartY);
+
+    // 最低限のドラッグ距離を超えたらドラッグ開始
+    if (deltaY > 10) {
+      setIsDraggingTouch(true);
+    }
+
+    // タッチ位置にある要素を取得
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    const accountCard = element?.closest('[data-account-id]');
+
+    if (accountCard) {
+      const targetAccountId = accountCard.getAttribute('data-account-id');
+      if (targetAccountId && targetAccountId !== draggedAccountId) {
+        setDragOverAccountId(targetAccountId);
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!draggedAccountId || !isDraggingTouch) {
+      setDraggedAccountId(null);
+      setDragOverAccountId(null);
+      setTouchStartY(null);
+      setIsDraggingTouch(false);
+      return;
+    }
+
+    if (dragOverAccountId && draggedAccountId !== dragOverAccountId) {
+      const allAccounts = [...accounts];
+      const draggedIndex = allAccounts.findIndex((a) => a.id === draggedAccountId);
+      const targetIndex = allAccounts.findIndex((a) => a.id === dragOverAccountId);
+
+      if (draggedIndex !== -1 && targetIndex !== -1) {
+        const [removed] = allAccounts.splice(draggedIndex, 1);
+        allAccounts.splice(targetIndex, 0, removed);
+
+        const orders = allAccounts.map((account, index) => ({ id: account.id, order: index }));
+        accountService.updateOrders(orders);
+        refreshData();
+      }
+    }
+
+    setDraggedAccountId(null);
+    setDragOverAccountId(null);
+    setTouchStartY(null);
+    setIsDraggingTouch(false);
   };
 
   const isAnyModalOpen = isAccountModalOpen || isPMModalOpen || !!viewingAccount || !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isLinkedPMModalOpen || isGradientPickerOpen;
@@ -471,6 +534,9 @@ export const AccountsPage = () => {
                   onDragOver={(e) => handleDragOver(e, account.id)}
                   onDrop={(e) => handleDrop(e, account.id)}
                   onDragEnd={handleDragEnd}
+                  onTouchStart={(e) => handleTouchStart(e, account.id)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
                 />
               );
             })}
@@ -632,6 +698,9 @@ interface AccountCardProps {
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   onDragEnd: () => void;
+  onTouchStart: (e: React.TouchEvent) => void;
+  onTouchMove: (e: React.TouchEvent) => void;
+  onTouchEnd: () => void;
 }
 
 const AccountCard = ({
@@ -642,6 +711,7 @@ const AccountCard = ({
   onViewPM, onEditPM, onDeletePM,
   isDragging, isDragOver,
   onDragStart, onDragOver, onDrop, onDragEnd,
+  onTouchStart, onTouchMove, onTouchEnd,
 }: AccountCardProps) => {
   const categories = categoryService.getAll();
   const getPaymentMethod = (id: string) => allPaymentMethods.find((pm) => pm.id === id);
@@ -650,14 +720,19 @@ const AccountCard = ({
 
   return (
     <div
+      data-account-id={account.id}
       draggable
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDrop={onDrop}
       onDragEnd={onDragEnd}
-      className={`bg-white rounded-xl shadow-sm p-4 transition-all ${
-        isDragging ? 'opacity-50' : ''
-      } ${isDragOver ? 'border-2 border-blue-500' : ''}`}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      style={{ touchAction: 'none' }}
+      className={`bg-white rounded-xl p-4 transition-all ${
+        isDragging ? 'opacity-60 shadow-2xl scale-105' : 'shadow-sm'
+      } ${isDragOver ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
     >
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-2 flex-1">
@@ -675,18 +750,18 @@ const AccountCard = ({
             >
               {ACCOUNT_TYPE_ICONS[account.type]}
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <p className="font-medium text-gray-900">{account.name}</p>
-                {member && (
+            <div className="flex-1 min-w-0">
+              {member && (
+                <div className="mb-0.5">
                   <span
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium text-white"
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-white"
                     style={{ backgroundColor: member.color }}
                   >
                     {member.name}
                   </span>
-                )}
-              </div>
+                </div>
+              )}
+              <p className="font-medium text-gray-900 truncate">{account.name}</p>
               <p className="text-xs text-gray-500">{ACCOUNT_TYPE_LABELS[account.type]}</p>
             </div>
           </button>
