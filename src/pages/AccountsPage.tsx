@@ -164,7 +164,7 @@ export const AccountsPage = () => {
   };
 
   const handleDeleteRecurring = (id: string) => {
-    if (confirm('この定期支払いを削除しますか？')) {
+    if (confirm('この定期取引を削除しますか？')) {
       recurringPaymentService.delete(id);
       refreshData();
     }
@@ -750,14 +750,14 @@ const RecurringPaymentsList = ({ items, onAdd, onEdit, onDelete, onToggle, getCa
       <div className="flex justify-between items-center mb-1.5">
         <p className="text-[10px] text-gray-400 font-medium flex items-center gap-1">
           <RefreshCw size={10} />
-          定期支払い
+          定期取引
         </p>
         <button onClick={onAdd} className="text-blue-500 hover:text-blue-700">
           <Plus size={14} />
         </button>
       </div>
       {items.length === 0 ? (
-        <p className="text-[11px] text-gray-300">定期支払いなし</p>
+        <p className="text-[11px] text-gray-300">定期取引なし</p>
       ) : (
         <div className="space-y-1.5">
           {items.map((rp) => {
@@ -1032,16 +1032,26 @@ const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, onClose 
             {accounts.length === 0 ? (
               <p className="text-sm text-gray-500">先に口座を登録してください</p>
             ) : (
-              <select
-                value={linkedAccountId}
-                onChange={(e) => setLinkedAccountId(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              >
-                <option value="">選択してください</option>
-                {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>{a.name}</option>
+              <div className="space-y-1">
+                {accounts.map((acct) => (
+                  <button
+                    key={acct.id}
+                    type="button"
+                    onClick={() => setLinkedAccountId(acct.id)}
+                    className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-colors ${
+                      linkedAccountId === acct.id
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
+                      <span className="font-medium text-gray-900 text-sm">{acct.name}</span>
+                    </div>
+                    {linkedAccountId === acct.id && <Check size={16} className="text-purple-500" />}
+                  </button>
                 ))}
-              </select>
+              </div>
             )}
           </div>
 
@@ -1809,7 +1819,7 @@ const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, onSaved
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
                   style={{ minWidth: 0, maxWidth: '100%' }}
                 />
               </div>
@@ -1822,7 +1832,7 @@ const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, onSaved
                   value={memo}
                   onChange={(e) => setMemo(e.target.value)}
                   placeholder="任意"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -2050,7 +2060,7 @@ const EditTransactionModal = ({
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
               style={{ minWidth: 0, maxWidth: '100%' }}
             />
           </div>
@@ -2062,7 +2072,7 @@ const EditTransactionModal = ({
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder="任意"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -2097,10 +2107,27 @@ interface RecurringPaymentModalProps {
 
 const RecurringPaymentModal = ({
   recurringPayment, defaultAccountId, defaultPaymentMethodId,
-  accounts, paymentMethods, onSave, onClose,
+  accounts: allAccounts, paymentMethods: allPaymentMethods, onSave, onClose,
 }: RecurringPaymentModalProps) => {
   const categories = categoryService.getAll();
   const members = memberService.getAll();
+
+  // 支払い元のフィルタリング：+ボタンを押した対象のみ表示
+  const isFromPM = !!defaultPaymentMethodId;
+  const isFromAccount = !!defaultAccountId && !defaultPaymentMethodId;
+
+  // 支払い手段から開いた場合：その支払い手段のみ
+  // 口座から開いた場合：その口座のみ（支払い手段は表示しない）
+  const accounts = isFromAccount
+    ? allAccounts.filter((a) => a.id === defaultAccountId)
+    : isFromPM
+      ? []
+      : allAccounts;
+  const paymentMethods = isFromPM
+    ? allPaymentMethods.filter((pm) => pm.id === defaultPaymentMethodId)
+    : isFromAccount
+      ? []
+      : allPaymentMethods;
 
   const [name, setName] = useState(recurringPayment?.name || '');
   const [amount, setAmount] = useState(recurringPayment?.amount.toString() || '');
@@ -2145,7 +2172,7 @@ const RecurringPaymentModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold">{recurringPayment ? '定期支払いを編集' : '定期支払いを追加'}</h3>
+          <h3 className="text-lg font-bold">{recurringPayment ? '定期取引を編集' : '定期取引を追加'}</h3>
           <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600">
             <X size={20} />
           </button>
@@ -2366,7 +2393,7 @@ const RecurringPaymentModal = ({
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder="任意"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
