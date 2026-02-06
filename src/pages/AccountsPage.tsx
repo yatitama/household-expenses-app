@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { format } from 'date-fns';
 import {
   Plus, Edit2, Trash2, Wallet, CreditCard, Building2, Smartphone, Banknote,
@@ -92,11 +92,38 @@ export const AccountsPage = () => {
   const [isGradientPickerOpen, setIsGradientPickerOpen] = useState(false);
   const [draggedAccountId, setDraggedAccountId] = useState<string | null>(null);
   const [dragOverAccountId, setDragOverAccountId] = useState<string | null>(null);
-  const [touchStartY, setTouchStartY] = useState<number | null>(null);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const [isDraggingTouch, setIsDraggingTouch] = useState(false);
-  const [longPressTimer, setLongPressTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
-  const [autoScrollInterval, setAutoScrollInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+
+  // タッチドラッグ用ref（stateだとiOSでスクロール競合・stale closure問題が起きるため）
+  const draggedIdRef = useRef<string | null>(null);
+  const dragOverIdRef = useRef<string | null>(null);
+  const isDraggingTouchRef = useRef(false);
+  const touchStartPosRef = useRef({ x: 0, y: 0 });
+  const lastTouchPosRef = useRef({ x: 0, y: 0 });
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoScrollRafRef = useRef<number | null>(null);
+  const accountsRef = useRef(accounts);
+  useEffect(() => { accountsRef.current = accounts; }, [accounts]);
+
+  // ドラッグ中のネイティブスクロール防止（iOS Safari: ReactのtouchmoveはpassiveなのでpreventDefault不可）
+  useEffect(() => {
+    const preventScroll = (e: TouchEvent) => {
+      if (isDraggingTouchRef.current) {
+        e.preventDefault();
+      }
+    };
+    document.addEventListener('touchmove', preventScroll, { passive: false });
+    return () => {
+      document.removeEventListener('touchmove', preventScroll);
+    };
+  }, []);
+
+  // タイマー・rAFのクリーンアップ
+  useEffect(() => {
+    return () => {
+      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+      if (autoScrollRafRef.current) cancelAnimationFrame(autoScrollRafRef.current);
+    };
+  }, []);
 
   const pendingByAccount = getPendingAmountByAccount();
   const pendingByPM = getPendingAmountByPaymentMethod();
@@ -268,113 +295,127 @@ export const AccountsPage = () => {
     setDragOverAccountId(null);
   };
 
-  // タッチイベントハンドラ（モバイル対応）
-  const handleTouchStart = (e: React.TouchEvent, accountId: string) => {
-    const touch = e.touches[0];
-    setTouchStartY(touch.clientY);
-    setTouchStartX(touch.clientX);
-
-    // 長押し判定タイマーを設定（300ms）
-    const timer = setTimeout(() => {
-      setDraggedAccountId(accountId);
-      setIsDraggingTouch(true);
-      // バイブレーションでフィードバック（対応している場合）
-      if ('vibrate' in navigator) {
-        navigator.vibrate(100);
+  // タッチドラッグ：ドロップ先の更新
+  const updateDragTarget = useCallback((x: number, y: number) => {
+    const element = document.elementFromPoint(x, y);
+    const accountCard = element?.closest('[data-account-id]');
+    if (accountCard) {
+      const targetId = accountCard.getAttribute('data-account-id');
+      if (targetId && targetId !== draggedIdRef.current) {
+        if (dragOverIdRef.current !== targetId) {
+          dragOverIdRef.current = targetId;
+          setDragOverAccountId(targetId);
+        }
       }
-    }, 300);
+    } else if (dragOverIdRef.current) {
+      dragOverIdRef.current = null;
+      setDragOverAccountId(null);
+    }
+  }, []);
 
-    setLongPressTimer(timer);
-  };
+  // タッチドラッグ：自動スクロール（rAFで滑らかに）
+  const autoScrollFnRef = useRef<() => void>(() => {});
+  const autoScroll = useCallback(() => {
+    if (!isDraggingTouchRef.current) return;
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
+    const y = lastTouchPosRef.current.y;
+    const threshold = 80;
+    const maxSpeed = 12;
 
-    // ドラッグ中の場合は、最初にスクロールを防ぐ
-    if (isDraggingTouch && draggedAccountId) {
-      e.preventDefault();
-      e.stopPropagation();
+    if (y < threshold && y > 0) {
+      const intensity = 1 - y / threshold;
+      window.scrollBy(0, -maxSpeed * intensity);
+    } else if (y > window.innerHeight - threshold) {
+      const intensity = 1 - (window.innerHeight - y) / threshold;
+      window.scrollBy(0, maxSpeed * intensity);
     }
 
-    // ドラッグ開始前に移動した場合は、タイマーをキャンセル（スクロール操作）
-    if (!isDraggingTouch && longPressTimer && touchStartY !== null && touchStartX !== null) {
-      const deltaY = Math.abs(touch.clientY - touchStartY);
-      const deltaX = Math.abs(touch.clientX - touchStartX);
+    // スクロール中もドロップ先を更新（指が動かなくてもスクロールで対象が変わる）
+    updateDragTarget(lastTouchPosRef.current.x, lastTouchPosRef.current.y);
 
-      // 10px以上移動したら長押しをキャンセル
-      if (deltaY > 10 || deltaX > 10) {
-        clearTimeout(longPressTimer);
-        setLongPressTimer(null);
+    autoScrollRafRef.current = requestAnimationFrame(autoScrollFnRef.current);
+  }, [updateDragTarget]);
+  useEffect(() => { autoScrollFnRef.current = autoScroll; }, [autoScroll]);
+
+  // タッチドラッグ：状態リセット
+  const resetTouchDrag = useCallback(() => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    if (autoScrollRafRef.current) {
+      cancelAnimationFrame(autoScrollRafRef.current);
+      autoScrollRafRef.current = null;
+    }
+    isDraggingTouchRef.current = false;
+    draggedIdRef.current = null;
+    dragOverIdRef.current = null;
+    setDraggedAccountId(null);
+    setDragOverAccountId(null);
+  }, []);
+
+  // タッチイベントハンドラ（グリップハンドル専用 - touch-action:noneでスクロール競合を防止）
+  const handleTouchStart = useCallback((e: React.TouchEvent, accountId: string) => {
+    const touch = e.touches[0];
+    touchStartPosRef.current = { x: touch.clientX, y: touch.clientY };
+    lastTouchPosRef.current = { x: touch.clientX, y: touch.clientY };
+
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+
+    // 150msの長押しでドラッグ開始（グリップにtouch-action:noneがあるため短めでOK）
+    longPressTimerRef.current = setTimeout(() => {
+      draggedIdRef.current = accountId;
+      isDraggingTouchRef.current = true;
+      setDraggedAccountId(accountId);
+
+      if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+      }
+
+      // 自動スクロールループ開始
+      autoScrollRafRef.current = requestAnimationFrame(autoScroll);
+    }, 150);
+  }, [autoScroll]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    lastTouchPosRef.current = { x: touch.clientX, y: touch.clientY };
+
+    // ドラッグ開始前に指が動いたら長押しキャンセル
+    if (!isDraggingTouchRef.current && longPressTimerRef.current) {
+      const dx = Math.abs(touch.clientX - touchStartPosRef.current.x);
+      const dy = Math.abs(touch.clientY - touchStartPosRef.current.y);
+      if (dx > 8 || dy > 8) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
         return;
       }
     }
 
-    // ドラッグ中の処理
-    if (!draggedAccountId || !isDraggingTouch) return;
+    if (!isDraggingTouchRef.current) return;
 
-    // タッチ位置にある要素を取得
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
-    const accountCard = element?.closest('[data-account-id]');
+    updateDragTarget(touch.clientX, touch.clientY);
+  }, [updateDragTarget]);
 
-    if (accountCard) {
-      const targetAccountId = accountCard.getAttribute('data-account-id');
-      if (targetAccountId && targetAccountId !== draggedAccountId) {
-        setDragOverAccountId(targetAccountId);
-      }
+  const handleTouchEnd = useCallback(() => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    if (autoScrollRafRef.current) {
+      cancelAnimationFrame(autoScrollRafRef.current);
+      autoScrollRafRef.current = null;
     }
 
-    // 自動スクロールの処理
-    const scrollThreshold = 100; // 画面端から100pxの範囲
-    const scrollSpeed = 10; // スクロール速度
+    const draggedId = draggedIdRef.current;
+    const overId = dragOverIdRef.current;
 
-    // 既存の自動スクロールをクリア
-    if (autoScrollInterval) {
-      clearInterval(autoScrollInterval);
-      setAutoScrollInterval(null);
-    }
-
-    // 画面の上端に近い場合
-    if (touch.clientY < scrollThreshold) {
-      const interval = setInterval(() => {
-        window.scrollBy(0, -scrollSpeed);
-      }, 16); // 約60fps
-      setAutoScrollInterval(interval);
-    }
-    // 画面の下端に近い場合
-    else if (touch.clientY > window.innerHeight - scrollThreshold) {
-      const interval = setInterval(() => {
-        window.scrollBy(0, scrollSpeed);
-      }, 16);
-      setAutoScrollInterval(interval);
-    }
-  };
-
-  const handleTouchEnd = () => {
-    // タイマーをクリア
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      setLongPressTimer(null);
-    }
-
-    // 自動スクロールをクリア
-    if (autoScrollInterval) {
-      clearInterval(autoScrollInterval);
-      setAutoScrollInterval(null);
-    }
-
-    if (!draggedAccountId || !isDraggingTouch) {
-      setDraggedAccountId(null);
-      setDragOverAccountId(null);
-      setTouchStartY(null);
-      setTouchStartX(null);
-      setIsDraggingTouch(false);
-      return;
-    }
-
-    if (dragOverAccountId && draggedAccountId !== dragOverAccountId) {
-      const allAccounts = [...accounts];
-      const draggedIndex = allAccounts.findIndex((a) => a.id === draggedAccountId);
-      const targetIndex = allAccounts.findIndex((a) => a.id === dragOverAccountId);
+    if (isDraggingTouchRef.current && draggedId && overId && draggedId !== overId) {
+      const allAccounts = [...accountsRef.current];
+      const draggedIndex = allAccounts.findIndex((a) => a.id === draggedId);
+      const targetIndex = allAccounts.findIndex((a) => a.id === overId);
 
       if (draggedIndex !== -1 && targetIndex !== -1) {
         const [removed] = allAccounts.splice(draggedIndex, 1);
@@ -386,12 +427,12 @@ export const AccountsPage = () => {
       }
     }
 
-    setDraggedAccountId(null);
-    setDragOverAccountId(null);
-    setTouchStartY(null);
-    setTouchStartX(null);
-    setIsDraggingTouch(false);
-  };
+    resetTouchDrag();
+  }, [refreshData, resetTouchDrag]);
+
+  const handleTouchCancel = useCallback(() => {
+    resetTouchDrag();
+  }, [resetTouchDrag]);
 
   const isAnyModalOpen = isAccountModalOpen || isPMModalOpen || !!viewingAccount || !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isLinkedPMModalOpen || isGradientPickerOpen;
   useBodyScrollLock(isAnyModalOpen);
@@ -604,6 +645,7 @@ export const AccountsPage = () => {
                   onTouchStart={(e) => handleTouchStart(e, account.id)}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
+                  onTouchCancel={handleTouchCancel}
                 />
               );
             })}
@@ -768,6 +810,7 @@ interface AccountCardProps {
   onTouchStart: (e: React.TouchEvent) => void;
   onTouchMove: (e: React.TouchEvent) => void;
   onTouchEnd: () => void;
+  onTouchCancel: () => void;
 }
 
 const AccountCard = ({
@@ -778,7 +821,7 @@ const AccountCard = ({
   onViewPM, onEditPM, onDeletePM,
   isDragging, isDragOver,
   onDragStart, onDragOver, onDrop, onDragEnd,
-  onTouchStart, onTouchMove, onTouchEnd,
+  onTouchStart, onTouchMove, onTouchEnd, onTouchCancel,
 }: AccountCardProps) => {
   const categories = categoryService.getAll();
   const getPaymentMethod = (id: string) => allPaymentMethods.find((pm) => pm.id === id);
@@ -793,26 +836,27 @@ const AccountCard = ({
       onDragOver={onDragOver}
       onDrop={onDrop}
       onDragEnd={onDragEnd}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
       style={{
-        touchAction: isDragging ? 'none' : 'pan-y',
         userSelect: isDragging ? 'none' : 'auto',
         WebkitUserSelect: isDragging ? 'none' : 'auto',
       }}
-      className={`bg-white rounded-xl p-4 transition-all ${
-        isDragging ? 'opacity-60 shadow-2xl scale-105' : 'shadow-sm'
-      } ${isDragOver ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
+      className={`bg-white rounded-xl p-4 transition-all duration-200 ${
+        isDragging ? 'opacity-70 shadow-lg scale-[1.02] ring-2 ring-blue-400 z-10 relative' : 'shadow-sm'
+      } ${isDragOver ? 'border-2 border-blue-400 bg-blue-50/60' : 'border-2 border-transparent'}`}
     >
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-2 flex-1">
           <button
             onMouseDown={(e) => e.stopPropagation()}
-            className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onTouchCancel={onTouchCancel}
+            className="cursor-grab active:cursor-grabbing p-2 -ml-1 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg active:bg-gray-100"
+            style={{ touchAction: 'none', WebkitTouchCallout: 'none' } as React.CSSProperties}
             title="ドラッグして並び替え"
           >
-            <GripVertical size={18} />
+            <GripVertical size={20} />
           </button>
           <button onClick={onView} className="flex items-center gap-3 flex-1 text-left">
             <div
