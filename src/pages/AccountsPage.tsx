@@ -93,7 +93,10 @@ export const AccountsPage = () => {
   const [draggedAccountId, setDraggedAccountId] = useState<string | null>(null);
   const [dragOverAccountId, setDragOverAccountId] = useState<string | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [isDraggingTouch, setIsDraggingTouch] = useState(false);
+  const [longPressTimer, setLongPressTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [autoScrollInterval, setAutoScrollInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 
   const pendingByAccount = getPendingAmountByAccount();
   const pendingByPM = getPendingAmountByPaymentMethod();
@@ -269,20 +272,42 @@ export const AccountsPage = () => {
   const handleTouchStart = (e: React.TouchEvent, accountId: string) => {
     const touch = e.touches[0];
     setTouchStartY(touch.clientY);
-    setDraggedAccountId(accountId);
-    setIsDraggingTouch(true);
+    setTouchStartX(touch.clientX);
+
+    // 長押し判定タイマーを設定（300ms）
+    const timer = setTimeout(() => {
+      setDraggedAccountId(accountId);
+      setIsDraggingTouch(true);
+      // バイブレーションでフィードバック（対応している場合）
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }, 300);
+
+    setLongPressTimer(timer);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!draggedAccountId || touchStartY === null) return;
-
     const touch = e.touches[0];
-    const deltaY = Math.abs(touch.clientY - touchStartY);
 
-    // 最低限のドラッグ距離を超えたらドラッグ開始
-    if (deltaY > 10) {
-      setIsDraggingTouch(true);
+    // ドラッグ開始前に移動した場合は、タイマーをキャンセル（スクロール操作）
+    if (!isDraggingTouch && longPressTimer && touchStartY !== null && touchStartX !== null) {
+      const deltaY = Math.abs(touch.clientY - touchStartY);
+      const deltaX = Math.abs(touch.clientX - touchStartX);
+
+      // 10px以上移動したら長押しをキャンセル
+      if (deltaY > 10 || deltaX > 10) {
+        clearTimeout(longPressTimer);
+        setLongPressTimer(null);
+        return;
+      }
     }
+
+    // ドラッグ中の処理
+    if (!draggedAccountId || !isDraggingTouch) return;
+
+    // スクロールを防ぐ
+    e.preventDefault();
 
     // タッチ位置にある要素を取得
     const element = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -294,13 +319,51 @@ export const AccountsPage = () => {
         setDragOverAccountId(targetAccountId);
       }
     }
+
+    // 自動スクロールの処理
+    const scrollThreshold = 100; // 画面端から100pxの範囲
+    const scrollSpeed = 10; // スクロール速度
+
+    // 既存の自動スクロールをクリア
+    if (autoScrollInterval) {
+      clearInterval(autoScrollInterval);
+      setAutoScrollInterval(null);
+    }
+
+    // 画面の上端に近い場合
+    if (touch.clientY < scrollThreshold) {
+      const interval = setInterval(() => {
+        window.scrollBy(0, -scrollSpeed);
+      }, 16); // 約60fps
+      setAutoScrollInterval(interval);
+    }
+    // 画面の下端に近い場合
+    else if (touch.clientY > window.innerHeight - scrollThreshold) {
+      const interval = setInterval(() => {
+        window.scrollBy(0, scrollSpeed);
+      }, 16);
+      setAutoScrollInterval(interval);
+    }
   };
 
   const handleTouchEnd = () => {
+    // タイマーをクリア
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
+    }
+
+    // 自動スクロールをクリア
+    if (autoScrollInterval) {
+      clearInterval(autoScrollInterval);
+      setAutoScrollInterval(null);
+    }
+
     if (!draggedAccountId || !isDraggingTouch) {
       setDraggedAccountId(null);
       setDragOverAccountId(null);
       setTouchStartY(null);
+      setTouchStartX(null);
       setIsDraggingTouch(false);
       return;
     }
@@ -323,6 +386,7 @@ export const AccountsPage = () => {
     setDraggedAccountId(null);
     setDragOverAccountId(null);
     setTouchStartY(null);
+    setTouchStartX(null);
     setIsDraggingTouch(false);
   };
 
@@ -729,7 +793,7 @@ const AccountCard = ({
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
-      style={{ touchAction: 'none' }}
+      style={{ touchAction: isDragging ? 'none' : 'pan-y' }}
       className={`bg-white rounded-xl p-4 transition-all ${
         isDragging ? 'opacity-60 shadow-2xl scale-105' : 'shadow-sm'
       } ${isDragOver ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
