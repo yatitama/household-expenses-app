@@ -279,8 +279,8 @@ export const AccountsPage = () => {
       setDraggedAccountId(accountId);
       setIsDraggingTouch(true);
       // バイブレーションでフィードバック（対応している場合）
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
+      if ('vibrate' in navigator) {
+        navigator.vibrate(100);
       }
     }, 300);
 
@@ -289,6 +289,12 @@ export const AccountsPage = () => {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     const touch = e.touches[0];
+
+    // ドラッグ中の場合は、最初にスクロールを防ぐ
+    if (isDraggingTouch && draggedAccountId) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
     // ドラッグ開始前に移動した場合は、タイマーをキャンセル（スクロール操作）
     if (!isDraggingTouch && longPressTimer && touchStartY !== null && touchStartX !== null) {
@@ -305,9 +311,6 @@ export const AccountsPage = () => {
 
     // ドラッグ中の処理
     if (!draggedAccountId || !isDraggingTouch) return;
-
-    // スクロールを防ぐ
-    e.preventDefault();
 
     // タッチ位置にある要素を取得
     const element = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -793,7 +796,11 @@ const AccountCard = ({
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
-      style={{ touchAction: isDragging ? 'none' : 'pan-y' }}
+      style={{
+        touchAction: isDragging ? 'none' : 'pan-y',
+        userSelect: isDragging ? 'none' : 'auto',
+        WebkitUserSelect: isDragging ? 'none' : 'auto',
+      }}
       className={`bg-white rounded-xl p-4 transition-all ${
         isDragging ? 'opacity-60 shadow-2xl scale-105' : 'shadow-sm'
       } ${isDragOver ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
