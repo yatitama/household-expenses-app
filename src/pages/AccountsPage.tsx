@@ -13,7 +13,7 @@ import type { AppSettings } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
-import { getPendingAmountByAccount, getPendingAmountByPaymentMethod, calculatePaymentDate } from '../utils/billingUtils';
+import { getPendingAmountByAccount, getPendingAmountByPaymentMethod, calculatePaymentDate, getTotalPendingByAccount } from '../utils/billingUtils';
 import { COMMON_MEMBER_ID } from '../types';
 import type {
   Account, AccountType, AccountInput,
@@ -86,6 +86,7 @@ export const AccountsPage = () => {
 
   const pendingByAccount = getPendingAmountByAccount();
   const pendingByPM = getPendingAmountByPaymentMethod();
+  const totalPendingByAccount = getTotalPendingByAccount();
 
   const refreshData = useCallback(() => {
     setAccounts(accountService.getAll());
@@ -194,7 +195,14 @@ export const AccountsPage = () => {
   };
 
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
-  const totalPending = Object.values(pendingByAccount).reduce((sum, v) => sum + v, 0);
+
+  // 総合的な未精算額を計算（カード + 定期支払い・収入）
+  const totalExpense = Object.values(totalPendingByAccount).reduce(
+    (sum, v) => sum + v.cardPending + v.recurringExpense,
+    0
+  );
+  const totalIncome = Object.values(totalPendingByAccount).reduce((sum, v) => sum + v.recurringIncome, 0);
+  const netPending = totalExpense - totalIncome;
 
   // メンバー別にグループ化
   const groupedAccounts = accounts.reduce<Record<string, Account[]>>((acc, account) => {
@@ -227,10 +235,25 @@ export const AccountsPage = () => {
           </button>
         </div>
         <p className="text-2xl font-bold">{formatCurrency(totalBalance)}</p>
-        {totalPending > 0 && (
-          <p className="text-sm opacity-80 mt-1">
-            引落後: {formatCurrency(totalBalance - totalPending)}
-          </p>
+        {(totalExpense > 0 || totalIncome > 0) && (
+          <div className="text-sm opacity-90 mt-2 space-y-0.5">
+            {totalExpense > 0 && (
+              <p className="flex justify-between">
+                <span className="opacity-80">使う予定:</span>
+                <span className="font-medium">-{formatCurrency(totalExpense)}</span>
+              </p>
+            )}
+            {totalIncome > 0 && (
+              <p className="flex justify-between">
+                <span className="opacity-80">入る予定:</span>
+                <span className="font-medium">+{formatCurrency(totalIncome)}</span>
+              </p>
+            )}
+            <p className="flex justify-between pt-1 border-t border-white/20">
+              <span className="opacity-80">実質残高:</span>
+              <span className="font-bold">{formatCurrency(totalBalance - netPending)}</span>
+            </p>
+          </div>
         )}
 
         {/* 内訳（トグル表示） */}
@@ -248,7 +271,12 @@ export const AccountsPage = () => {
                 {Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
                   const member = getMember(memberId);
                   const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
-                  const memberPending = memberAccounts.reduce((sum, a) => sum + (pendingByAccount[a.id] || 0), 0);
+                  const memberExpense = memberAccounts.reduce(
+                    (sum, a) => sum + (totalPendingByAccount[a.id]?.cardPending || 0) + (totalPendingByAccount[a.id]?.recurringExpense || 0),
+                    0
+                  );
+                  const memberIncome = memberAccounts.reduce((sum, a) => sum + (totalPendingByAccount[a.id]?.recurringIncome || 0), 0);
+                  const memberNetPending = memberExpense - memberIncome;
                   return (
                     <div key={memberId}>
                       <div className="flex items-center justify-between mb-1">
@@ -258,14 +286,16 @@ export const AccountsPage = () => {
                         </div>
                         <div className="text-right">
                           <span className="text-xs font-bold">{formatCurrency(memberTotal)}</span>
-                          {memberPending > 0 && (
-                            <span className="text-[10px] opacity-70 ml-1">（引落後: {formatCurrency(memberTotal - memberPending)}）</span>
+                          {(memberExpense > 0 || memberIncome > 0) && (
+                            <span className="text-[10px] opacity-70 ml-1">（実質: {formatCurrency(memberTotal - memberNetPending)}）</span>
                           )}
                         </div>
                       </div>
                       <div className="space-y-1 pl-3.5">
                         {memberAccounts.map((account) => {
-                          const pending = pendingByAccount[account.id] || 0;
+                          const pendingData = totalPendingByAccount[account.id];
+                          const hasExpense = pendingData && (pendingData.cardPending > 0 || pendingData.recurringExpense > 0);
+                          const hasIncome = pendingData && pendingData.recurringIncome > 0;
                           return (
                             <div key={account.id} className="flex justify-between items-center">
                               <div className="flex items-center gap-1.5">
@@ -278,8 +308,8 @@ export const AccountsPage = () => {
                               </div>
                               <div className="text-right">
                                 <span className="font-medium text-xs">{formatCurrency(account.balance)}</span>
-                                {pending > 0 && (
-                                  <p className="text-[10px] opacity-60">引落後: {formatCurrency(account.balance - pending)}</p>
+                                {(hasExpense || hasIncome) && pendingData && (
+                                  <p className="text-[10px] opacity-60">実質: {formatCurrency(account.balance - pendingData.totalPending)}</p>
                                 )}
                               </div>
                             </div>
@@ -346,6 +376,7 @@ export const AccountsPage = () => {
                           key={account.id}
                           account={account}
                           pendingAmount={pendingByAccount[account.id] || 0}
+                          totalPendingData={totalPendingByAccount[account.id]}
                           linkedPaymentMethods={linkedPMs}
                           pendingByPM={pendingByPM}
                           recurringPayments={accountRecurrings}
@@ -476,6 +507,12 @@ export const AccountsPage = () => {
 interface AccountCardProps {
   account: Account;
   pendingAmount: number;
+  totalPendingData?: {
+    cardPending: number;
+    recurringExpense: number;
+    recurringIncome: number;
+    totalPending: number;
+  };
   linkedPaymentMethods: PaymentMethod[];
   pendingByPM: Record<string, number>;
   recurringPayments: RecurringPayment[];
@@ -496,7 +533,7 @@ interface AccountCardProps {
 }
 
 const AccountCard = ({
-  account, pendingAmount, linkedPaymentMethods, pendingByPM, recurringPayments, allRecurringPayments,
+  account, pendingAmount, totalPendingData, linkedPaymentMethods, pendingByPM, recurringPayments, allRecurringPayments,
   onView, onEdit, onDelete, onAddTransaction, onAddRecurring,
   onEditRecurring, onDeleteRecurring, onToggleRecurring,
   onViewPM, onEditPM, onDeletePM, onAddPMTransaction, onAddPMRecurring,
@@ -533,11 +570,21 @@ const AccountCard = ({
       </div>
       <button onClick={onView} className="mt-3 text-right w-full">
         <p className="text-xl font-bold text-gray-900">{formatCurrency(account.balance)}</p>
-        {pendingAmount > 0 && (
+        {totalPendingData && (totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0 || totalPendingData.recurringIncome > 0) ? (
+          <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+            {(totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0) && (
+              <p>使う予定: -{formatCurrency(totalPendingData.cardPending + totalPendingData.recurringExpense)}</p>
+            )}
+            {totalPendingData.recurringIncome > 0 && (
+              <p>入る予定: +{formatCurrency(totalPendingData.recurringIncome)}</p>
+            )}
+            <p className="font-medium text-gray-700">実質: {formatCurrency(account.balance - totalPendingData.totalPending)}</p>
+          </div>
+        ) : pendingAmount > 0 ? (
           <p className="text-xs text-gray-500 mt-0.5">
             引落後: {formatCurrency(account.balance - pendingAmount)}
           </p>
-        )}
+        ) : null}
       </button>
       {/* 紐づき支払い手段（詳細表示） */}
       {linkedPaymentMethods.length > 0 && (
