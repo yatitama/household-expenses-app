@@ -17,9 +17,11 @@ export const calculatePaymentDate = (
   const txDate = new Date(year, month - 1, day);
   const txDay = txDate.getDate();
 
-  // 締め月を決定
+  // 締め月を決定（月末締め対応：締め日がその月の最終日以上なら月末締めとして扱う）
+  const lastDayOfTxMonth = lastDayOfMonth(txDate).getDate();
+  const effectiveClosingDay = Math.min(pm.closingDay, lastDayOfTxMonth);
   let closingMonth: Date;
-  if (txDay <= pm.closingDay) {
+  if (txDay <= effectiveClosingDay) {
     closingMonth = new Date(txDate.getFullYear(), txDate.getMonth(), 1);
   } else {
     closingMonth = addMonths(new Date(txDate.getFullYear(), txDate.getMonth(), 1), 1);
