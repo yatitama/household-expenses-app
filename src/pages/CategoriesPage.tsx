@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Edit2, Trash2, Tag } from 'lucide-react';
 import { categoryService, memberService } from '../services/storage';
 import { COMMON_MEMBER_ID } from '../types';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import type { Category, CategoryInput, TransactionType } from '../types';
 
 const COLORS = [
@@ -22,6 +23,8 @@ export const CategoriesPage = () => {
   const refreshCategories = useCallback(() => {
     setCategories(categoryService.getAll());
   }, []);
+
+  useBodyScrollLock(isModalOpen);
 
   const filteredCategories = categories.filter((c) => c.type === filterType);
 
