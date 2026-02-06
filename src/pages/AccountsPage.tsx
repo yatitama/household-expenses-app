@@ -410,7 +410,6 @@ export const AccountsPage = () => {
                   </h4>
                   <div className="space-y-2">
                     {memberAccounts.map((account) => {
-                      const linkedPMs = paymentMethods.filter((pm) => pm.linkedAccountId === account.id);
                       const accountLinkedPMs = linkedPaymentMethods.filter((lpm) => lpm.accountId === account.id);
                       const accountRecurrings = recurringPayments.filter(
                         (rp) => rp.accountId === account.id && !rp.paymentMethodId
@@ -421,12 +420,10 @@ export const AccountsPage = () => {
                           account={account}
                           pendingAmount={pendingByAccount[account.id] || 0}
                           totalPendingData={totalPendingByAccount[account.id]}
-                          linkedPaymentMethods={linkedPMs}
                           linkedPaymentMethodsData={accountLinkedPMs}
                           allPaymentMethods={paymentMethods}
                           pendingByPM={pendingByPM}
                           recurringPayments={accountRecurrings}
-                          allRecurringPayments={recurringPayments}
                           onView={() => setViewingAccount(account)}
                           onEdit={() => handleEditAccount(account)}
                           onDelete={() => handleDeleteAccount(account.id)}
@@ -440,10 +437,7 @@ export const AccountsPage = () => {
                           onDeleteLinkedPM={handleDeleteLinkedPM}
                           onToggleLinkedPM={handleToggleLinkedPM}
                           onViewPM={(pm) => setViewingPM(pm)}
-                          onEditPM={(pm) => handleEditPM(pm)}
-                          onDeletePM={(id) => handleDeletePM(id)}
                           onAddPMTransaction={(pm) => setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
-                          onAddPMRecurring={(pm) => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
                         />
                       );
                     })}
@@ -579,12 +573,10 @@ interface AccountCardProps {
     recurringIncome: number;
     totalPending: number;
   };
-  linkedPaymentMethods: PaymentMethod[];
   linkedPaymentMethodsData: LinkedPaymentMethod[];
   allPaymentMethods: PaymentMethod[];
   pendingByPM: Record<string, number>;
   recurringPayments: RecurringPayment[];
-  allRecurringPayments: RecurringPayment[];
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -598,18 +590,15 @@ interface AccountCardProps {
   onDeleteLinkedPM: (id: string) => void;
   onToggleLinkedPM: (lpm: LinkedPaymentMethod) => void;
   onViewPM: (pm: PaymentMethod) => void;
-  onEditPM: (pm: PaymentMethod) => void;
-  onDeletePM: (id: string) => void;
   onAddPMTransaction: (pm: PaymentMethod) => void;
-  onAddPMRecurring: (pm: PaymentMethod) => void;
 }
 
 const AccountCard = ({
-  account, pendingAmount, totalPendingData, linkedPaymentMethods, linkedPaymentMethodsData, allPaymentMethods, pendingByPM, recurringPayments, allRecurringPayments,
+  account, pendingAmount, totalPendingData, linkedPaymentMethodsData, allPaymentMethods, pendingByPM, recurringPayments,
   onView, onEdit, onDelete, onAddTransaction, onAddRecurring,
   onEditRecurring, onDeleteRecurring, onToggleRecurring,
   onAddLinkedPM, onEditLinkedPM, onDeleteLinkedPM, onToggleLinkedPM,
-  onViewPM, onEditPM, onDeletePM, onAddPMTransaction, onAddPMRecurring,
+  onViewPM, onAddPMTransaction,
 }: AccountCardProps) => {
   const categories = categoryService.getAll();
   const getPaymentMethod = (id: string) => allPaymentMethods.find((pm) => pm.id === id);
@@ -661,66 +650,6 @@ const AccountCard = ({
           </p>
         ) : null}
       </button>
-      {/* 紐づき支払い手段（詳細表示） */}
-      {linkedPaymentMethods.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-gray-100">
-          <p className="text-[10px] text-gray-400 font-medium mb-2 flex items-center gap-1">
-            <CreditCard size={10} />
-            紐づき支払い手段
-          </p>
-          <div className="space-y-2">
-            {linkedPaymentMethods.map((pm) => {
-              const pmPending = pendingByPM[pm.id] || 0;
-              const pmRecurrings = allRecurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
-              return (
-                <div key={pm.id} className="bg-gray-50 rounded-lg p-3">
-                  <div className="flex justify-between items-start">
-                    <button onClick={() => onViewPM(pm)} className="flex items-center gap-2 flex-1 text-left">
-                      <div
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-white flex-shrink-0"
-                        style={{ backgroundColor: pm.color }}
-                      >
-                        <CreditCard size={14} />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-900">{pm.name}</p>
-                        <p className="text-[10px] text-gray-400">{PM_TYPE_LABELS[pm.type]} ・ {BILLING_TYPE_LABELS[pm.billingType]}</p>
-                      </div>
-                    </button>
-                    <div className="flex items-center gap-0.5 flex-shrink-0">
-                      <button onClick={() => onAddPMTransaction(pm)} className="p-1.5 text-purple-500 hover:text-purple-700" title="取引追加">
-                        <PlusCircle size={15} />
-                      </button>
-                      <button onClick={() => onEditPM(pm)} className="p-1.5 text-gray-400 hover:text-gray-600">
-                        <Edit2 size={13} />
-                      </button>
-                      <button onClick={() => onDeletePM(pm.id)} className="p-1.5 text-gray-400 hover:text-red-600">
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                  </div>
-                  {pmPending > 0 && (
-                    <div className="mt-1.5 text-right">
-                      <p className="text-xs text-orange-600 font-medium">未精算: {formatCurrency(pmPending)}</p>
-                    </div>
-                  )}
-                  {/* 支払い手段の定期支払い */}
-                  {pmRecurrings.length > 0 && (
-                    <RecurringPaymentsList
-                      items={pmRecurrings}
-                      onAdd={() => onAddPMRecurring(pm)}
-                      onEdit={onEditRecurring}
-                      onDelete={onDeleteRecurring}
-                      onToggle={onToggleRecurring}
-                      getCategory={getCategory}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
       {/* 定期支払いと紐付き手段 */}
       <RecurringAndLinkedList
         recurringItems={recurringPayments}
@@ -733,6 +662,8 @@ const AccountCard = ({
         onEditLinked={onEditLinkedPM}
         onDeleteLinked={onDeleteLinkedPM}
         onToggleLinked={onToggleLinkedPM}
+        onViewPM={onViewPM}
+        onAddPMTransaction={onAddPMTransaction}
         getCategory={getCategory}
         getPaymentMethod={getPaymentMethod}
         getUnsettledAmount={getUnsettledAmount}
@@ -897,6 +828,8 @@ interface RecurringAndLinkedListProps {
   onEditLinked: (lpm: LinkedPaymentMethod) => void;
   onDeleteLinked: (id: string) => void;
   onToggleLinked: (lpm: LinkedPaymentMethod) => void;
+  onViewPM: (pm: PaymentMethod) => void;
+  onAddPMTransaction: (pm: PaymentMethod) => void;
   getCategory: (id: string) => { name: string; color: string; icon: string } | undefined;
   getPaymentMethod: (id: string) => PaymentMethod | undefined;
   getUnsettledAmount: (paymentMethodId: string) => number;
@@ -906,6 +839,7 @@ const RecurringAndLinkedList = ({
   recurringItems, linkedItems,
   onAddRecurring, onEditRecurring, onDeleteRecurring, onToggleRecurring,
   onAddLinked, onEditLinked, onDeleteLinked, onToggleLinked,
+  onViewPM, onAddPMTransaction,
   getCategory, getPaymentMethod, getUnsettledAmount,
 }: RecurringAndLinkedListProps) => {
   return (
@@ -1004,7 +938,9 @@ const RecurringAndLinkedList = ({
                     >
                       <CreditCard size={12} />
                     </div>
-                    <span className="truncate text-gray-700">{pm.name}</span>
+                    <button onClick={() => onViewPM(pm)} className="truncate text-gray-700 hover:text-gray-900">
+                      {pm.name}
+                    </button>
                     <span className="text-gray-400 flex-shrink-0">{closingLabel}</span>
                     <span className="text-gray-400 flex-shrink-0">{paymentLabel}</span>
                   </div>
@@ -1012,6 +948,9 @@ const RecurringAndLinkedList = ({
                     <span className="font-medium text-red-600">
                       {formatCurrency(unsettledAmount)}
                     </span>
+                    <button onClick={() => onAddPMTransaction(pm)} className="p-1 text-purple-500 hover:text-purple-700" title="取引追加">
+                      <PlusCircle size={12} />
+                    </button>
                     <button onClick={() => onEditLinked(lpm)} className="p-1 text-gray-300 hover:text-gray-500">
                       <Edit2 size={12} />
                     </button>
