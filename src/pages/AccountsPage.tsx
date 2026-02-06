@@ -511,9 +511,16 @@ export const AccountsPage = () => {
         <PMTransactionsModal
           paymentMethod={viewingPM}
           onClose={() => { setViewingPM(null); refreshData(); }}
-          onAddLinkedPM={(pmId) => {
+          onEdit={(pm) => {
             setViewingPM(null);
-            handleAddLinkedPM({ paymentMethodId: pmId });
+            handleEditPM(pm);
+          }}
+          onAddTransaction={(pm) => {
+            setViewingPM(null);
+            setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId });
+          }}
+          onDelete={(pmId) => {
+            handleDeletePM(pmId);
           }}
         />
       )}
@@ -919,10 +926,7 @@ const RecurringAndLinkedList = ({
               const pm = getPaymentMethod(lpm.paymentMethodId);
               if (!pm) return null;
               const unsettledAmount = getUnsettledAmount(pm.id);
-              const closingLabel = pm.closingDay ? `${pm.closingDay}日締` : '締日なし';
-              const paymentLabel = pm.paymentDay
-                ? `${pm.paymentMonthOffset === 0 ? '当月' : `翌${pm.paymentMonthOffset}月`}${pm.paymentDay}日払`
-                : '支払日なし';
+              const paymentLabel = pm.paymentDay ? `毎月${pm.paymentDay}日` : '支払日なし';
               return (
                 <div key={lpm.id} className={`flex items-center justify-between text-xs ${lpm.isActive ? '' : 'opacity-40'}`}>
                   <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -941,7 +945,6 @@ const RecurringAndLinkedList = ({
                     <button onClick={() => onViewPM(pm)} className="truncate text-gray-700 hover:text-gray-900">
                       {pm.name}
                     </button>
-                    <span className="text-gray-400 flex-shrink-0">{closingLabel}</span>
                     <span className="text-gray-400 flex-shrink-0">{paymentLabel}</span>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0 ml-2">
@@ -1511,10 +1514,12 @@ const AccountTransactionsModal = ({ account, onClose }: AccountTransactionsModal
 interface PMTransactionsModalProps {
   paymentMethod: PaymentMethod;
   onClose: () => void;
-  onAddLinkedPM: (pmId: string) => void;
+  onEdit: (pm: PaymentMethod) => void;
+  onAddTransaction: (pm: PaymentMethod) => void;
+  onDelete: (pmId: string) => void;
 }
 
-const PMTransactionsModal = ({ paymentMethod, onClose, onAddLinkedPM }: PMTransactionsModalProps) => {
+const PMTransactionsModal = ({ paymentMethod, onClose, onEdit, onAddTransaction, onDelete }: PMTransactionsModalProps) => {
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     return transactionService.getAll()
       .filter((t) => t.paymentMethodId === paymentMethod.id)
@@ -1568,14 +1573,18 @@ const PMTransactionsModal = ({ paymentMethod, onClose, onAddLinkedPM }: PMTransa
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-4 border-b border-gray-200">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: paymentMethod.color }}>
                 {PM_TYPE_ICONS[paymentMethod.type]}
               </div>
               <div>
                 <h3 className="text-lg font-bold">{paymentMethod.name}</h3>
-                <p className="text-sm text-gray-500">取引履歴</p>
+                <p className="text-sm text-gray-500">
+                  {paymentMethod.closingDay && paymentMethod.paymentDay
+                    ? `${paymentMethod.closingDay}日締 翌${paymentMethod.paymentDay}日払`
+                    : '取引履歴'}
+                </p>
               </div>
             </div>
             <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600">
@@ -1583,14 +1592,35 @@ const PMTransactionsModal = ({ paymentMethod, onClose, onAddLinkedPM }: PMTransa
             </button>
           </div>
 
-          {/* 紐付き手段追加ボタン */}
-          <button
-            onClick={() => onAddLinkedPM(paymentMethod.id)}
-            className="mt-3 w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-blue-500 text-blue-600 hover:bg-blue-50 transition-colors"
-          >
-            <Link2 size={16} />
-            <span className="text-sm font-medium">口座に紐付ける</span>
-          </button>
+          {/* 操作ボタン */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => onEdit(paymentMethod)}
+              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <Edit2 size={16} />
+              <span className="text-sm font-medium">編集</span>
+            </button>
+            <button
+              onClick={() => onAddTransaction(paymentMethod)}
+              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-purple-500 text-purple-600 hover:bg-purple-50 transition-colors"
+            >
+              <PlusCircle size={16} />
+              <span className="text-sm font-medium">取引追加</span>
+            </button>
+            <button
+              onClick={() => {
+                if (confirm('この支払い手段を削除しますか？')) {
+                  onDelete(paymentMethod.id);
+                  onClose();
+                }
+              }}
+              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-red-500 text-red-600 hover:bg-red-50 transition-colors"
+            >
+              <Trash2 size={16} />
+              <span className="text-sm font-medium">削除</span>
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4">
