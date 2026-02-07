@@ -30,34 +30,34 @@ export const PaymentMethodCard = ({
   const getCategory = (id: string) => categories.find((c) => c.id === id);
 
   return (
-    <div className="premium-card shadow-card hover:shadow-card-hover transition-all duration-300 p-4">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
       <div className="flex justify-between items-start">
         <button onClick={onView} className="flex items-center gap-3 flex-1 text-left">
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white"
             style={{ backgroundColor: paymentMethod.color }}
           >
             {PM_TYPE_ICONS[paymentMethod.type]}
           </div>
           <div className="min-w-0">
-            <p className="font-medium text-brand-900 dark:text-brand-100">{paymentMethod.name}</p>
-            <p className="text-xs text-brand-500 dark:text-brand-400">{PM_TYPE_LABELS[paymentMethod.type]} ・ {BILLING_TYPE_LABELS[paymentMethod.billingType]}</p>
+            <p className="font-medium text-gray-900 dark:text-gray-100">{paymentMethod.name}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{PM_TYPE_LABELS[paymentMethod.type]} ・ {BILLING_TYPE_LABELS[paymentMethod.billingType]}</p>
             <div className="flex items-center gap-1 mt-0.5">
-              <Link2 size={12} className={linkedAccountName ? 'text-brand-400 dark:text-brand-500' : 'text-amber-500'} />
-              <span className={`text-xs ${linkedAccountName ? 'text-brand-400 dark:text-brand-500' : 'text-amber-500 font-medium'}`}>
+              <Link2 size={12} className={linkedAccountName ? 'text-gray-400' : 'text-amber-500'} />
+              <span className={`text-xs ${linkedAccountName ? 'text-gray-400 dark:text-gray-500' : 'text-amber-500 font-medium'}`}>
                 {linkedAccountName || '引き落とし先未設定'}
               </span>
             </div>
           </div>
         </button>
         <div className="flex items-center gap-1 flex-shrink-0">
-          <button onClick={onAddTransaction} className="p-2 text-accent-500 hover:text-accent-700 dark:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-900/20 rounded-lg transition-all duration-300" title="取引追加" aria-label="取引を追加">
+          <button onClick={onAddTransaction} className="p-2 text-purple-500 hover:text-purple-700 dark:text-purple-400" title="取引追加" aria-label="取引を追加">
             <PlusCircle size={18} />
           </button>
-          <button onClick={onEdit} className="p-2 text-brand-400 hover:text-brand-600 dark:text-brand-500 dark:hover:text-brand-300 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-all duration-300" aria-label="支払い手段を編集">
+          <button onClick={onEdit} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" aria-label="支払い手段を編集">
             <Edit2 size={16} />
           </button>
-          <button onClick={onDelete} className="p-2 text-brand-400 hover:text-red-600 dark:text-brand-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-300" aria-label="支払い手段を削除">
+          <button onClick={onDelete} className="p-2 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400" aria-label="支払い手段を削除">
             <Trash2 size={16} />
           </button>
         </div>

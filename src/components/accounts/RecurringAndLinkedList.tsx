@@ -28,20 +28,20 @@ export const RecurringAndLinkedList = ({
   getCategory, getPaymentMethod, getUnsettledAmount,
 }: RecurringAndLinkedListProps) => {
   return (
-    <div className="mt-3 pt-3 border-t border-brand-100 dark:border-brand-800 space-y-3">
+    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 space-y-3">
       {/* 定期取引セクション */}
       <div>
         <div className="flex justify-between items-center mb-1.5">
-          <p className="text-xs text-brand-500 dark:text-brand-400 font-medium flex items-center gap-1">
+          <p className="text-xs text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1">
             <RefreshCw size={10} />
             定期取引
           </p>
-          <button onClick={onAddRecurring} className="text-brand-500 hover:text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded transition-all duration-300" aria-label="定期取引を追加">
+          <button onClick={onAddRecurring} className="text-blue-500 hover:text-blue-700 dark:text-blue-400" aria-label="定期取引を追加">
             <Plus size={14} />
           </button>
         </div>
         {recurringItems.length === 0 ? (
-          <p className="text-xs text-brand-300 dark:text-brand-700">定期取引なし</p>
+          <p className="text-xs text-gray-300 dark:text-gray-600">定期取引なし</p>
         ) : (
           <div className="space-y-1.5">
             {recurringItems.map((rp) => {
@@ -64,17 +64,17 @@ export const RecurringAndLinkedList = ({
                     >
                       {getCategoryIcon(category?.icon || '', 12)}
                     </div>
-                    <span className="truncate text-brand-700 dark:text-brand-300">{rp.name}</span>
-                    <span className="text-brand-400 dark:text-brand-500 flex-shrink-0">{freqLabel}</span>
+                    <span className="truncate text-gray-700 dark:text-gray-300">{rp.name}</span>
+                    <span className="text-gray-400 dark:text-gray-500 flex-shrink-0">{freqLabel}</span>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0 ml-2">
                     <span className={`font-medium ${rp.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                       {formatCurrency(rp.amount)}
                     </span>
-                    <button onClick={() => onEditRecurring(rp)} className="p-1 text-brand-300 hover:text-brand-500 dark:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded transition-all duration-300">
+                    <button onClick={() => onEditRecurring(rp)} className="p-1 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400">
                       <Edit2 size={12} />
                     </button>
-                    <button onClick={() => onDeleteRecurring(rp.id)} className="p-1 text-brand-300 hover:text-red-500 dark:text-brand-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all duration-300">
+                    <button onClick={() => onDeleteRecurring(rp.id)} className="p-1 text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400">
                       <Trash2 size={12} />
                     </button>
                   </div>
@@ -88,16 +88,16 @@ export const RecurringAndLinkedList = ({
       {/* 支払い手段セクション */}
       <div>
         <div className="flex justify-between items-center mb-1.5">
-          <p className="text-xs text-brand-500 dark:text-brand-400 font-medium flex items-center gap-1">
+          <p className="text-xs text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1">
             <CreditCard size={10} />
             支払い手段
           </p>
-          <button onClick={onAddLinked} className="text-brand-500 hover:text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded transition-all duration-300" aria-label="支払い手段を追加">
+          <button onClick={onAddLinked} className="text-blue-500 hover:text-blue-700 dark:text-blue-400" aria-label="支払い手段を追加">
             <Plus size={14} />
           </button>
         </div>
         {linkedItems.length === 0 ? (
-          <p className="text-xs text-brand-300 dark:text-brand-700">支払い手段なし</p>
+          <p className="text-xs text-gray-300 dark:text-gray-600">支払い手段なし</p>
         ) : (
           <div className="space-y-1.5">
             {linkedItems.map((lpm) => {
@@ -120,19 +120,19 @@ export const RecurringAndLinkedList = ({
                     >
                       <CreditCard size={12} />
                     </div>
-                    <button onClick={() => onViewPM(pm)} className="truncate text-brand-700 hover:text-brand-900 dark:text-brand-300 dark:hover:text-brand-100">
+                    <button onClick={() => onViewPM(pm)} className="truncate text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
                       {pm.name}
                     </button>
-                    <span className="text-brand-400 dark:text-brand-500 flex-shrink-0">{paymentLabel}</span>
+                    <span className="text-gray-400 dark:text-gray-500 flex-shrink-0">{paymentLabel}</span>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0 ml-2">
                     <span className="font-medium text-red-600 dark:text-red-400">
                       {formatCurrency(unsettledAmount)}
                     </span>
-                    <button onClick={() => onEditPM(pm)} className="p-1 text-brand-300 hover:text-brand-500 dark:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded transition-all duration-300" title="支払い手段編集">
+                    <button onClick={() => onEditPM(pm)} className="p-1 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400" title="支払い手段編集">
                       <Edit2 size={12} />
                     </button>
-                    <button onClick={() => onDeletePM(pm.id)} className="p-1 text-brand-300 hover:text-red-500 dark:text-brand-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all duration-300" title="支払い手段削除">
+                    <button onClick={() => onDeletePM(pm.id)} className="p-1 text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400" title="支払い手段削除">
                       <Trash2 size={12} />
                     </button>
                   </div>
