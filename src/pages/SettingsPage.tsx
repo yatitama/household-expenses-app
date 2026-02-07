@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Database, Download, Upload, Users, Tag, ChevronDown, ChevronUp, Plus, Moon, Sun, Wallet, CreditCard } from 'lucide-react';
-import { accountService, transactionService, categoryService, budgetService, memberService } from '../services/storage';
+import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, Moon, Sun, Wallet, CreditCard } from 'lucide-react';
+import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
@@ -52,7 +52,7 @@ export const SettingsPage = () => {
   const [members, setMembers] = useState<Member[]>(() => memberService.getAll());
   const [categories, setCategories] = useState<Category[]>(() => categoryService.getAll());
   const [accounts, setAccounts] = useState<Account[]>(() => accountService.getAll());
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => accountService.getPaymentMethods());
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => paymentMethodService.getAll());
   const [categoryFilterType, setCategoryFilterType] = useState<TransactionType>('expense');
 
   // Member modal state
@@ -84,7 +84,7 @@ export const SettingsPage = () => {
   const refreshMembers = useCallback(() => setMembers(memberService.getAll()), []);
   const refreshCategories = useCallback(() => setCategories(categoryService.getAll()), []);
   const refreshAccounts = useCallback(() => setAccounts(accountService.getAll()), []);
-  const refreshPaymentMethods = useCallback(() => setPaymentMethods(accountService.getPaymentMethods()), []);
+  const refreshPaymentMethods = useCallback(() => setPaymentMethods(paymentMethodService.getAll()), []);
 
   const filteredCategories = categories.filter((c) => c.type === categoryFilterType);
 
@@ -176,7 +176,7 @@ export const SettingsPage = () => {
       title: '支払い手段を削除',
       message: 'この支払い手段を削除してもよろしいですか？',
       onConfirm: () => {
-        accountService.deletePaymentMethod(id);
+        paymentMethodService.delete(id);
         refreshPaymentMethods();
         toast.success('支払い手段を削除しました');
       },
@@ -184,10 +184,10 @@ export const SettingsPage = () => {
   };
   const handleSavePM = (input: PaymentMethodInput) => {
     if (editingPM) {
-      accountService.updatePaymentMethod(editingPM.id, input);
+      paymentMethodService.update(editingPM.id, input);
       toast.success('支払い手段を更新しました');
     } else {
-      accountService.createPaymentMethod(input);
+      paymentMethodService.create(input);
       toast.success('支払い手段を追加しました');
     }
     refreshPaymentMethods(); setIsPMModalOpen(false);

@@ -46,8 +46,10 @@ export const TransactionsPage = () => {
 
     const oldTransaction = editingTransaction;
     revertTransactionBalance(oldTransaction);
-    transactionService.update(editingTransaction.id, input);
-    applyTransactionBalance({ ...input, id: editingTransaction.id, settledAt: editingTransaction.settledAt });
+    const updatedTransaction = transactionService.update(editingTransaction.id, input);
+    if (updatedTransaction) {
+      applyTransactionBalance(updatedTransaction);
+    }
 
     toast.success('取引を更新しました');
     setEditingTransaction(null);

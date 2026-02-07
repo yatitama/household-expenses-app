@@ -13,7 +13,6 @@ interface RecurringAndLinkedListProps {
   onAddLinked: () => void;
   onToggleLinked: (lpm: LinkedPaymentMethod) => void;
   onViewPM: (pm: PaymentMethod) => void;
-  onEditPM: (pm: PaymentMethod) => void;
   onDeletePM: (pmId: string) => void;
   getCategory: (id: string) => { name: string; color: string; icon: string } | undefined;
   getPaymentMethod: (id: string) => PaymentMethod | undefined;
@@ -24,7 +23,7 @@ export const RecurringAndLinkedList = ({
   recurringItems, linkedItems,
   onAddRecurring, onEditRecurring, onDeleteRecurring, onToggleRecurring,
   onAddLinked, onToggleLinked,
-  onViewPM, onEditPM, onDeletePM,
+  onViewPM, onDeletePM,
   getCategory, getPaymentMethod, getUnsettledAmount,
 }: RecurringAndLinkedListProps) => {
   return (
@@ -129,9 +128,6 @@ export const RecurringAndLinkedList = ({
                     <span className="font-medium text-red-600 dark:text-red-400">
                       {formatCurrency(unsettledAmount)}
                     </span>
-                    <button onClick={() => onEditPM(pm)} className="p-1 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400" title="支払い手段編集">
-                      <Edit2 size={12} />
-                    </button>
                     <button onClick={() => onDeletePM(pm.id)} className="p-1 text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400" title="支払い手段削除">
                       <Trash2 size={12} />
                     </button>

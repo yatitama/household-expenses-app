@@ -1,4 +1,4 @@
-import { Edit2, Trash2, PlusCircle, GripVertical } from 'lucide-react';
+import { Trash2, PlusCircle, GripVertical } from 'lucide-react';
 import { categoryService } from '../../services/storage';
 import { formatCurrency } from '../../utils/formatters';
 import { ACCOUNT_TYPE_ICONS } from './AccountIcons';
@@ -21,7 +21,6 @@ interface AccountCardProps {
   pendingByPM: Record<string, number>;
   recurringPayments: RecurringPayment[];
   onView: () => void;
-  onEdit: () => void;
   onDelete: () => void;
   onAddTransaction: () => void;
   onAddRecurring: () => void;
@@ -31,7 +30,6 @@ interface AccountCardProps {
   onAddLinkedPM: () => void;
   onToggleLinkedPM: (lpm: LinkedPaymentMethod) => void;
   onViewPM: (pm: PaymentMethod) => void;
-  onEditPM: (pm: PaymentMethod) => void;
   onDeletePM: (pmId: string) => void;
   isDragging?: boolean;
   isDragOver?: boolean;
@@ -47,10 +45,10 @@ interface AccountCardProps {
 
 export const AccountCard = ({
   account, member, pendingAmount, totalPendingData, linkedPaymentMethodsData, allPaymentMethods, pendingByPM, recurringPayments,
-  onView, onEdit, onDelete, onAddTransaction, onAddRecurring,
+  onView, onDelete, onAddTransaction, onAddRecurring,
   onEditRecurring, onDeleteRecurring, onToggleRecurring,
   onAddLinkedPM, onToggleLinkedPM,
-  onViewPM, onEditPM, onDeletePM,
+  onViewPM, onDeletePM,
   isDragging, isDragOver,
   onDragStart, onDragOver, onDrop, onDragEnd,
   onTouchStart, onTouchMove, onTouchEnd, onTouchCancel,
@@ -117,9 +115,6 @@ export const AccountCard = ({
           <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400" title="取引追加" aria-label="取引を追加">
             <PlusCircle size={18} />
           </button>
-          <button onClick={onEdit} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" aria-label="口座を編集">
-            <Edit2 size={16} />
-          </button>
           <button onClick={onDelete} className="p-2 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400" aria-label="口座を削除">
             <Trash2 size={16} />
           </button>
@@ -153,7 +148,6 @@ export const AccountCard = ({
         onAddLinked={onAddLinkedPM}
         onToggleLinked={onToggleLinkedPM}
         onViewPM={onViewPM}
-        onEditPM={onEditPM}
         onDeletePM={onDeletePM}
         getCategory={getCategory}
         getPaymentMethod={getPaymentMethod}
