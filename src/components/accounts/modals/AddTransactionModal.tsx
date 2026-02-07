@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 import { X, Check, CheckCircle } from 'lucide-react';
 import {
   accountService, transactionService, categoryService,
@@ -63,7 +64,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!amount || !categoryId || (!accountId && !pmId)) {
-      alert('金額、カテゴリ、支払い元を入力してください');
+      toast.error('金額、カテゴリ、支払い元を入力してください');
       return;
     }
 
@@ -113,7 +114,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose} role="dialog" aria-modal="true" aria-label="取引を追加">
       <div
         className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
@@ -192,11 +193,11 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                         >
                           {getCategoryIcon(category.icon, 16)}
                         </div>
-                        <span className="text-[11px] text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight">
+                        <span className="text-xs text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight">
                           {category.name}
                         </span>
                         {member && member.id !== 'common' && (
-                          <span className="text-[9px] text-gray-400 dark:text-gray-500 leading-none">{member.name}</span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500 leading-none">{member.name}</span>
                         )}
                       </button>
                     );
@@ -211,7 +212,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {accounts.length > 0 && (
                     <div>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium mb-1">口座</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mb-1">口座</p>
                       <div className="space-y-1">
                         {accounts.map((acct) => (
                           <button
@@ -237,7 +238,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
 
                   {type === 'expense' && paymentMethods.length > 0 && (
                     <div>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium mb-1">支払い手段</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mb-1">支払い手段</p>
                       <div className="space-y-1">
                         {paymentMethods.map((pm) => {
                           const linked = allAccounts.find((a) => a.id === pm.linkedAccountId);
@@ -256,7 +257,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                                 <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: pm.color }} />
                                 <div className="text-left">
                                   <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">{pm.name}</span>
-                                  {linked && <p className="text-[9px] text-gray-400 dark:text-gray-500">→ {linked.name}</p>}
+                                  {linked && <p className="text-xs text-gray-400 dark:text-gray-500">→ {linked.name}</p>}
                                 </div>
                               </div>
                               {pmId === pm.id && <Check size={16} className="text-purple-500" />}

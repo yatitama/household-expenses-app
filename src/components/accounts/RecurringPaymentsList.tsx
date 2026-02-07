@@ -16,7 +16,7 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onDelete, onToggle
   return (
     <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
       <div className="flex justify-between items-center mb-1.5">
-        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1">
+        <p className="text-xs text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1">
           <RefreshCw size={10} />
           定期取引
         </p>
@@ -25,7 +25,7 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onDelete, onToggle
         </button>
       </div>
       {items.length === 0 ? (
-        <p className="text-[11px] text-gray-300 dark:text-gray-600">定期取引なし</p>
+        <p className="text-xs text-gray-300 dark:text-gray-600">定期取引なし</p>
       ) : (
         <div className="space-y-1.5">
           {items.map((rp) => {

@@ -1,9 +1,11 @@
 import { useState, useCallback } from 'react';
+import toast from 'react-hot-toast';
 import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, Edit2, Moon, Sun } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
+import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { COMMON_MEMBER_ID } from '../types';
 import type { Member, MemberInput, Category, CategoryInput, TransactionType } from '../types';
 
@@ -28,6 +30,14 @@ export const SettingsPage = () => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
+  // Confirm dialog state
+  const [confirmDialogState, setConfirmDialogState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+
   useBodyScrollLock(isMemberModalOpen || isCategoryModalOpen);
 
   const refreshMembers = useCallback(() => setMembers(memberService.getAll()), []);
@@ -39,12 +49,26 @@ export const SettingsPage = () => {
   const handleAddMember = () => { setEditingMember(null); setIsMemberModalOpen(true); };
   const handleEditMember = (member: Member) => { setEditingMember(member); setIsMemberModalOpen(true); };
   const handleDeleteMember = (member: Member) => {
-    if (member.isDefault) { alert('デフォルトメンバーは削除できません'); return; }
-    if (confirm('このメンバーを削除しますか？')) { memberService.delete(member.id); refreshMembers(); }
+    if (member.isDefault) { toast.error('デフォルトメンバーは削除できません'); return; }
+    setConfirmDialogState({
+      isOpen: true,
+      title: 'メンバーを削除',
+      message: 'このメンバーを削除してもよろしいですか？',
+      onConfirm: () => {
+        memberService.delete(member.id);
+        refreshMembers();
+        toast.success('メンバーを削除しました');
+      },
+    });
   };
   const handleSaveMember = (input: MemberInput) => {
-    if (editingMember) { memberService.update(editingMember.id, input); }
-    else { memberService.create(input); }
+    if (editingMember) {
+      memberService.update(editingMember.id, input);
+      toast.success('メンバーを更新しました');
+    } else {
+      memberService.create(input);
+      toast.success('メンバーを追加しました');
+    }
     refreshMembers(); setIsMemberModalOpen(false);
   };
 
@@ -52,11 +76,25 @@ export const SettingsPage = () => {
   const handleAddCategory = () => { setEditingCategory(null); setIsCategoryModalOpen(true); };
   const handleEditCategory = (category: Category) => { setEditingCategory(category); setIsCategoryModalOpen(true); };
   const handleDeleteCategory = (id: string) => {
-    if (confirm('このカテゴリを削除しますか？')) { categoryService.delete(id); refreshCategories(); }
+    setConfirmDialogState({
+      isOpen: true,
+      title: 'カテゴリを削除',
+      message: 'このカテゴリを削除してもよろしいですか？',
+      onConfirm: () => {
+        categoryService.delete(id);
+        refreshCategories();
+        toast.success('カテゴリを削除しました');
+      },
+    });
   };
   const handleSaveCategory = (input: CategoryInput) => {
-    if (editingCategory) { categoryService.update(editingCategory.id, input); }
-    else { categoryService.create(input); }
+    if (editingCategory) {
+      categoryService.update(editingCategory.id, input);
+      toast.success('カテゴリを更新しました');
+    } else {
+      categoryService.create(input);
+      toast.success('カテゴリを追加しました');
+    }
     refreshCategories(); setIsCategoryModalOpen(false);
   };
 
@@ -77,6 +115,7 @@ export const SettingsPage = () => {
     a.download = `household-expenses-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    toast.success('データをエクスポートしました');
   };
 
   const handleImport = () => {
@@ -100,26 +139,31 @@ export const SettingsPage = () => {
         if (data.accounts) localStorage.setItem('household_accounts', JSON.stringify(data.accounts));
         if (data.transactions) localStorage.setItem('household_transactions', JSON.stringify(data.transactions));
         if (data.budgets) localStorage.setItem('household_budgets', JSON.stringify(data.budgets));
-        alert('データをインポートしました。ページを再読み込みします。');
-        window.location.reload();
+        toast.success('データをインポートしました。再読み込みします。');
+        setTimeout(() => window.location.reload(), 1000);
       } catch {
-        alert('インポートに失敗しました。ファイル形式を確認してください。');
+        toast.error('インポートに失敗しました。ファイル形式を確認してください。');
       }
     };
     input.click();
   };
 
   const handleReset = () => {
-    if (confirm('すべてのデータを削除しますか？この操作は取り消せません。')) {
-      localStorage.removeItem('household_members');
-      localStorage.removeItem('household_accounts');
-      localStorage.removeItem('household_transactions');
-      localStorage.removeItem('household_categories');
-      localStorage.removeItem('household_budgets');
-      localStorage.removeItem('household_card_billings');
-      alert('データを削除しました。ページを再読み込みします。');
-      window.location.reload();
-    }
+    setConfirmDialogState({
+      isOpen: true,
+      title: 'データを初期化',
+      message: 'すべてのデータを削除しますか？この操作は取り消せません。',
+      onConfirm: () => {
+        localStorage.removeItem('household_members');
+        localStorage.removeItem('household_accounts');
+        localStorage.removeItem('household_transactions');
+        localStorage.removeItem('household_categories');
+        localStorage.removeItem('household_budgets');
+        localStorage.removeItem('household_card_billings');
+        toast.success('データを削除しました。再読み込みします。');
+        setTimeout(() => window.location.reload(), 1000);
+      },
+    });
   };
 
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
@@ -370,6 +414,16 @@ export const SettingsPage = () => {
           onClose={() => setIsCategoryModalOpen(false)}
         />
       )}
+
+      <ConfirmDialog
+        isOpen={confirmDialogState.isOpen}
+        onClose={() => setConfirmDialogState((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmDialogState.onConfirm}
+        title={confirmDialogState.title}
+        message={confirmDialogState.message}
+        confirmText="削除"
+        confirmVariant="danger"
+      />
     </div>
   );
 };
