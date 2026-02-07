@@ -37,9 +37,7 @@ export const FloatingFilterMenu = ({
 }: FloatingFilterMenuProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activePanel, setActivePanel] = useState<FilterType | null>(null);
-  const [rotation, setRotation] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
-  const touchStartRef = useRef<{ x: number; y: number; angle: number } | null>(null);
 
   // 各フィルターがアクティブかどうかを判定
   const isTypeActive = filters.transactionType !== 'all';
@@ -99,80 +97,6 @@ export const FloatingFilterMenu = ({
     setActivePanel(null);
   };
 
-  // メインボタンの角度計算（円形に配置）
-  const getItemPosition = (index: number, itemsPerPage: number, currentRotation: number) => {
-    const radius = 90; // ボタンからの距離
-    const startAngle = -90; // 真上から開始
-    const endAngle = 180; // 真左まで
-    const totalAngle = endAngle - startAngle; // 270度の範囲
-    const angleStep = totalAngle / (itemsPerPage - 1);
-    const angle = (startAngle + angleStep * index + currentRotation) * (Math.PI / 180);
-
-    return {
-      x: Math.cos(angle) * radius,
-      y: Math.sin(angle) * radius,
-    };
-  };
-
-  // 表示するアイテムの数（1ページあたり）
-  const itemsPerPage = 5;
-  const totalPages = Math.ceil(filterMenuItems.length / itemsPerPage);
-  const currentPage = Math.floor(Math.abs(rotation) / 90) % totalPages;
-  const visibleItems = filterMenuItems.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage
-  );
-
-  // タッチ位置から角度を計算
-  const getAngleFromCenter = (x: number, y: number, centerX: number, centerY: number) => {
-    const dx = x - centerX;
-    const dy = y - centerY;
-    return Math.atan2(dy, dx) * (180 / Math.PI);
-  };
-
-  // タッチジェスチャーハンドラー
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!menuRef.current || !isExpanded) return;
-
-    const touch = e.touches[0];
-    const rect = menuRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const angle = getAngleFromCenter(touch.clientX, touch.clientY, centerX, centerY);
-
-    touchStartRef.current = { x: touch.clientX, y: touch.clientY, angle };
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!menuRef.current || !isExpanded || !touchStartRef.current) return;
-
-    const touch = e.touches[0];
-    const rect = menuRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const currentAngle = getAngleFromCenter(touch.clientX, touch.clientY, centerX, centerY);
-
-    // 角度の差分を計算
-    let angleDiff = currentAngle - touchStartRef.current.angle;
-
-    // 角度の正規化（-180〜180の範囲に）
-    if (angleDiff > 180) angleDiff -= 360;
-    if (angleDiff < -180) angleDiff += 360;
-
-    // 回転を更新
-    setRotation((prev) => prev + angleDiff);
-
-    // 次のフレームのために現在の角度を保存
-    touchStartRef.current.angle = currentAngle;
-  };
-
-  const handleTouchEnd = () => {
-    // 最も近いページにスナップ
-    const nearestPage = Math.round(rotation / 90);
-    setRotation(nearestPage * 90);
-    touchStartRef.current = null;
-  };
-
   return (
     <>
       {/* オーバーレイ（パネルが開いているときのみ） */}
@@ -186,35 +110,20 @@ export const FloatingFilterMenu = ({
       )}
 
       {/* フローティングメニュー */}
-      <div
-        ref={menuRef}
-        className="fixed bottom-20 right-6 z-40"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* 展開されたフィルターアイコン */}
+      <div ref={menuRef} className="fixed bottom-20 right-4 sm:right-6 z-40 flex items-end gap-2">
+        {/* 展開されたフィルターアイコン（横並び） */}
         {isExpanded && (
-          <div className="absolute bottom-0 right-0 pointer-events-none">
-            {visibleItems.map((item, index) => {
-              const pos = getItemPosition(index, itemsPerPage, rotation);
+          <div className="flex flex-wrap items-center gap-2 max-w-[calc(100vw-6rem)] sm:max-w-[calc(100vw-8rem)]">
+            {filterMenuItems.map((item) => {
               const Icon = item.icon;
 
               return (
                 <button
                   key={item.type}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleFilterClick(item.type);
-                  }}
-                  className={`absolute w-12 h-12 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 pointer-events-auto ${
+                  onClick={() => handleFilterClick(item.type)}
+                  className={`w-12 h-12 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 ${
                     item.isActive ? 'ring-4 ring-white' : ''
                   }`}
-                  style={{
-                    transform: `translate(${pos.x}px, ${pos.y}px)`,
-                    left: '-24px',
-                    top: '-24px',
-                  }}
                   title={item.label}
                   aria-label={item.label}
                 >
@@ -232,7 +141,7 @@ export const FloatingFilterMenu = ({
           </div>
         )}
 
-        {/* メインフィルターボタン（常に中心） */}
+        {/* メインフィルターボタン */}
         <button
           onClick={() => {
             if (isExpanded) {
@@ -244,9 +153,9 @@ export const FloatingFilterMenu = ({
               setIsExpanded(true);
             }
           }}
-          className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
+          className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
             isExpanded ? 'bg-red-500' : activeFilterCount > 0 ? 'bg-blue-600' : 'bg-gray-800 dark:bg-gray-700'
-          } text-white active:scale-95 relative z-10`}
+          } text-white active:scale-95 relative`}
           aria-label={isExpanded ? 'フィルターを閉じる' : 'フィルターを開く'}
         >
           {isExpanded ? <X size={24} /> : <Filter size={24} />}
@@ -258,13 +167,6 @@ export const FloatingFilterMenu = ({
             </span>
           )}
         </button>
-
-        {/* 回転のヒントテキスト（モバイル用） */}
-        {isExpanded && totalPages > 1 && (
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap pointer-events-none">
-            指で回転
-          </div>
-        )}
       </div>
 
       {/* フィルターサイドパネル */}
