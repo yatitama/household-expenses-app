@@ -99,8 +99,19 @@ export const FloatingFilterMenu = ({
 
   return (
     <>
+      {/* オーバーレイ（メニュー展開時） */}
+      {(isExpanded || activePanel !== null) && (
+        <div
+          className="fixed inset-0 bg-black/30 z-30"
+          onClick={() => {
+            setIsExpanded(false);
+            setActivePanel(null);
+          }}
+        />
+      )}
+
       {/* フローティングメニュー */}
-      <div ref={menuRef} className="fixed bottom-6 right-6 z-40">
+      <div ref={menuRef} className="fixed bottom-20 right-6 z-40">
         {/* 展開されたフィルターアイコン */}
         {isExpanded && (
           <div className="absolute bottom-0 right-0">
@@ -112,7 +123,7 @@ export const FloatingFilterMenu = ({
                 <button
                   key={item.type}
                   onClick={() => handleFilterClick(item.type)}
-                  className={`absolute w-12 h-12 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 ${
+                  className={`absolute w-12 h-12 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 active:scale-95 ${
                     item.isActive ? 'ring-4 ring-white' : ''
                   }`}
                   style={{
@@ -139,7 +150,7 @@ export const FloatingFilterMenu = ({
           }}
           className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
             isExpanded ? 'bg-red-500 rotate-180' : activeFilterCount > 0 ? 'bg-blue-600' : 'bg-gray-800 dark:bg-gray-700'
-          } text-white hover:scale-110 relative`}
+          } text-white active:scale-95 relative`}
           aria-label={isExpanded ? 'フィルターを閉じる' : 'フィルターを開く'}
         >
           {isExpanded ? <X size={24} /> : <Filter size={24} />}
