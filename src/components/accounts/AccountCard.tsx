@@ -106,6 +106,9 @@ export const AccountCard = ({
         <div className="flex-1 min-w-0 space-y-0.5">
           {/* 口座名とプラスボタン */}
           <div className="flex items-center gap-3">
+            <button onClick={onView} className="text-left flex-1 min-w-0">
+              <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{account.name}</p>
+            </button>
             {member?.icon && (
               <div
                 className="w-6 h-6 rounded-full flex items-center justify-center text-white flex-shrink-0"
@@ -114,9 +117,6 @@ export const AccountCard = ({
                 {getCategoryIcon(member.icon, 14)}
               </div>
             )}
-            <button onClick={onView} className="text-left flex-1 min-w-0">
-              <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{account.name}</p>
-            </button>
             <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 -mr-2 flex-shrink-0" title="取引追加" aria-label="取引を追加">
               <PlusCircle size={18} />
             </button>
