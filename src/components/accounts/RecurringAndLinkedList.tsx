@@ -32,16 +32,16 @@ export const RecurringAndLinkedList = ({
       {/* 定期取引セクション */}
       <div>
         <div className="flex justify-between items-center mb-1.5">
-          <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1">
+          <p className="text-xs text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1">
             <RefreshCw size={10} />
             定期取引
           </p>
-          <button onClick={onAddRecurring} className="text-blue-500 hover:text-blue-700 dark:text-blue-400">
+          <button onClick={onAddRecurring} className="text-blue-500 hover:text-blue-700 dark:text-blue-400" aria-label="定期取引を追加">
             <Plus size={14} />
           </button>
         </div>
         {recurringItems.length === 0 ? (
-          <p className="text-[11px] text-gray-300 dark:text-gray-600">定期取引なし</p>
+          <p className="text-xs text-gray-300 dark:text-gray-600">定期取引なし</p>
         ) : (
           <div className="space-y-1.5">
             {recurringItems.map((rp) => {
@@ -88,16 +88,16 @@ export const RecurringAndLinkedList = ({
       {/* 支払い手段セクション */}
       <div>
         <div className="flex justify-between items-center mb-1.5">
-          <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1">
+          <p className="text-xs text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1">
             <CreditCard size={10} />
             支払い手段
           </p>
-          <button onClick={onAddLinked} className="text-blue-500 hover:text-blue-700 dark:text-blue-400">
+          <button onClick={onAddLinked} className="text-blue-500 hover:text-blue-700 dark:text-blue-400" aria-label="支払い手段を追加">
             <Plus size={14} />
           </button>
         </div>
         {linkedItems.length === 0 ? (
-          <p className="text-[11px] text-gray-300 dark:text-gray-600">支払い手段なし</p>
+          <p className="text-xs text-gray-300 dark:text-gray-600">支払い手段なし</p>
         ) : (
           <div className="space-y-1.5">
             {linkedItems.map((lpm) => {

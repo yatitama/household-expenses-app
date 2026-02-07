@@ -83,7 +83,7 @@ export const AssetCard = ({
         <div className="mt-3 pt-3 border-t border-white/20">
           <button
             onClick={onToggleBreakdown}
-            className="flex items-center gap-1 text-[10px] font-medium opacity-70 mb-2"
+            className="flex items-center gap-1 text-xs font-medium opacity-70 mb-2"
           >
             {isBreakdownOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             内訳
@@ -109,7 +109,7 @@ export const AssetCard = ({
                       <div className="text-right">
                         <span className="text-xs font-bold">{formatCurrency(memberTotal)}</span>
                         {(memberExpense > 0 || memberIncome > 0) && (
-                          <span className="text-[10px] opacity-70 ml-1">（実質: {formatCurrency(memberTotal - memberNetPending)}）</span>
+                          <span className="text-xs opacity-70 ml-1">（実質: {formatCurrency(memberTotal - memberNetPending)}）</span>
                         )}
                       </div>
                     </div>
@@ -129,7 +129,7 @@ export const AssetCard = ({
                             <div className="text-right">
                               <span className="font-medium text-xs">{formatCurrency(account.balance)}</span>
                               {(hasExpense || hasIncome) && pendingData && (
-                                <p className="text-[10px] opacity-60">実質: {formatCurrency(account.balance - pendingData.totalPending)}</p>
+                                <p className="text-xs opacity-60">実質: {formatCurrency(account.balance - pendingData.totalPending)}</p>
                               )}
                             </div>
                           </div>

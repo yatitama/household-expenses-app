@@ -54,7 +54,7 @@ export const Layout = () => {
   return (
     <div className="min-h-screen flex bg-gray-50 dark:bg-slate-900">
       {/* デスクトップ: サイドバーナビゲーション */}
-      <nav className="hidden md:flex md:flex-col md:w-64 bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-gray-700 fixed inset-y-0 left-0">
+      <nav aria-label="メインナビゲーション" className="hidden md:flex md:flex-col md:w-64 bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-gray-700 fixed inset-y-0 left-0">
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">家計簿</h1>
         </div>

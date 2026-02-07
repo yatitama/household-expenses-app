@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { memberService, linkedPaymentMethodService } from '../../../services/storage';
 import { ACCOUNT_TYPE_LABELS } from '../constants';
@@ -38,7 +39,7 @@ export const LinkedPaymentMethodModal = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!paymentMethodId || !accountId) {
-      alert('支払い手段と支払い口座を選択してください');
+      toast.error('支払い手段と支払い口座を選択してください');
       return;
     }
     onSave({

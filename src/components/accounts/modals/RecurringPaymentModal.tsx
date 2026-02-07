@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { X, Check, ToggleLeft, ToggleRight } from 'lucide-react';
 import { categoryService, memberService } from '../../../services/storage';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
@@ -52,7 +53,7 @@ export const RecurringPaymentModal = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !amount || !categoryId || (!accountId && !pmId)) {
-      alert('名前、金額、カテゴリ、支払い元を入力してください');
+      toast.error('名前、金額、カテゴリ、支払い元を入力してください');
       return;
     }
     onSave({
@@ -213,9 +214,9 @@ export const RecurringPaymentModal = ({
                     >
                       {getCategoryIcon(category.icon, 14)}
                     </div>
-                    <span className="text-[10px] text-gray-700 dark:text-gray-300 truncate w-full text-center">{category.name}</span>
+                    <span className="text-xs text-gray-700 dark:text-gray-300 truncate w-full text-center">{category.name}</span>
                     {member && member.id !== 'common' && (
-                      <span className="text-[8px] text-gray-400 dark:text-gray-500 leading-none">{member.name}</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500 leading-none">{member.name}</span>
                     )}
                   </button>
                 );
@@ -230,7 +231,7 @@ export const RecurringPaymentModal = ({
             <div className="space-y-2 max-h-32 overflow-y-auto">
               {accounts.length > 0 && (
                 <div>
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium mb-1">口座</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mb-1">口座</p>
                   <div className="space-y-1">
                     {accounts.map((acct) => (
                       <button
@@ -255,7 +256,7 @@ export const RecurringPaymentModal = ({
               )}
               {type === 'expense' && paymentMethods.length > 0 && (
                 <div>
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium mb-1">支払い手段</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mb-1">支払い手段</p>
                   <div className="space-y-1">
                     {paymentMethods.map((pm) => (
                       <button

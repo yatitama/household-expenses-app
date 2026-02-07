@@ -1,10 +1,12 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { ArrowLeft, Plus, Edit2, Trash2, Tag } from 'lucide-react';
 import { categoryService, memberService } from '../services/storage';
 import { COMMON_MEMBER_ID } from '../types';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import type { Category, CategoryInput, TransactionType } from '../types';
 
 const COLORS = [
@@ -38,18 +40,26 @@ export const CategoriesPage = () => {
     setIsModalOpen(true);
   };
 
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id: string | null }>({ isOpen: false, id: null });
+
   const handleDelete = (id: string) => {
-    if (confirm('このカテゴリを削除しますか？')) {
-      categoryService.delete(id);
-      refreshCategories();
-    }
+    setDeleteConfirm({ isOpen: true, id });
+  };
+
+  const confirmDelete = () => {
+    if (!deleteConfirm.id) return;
+    categoryService.delete(deleteConfirm.id);
+    refreshCategories();
+    toast.success('カテゴリを削除しました');
   };
 
   const handleSave = (input: CategoryInput) => {
     if (editingCategory) {
       categoryService.update(editingCategory.id, input);
+      toast.success('カテゴリを更新しました');
     } else {
       categoryService.create(input);
+      toast.success('カテゴリを追加しました');
     }
     refreshCategories();
     setIsModalOpen(false);
@@ -144,6 +154,16 @@ export const CategoriesPage = () => {
           onClose={() => setIsModalOpen(false)}
         />
       )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, id: null })}
+        onConfirm={confirmDelete}
+        title="カテゴリを削除"
+        message="このカテゴリを削除してもよろしいですか？"
+        confirmText="削除"
+        confirmVariant="danger"
+      />
     </div>
   );
 };

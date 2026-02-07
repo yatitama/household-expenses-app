@@ -101,7 +101,7 @@ export const AccountCard = ({
               {member && (
                 <div className="mb-0.5">
                   <span
-                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-white"
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium text-white"
                     style={{ backgroundColor: member.color }}
                   >
                     {member.name}
@@ -114,13 +114,13 @@ export const AccountCard = ({
           </button>
         </div>
         <div className="flex items-center gap-1 flex-shrink-0">
-          <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400" title="取引追加">
+          <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400" title="取引追加" aria-label="取引を追加">
             <PlusCircle size={18} />
           </button>
-          <button onClick={onEdit} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
+          <button onClick={onEdit} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" aria-label="口座を編集">
             <Edit2 size={16} />
           </button>
-          <button onClick={onDelete} className="p-2 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400">
+          <button onClick={onDelete} className="p-2 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400" aria-label="口座を削除">
             <Trash2 size={16} />
           </button>
         </div>

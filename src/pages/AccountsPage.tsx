@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Plus, Wallet } from 'lucide-react';
 import { memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { useAccountDragAndDrop } from '../hooks/accounts/useAccountDragAndDrop';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { getPendingAmountByAccount, getPendingAmountByPaymentMethod, getTotalPendingByAccount } from '../utils/billingUtils';
 import { AssetCard } from '../components/accounts/AssetCard';
 import { AccountCard } from '../components/accounts/AccountCard';
@@ -16,6 +17,8 @@ import { AddTransactionModal } from '../components/accounts/modals/AddTransactio
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { LinkedPaymentMethodModal } from '../components/accounts/modals/LinkedPaymentMethodModal';
 import { GradientPickerModal } from '../components/accounts/modals/GradientPickerModal';
+import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
+import { EmptyState } from '../components/feedback/EmptyState';
 import type { Account, PaymentMethod, RecurringPayment, LinkedPaymentMethod } from '../types';
 
 export const AccountsPage = () => {
@@ -26,6 +29,7 @@ export const AccountsPage = () => {
     handleSaveRecurring, handleDeleteRecurring, handleToggleRecurring,
     handleSaveLinkedPM, handleToggleLinkedPM,
     handleSaveGradient,
+    confirmDialog, closeConfirmDialog,
   } = useAccountOperations();
 
   const dragAndDrop = useAccountDragAndDrop(accounts, refreshData);
@@ -69,6 +73,22 @@ export const AccountsPage = () => {
   const handleAddLinkedPM = (target: { accountId: string }) => {
     setEditingLinkedPM(null); setLinkedPMTarget(target); setIsLinkedPMModalOpen(true);
   };
+
+  const closeAllModals = () => {
+    setIsAccountModalOpen(false); setIsPMModalOpen(false);
+    setViewingAccount(null); setViewingPM(null);
+    setAddTransactionTarget(null); setIsRecurringModalOpen(false);
+    setIsLinkedPMModalOpen(false); setIsGradientPickerOpen(false);
+  };
+
+  const keyboardOptions = useMemo(() => ({
+    onNewTransaction: () => {
+      if (accounts.length > 0) setAddTransactionTarget({ accountId: accounts[0].id });
+    },
+    onCloseModal: closeAllModals,
+  }), [accounts]);
+
+  useKeyboardShortcuts(keyboardOptions);
 
   // Computed values
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
@@ -130,12 +150,16 @@ export const AccountsPage = () => {
         </div>
 
         {accounts.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 text-center">
-            <Wallet size={40} className="mx-auto text-gray-300 dark:text-gray-600 mb-2" />
-            <p className="text-gray-500 dark:text-gray-400 text-sm">口座がありません</p>
-            <button onClick={handleAddAccount} className="mt-2 text-blue-600 dark:text-blue-400 font-medium text-sm">
-              口座を追加する
-            </button>
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+            <EmptyState
+              icon={<Wallet size={32} className="text-gray-400 dark:text-gray-500" />}
+              title="口座がありません"
+              description="まずは口座を追加してみましょう"
+              action={{
+                label: '口座を追加',
+                onClick: handleAddAccount,
+              }}
+            />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -297,6 +321,16 @@ export const AccountsPage = () => {
           onClose={() => setIsGradientPickerOpen(false)}
         />
       )}
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={closeConfirmDialog}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText="削除"
+        confirmVariant="danger"
+      />
     </div>
   );
 };

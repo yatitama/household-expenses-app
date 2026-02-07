@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import { useFocusTrap } from '../../../hooks/useFocusTrap';
 
 interface ModalWrapperProps {
   onClose: () => void;
@@ -15,19 +16,29 @@ export const ModalWrapper = ({ onClose, title, children, size = 'md', zIndex = 5
     lg: 'sm:max-w-2xl md:max-w-4xl',
   }[size];
 
+  const modalRef = useFocusTrap(true);
+
   return (
     <div
       className={`fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center`}
       style={{ zIndex }}
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
     >
       <div
+        ref={modalRef}
         className={`bg-white dark:bg-slate-800 w-full ${sizeClass} sm:rounded-xl rounded-t-xl max-h-[90vh] overflow-hidden flex flex-col`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-800">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{title}</h2>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
+          <h2 id="modal-title" className="text-lg font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+          <button
+            onClick={onClose}
+            className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label="閉じる"
+          >
             <X size={20} />
           </button>
         </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 import { X, Edit2, Trash2, PlusCircle, Calendar } from 'lucide-react';
 import {
   accountService, transactionService, categoryService,
@@ -10,6 +11,7 @@ import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { calculatePaymentDate } from '../../../utils/billingUtils';
 import { PM_TYPE_ICONS } from '../AccountIcons';
 import { EditTransactionModal } from './EditTransactionModal';
+import { ConfirmDialog } from '../../feedback/ConfirmDialog';
 import { revertTransactionBalance, applyTransactionBalance } from '../balanceHelpers';
 import type { PaymentMethod, Transaction, TransactionInput } from '../../../types';
 
@@ -28,6 +30,8 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onEdit, onAddTrans
       .sort((a, b) => b.date.localeCompare(a.date));
   });
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; transaction: Transaction | null }>({ isOpen: false, transaction: null });
+  const [deletePMConfirm, setDeletePMConfirm] = useState(false);
 
   const allPMs = paymentMethodService.getAll();
   const allAccounts = accountService.getAll();
@@ -44,10 +48,15 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onEdit, onAddTrans
   };
 
   const handleDelete = (transaction: Transaction) => {
-    if (!confirm('この取引を削除しますか？')) return;
-    revertTransactionBalance(transaction);
-    transactionService.delete(transaction.id);
+    setDeleteConfirm({ isOpen: true, transaction });
+  };
+
+  const confirmDeleteTransaction = () => {
+    if (!deleteConfirm.transaction) return;
+    revertTransactionBalance(deleteConfirm.transaction);
+    transactionService.delete(deleteConfirm.transaction.id);
     refreshTransactions();
+    toast.success('取引を削除しました');
   };
 
   const handleSaveEdit = (input: TransactionInput) => {
@@ -60,6 +69,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onEdit, onAddTrans
     });
     refreshTransactions();
     setEditingTransaction(null);
+    toast.success('取引を更新しました');
   };
 
   const groupedByDate: Record<string, Transaction[]> = {};
@@ -110,12 +120,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onEdit, onAddTrans
               <span className="text-sm font-medium">取引追加</span>
             </button>
             <button
-              onClick={() => {
-                if (confirm('この支払い手段を削除しますか？')) {
-                  onDelete(paymentMethod.id);
-                  onClose();
-                }
-              }}
+              onClick={() => setDeletePMConfirm(true)}
               className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-red-500 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
             >
               <Trash2 size={16} />
@@ -156,7 +161,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onEdit, onAddTrans
                                 {settlementDate && (
                                   <div className="flex items-center gap-1 mt-0.5">
                                     <Calendar size={10} className={isSettled ? 'text-green-400' : 'text-orange-400'} />
-                                    <p className={`text-[11px] ${isSettled ? 'text-green-500 dark:text-green-400' : 'text-orange-500 dark:text-orange-400'}`}>
+                                    <p className={`text-xs ${isSettled ? 'text-green-500 dark:text-green-400' : 'text-orange-500 dark:text-orange-400'}`}>
                                       {settlementLabel}{isSettled ? '（精算済）' : ''}
                                     </p>
                                   </div>
@@ -200,6 +205,29 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onEdit, onAddTrans
           />
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, transaction: null })}
+        onConfirm={confirmDeleteTransaction}
+        title="取引を削除"
+        message="この取引を削除してもよろしいですか？この操作は取り消せません。"
+        confirmText="削除"
+        confirmVariant="danger"
+      />
+
+      <ConfirmDialog
+        isOpen={deletePMConfirm}
+        onClose={() => setDeletePMConfirm(false)}
+        onConfirm={() => {
+          onDelete(paymentMethod.id);
+          onClose();
+        }}
+        title="支払い手段を削除"
+        message="この支払い手段を削除してもよろしいですか？この操作は取り消せません。"
+        confirmText="削除"
+        confirmVariant="danger"
+      />
     </div>
   );
 };

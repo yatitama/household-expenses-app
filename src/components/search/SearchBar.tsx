@@ -11,6 +11,7 @@ export const SearchBar = ({ value, onChange, placeholder = '取引を検索...' 
     <div className="relative">
       <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
       <input
+        id="search-input"
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}

@@ -1,8 +1,10 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { ArrowLeft, Plus, Edit2, Trash2, Users } from 'lucide-react';
 import { memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import type { Member, MemberInput } from '../types';
 
 const COLORS = [
@@ -32,22 +34,30 @@ export const MembersPage = () => {
     setIsModalOpen(true);
   };
 
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; member: Member | null }>({ isOpen: false, member: null });
+
   const handleDelete = (member: Member) => {
     if (member.isDefault) {
-      alert('デフォルトメンバーは削除できません');
+      toast.error('デフォルトメンバーは削除できません');
       return;
     }
-    if (confirm('このメンバーを削除しますか？')) {
-      memberService.delete(member.id);
-      refreshMembers();
-    }
+    setDeleteConfirm({ isOpen: true, member });
+  };
+
+  const confirmDelete = () => {
+    if (!deleteConfirm.member) return;
+    memberService.delete(deleteConfirm.member.id);
+    refreshMembers();
+    toast.success('メンバーを削除しました');
   };
 
   const handleSave = (input: MemberInput) => {
     if (editingMember) {
       memberService.update(editingMember.id, input);
+      toast.success('メンバーを更新しました');
     } else {
       memberService.create(input);
+      toast.success('メンバーを追加しました');
     }
     refreshMembers();
     setIsModalOpen(false);
@@ -124,6 +134,16 @@ export const MembersPage = () => {
           onClose={() => setIsModalOpen(false)}
         />
       )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, member: null })}
+        onConfirm={confirmDelete}
+        title="メンバーを削除"
+        message="このメンバーを削除してもよろしいですか？"
+        confirmText="削除"
+        confirmVariant="danger"
+      />
     </div>
   );
 };

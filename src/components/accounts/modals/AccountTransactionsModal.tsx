@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 import { X, Edit2, Trash2, CreditCard, Calendar } from 'lucide-react';
 import {
   accountService, transactionService, categoryService,
@@ -10,6 +11,7 @@ import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { calculatePaymentDate } from '../../../utils/billingUtils';
 import { ACCOUNT_TYPE_ICONS } from '../AccountIcons';
 import { EditTransactionModal } from './EditTransactionModal';
+import { ConfirmDialog } from '../../feedback/ConfirmDialog';
 import { revertTransactionBalance, applyTransactionBalance } from '../balanceHelpers';
 import type { Account, Transaction, TransactionInput } from '../../../types';
 
@@ -30,6 +32,7 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
       .sort((a, b) => b.date.localeCompare(a.date));
   });
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; transaction: Transaction | null }>({ isOpen: false, transaction: null });
 
   const allPMs = paymentMethodService.getAll();
   const allAccounts = accountService.getAll();
@@ -51,10 +54,15 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
   };
 
   const handleDelete = (transaction: Transaction) => {
-    if (!confirm('この取引を削除しますか？')) return;
-    revertTransactionBalance(transaction);
-    transactionService.delete(transaction.id);
+    setDeleteConfirm({ isOpen: true, transaction });
+  };
+
+  const confirmDelete = () => {
+    if (!deleteConfirm.transaction) return;
+    revertTransactionBalance(deleteConfirm.transaction);
+    transactionService.delete(deleteConfirm.transaction.id);
     refreshTransactions();
+    toast.success('取引を削除しました');
   };
 
   const handleSaveEdit = (input: TransactionInput) => {
@@ -67,6 +75,7 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
     });
     refreshTransactions();
     setEditingTransaction(null);
+    toast.success('取引を更新しました');
   };
 
   const groupedByDate: Record<string, Transaction[]> = {};
@@ -135,7 +144,7 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
                                 {settlementDate && (
                                   <div className="flex items-center gap-1 mt-0.5">
                                     <Calendar size={10} className={isSettled ? 'text-green-400' : 'text-orange-400'} />
-                                    <p className={`text-[11px] ${isSettled ? 'text-green-500 dark:text-green-400' : 'text-orange-500 dark:text-orange-400'}`}>
+                                    <p className={`text-xs ${isSettled ? 'text-green-500 dark:text-green-400' : 'text-orange-500 dark:text-orange-400'}`}>
                                       {settlementLabel}{isSettled ? '（精算済）' : ''}
                                     </p>
                                   </div>
@@ -179,6 +188,16 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
           />
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, transaction: null })}
+        onConfirm={confirmDelete}
+        title="取引を削除"
+        message="この取引を削除してもよろしいですか？この操作は取り消せません。"
+        confirmText="削除"
+        confirmVariant="danger"
+      />
     </div>
   );
 };
