@@ -12,18 +12,16 @@ interface PaymentMethodCardProps {
   pendingAmount: number;
   recurringPayments: RecurringPayment[];
   onView: () => void;
-  onDelete: () => void;
   onAddTransaction: () => void;
   onAddRecurring: () => void;
   onEditRecurring: (rp: RecurringPayment) => void;
-  onDeleteRecurring: (id: string) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
 }
 
 export const PaymentMethodCard = ({
   paymentMethod, linkedAccountName, pendingAmount, recurringPayments,
-  onView, onDelete, onAddTransaction, onAddRecurring,
-  onEditRecurring, onDeleteRecurring, onToggleRecurring,
+  onView, onAddTransaction, onAddRecurring,
+  onEditRecurring, onToggleRecurring,
 }: PaymentMethodCardProps) => {
   const categories = categoryService.getAll();
   const getCategory = (id: string) => categories.find((c) => c.id === id);
@@ -62,7 +60,6 @@ export const PaymentMethodCard = ({
         items={recurringPayments}
         onAdd={onAddRecurring}
         onEdit={onEditRecurring}
-        onDelete={onDeleteRecurring}
         onToggle={onToggleRecurring}
         getCategory={getCategory}
       />

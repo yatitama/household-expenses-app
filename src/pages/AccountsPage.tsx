@@ -22,8 +22,8 @@ import type { Account, PaymentMethod, RecurringPayment, LinkedPaymentMethod } fr
 export const AccountsPage = () => {
   const {
     accounts, paymentMethods, recurringPayments, linkedPaymentMethods, appSettings,
-    refreshData, handleDeleteAccount, handleDeletePM,
-    handleSaveRecurring, handleDeleteRecurring, handleToggleRecurring,
+    refreshData,
+    handleSaveRecurring, handleToggleRecurring,
     handleSaveLinkedPM, handleToggleLinkedPM,
     handleSaveGradient,
     confirmDialog, closeConfirmDialog,
@@ -149,16 +149,13 @@ export const AccountsPage = () => {
                   pendingByPM={pendingByPM}
                   recurringPayments={accountRecurrings}
                   onView={() => setViewingAccount(account)}
-                  onDelete={() => handleDeleteAccount(account.id)}
                   onAddTransaction={() => setAddTransactionTarget({ accountId: account.id })}
                   onAddRecurring={() => handleAddRecurring({ accountId: account.id })}
                   onEditRecurring={handleEditRecurring}
-                  onDeleteRecurring={handleDeleteRecurring}
                   onToggleRecurring={handleToggleRecurring}
                   onAddLinkedPM={() => handleAddLinkedPM({ accountId: account.id })}
                   onToggleLinkedPM={handleToggleLinkedPM}
                   onViewPM={(pm) => setViewingPM(pm)}
-                  onDeletePM={(pmId) => handleDeletePM(pmId)}
                   isDragging={dragAndDrop.draggedAccountId === account.id}
                   isDragOver={dragAndDrop.dragOverAccountId === account.id}
                   onDragStart={() => dragAndDrop.handleDragStart(account.id)}
@@ -193,11 +190,9 @@ export const AccountsPage = () => {
                   pendingAmount={pendingByPM[pm.id] || 0}
                   recurringPayments={pmRecurrings}
                   onView={() => setViewingPM(pm)}
-                  onDelete={() => handleDeletePM(pm.id)}
                   onAddTransaction={() => setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
                   onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
                   onEditRecurring={handleEditRecurring}
-                  onDeleteRecurring={handleDeleteRecurring}
                   onToggleRecurring={handleToggleRecurring}
                 />
               );

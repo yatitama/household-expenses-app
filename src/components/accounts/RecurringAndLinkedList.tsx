@@ -8,12 +8,10 @@ interface RecurringAndLinkedListProps {
   linkedItems: LinkedPaymentMethod[];
   onAddRecurring: () => void;
   onEditRecurring: (rp: RecurringPayment) => void;
-  onDeleteRecurring: (id: string) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
   onAddLinked: () => void;
   onToggleLinked: (lpm: LinkedPaymentMethod) => void;
   onViewPM: (pm: PaymentMethod) => void;
-  onDeletePM: (pmId: string) => void;
   getCategory: (id: string) => { name: string; color: string; icon: string } | undefined;
   getPaymentMethod: (id: string) => PaymentMethod | undefined;
   getUnsettledAmount: (paymentMethodId: string) => number;
@@ -21,9 +19,9 @@ interface RecurringAndLinkedListProps {
 
 export const RecurringAndLinkedList = ({
   recurringItems, linkedItems,
-  onAddRecurring, onEditRecurring, onDeleteRecurring, onToggleRecurring,
+  onAddRecurring, onEditRecurring, onToggleRecurring,
   onAddLinked, onToggleLinked,
-  onViewPM, onDeletePM,
+  onViewPM,
   getCategory, getPaymentMethod, getUnsettledAmount,
 }: RecurringAndLinkedListProps) => {
   return (

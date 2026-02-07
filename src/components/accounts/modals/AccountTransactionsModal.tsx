@@ -11,7 +11,6 @@ import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { calculatePaymentDate } from '../../../utils/billingUtils';
 import { ACCOUNT_TYPE_ICONS } from '../AccountIcons';
 import { EditTransactionModal } from './EditTransactionModal';
-import { ConfirmDialog } from '../../feedback/ConfirmDialog';
 import { revertTransactionBalance, applyTransactionBalance } from '../balanceHelpers';
 import type { Account, Transaction, TransactionInput } from '../../../types';
 
@@ -32,7 +31,6 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
       .sort((a, b) => b.date.localeCompare(a.date));
   });
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; transaction: Transaction | null }>({ isOpen: false, transaction: null });
 
   const allPMs = paymentMethodService.getAll();
   const allAccounts = accountService.getAll();
@@ -51,18 +49,6 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
         .filter((t) => t.accountId === account.id || (t.paymentMethodId && linkedPMIds.includes(t.paymentMethodId)))
         .sort((a, b) => b.date.localeCompare(a.date))
     );
-  };
-
-  const handleDelete = (transaction: Transaction) => {
-    setDeleteConfirm({ isOpen: true, transaction });
-  };
-
-  const confirmDelete = () => {
-    if (!deleteConfirm.transaction) return;
-    revertTransactionBalance(deleteConfirm.transaction);
-    transactionService.delete(deleteConfirm.transaction.id);
-    refreshTransactions();
-    toast.success('取引を削除しました');
   };
 
   const handleSaveEdit = (input: TransactionInput) => {
@@ -194,16 +180,6 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
           />
         </div>
       )}
-
-      <ConfirmDialog
-        isOpen={deleteConfirm.isOpen}
-        onClose={() => setDeleteConfirm({ isOpen: false, transaction: null })}
-        onConfirm={confirmDelete}
-        title="取引を削除"
-        message="この取引を削除してもよろしいですか？この操作は取り消せません。"
-        confirmText="削除"
-        confirmVariant="danger"
-      />
     </div>
   );
 };

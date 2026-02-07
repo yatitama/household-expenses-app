@@ -21,16 +21,13 @@ interface AccountCardProps {
   pendingByPM: Record<string, number>;
   recurringPayments: RecurringPayment[];
   onView: () => void;
-  onDelete: () => void;
   onAddTransaction: () => void;
   onAddRecurring: () => void;
   onEditRecurring: (rp: RecurringPayment) => void;
-  onDeleteRecurring: (id: string) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
   onAddLinkedPM: () => void;
   onToggleLinkedPM: (lpm: LinkedPaymentMethod) => void;
   onViewPM: (pm: PaymentMethod) => void;
-  onDeletePM: (pmId: string) => void;
   isDragging?: boolean;
   isDragOver?: boolean;
   onDragStart: () => void;
@@ -45,10 +42,10 @@ interface AccountCardProps {
 
 export const AccountCard = ({
   account, member, pendingAmount, totalPendingData, linkedPaymentMethodsData, allPaymentMethods, pendingByPM, recurringPayments,
-  onView, onDelete, onAddTransaction, onAddRecurring,
-  onEditRecurring, onDeleteRecurring, onToggleRecurring,
+  onView, onAddTransaction, onAddRecurring,
+  onEditRecurring, onToggleRecurring,
   onAddLinkedPM, onToggleLinkedPM,
-  onViewPM, onDeletePM,
+  onViewPM,
   isDragging, isDragOver,
   onDragStart, onDragOver, onDrop, onDragEnd,
   onTouchStart, onTouchMove, onTouchEnd, onTouchCancel,
@@ -138,12 +135,10 @@ export const AccountCard = ({
         linkedItems={linkedPaymentMethodsData}
         onAddRecurring={onAddRecurring}
         onEditRecurring={onEditRecurring}
-        onDeleteRecurring={onDeleteRecurring}
         onToggleRecurring={onToggleRecurring}
         onAddLinked={onAddLinkedPM}
         onToggleLinked={onToggleLinkedPM}
         onViewPM={onViewPM}
-        onDeletePM={onDeletePM}
         getCategory={getCategory}
         getPaymentMethod={getPaymentMethod}
         getUnsettledAmount={getUnsettledAmount}
