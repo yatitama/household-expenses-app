@@ -7,12 +7,11 @@ interface RecurringPaymentsListProps {
   items: RecurringPayment[];
   onAdd: () => void;
   onEdit: (rp: RecurringPayment) => void;
-  onDelete: (id: string) => void;
   onToggle: (rp: RecurringPayment) => void;
   getCategory: (id: string) => { name: string; color: string; icon: string } | undefined;
 }
 
-export const RecurringPaymentsList = ({ items, onAdd, onEdit, onDelete, onToggle, getCategory }: RecurringPaymentsListProps) => {
+export const RecurringPaymentsList = ({ items, onAdd, onEdit, onToggle, getCategory }: RecurringPaymentsListProps) => {
   return (
     <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
       <div className="flex justify-between items-center mb-1.5">
