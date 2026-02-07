@@ -1,14 +1,19 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import { Receipt } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { SearchBar } from '../components/search/SearchBar';
 import { FilterPanel } from '../components/search/FilterPanel';
-import { categoryService, memberService, accountService, paymentMethodService } from '../services/storage';
+import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
+import { categoryService, memberService, accountService, paymentMethodService, transactionService } from '../services/storage';
+import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
+import type { Transaction, TransactionInput } from '../types';
 
 export const TransactionsPage = () => {
   const { filters, filteredTransactions, updateFilter, resetFilters, activeFilterCount } = useTransactionFilter();
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
   const members = useMemo(() => memberService.getAll(), []);
   const categories = useMemo(() => categoryService.getAll(), []);
@@ -33,6 +38,32 @@ export const TransactionsPage = () => {
 
   const getPaymentMethodName = (pmId: string) => {
     return paymentMethods.find((pm) => pm.id === pmId)?.name || '';
+  };
+
+  // Handlers
+  const handleSaveEdit = (input: TransactionInput) => {
+    if (!editingTransaction) return;
+
+    const oldTransaction = editingTransaction;
+    revertTransactionBalance(oldTransaction);
+    transactionService.update(editingTransaction.id, input);
+    applyTransactionBalance({ ...input, id: editingTransaction.id, settledAt: editingTransaction.settledAt });
+
+    toast.success('取引を更新しました');
+    setEditingTransaction(null);
+    window.location.reload(); // Refresh to update the list
+  };
+
+  const handleDelete = (id: string) => {
+    const transaction = transactionService.getAll().find((t) => t.id === id);
+    if (!transaction) return;
+
+    revertTransactionBalance(transaction);
+    transactionService.delete(id);
+
+    toast.success('取引を削除しました');
+    setEditingTransaction(null);
+    window.location.reload(); // Refresh to update the list
   };
 
   // Group transactions by date
@@ -97,7 +128,11 @@ export const TransactionsPage = () => {
                     : getAccountName(t.accountId);
 
                   return (
-                    <div key={t.id} className="flex items-center gap-3 px-4 py-3">
+                    <button
+                      key={t.id}
+                      onClick={() => setEditingTransaction(t)}
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                    >
                       <div
                         className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
                         style={{ backgroundColor: `${color}20`, color }}
@@ -117,13 +152,27 @@ export const TransactionsPage = () => {
                       }`}>
                         {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
                       </p>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {/* Edit Transaction Modal */}
+      {editingTransaction && (
+        <EditTransactionModal
+          transaction={editingTransaction}
+          accounts={accounts}
+          paymentMethods={paymentMethods}
+          categories={categories}
+          members={members}
+          onSave={handleSaveEdit}
+          onClose={() => setEditingTransaction(null)}
+          onDelete={handleDelete}
+        />
       )}
     </div>
   );

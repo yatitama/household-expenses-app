@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
-import { X, Edit2, Trash2, PlusCircle, Calendar } from 'lucide-react';
+import { X, PlusCircle, Calendar } from 'lucide-react';
 import {
   accountService, transactionService, categoryService,
   memberService, paymentMethodService,
@@ -18,12 +18,10 @@ import type { PaymentMethod, Transaction, TransactionInput } from '../../../type
 interface PMTransactionsModalProps {
   paymentMethod: PaymentMethod;
   onClose: () => void;
-  onEdit: (pm: PaymentMethod) => void;
   onAddTransaction: (pm: PaymentMethod) => void;
-  onDelete: (pmId: string) => void;
 }
 
-export const PMTransactionsModal = ({ paymentMethod, onClose, onEdit, onAddTransaction, onDelete }: PMTransactionsModalProps) => {
+export const PMTransactionsModal = ({ paymentMethod, onClose, onAddTransaction }: PMTransactionsModalProps) => {
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     return transactionService.getAll()
       .filter((t) => t.paymentMethodId === paymentMethod.id)
@@ -31,7 +29,6 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onEdit, onAddTrans
   });
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; transaction: Transaction | null }>({ isOpen: false, transaction: null });
-  const [deletePMConfirm, setDeletePMConfirm] = useState(false);
 
   const allPMs = paymentMethodService.getAll();
   const allAccounts = accountService.getAll();
@@ -106,25 +103,11 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onEdit, onAddTrans
 
           <div className="flex gap-2">
             <button
-              onClick={() => onEdit(paymentMethod)}
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
-            >
-              <Edit2 size={16} />
-              <span className="text-sm font-medium">編集</span>
-            </button>
-            <button
               onClick={() => onAddTransaction(paymentMethod)}
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-purple-500 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors"
             >
               <PlusCircle size={16} />
               <span className="text-sm font-medium">取引追加</span>
-            </button>
-            <button
-              onClick={() => setDeletePMConfirm(true)}
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-red-500 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
-            >
-              <Trash2 size={16} />
-              <span className="text-sm font-medium">削除</span>
             </button>
           </div>
         </div>
@@ -212,19 +195,6 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onEdit, onAddTrans
         onConfirm={confirmDeleteTransaction}
         title="取引を削除"
         message="この取引を削除してもよろしいですか？この操作は取り消せません。"
-        confirmText="削除"
-        confirmVariant="danger"
-      />
-
-      <ConfirmDialog
-        isOpen={deletePMConfirm}
-        onClose={() => setDeletePMConfirm(false)}
-        onConfirm={() => {
-          onDelete(paymentMethod.id);
-          onClose();
-        }}
-        title="支払い手段を削除"
-        message="この支払い手段を削除してもよろしいですか？この操作は取り消せません。"
         confirmText="削除"
         confirmVariant="danger"
       />

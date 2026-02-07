@@ -9,9 +9,10 @@ interface AccountModalProps {
   members: Member[];
   onSave: (input: AccountInput) => void;
   onClose: () => void;
+  onDelete?: (id: string) => void;
 }
 
-export const AccountModal = ({ account, members, onSave, onClose }: AccountModalProps) => {
+export const AccountModal = ({ account, members, onSave, onClose, onDelete }: AccountModalProps) => {
   const [name, setName] = useState(account?.name || '');
   const [memberId, setMemberId] = useState(account?.memberId || COMMON_MEMBER_ID);
   const [accountType, setAccountType] = useState<AccountType>(account?.type || 'bank');
@@ -115,13 +116,24 @@ export const AccountModal = ({ account, members, onSave, onClose }: AccountModal
             </div>
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
-              キャンセル
-            </button>
-            <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
-              保存
-            </button>
+          <div className="space-y-2 pt-2">
+            {account && onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(account.id); onClose(); }}
+                className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+              >
+                削除
+              </button>
+            )}
+            <div className="flex gap-3">
+              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+                キャンセル
+              </button>
+              <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
+                保存
+              </button>
+            </div>
           </div>
         </form>
       </div>

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Wallet } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 import { memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
@@ -9,8 +9,6 @@ import { getPendingAmountByAccount, getPendingAmountByPaymentMethod, getTotalPen
 import { AssetCard } from '../components/accounts/AssetCard';
 import { AccountCard } from '../components/accounts/AccountCard';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
-import { AccountModal } from '../components/accounts/modals/AccountModal';
-import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { AccountTransactionsModal } from '../components/accounts/modals/AccountTransactionsModal';
 import { PMTransactionsModal } from '../components/accounts/modals/PMTransactionsModal';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
@@ -36,12 +34,8 @@ export const AccountsPage = () => {
   const members = memberService.getAll();
 
   // Modal state
-  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
-  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [viewingAccount, setViewingAccount] = useState<Account | null>(null);
   const [viewingPM, setViewingPM] = useState<PaymentMethod | null>(null);
-  const [isPMModalOpen, setIsPMModalOpen] = useState(false);
-  const [editingPM, setEditingPM] = useState<PaymentMethod | null>(null);
   const [addTransactionTarget, setAddTransactionTarget] = useState<{ accountId?: string; paymentMethodId?: string } | null>(null);
   const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
   const [editingRecurring, setEditingRecurring] = useState<RecurringPayment | null>(null);
@@ -56,14 +50,10 @@ export const AccountsPage = () => {
   const pendingByPM = getPendingAmountByPaymentMethod();
   const totalPendingByAccount = getTotalPendingByAccount();
 
-  const isAnyModalOpen = isAccountModalOpen || isPMModalOpen || !!viewingAccount || !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isLinkedPMModalOpen || isGradientPickerOpen;
+  const isAnyModalOpen = !!viewingAccount || !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isLinkedPMModalOpen || isGradientPickerOpen;
   useBodyScrollLock(isAnyModalOpen);
 
   // Handlers
-  const handleAddAccount = () => { setEditingAccount(null); setIsAccountModalOpen(true); };
-  const handleEditAccount = (account: Account) => { setEditingAccount(account); setIsAccountModalOpen(true); };
-  const handleAddPM = () => { setEditingPM(null); setIsPMModalOpen(true); };
-  const handleEditPM = (pm: PaymentMethod) => { setEditingPM(pm); setIsPMModalOpen(true); };
   const handleAddRecurring = (target: { accountId?: string; paymentMethodId?: string }) => {
     setEditingRecurring(null); setRecurringTarget(target); setIsRecurringModalOpen(true);
   };
@@ -75,7 +65,6 @@ export const AccountsPage = () => {
   };
 
   const closeAllModals = () => {
-    setIsAccountModalOpen(false); setIsPMModalOpen(false);
     setViewingAccount(null); setViewingPM(null);
     setAddTransactionTarget(null); setIsRecurringModalOpen(false);
     setIsLinkedPMModalOpen(false); setIsGradientPickerOpen(false);
@@ -131,22 +120,6 @@ export const AccountsPage = () => {
       <div>
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-base font-bold text-gray-700 dark:text-gray-300">口座</h3>
-          <div className="flex gap-2">
-            <button
-              onClick={handleAddPM}
-              className="flex items-center gap-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium"
-            >
-              <Plus size={16} />
-              支払い手段
-            </button>
-            <button
-              onClick={handleAddAccount}
-              className="flex items-center gap-1 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium"
-            >
-              <Plus size={16} />
-              口座
-            </button>
-          </div>
         </div>
 
         {accounts.length === 0 ? (
@@ -154,11 +127,7 @@ export const AccountsPage = () => {
             <EmptyState
               icon={<Wallet size={32} className="text-gray-400 dark:text-gray-500" />}
               title="口座がありません"
-              description="まずは口座を追加してみましょう"
-              action={{
-                label: '口座を追加',
-                onClick: handleAddAccount,
-              }}
+              description="設定から口座を追加してください"
             />
           </div>
         ) : (
@@ -242,25 +211,6 @@ export const AccountsPage = () => {
       )}
 
       {/* モーダル群 */}
-      {isAccountModalOpen && (
-        <AccountModal
-          account={editingAccount}
-          members={members}
-          onSave={(input) => { handleSaveAccount(input, editingAccount); setIsAccountModalOpen(false); }}
-          onClose={() => setIsAccountModalOpen(false)}
-        />
-      )}
-
-      {isPMModalOpen && (
-        <PaymentMethodModal
-          paymentMethod={editingPM}
-          members={members}
-          accounts={accounts}
-          onSave={(input) => { handleSavePM(input, editingPM); setIsPMModalOpen(false); }}
-          onClose={() => setIsPMModalOpen(false)}
-        />
-      )}
-
       {viewingAccount && (
         <AccountTransactionsModal
           account={viewingAccount}
@@ -272,12 +222,10 @@ export const AccountsPage = () => {
         <PMTransactionsModal
           paymentMethod={viewingPM}
           onClose={() => { setViewingPM(null); refreshData(); }}
-          onEdit={(pm) => { setViewingPM(null); handleEditPM(pm); }}
           onAddTransaction={(pm) => {
             setViewingPM(null);
             setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId });
           }}
-          onDelete={(pmId) => { handleDeletePM(pmId); }}
         />
       )}
 

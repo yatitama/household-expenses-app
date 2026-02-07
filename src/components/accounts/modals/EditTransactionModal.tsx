@@ -12,10 +12,11 @@ interface EditTransactionModalProps {
   members: Member[];
   onSave: (input: TransactionInput) => void;
   onClose: () => void;
+  onDelete?: (id: string) => void;
 }
 
 export const EditTransactionModal = ({
-  transaction, accounts, paymentMethods, categories, members, onSave, onClose,
+  transaction, accounts, paymentMethods, categories, members, onSave, onClose, onDelete,
 }: EditTransactionModalProps) => {
   const [type, setType] = useState<TransactionType>(transaction.type);
   const [amount, setAmount] = useState(transaction.amount.toString());
@@ -221,17 +222,28 @@ export const EditTransactionModal = ({
             />
           </div>
 
-          <div className="flex gap-3 pt-1">
-            <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
-              キャンセル
-            </button>
-            <button
-              type="submit"
-              disabled={!amount || !categoryId || (!accountId && !pmId)}
-              className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium disabled:opacity-50"
-            >
-              保存
-            </button>
+          <div className="space-y-2 pt-1">
+            {onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(transaction.id); onClose(); }}
+                className="w-full py-2.5 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+              >
+                削除
+              </button>
+            )}
+            <div className="flex gap-3">
+              <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+                キャンセル
+              </button>
+              <button
+                type="submit"
+                disabled={!amount || !categoryId || (!accountId && !pmId)}
+                className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium disabled:opacity-50"
+              >
+                保存
+              </button>
+            </div>
           </div>
         </form>
       </div>
