@@ -31,6 +31,38 @@ export const FilterSidePanel = ({
 }: FilterSidePanelProps) => {
   if (!isOpen || !filterType) return null;
 
+  // 個別のフィルターリセット関数
+  const resetCurrentFilter = () => {
+    switch (filterType) {
+      case 'search':
+        updateFilter('searchQuery', '');
+        break;
+      case 'type':
+        updateFilter('transactionType', 'all');
+        break;
+      case 'date':
+        updateFilter('dateRange', { start: '', end: '' });
+        break;
+      case 'member':
+        updateFilter('memberIds', []);
+        break;
+      case 'category':
+        updateFilter('categoryIds', []);
+        break;
+      case 'account':
+        updateFilter('accountIds', []);
+        break;
+      case 'payment':
+        updateFilter('paymentMethodIds', []);
+        break;
+      case 'sort':
+        updateFilter('sortBy', 'date');
+        updateFilter('sortOrder', 'desc');
+        break;
+    }
+    onClose();
+  };
+
   const getTitleAndContent = () => {
     switch (filterType) {
       case 'search':
@@ -199,14 +231,11 @@ export const FilterSidePanel = ({
         {/* フッター（リセットボタン） */}
         <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 rounded-b-2xl">
           <button
-            onClick={() => {
-              resetFilters();
-              onClose();
-            }}
+            onClick={resetCurrentFilter}
             className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 active:scale-95 transition-all text-sm font-medium"
           >
             <RotateCcw size={14} />
-            リセット
+            このフィルターをリセット
           </button>
         </div>
       </div>
