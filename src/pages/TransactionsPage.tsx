@@ -5,6 +5,7 @@ import { Receipt } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { FloatingFilterMenu } from '../components/search/FloatingFilterMenu';
+import { GroupingButton } from '../components/search/GroupingButton';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
 import { categoryService, memberService, accountService, paymentMethodService, transactionService } from '../services/storage';
 import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
@@ -19,6 +20,7 @@ export const TransactionsPage = () => {
   const { filters, filteredTransactions, updateFilter, resetFilters, activeFilterCount } = useTransactionFilter();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
+  const [isFilterMenuExpanded, setIsFilterMenuExpanded] = useState(false);
   useBodyScrollLock(!!editingTransaction);
 
   // URLパラメータからフィルターを初期化
@@ -148,11 +150,22 @@ export const TransactionsPage = () => {
         </div>
       ) : (
         <div className="space-y-3">
-          {groupedTransactions.map(([key, { label, transactions }]) => (
-            <div key={key} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
-              <div className="px-4 py-2 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-700">
-                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}</p>
-              </div>
+          {groupedTransactions.map(([key, { label, transactions }]) => {
+            // グループ内の合計を計算
+            const groupTotal = transactions.reduce((sum, t) => {
+              return sum + (t.type === 'income' ? t.amount : -t.amount);
+            }, 0);
+
+            return (
+              <div key={key} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+                <div className="px-4 py-2 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}</p>
+                  <p className={`text-xs font-bold ${
+                    groupTotal >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {groupTotal >= 0 ? '+' : ''}{formatCurrency(groupTotal)}
+                  </p>
+                </div>
               <div className="divide-y divide-gray-50 dark:divide-gray-700">
                 {transactions.map((t) => {
                   const color = getCategoryColor(t.categoryId);
@@ -190,9 +203,17 @@ export const TransactionsPage = () => {
                 })}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
+
+      {/* Grouping Button */}
+      <GroupingButton
+        groupBy={groupBy}
+        onGroupByChange={setGroupBy}
+        isFilterMenuExpanded={isFilterMenuExpanded}
+      />
 
       {/* Floating Filter Menu */}
       <FloatingFilterMenu
@@ -204,8 +225,8 @@ export const TransactionsPage = () => {
         categories={categories}
         accounts={accounts}
         paymentMethods={paymentMethods}
-        groupBy={groupBy}
-        onGroupByChange={setGroupBy}
+        isExpanded={isFilterMenuExpanded}
+        setIsExpanded={setIsFilterMenuExpanded}
       />
 
       {/* Edit Transaction Modal */}
