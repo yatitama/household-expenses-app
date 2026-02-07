@@ -42,7 +42,7 @@ export const FloatingFilterMenu = ({
   isGroupingPanelOpen,
 }: FloatingFilterMenuProps) => {
   const [activePanel, setActivePanel] = useState<FilterType | null>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLButtonElement>(null);
 
   // 各フィルターがアクティブかどうかを判定
   const isTypeActive = filters.transactionType !== 'all';
