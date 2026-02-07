@@ -202,7 +202,7 @@ export const FilterSidePanel = ({
     <>
       {/* フローティングパネル */}
       <div
-        className={`fixed bottom-20 right-24 w-72 max-w-[calc(100vw-6rem)] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl z-50 transform transition-all duration-300 ${
+        className={`fixed bottom-38 right-2 sm:right-3 w-full max-w-[calc(100vw-4rem)] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl z-50 transform transition-all duration-300 ${
           isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
         }`}
         style={{
