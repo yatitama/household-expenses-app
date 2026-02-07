@@ -73,19 +73,23 @@ export const AccountCard = ({
         isDragging ? 'opacity-70 shadow-lg scale-[1.02] ring-2 ring-blue-400 z-10 relative' : 'shadow-sm'
       } ${isDragOver ? 'border-2 border-blue-400 bg-blue-50/60 dark:bg-blue-900/20' : 'border-2 border-transparent'}`}
     >
-      <div className="flex justify-between items-start">
+      {/* 並び替えアイコン - 上部中央 */}
+      <div className="flex justify-center -mt-2 mb-2">
         <button
           onMouseDown={(e) => e.stopPropagation()}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
           onTouchCancel={onTouchCancel}
-          className="cursor-grab active:cursor-grabbing p-2 -ml-1 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 rounded-lg active:bg-gray-100 dark:active:bg-gray-700 flex-shrink-0"
+          className="cursor-grab active:cursor-grabbing p-1 min-w-[44px] min-h-[32px] flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 rounded-lg active:bg-gray-100 dark:active:bg-gray-700"
           style={{ touchAction: 'none', WebkitTouchCallout: 'none' } as React.CSSProperties}
           title="ドラッグして並び替え"
         >
           <GripVertical size={20} />
         </button>
+      </div>
+
+      <div className="flex justify-between items-start">
         <button onClick={onView} className="flex items-center gap-3 flex-1 min-w-0 text-left">
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0"

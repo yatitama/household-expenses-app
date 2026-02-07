@@ -117,7 +117,7 @@ export const AccountsPage = () => {
 
       {/* 口座セクション */}
       <div>
-        <div className="flex justify-center items-center mb-2 relative">
+        <div className="flex justify-between items-center mb-2">
           <h3 className="text-base font-bold text-gray-700 dark:text-gray-300">口座</h3>
         </div>
 
