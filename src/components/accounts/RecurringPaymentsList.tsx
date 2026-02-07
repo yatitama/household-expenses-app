@@ -14,18 +14,18 @@ interface RecurringPaymentsListProps {
 
 export const RecurringPaymentsList = ({ items, onAdd, onEdit, onDelete, onToggle, getCategory }: RecurringPaymentsListProps) => {
   return (
-    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+    <div className="mt-3 pt-3 border-t border-brand-100 dark:border-brand-800">
       <div className="flex justify-between items-center mb-1.5">
-        <p className="text-xs text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1">
+        <p className="text-xs text-brand-500 dark:text-brand-400 font-medium flex items-center gap-1">
           <RefreshCw size={10} />
           定期取引
         </p>
-        <button onClick={onAdd} className="text-blue-500 hover:text-blue-700 dark:text-blue-400">
+        <button onClick={onAdd} className="text-brand-500 hover:text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded transition-all duration-300">
           <Plus size={14} />
         </button>
       </div>
       {items.length === 0 ? (
-        <p className="text-xs text-gray-300 dark:text-gray-600">定期取引なし</p>
+        <p className="text-xs text-brand-300 dark:text-brand-700">定期取引なし</p>
       ) : (
         <div className="space-y-1.5">
           {items.map((rp) => {
@@ -48,17 +48,17 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onDelete, onToggle
                   >
                     {getCategoryIcon(category?.icon || '', 12)}
                   </div>
-                  <span className="truncate text-gray-700 dark:text-gray-300">{rp.name}</span>
-                  <span className="text-gray-400 dark:text-gray-500 flex-shrink-0">{freqLabel}</span>
+                  <span className="truncate text-brand-700 dark:text-brand-300">{rp.name}</span>
+                  <span className="text-brand-400 dark:text-brand-500 flex-shrink-0">{freqLabel}</span>
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0 ml-2">
                   <span className={`font-medium ${rp.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                     {formatCurrency(rp.amount)}
                   </span>
-                  <button onClick={() => onEdit(rp)} className="p-1 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400">
+                  <button onClick={() => onEdit(rp)} className="p-1 text-brand-300 hover:text-brand-500 dark:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded transition-all duration-300">
                     <Edit2 size={12} />
                   </button>
-                  <button onClick={() => onDelete(rp.id)} className="p-1 text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400">
+                  <button onClick={() => onDelete(rp.id)} className="p-1 text-brand-300 hover:text-red-500 dark:text-brand-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all duration-300">
                     <Trash2 size={12} />
                   </button>
                 </div>
