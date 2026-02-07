@@ -4,8 +4,7 @@ import toast from 'react-hot-toast';
 import { Receipt } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
-import { SearchBar } from '../components/search/SearchBar';
-import { FilterPanel } from '../components/search/FilterPanel';
+import { FloatingFilterMenu } from '../components/search/FloatingFilterMenu';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
 import { categoryService, memberService, accountService, paymentMethodService, transactionService } from '../services/storage';
 import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
@@ -95,28 +94,8 @@ export const TransactionsPage = () => {
   }, [filteredTransactions]);
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-3">
+    <div className="p-4 md:p-6 lg:p-8 space-y-3 pb-24">
       <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">取引履歴</h2>
-
-      {/* Search bar */}
-      <div className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900 -mx-4 px-4 py-2 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8">
-        <SearchBar
-          value={filters.searchQuery}
-          onChange={(v) => updateFilter('searchQuery', v)}
-        />
-      </div>
-
-      {/* Filter panel */}
-      <FilterPanel
-        filters={filters}
-        updateFilter={updateFilter}
-        resetFilters={resetFilters}
-        activeFilterCount={activeFilterCount}
-        members={members}
-        categories={categories}
-        accounts={accounts}
-        paymentMethods={paymentMethods}
-      />
 
       {/* Results count */}
       <p className="text-xs text-gray-500 dark:text-gray-400">{filteredTransactions.length}件の取引</p>
@@ -174,6 +153,18 @@ export const TransactionsPage = () => {
           ))}
         </div>
       )}
+
+      {/* Floating Filter Menu */}
+      <FloatingFilterMenu
+        filters={filters}
+        updateFilter={updateFilter}
+        resetFilters={resetFilters}
+        activeFilterCount={activeFilterCount}
+        members={members}
+        categories={categories}
+        accounts={accounts}
+        paymentMethods={paymentMethods}
+      />
 
       {/* Edit Transaction Modal */}
       {editingTransaction && (
