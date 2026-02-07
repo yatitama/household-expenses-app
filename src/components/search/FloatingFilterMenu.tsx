@@ -123,15 +123,6 @@ export const FloatingFilterMenu = ({
     (currentPage + 1) * itemsPerPage
   );
 
-  // 回転処理
-  const rotateNext = () => {
-    setRotation((prev) => prev - 90);
-  };
-
-  const rotatePrev = () => {
-    setRotation((prev) => prev + 90);
-  };
-
   // タッチ位置から角度を計算
   const getAngleFromCenter = (x: number, y: number, centerX: number, centerY: number) => {
     const dx = x - centerX;
