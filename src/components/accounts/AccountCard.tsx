@@ -73,8 +73,9 @@ export const AccountCard = ({
         isDragging ? 'opacity-70 shadow-lg scale-[1.02] ring-2 ring-blue-400 z-10 relative' : 'shadow-sm'
       } ${isDragOver ? 'border-2 border-blue-400 bg-blue-50/60 dark:bg-blue-900/20' : 'border-2 border-transparent'}`}
     >
-      {/* 並び替えアイコン - 上部中央 */}
-      <div className="flex justify-center -mt-2 mb-2">
+      {/* 並び替えアイコン - 上部中央 とプラスボタン - 右上 */}
+      <div className="flex justify-between items-start -mt-2 mb-2">
+        <div className="flex-1"></div>
         <button
           onMouseDown={(e) => e.stopPropagation()}
           onTouchStart={onTouchStart}
@@ -87,51 +88,52 @@ export const AccountCard = ({
         >
           <GripHorizontal size={20} />
         </button>
-      </div>
-
-      <div className="flex justify-between items-start">
-        <button onClick={onView} className="flex items-center gap-3 flex-1 min-w-0 text-left">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0"
-            style={{ backgroundColor: account.color }}
-          >
-            {ACCOUNT_TYPE_ICONS[account.type]}
-          </div>
-          <div className="flex-1 min-w-0">
-            {member && (
-              <div className="mb-0.5">
-                <span
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium text-white"
-                  style={{ backgroundColor: member.color }}
-                >
-                  {member.name}
-                </span>
-              </div>
-            )}
-            <div className="space-y-1">
-              <div className="flex items-baseline gap-2">
-                <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{account.name}</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatCurrency(account.balance)}</p>
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 break-words">{ACCOUNT_TYPE_LABELS[account.type]}</p>
-            </div>
-          </div>
-        </button>
-        <div className="flex items-start gap-1 flex-shrink-0">
-          {((totalPendingData && (totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0 || totalPendingData.recurringIncome > 0)) || pendingAmount > 0) && (
-            <button
-              onClick={(e) => { e.stopPropagation(); setIsPendingDetailsOpen(!isPendingDetailsOpen); }}
-              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-              title={isPendingDetailsOpen ? "詳細を閉じる" : "詳細を表示"}
-              aria-label={isPendingDetailsOpen ? "詳細を閉じる" : "詳細を表示"}
-            >
-              {isPendingDetailsOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-            </button>
-          )}
+        <div className="flex-1 flex justify-end">
           <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400" title="取引追加" aria-label="取引を追加">
             <PlusCircle size={18} />
           </button>
         </div>
+      </div>
+
+      {/* 口座情報 */}
+      <button onClick={onView} className="flex items-center gap-3 w-full text-left mb-2">
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0"
+          style={{ backgroundColor: account.color }}
+        >
+          {ACCOUNT_TYPE_ICONS[account.type]}
+        </div>
+        <div className="flex-1 min-w-0">
+          {member && (
+            <div className="mb-0.5">
+              <span
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium text-white"
+                style={{ backgroundColor: member.color }}
+              >
+                {member.name}
+              </span>
+            </div>
+          )}
+          <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{account.name}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 break-words">{ACCOUNT_TYPE_LABELS[account.type]}</p>
+        </div>
+      </button>
+
+      {/* 折りたたみアイコンと金額 - 右下 */}
+      <div className="flex justify-end items-center gap-2">
+        {((totalPendingData && (totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0 || totalPendingData.recurringIncome > 0)) || pendingAmount > 0) && (
+          <button
+            onClick={(e) => { e.stopPropagation(); setIsPendingDetailsOpen(!isPendingDetailsOpen); }}
+            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            title={isPendingDetailsOpen ? "詳細を閉じる" : "詳細を表示"}
+            aria-label={isPendingDetailsOpen ? "詳細を閉じる" : "詳細を表示"}
+          >
+            {isPendingDetailsOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+          </button>
+        )}
+        <button onClick={onView} className="text-right">
+          <p className="text-xl font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatCurrency(account.balance)}</p>
+        </button>
       </div>
       {isPendingDetailsOpen && (
         <div className="mt-2 text-right text-xs text-gray-500 dark:text-gray-400 space-y-0.5 pr-2">
