@@ -1,4 +1,4 @@
-import { PlusCircle, GripVertical, ChevronDown, ChevronRight } from 'lucide-react';
+import { PlusCircle, GripHorizontal, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { categoryService } from '../../services/storage';
 import { formatCurrency } from '../../utils/formatters';
@@ -85,7 +85,7 @@ export const AccountCard = ({
           style={{ touchAction: 'none', WebkitTouchCallout: 'none' } as React.CSSProperties}
           title="ドラッグして並び替え"
         >
-          <GripVertical size={20} />
+          <GripHorizontal size={20} />
         </button>
       </div>
 
@@ -108,14 +108,12 @@ export const AccountCard = ({
                 </span>
               </div>
             )}
-            <div className="flex items-center gap-2">
-              <div className="flex-1 min-w-0">
+            <div className="space-y-1">
+              <div className="flex items-baseline gap-2">
                 <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{account.name}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 break-words">{ACCOUNT_TYPE_LABELS[account.type]}</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatCurrency(account.balance)}</p>
               </div>
-              <div className="text-right flex-shrink-0" style={{ minWidth: '120px' }}>
-                <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{formatCurrency(account.balance)}</p>
-              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 break-words">{ACCOUNT_TYPE_LABELS[account.type]}</p>
             </div>
           </div>
         </button>
