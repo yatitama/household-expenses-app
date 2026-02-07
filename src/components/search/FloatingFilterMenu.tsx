@@ -120,13 +120,13 @@ export const FloatingFilterMenu = ({
       )}
 
       {/* フローティングメニュー */}
-      <div ref={menuRef} className="fixed bottom-20 right-3 sm:right-5 z-40 flex items-end gap-2">
+      <div className="fixed bottom-20 right-3 sm:right-5 z-40">
         {/* 展開されたフィルターアイコン（横1列スクロール） */}
         {isExpanded && (
           <div
-            className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 py-2"
+            className="absolute bottom-0 right-14 flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 py-2 mr-2"
             style={{
-              maxWidth: 'calc(100vw - 5rem)',
+              maxWidth: 'calc(100vw - 8rem)',
               width: 'max-content'
             }}
           >
@@ -177,6 +177,7 @@ export const FloatingFilterMenu = ({
 
         {/* メインフィルターボタン */}
         <button
+          ref={menuRef}
           onClick={() => {
             if (isExpanded) {
               // メニューが展開されている場合は閉じる
@@ -187,7 +188,7 @@ export const FloatingFilterMenu = ({
               setIsExpanded(true);
             }
           }}
-          className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
+          className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
             isExpanded ? 'bg-red-500' : activeFilterCount > 0 ? 'bg-blue-600' : 'bg-gray-800 dark:bg-gray-700'
           } text-white active:scale-95 relative`}
           aria-label={isExpanded ? 'フィルターを閉じる' : 'フィルターを開く'}
