@@ -1,19 +1,24 @@
-import { useState, useEffect, useRef } from 'react';
-import { Calendar, Tag, User, Wallet, CreditCard } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { Calendar, Tag, User, Wallet, CreditCard, X, ArrowUp, ArrowDown } from 'lucide-react';
 import type { GroupByType } from '../../pages/TransactionsPage';
 
 interface GroupingButtonProps {
   groupBy: GroupByType;
+  groupOrder: 'asc' | 'desc';
   onGroupByChange: (groupBy: GroupByType) => void;
   isFilterMenuExpanded: boolean;
+  isPanelOpen: boolean;
+  setIsPanelOpen: (value: boolean) => void;
 }
 
 export const GroupingButton = ({
   groupBy,
+  groupOrder,
   onGroupByChange,
   isFilterMenuExpanded,
+  isPanelOpen,
+  setIsPanelOpen,
 }: GroupingButtonProps) => {
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -98,21 +103,24 @@ export const GroupingButton = ({
           <div className="p-3 space-y-2">
             {groupingOptions.map((option) => {
               const OptionIcon = getGroupingInfo(option.value).icon;
+              const isSelected = groupBy === option.value;
+              const OrderIcon = groupOrder === 'desc' ? ArrowDown : ArrowUp;
+
               return (
                 <button
                   key={option.value}
                   onClick={() => {
                     onGroupByChange(option.value);
-                    setIsPanelOpen(false);
                   }}
                   className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 flex items-center gap-2 ${
-                    groupBy === option.value
+                    isSelected
                       ? `${option.color} text-white shadow-lg`
                       : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
                   }`}
                 >
                   <OptionIcon size={16} />
-                  {option.label}
+                  <span className="flex-1 text-left">{option.label}</span>
+                  {isSelected && <OrderIcon size={16} />}
                 </button>
               );
             })}
@@ -124,11 +132,11 @@ export const GroupingButton = ({
       <button
         ref={buttonRef}
         onClick={() => setIsPanelOpen(!isPanelOpen)}
-        className={`fixed bottom-20 left-3 sm:left-5 z-40 w-14 h-14 ${currentGrouping.color} text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95`}
-        aria-label={`グループ化: ${currentGrouping.label}`}
-        title={`グループ化: ${currentGrouping.label}`}
+        className={`fixed bottom-20 left-3 sm:left-5 z-40 w-14 h-14 ${isPanelOpen ? 'bg-red-500' : currentGrouping.color} text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95`}
+        aria-label={isPanelOpen ? 'グループ化を閉じる' : `グループ化: ${currentGrouping.label}`}
+        title={isPanelOpen ? 'グループ化を閉じる' : `グループ化: ${currentGrouping.label}`}
       >
-        <CurrentIcon size={24} />
+        {isPanelOpen ? <X size={24} /> : <CurrentIcon size={24} />}
       </button>
     </>
   );

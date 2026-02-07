@@ -20,7 +20,9 @@ export const TransactionsPage = () => {
   const { filters, filteredTransactions, updateFilter, resetFilters, activeFilterCount } = useTransactionFilter();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
+  const [groupOrder, setGroupOrder] = useState<'asc' | 'desc'>('desc');
   const [isFilterMenuExpanded, setIsFilterMenuExpanded] = useState(false);
+  const [isGroupingPanelOpen, setIsGroupingPanelOpen] = useState(false);
   useBodyScrollLock(!!editingTransaction);
 
   // URLパラメータからフィルターを初期化
@@ -35,6 +37,18 @@ export const TransactionsPage = () => {
   const categories = useMemo(() => categoryService.getAll(), []);
   const accounts = useMemo(() => accountService.getAll(), []);
   const paymentMethods = useMemo(() => paymentMethodService.getAll(), []);
+
+  // Handle grouping change with order toggle
+  const handleGroupByChange = (newGroupBy: GroupByType) => {
+    if (newGroupBy === groupBy) {
+      // Toggle order if same grouping is selected
+      setGroupOrder(groupOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new grouping with default descending order
+      setGroupBy(newGroupBy);
+      setGroupOrder('desc');
+    }
+  };
 
   const getCategoryName = useCallback((categoryId: string) => {
     return categories.find((c) => c.id === categoryId)?.name || '不明';
@@ -126,14 +140,18 @@ export const TransactionsPage = () => {
         groups.set(key, { label, transactions: [t] });
       }
     }
-    // Sort groups: for date, descending; for others, alphabetically
+    // Sort groups based on groupOrder
     const entries = Array.from(groups.entries());
     if (groupBy === 'date') {
-      return entries.sort((a, b) => b[0].localeCompare(a[0]));
+      return groupOrder === 'desc'
+        ? entries.sort((a, b) => b[0].localeCompare(a[0]))
+        : entries.sort((a, b) => a[0].localeCompare(b[0]));
     } else {
-      return entries.sort((a, b) => a[1].label.localeCompare(b[1].label));
+      return groupOrder === 'desc'
+        ? entries.sort((a, b) => b[1].label.localeCompare(a[1].label))
+        : entries.sort((a, b) => a[1].label.localeCompare(b[1].label));
     }
-  }, [filteredTransactions, groupBy, categories, members, getCategoryName, getAccountName, getPaymentMethodName]);
+  }, [filteredTransactions, groupBy, groupOrder, categories, members, getCategoryName, getAccountName, getPaymentMethodName]);
 
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-3 pb-24">
@@ -190,7 +208,7 @@ export const TransactionsPage = () => {
                           {getCategoryName(t.categoryId)}
                         </p>
                         <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
-                          {source}{t.memo ? ` - ${t.memo}` : ''}
+                          {groupBy !== 'date' && `${formatDate(t.date)} - `}{source}{t.memo ? ` - ${t.memo}` : ''}
                         </p>
                       </div>
                       <p className={`text-sm font-bold shrink-0 ${
@@ -211,8 +229,11 @@ export const TransactionsPage = () => {
       {/* Grouping Button */}
       <GroupingButton
         groupBy={groupBy}
-        onGroupByChange={setGroupBy}
+        groupOrder={groupOrder}
+        onGroupByChange={handleGroupByChange}
         isFilterMenuExpanded={isFilterMenuExpanded}
+        isPanelOpen={isGroupingPanelOpen}
+        setIsPanelOpen={setIsGroupingPanelOpen}
       />
 
       {/* Floating Filter Menu */}
@@ -227,6 +248,7 @@ export const TransactionsPage = () => {
         paymentMethods={paymentMethods}
         isExpanded={isFilterMenuExpanded}
         setIsExpanded={setIsFilterMenuExpanded}
+        isGroupingPanelOpen={isGroupingPanelOpen}
       />
 
       {/* Edit Transaction Modal */}
