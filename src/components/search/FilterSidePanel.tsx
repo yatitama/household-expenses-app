@@ -10,7 +10,6 @@ interface FilterSidePanelProps {
   filterType: 'type' | 'date' | 'member' | 'category' | 'account' | 'payment' | 'sort' | 'search' | null;
   filters: FilterOptions;
   updateFilter: <K extends keyof FilterOptions>(key: K, value: FilterOptions[K]) => void;
-  resetFilters: () => void;
   members: { id: string; name: string; color: string }[];
   categories: { id: string; name: string; color: string }[];
   accounts: { id: string; name: string }[];
@@ -23,7 +22,6 @@ export const FilterSidePanel = ({
   filterType,
   filters,
   updateFilter,
-  resetFilters,
   members,
   categories,
   accounts,

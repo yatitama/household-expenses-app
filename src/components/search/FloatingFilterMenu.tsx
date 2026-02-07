@@ -194,7 +194,6 @@ export const FloatingFilterMenu = ({
         filterType={activePanel}
         filters={filters}
         updateFilter={updateFilter}
-        resetFilters={resetFilters}
         members={members}
         categories={categories}
         accounts={accounts}
