@@ -21,16 +21,16 @@ export const StatsPage = () => {
   const { income, expense } = useMemo(() => getMonthlyTotal(year, month), [year, month]);
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 md:p-6 lg:p-8 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-800">統計</h2>
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">統計</h2>
         <div className="flex items-center gap-2">
-          <button onClick={handlePrevMonth} className="p-1.5 text-gray-500 hover:text-gray-700" aria-label="前月">
+          <button onClick={handlePrevMonth} className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="前月">
             <ChevronLeft size={20} />
           </button>
-          <span className="text-sm font-medium text-gray-700 min-w-[100px] text-center">{monthLabel}</span>
-          <button onClick={handleNextMonth} className="p-1.5 text-gray-500 hover:text-gray-700" aria-label="翌月">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[100px] text-center">{monthLabel}</span>
+          <button onClick={handleNextMonth} className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="翌月">
             <ChevronRight size={20} />
           </button>
         </div>
@@ -38,12 +38,12 @@ export const StatsPage = () => {
 
       {/* Monthly summary */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white rounded-xl shadow-sm p-4">
-          <p className="text-xs text-gray-500 mb-1">収入</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">収入</p>
           <p className="text-lg font-bold text-green-600">{formatCurrency(income)}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-4">
-          <p className="text-xs text-gray-500 mb-1">支出</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">支出</p>
           <p className="text-lg font-bold text-red-600">{formatCurrency(expense)}</p>
         </div>
       </div>

@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
-import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, Edit2 } from 'lucide-react';
+import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, Edit2, Moon, Sun } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+import { useDarkMode } from '../hooks/useDarkMode';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { COMMON_MEMBER_ID } from '../types';
 import type { Member, MemberInput, Category, CategoryInput, TransactionType } from '../types';
@@ -12,6 +13,7 @@ const COLORS = [
 ];
 
 export const SettingsPage = () => {
+  const { isDark, toggle: toggleDarkMode } = useDarkMode();
   const [membersOpen, setMembersOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [members, setMembers] = useState<Member[]>(() => memberService.getAll());
@@ -123,28 +125,56 @@ export const SettingsPage = () => {
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   return (
-    <div className="p-4 space-y-4">
-      <h2 className="text-xl font-bold text-gray-800">設定</h2>
+    <div className="p-4 md:p-6 lg:p-8 space-y-4">
+      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">設定</h2>
+
+      {/* ダークモード切り替え */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {isDark ? <Moon size={20} className="text-indigo-400" /> : <Sun size={20} className="text-yellow-500" />}
+            <div>
+              <p className="font-medium text-gray-900 dark:text-gray-100">ダークモード</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{isDark ? 'ダークモード有効' : 'ライトモード有効'}</p>
+            </div>
+          </div>
+          <button
+            onClick={toggleDarkMode}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
+              isDark ? 'bg-indigo-600' : 'bg-gray-300'
+            }`}
+            role="switch"
+            aria-checked={isDark}
+            aria-label="ダークモード切り替え"
+          >
+            <span
+              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                isDark ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
+        </div>
+      </div>
 
       {/* メンバー管理 */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
         <button
           onClick={() => setMembersOpen(!membersOpen)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
           aria-expanded={membersOpen}
         >
           <div className="flex items-center gap-3">
-            <Users size={20} className="text-blue-600" />
+            <Users size={20} className="text-blue-600 dark:text-blue-400" />
             <div className="text-left">
-              <p className="font-medium text-gray-900">メンバー管理</p>
-              <p className="text-xs text-gray-500">家族のメンバーを追加・編集</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100">メンバー管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">家族のメンバーを追加・編集</p>
             </div>
           </div>
           {membersOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
         </button>
 
         {membersOpen && (
-          <div className="border-t border-gray-100 p-4 space-y-3">
+          <div className="border-t border-gray-100 dark:border-gray-700 p-4 space-y-3">
             <button
               onClick={handleAddMember}
               className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm"
@@ -154,9 +184,9 @@ export const SettingsPage = () => {
             </button>
 
             {members.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4">メンバーがいません</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">メンバーがいません</p>
             ) : (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {members.map((member) => (
                   <div key={member.id} className="flex items-center justify-between py-3">
                     <div className="flex items-center gap-3">
@@ -167,12 +197,12 @@ export const SettingsPage = () => {
                         {member.name.charAt(0)}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{member.name}</p>
-                        {member.isDefault && <p className="text-xs text-gray-400">デフォルト</p>}
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{member.name}</p>
+                        {member.isDefault && <p className="text-xs text-gray-400 dark:text-gray-500">デフォルト</p>}
                       </div>
                     </div>
                     <div className="flex items-center gap-1">
-                      <button onClick={() => handleEditMember(member)} className="p-2 text-gray-400 hover:text-gray-600">
+                      <button onClick={() => handleEditMember(member)} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                         <Edit2 size={14} />
                       </button>
                       {!member.isDefault && (
@@ -190,30 +220,30 @@ export const SettingsPage = () => {
       </div>
 
       {/* カテゴリ管理 */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
         <button
           onClick={() => setCategoriesOpen(!categoriesOpen)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
           aria-expanded={categoriesOpen}
         >
           <div className="flex items-center gap-3">
-            <Tag size={20} className="text-green-600" />
+            <Tag size={20} className="text-green-600 dark:text-green-400" />
             <div className="text-left">
-              <p className="font-medium text-gray-900">カテゴリ管理</p>
-              <p className="text-xs text-gray-500">収支カテゴリを追加・編集</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100">カテゴリ管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">収支カテゴリを追加・編集</p>
             </div>
           </div>
           {categoriesOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
         </button>
 
         {categoriesOpen && (
-          <div className="border-t border-gray-100 p-4 space-y-3">
+          <div className="border-t border-gray-100 dark:border-gray-700 p-4 space-y-3">
             {/* Type toggle */}
-            <div className="flex rounded-lg overflow-hidden border border-gray-300">
+            <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
               <button
                 onClick={() => setCategoryFilterType('expense')}
                 className={`flex-1 py-2 text-sm font-medium transition-colors ${
-                  categoryFilterType === 'expense' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'
+                  categoryFilterType === 'expense' ? 'bg-red-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 支出
@@ -221,7 +251,7 @@ export const SettingsPage = () => {
               <button
                 onClick={() => setCategoryFilterType('income')}
                 className={`flex-1 py-2 text-sm font-medium transition-colors ${
-                  categoryFilterType === 'income' ? 'bg-green-500 text-white' : 'bg-white text-gray-700'
+                  categoryFilterType === 'income' ? 'bg-green-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 収入
@@ -237,9 +267,9 @@ export const SettingsPage = () => {
             </button>
 
             {filteredCategories.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4">カテゴリがありません</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">カテゴリがありません</p>
             ) : (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredCategories.map((category) => {
                   const member = getMember(category.memberId);
                   return (
@@ -252,12 +282,12 @@ export const SettingsPage = () => {
                           {getCategoryIcon(category.icon, 18)}
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{category.name}</p>
-                          <p className="text-xs text-gray-500">{member?.name || '共通'}</p>
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{member?.name || '共通'}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1">
-                        <button onClick={() => handleEditCategory(category)} className="p-2 text-gray-400 hover:text-gray-600">
+                        <button onClick={() => handleEditCategory(category)} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                           <Edit2 size={14} />
                         </button>
                         <button onClick={() => handleDeleteCategory(category.id)} className="p-2 text-gray-400 hover:text-red-600">
@@ -274,51 +304,51 @@ export const SettingsPage = () => {
       </div>
 
       {/* データ管理 */}
-      <div className="bg-white rounded-xl shadow-sm p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
         <div className="flex items-center gap-2 mb-4">
-          <Database size={20} className="text-gray-600" />
-          <h3 className="font-bold text-gray-800">データ管理</h3>
+          <Database size={20} className="text-gray-600 dark:text-gray-400" />
+          <h3 className="font-bold text-gray-800 dark:text-gray-100">データ管理</h3>
         </div>
 
         <div className="space-y-3">
           <button
             onClick={handleExport}
-            className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
           >
-            <Download size={20} className="text-blue-600" />
+            <Download size={20} className="text-blue-600 dark:text-blue-400" />
             <div className="text-left">
-              <p className="font-medium text-gray-900 text-sm">データをエクスポート</p>
-              <p className="text-xs text-gray-500">JSONファイルとしてダウンロード</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">データをエクスポート</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">JSONファイルとしてダウンロード</p>
             </div>
           </button>
 
           <button
             onClick={handleImport}
-            className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
           >
-            <Upload size={20} className="text-green-600" />
+            <Upload size={20} className="text-green-600 dark:text-green-400" />
             <div className="text-left">
-              <p className="font-medium text-gray-900 text-sm">データをインポート</p>
-              <p className="text-xs text-gray-500">JSONファイルから復元</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">データをインポート</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">JSONファイルから復元</p>
             </div>
           </button>
 
           <button
             onClick={handleReset}
-            className="w-full flex items-center gap-3 p-3 rounded-lg border border-red-200 hover:border-red-300 transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-lg border border-red-200 dark:border-red-800 hover:border-red-300 dark:hover:border-red-700 transition-colors"
           >
             <Trash2 size={20} className="text-red-600" />
             <div className="text-left">
               <p className="font-medium text-red-600 text-sm">データを初期化</p>
-              <p className="text-xs text-gray-500">すべてのデータを削除</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">すべてのデータを削除</p>
             </div>
           </button>
         </div>
       </div>
 
       {/* バージョン情報 */}
-      <div className="bg-white rounded-xl shadow-sm p-4">
-        <p className="text-center text-sm text-gray-500">家計簿アプリ v1.0.0</p>
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400">家計簿アプリ v1.0.0</p>
       </div>
 
       {/* Member Modal */}
@@ -362,22 +392,22 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-bold mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
+      <div className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">名前</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">名前</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 太郎"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">色</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">色</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button
@@ -385,7 +415,7 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-8 h-8 rounded-full transition-transform ${
-                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''
+                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
                   }`}
                   style={{ backgroundColor: c }}
                 />
@@ -393,7 +423,7 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 text-gray-700 font-medium">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
               キャンセル
             </button>
             <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
@@ -428,22 +458,22 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-bold mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
+      <div className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">名前</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">名前</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 食費"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">対象メンバー</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">対象メンバー</label>
             <div className="flex flex-wrap gap-2">
               {members.map((m) => (
                 <button
@@ -453,7 +483,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
                   className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                     memberId === m.id
                       ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                      : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: m.color }} />
@@ -463,7 +493,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">色</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">色</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button
@@ -471,7 +501,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-8 h-8 rounded-full transition-transform ${
-                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''
+                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
                   }`}
                   style={{ backgroundColor: c }}
                 />
@@ -479,7 +509,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">アイコン</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">アイコン</label>
             <div className="grid grid-cols-6 gap-2">
               {ICON_NAMES.map((i) => {
                 const IconComponent = ICON_COMPONENTS[i];
@@ -490,8 +520,8 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
                     onClick={() => setIcon(i)}
                     className={`w-10 h-10 rounded-lg border flex items-center justify-center transition-colors ${
                       icon === i
-                        ? 'border-blue-500 bg-blue-50 text-blue-600'
-                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                        : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
                     }`}
                   >
                     <IconComponent size={20} />
@@ -501,7 +531,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 text-gray-700 font-medium">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
               キャンセル
             </button>
             <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">

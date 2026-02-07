@@ -50,11 +50,11 @@ export const TransactionsPage = () => {
   }, [filteredTransactions]);
 
   return (
-    <div className="p-4 space-y-3">
-      <h2 className="text-xl font-bold text-gray-800">取引履歴</h2>
+    <div className="p-4 md:p-6 lg:p-8 space-y-3">
+      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">取引履歴</h2>
 
       {/* Search bar */}
-      <div className="sticky top-0 z-10 bg-gray-50 -mx-4 px-4 py-2">
+      <div className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900 -mx-4 px-4 py-2 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8">
         <SearchBar
           value={filters.searchQuery}
           onChange={(v) => updateFilter('searchQuery', v)}
@@ -74,22 +74,22 @@ export const TransactionsPage = () => {
       />
 
       {/* Results count */}
-      <p className="text-xs text-gray-500">{filteredTransactions.length}件の取引</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400">{filteredTransactions.length}件の取引</p>
 
       {/* Transaction list */}
       {filteredTransactions.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-          <Receipt size={48} className="mx-auto text-gray-300 mb-3" />
-          <p className="text-sm text-gray-500">取引がありません</p>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
+          <Receipt size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+          <p className="text-sm text-gray-500 dark:text-gray-400">取引がありません</p>
         </div>
       ) : (
         <div className="space-y-3">
           {groupedTransactions.map(([date, transactions]) => (
-            <div key={date} className="bg-white rounded-xl shadow-sm overflow-hidden">
-              <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
-                <p className="text-xs font-medium text-gray-500">{formatDate(date)}</p>
+            <div key={date} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+              <div className="px-4 py-2 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-700">
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{formatDate(date)}</p>
               </div>
-              <div className="divide-y divide-gray-50">
+              <div className="divide-y divide-gray-50 dark:divide-gray-700">
                 {transactions.map((t) => {
                   const color = getCategoryColor(t.categoryId);
                   const source = t.paymentMethodId
@@ -105,10 +105,10 @@ export const TransactionsPage = () => {
                         {getCategoryIcon(getCategoryIconName(t.categoryId), 18)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-800 truncate">
+                        <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                           {getCategoryName(t.categoryId)}
                         </p>
-                        <p className="text-xs text-gray-400 truncate">
+                        <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
                           {source}{t.memo ? ` - ${t.memo}` : ''}
                         </p>
                       </div>
