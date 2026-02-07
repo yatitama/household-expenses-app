@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Receipt } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
@@ -13,9 +14,18 @@ import { getCategoryIcon } from '../utils/categoryIcons';
 import type { Transaction, TransactionInput } from '../types';
 
 export const TransactionsPage = () => {
+  const [searchParams] = useSearchParams();
   const { filters, filteredTransactions, updateFilter, resetFilters, activeFilterCount } = useTransactionFilter();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   useBodyScrollLock(!!editingTransaction);
+
+  // URLパラメータからフィルターを初期化
+  useEffect(() => {
+    const accountId = searchParams.get('accountId');
+    if (accountId) {
+      updateFilter('accountIds', [accountId]);
+    }
+  }, [searchParams, updateFilter]);
 
   const members = useMemo(() => memberService.getAll(), []);
   const categories = useMemo(() => categoryService.getAll(), []);
