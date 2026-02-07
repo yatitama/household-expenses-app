@@ -22,7 +22,7 @@ export const MultiSelect = ({ label, options, selectedIds, onChange }: MultiSele
 
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+      <label className="block text-xs font-medium text-brand-600 dark:text-brand-400 mb-1">{label}</label>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => {
           const isSelected = selectedIds.includes(option.id);
@@ -31,10 +31,10 @@ export const MultiSelect = ({ label, options, selectedIds, onChange }: MultiSele
               key={option.id}
               type="button"
               onClick={() => handleToggle(option.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-300 ${
                 isSelected
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
+                  ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white border-brand-600 shadow-brand'
+                  : 'bg-white dark:bg-slate-800 text-brand-700 dark:text-brand-300 border-brand-200 dark:border-brand-700 hover:border-brand-400 dark:hover:border-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20'
               }`}
               aria-pressed={isSelected}
             >

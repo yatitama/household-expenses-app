@@ -43,21 +43,21 @@ export const AssetCard = ({
 }: AssetCardProps) => {
   return (
     <div
-      className="rounded-xl p-4 text-white"
+      className="rounded-xl p-4 text-white shadow-card hover:shadow-card-hover transition-all duration-300"
       style={{ background: `linear-gradient(to right, ${gradientFrom}, ${gradientTo})` }}
     >
       <div className="flex items-center gap-2 mb-1">
-        <Wallet size={20} />
-        <span className="text-sm opacity-90">総資産</span>
+        <Wallet size={20} className="drop-shadow-md" />
+        <span className="text-sm opacity-90 font-medium">総資産</span>
         <button
           onClick={onChangeGradient}
-          className="ml-auto p-1 rounded-full hover:bg-white/20 transition-colors opacity-60 hover:opacity-100"
+          className="ml-auto p-1.5 rounded-full hover:bg-white/20 transition-all duration-300 opacity-60 hover:opacity-100 hover:scale-110"
           title="背景色を変更"
         >
           <Palette size={16} />
         </button>
       </div>
-      <p className="text-2xl font-bold">{formatCurrency(totalBalance)}</p>
+      <p className="text-2xl font-bold drop-shadow-md">{formatCurrency(totalBalance)}</p>
       {(totalExpense > 0 || totalIncome > 0) && (
         <div className="text-sm opacity-90 mt-2 space-y-0.5">
           {totalExpense > 0 && (

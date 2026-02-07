@@ -130,18 +130,18 @@ export const AccountsPage = () => {
       {/* 口座セクション */}
       <div>
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-base font-bold text-gray-700 dark:text-gray-300">口座</h3>
+          <h3 className="text-base font-bold bg-gradient-to-r from-brand-600 to-accent-600 bg-clip-text text-transparent">口座</h3>
           <div className="flex gap-2">
             <button
               onClick={handleAddPM}
-              className="flex items-center gap-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium"
+              className="flex items-center gap-1 bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium shadow-accent hover:shadow-lg transition-all duration-300 hover:scale-105"
             >
               <Plus size={16} />
               支払い手段
             </button>
             <button
               onClick={handleAddAccount}
-              className="flex items-center gap-1 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium"
+              className="flex items-center gap-1 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium shadow-brand hover:shadow-lg transition-all duration-300 hover:scale-105"
             >
               <Plus size={16} />
               口座
@@ -150,9 +150,9 @@ export const AccountsPage = () => {
         </div>
 
         {accounts.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+          <div className="premium-card shadow-card">
             <EmptyState
-              icon={<Wallet size={32} className="text-gray-400 dark:text-gray-500" />}
+              icon={<Wallet size={32} className="text-brand-400 dark:text-brand-500" />}
               title="口座がありません"
               description="まずは口座を追加してみましょう"
               action={{
@@ -214,7 +214,7 @@ export const AccountsPage = () => {
       {unlinkedPMs.length > 0 && (
         <div>
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-base font-bold text-gray-700 dark:text-gray-300">引き落とし先未設定</h3>
+            <h3 className="text-base font-bold bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">引き落とし先未設定</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {unlinkedPMs.map((pm) => {

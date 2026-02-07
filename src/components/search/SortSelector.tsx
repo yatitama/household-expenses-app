@@ -13,7 +13,7 @@ export const SortSelector = ({ sortBy, sortOrder, onSortByChange, onSortOrderCha
       <select
         value={sortBy}
         onChange={(e) => onSortByChange(e.target.value as 'date' | 'amount' | 'category')}
-        className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border border-brand-200 dark:border-brand-700 rounded-lg px-3 py-2 text-sm text-brand-900 dark:text-brand-100 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all duration-300"
         aria-label="並び替え基準"
       >
         <option value="date">日付</option>
@@ -22,7 +22,7 @@ export const SortSelector = ({ sortBy, sortOrder, onSortByChange, onSortOrderCha
       </select>
       <button
         onClick={() => onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')}
-        className="flex items-center gap-1 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50"
+        className="flex items-center gap-1 px-3 py-2 border border-brand-200 dark:border-brand-700 rounded-lg text-sm text-brand-700 dark:text-brand-300 bg-white dark:bg-slate-800 hover:bg-brand-50 dark:hover:bg-brand-900/20 hover:border-brand-400 dark:hover:border-brand-500 transition-all duration-300"
         aria-label={sortOrder === 'asc' ? '降順に変更' : '昇順に変更'}
       >
         <ArrowUpDown size={14} />
