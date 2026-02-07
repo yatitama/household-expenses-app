@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
-import { X, PlusCircle, Calendar } from 'lucide-react';
+import { X, Calendar } from 'lucide-react';
 import {
   accountService, transactionService, categoryService,
   memberService, paymentMethodService,
@@ -17,10 +17,9 @@ import type { PaymentMethod, Transaction, TransactionInput } from '../../../type
 interface PMTransactionsModalProps {
   paymentMethod: PaymentMethod;
   onClose: () => void;
-  onAddTransaction: (pm: PaymentMethod) => void;
 }
 
-export const PMTransactionsModal = ({ paymentMethod, onClose, onAddTransaction }: PMTransactionsModalProps) => {
+export const PMTransactionsModal = ({ paymentMethod, onClose }: PMTransactionsModalProps) => {
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     return transactionService.getAll()
       .filter((t) => t.paymentMethodId === paymentMethod.id)
@@ -84,16 +83,6 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onAddTransaction }
             </div>
             <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
               <X size={24} />
-            </button>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => onAddTransaction(paymentMethod)}
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors"
-            >
-              <PlusCircle size={16} />
-              <span className="text-sm font-medium">取引追加</span>
             </button>
           </div>
         </div>

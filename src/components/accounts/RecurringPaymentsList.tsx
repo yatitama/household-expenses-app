@@ -1,4 +1,4 @@
-import { Plus, Edit2, Trash2, RefreshCw, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, RefreshCw, ToggleLeft, ToggleRight } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { RecurringPayment } from '../../types';
@@ -42,26 +42,20 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onDelete, onToggle
                       : <ToggleLeft size={16} className="text-gray-300 dark:text-gray-600" />
                     }
                   </button>
-                  <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
-                  >
-                    {getCategoryIcon(category?.icon || '', 12)}
-                  </div>
-                  <span className="truncate text-gray-700 dark:text-gray-300">{rp.name}</span>
-                  <span className="text-gray-400 dark:text-gray-500 flex-shrink-0">{freqLabel}</span>
-                </div>
-                <div className="flex items-center gap-1 flex-shrink-0 ml-2">
-                  <span className={`font-medium ${rp.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                    {formatCurrency(rp.amount)}
-                  </span>
-                  <button onClick={() => onEdit(rp)} className="p-1 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400">
-                    <Edit2 size={12} />
-                  </button>
-                  <button onClick={() => onDelete(rp.id)} className="p-1 text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400">
-                    <Trash2 size={12} />
+                  <button onClick={() => onEdit(rp)} className="flex items-center gap-2 min-w-0 flex-1 text-left hover:opacity-70 transition-opacity">
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                    >
+                      {getCategoryIcon(category?.icon || '', 12)}
+                    </div>
+                    <span className="truncate text-gray-700 dark:text-gray-300">{rp.name}</span>
+                    <span className="text-gray-400 dark:text-gray-500 flex-shrink-0">{freqLabel}</span>
                   </button>
                 </div>
+                <span className={`font-medium flex-shrink-0 ml-2 ${rp.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                  {formatCurrency(rp.amount)}
+                </span>
               </div>
             );
           })}

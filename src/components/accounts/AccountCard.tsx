@@ -1,4 +1,4 @@
-import { Trash2, PlusCircle, GripVertical } from 'lucide-react';
+import { PlusCircle, GripVertical } from 'lucide-react';
 import { categoryService } from '../../services/storage';
 import { formatCurrency } from '../../utils/formatters';
 import { ACCOUNT_TYPE_ICONS } from './AccountIcons';
@@ -111,14 +111,9 @@ export const AccountCard = ({
             </div>
           </button>
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0">
-          <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400" title="取引追加" aria-label="取引を追加">
-            <PlusCircle size={18} />
-          </button>
-          <button onClick={onDelete} className="p-2 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400" aria-label="口座を削除">
-            <Trash2 size={16} />
-          </button>
-        </div>
+        <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 flex-shrink-0" title="取引追加" aria-label="取引を追加">
+          <PlusCircle size={18} />
+        </button>
       </div>
       <button onClick={onView} className="mt-3 text-right w-full">
         <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{formatCurrency(account.balance)}</p>
