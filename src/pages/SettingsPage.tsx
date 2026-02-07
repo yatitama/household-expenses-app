@@ -509,7 +509,7 @@ export const SettingsPage = () => {
           <div className="border-t border-gray-100 dark:border-gray-700 p-4 space-y-3">
             <button
               onClick={handleAddPM}
-              className="w-full flex items-center justify-center gap-2 bg-purple-600 text-white py-2.5 rounded-lg font-medium text-sm"
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm"
             >
               <Plus size={16} />
               支払い手段を追加
