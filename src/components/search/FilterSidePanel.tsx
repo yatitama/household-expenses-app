@@ -3,17 +3,20 @@ import { DateRangePicker } from './DateRangePicker';
 import { MultiSelect } from './MultiSelect';
 import { SortSelector } from './SortSelector';
 import type { FilterOptions } from '../../hooks/useTransactionFilter';
+import type { GroupByType } from '../../pages/TransactionsPage';
 
 interface FilterSidePanelProps {
   isOpen: boolean;
   onClose: () => void;
-  filterType: 'type' | 'date' | 'member' | 'category' | 'account' | 'payment' | 'sort' | 'search' | null;
+  filterType: 'type' | 'date' | 'member' | 'category' | 'account' | 'payment' | 'sort' | 'search' | 'grouping' | null;
   filters: FilterOptions;
   updateFilter: <K extends keyof FilterOptions>(key: K, value: FilterOptions[K]) => void;
   members: { id: string; name: string; color: string }[];
   categories: { id: string; name: string; color: string }[];
   accounts: { id: string; name: string }[];
   paymentMethods: { id: string; name: string }[];
+  groupBy: GroupByType;
+  onGroupByChange: (groupBy: GroupByType) => void;
 }
 
 export const FilterSidePanel = ({
@@ -26,6 +29,8 @@ export const FilterSidePanel = ({
   categories,
   accounts,
   paymentMethods,
+  groupBy,
+  onGroupByChange,
 }: FilterSidePanelProps) => {
   if (!isOpen || !filterType) return null;
 
@@ -56,6 +61,9 @@ export const FilterSidePanel = ({
       case 'sort':
         updateFilter('sortBy', 'date');
         updateFilter('sortOrder', 'desc');
+        break;
+      case 'grouping':
+        onGroupByChange('date');
         break;
     }
     onClose();
@@ -187,6 +195,34 @@ export const FilterSidePanel = ({
                 onSortByChange={(v) => updateFilter('sortBy', v)}
                 onSortOrderChange={(v) => updateFilter('sortOrder', v)}
               />
+            </div>
+          ),
+        };
+
+      case 'grouping':
+        return {
+          title: 'グループ化',
+          content: (
+            <div className="space-y-2">
+              {([
+                ['date', '日付', 'bg-green-500'],
+                ['category', 'カテゴリ', 'bg-pink-500'],
+                ['member', 'メンバー', 'bg-orange-500'],
+                ['account', '口座', 'bg-teal-500'],
+                ['payment', '支払い方法', 'bg-indigo-500'],
+              ] as const).map(([value, label, colorClass]) => (
+                <button
+                  key={value}
+                  onClick={() => onGroupByChange(value)}
+                  className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 ${
+                    groupBy === value
+                      ? `${colorClass} text-white shadow-lg`
+                      : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           ),
         };

@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Receipt } from 'lucide-react';
@@ -12,10 +12,13 @@ import { formatCurrency, formatDate } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import type { Transaction, TransactionInput } from '../types';
 
+export type GroupByType = 'date' | 'category' | 'member' | 'account' | 'payment';
+
 export const TransactionsPage = () => {
   const [searchParams] = useSearchParams();
   const { filters, filteredTransactions, updateFilter, resetFilters, activeFilterCount } = useTransactionFilter();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [groupBy, setGroupBy] = useState<GroupByType>('date');
   useBodyScrollLock(!!editingTransaction);
 
   // URLパラメータからフィルターを初期化
@@ -31,25 +34,25 @@ export const TransactionsPage = () => {
   const accounts = useMemo(() => accountService.getAll(), []);
   const paymentMethods = useMemo(() => paymentMethodService.getAll(), []);
 
-  const getCategoryName = (categoryId: string) => {
+  const getCategoryName = useCallback((categoryId: string) => {
     return categories.find((c) => c.id === categoryId)?.name || '不明';
-  };
+  }, [categories]);
 
-  const getCategoryColor = (categoryId: string) => {
+  const getCategoryColor = useCallback((categoryId: string) => {
     return categories.find((c) => c.id === categoryId)?.color || '#9ca3af';
-  };
+  }, [categories]);
 
-  const getCategoryIconName = (categoryId: string) => {
+  const getCategoryIconName = useCallback((categoryId: string) => {
     return categories.find((c) => c.id === categoryId)?.icon || 'MoreHorizontal';
-  };
+  }, [categories]);
 
-  const getAccountName = (accountId: string) => {
+  const getAccountName = useCallback((accountId: string) => {
     return accounts.find((a) => a.id === accountId)?.name || '';
-  };
+  }, [accounts]);
 
-  const getPaymentMethodName = (pmId: string) => {
+  const getPaymentMethodName = useCallback((pmId: string) => {
     return paymentMethods.find((pm) => pm.id === pmId)?.name || '';
-  };
+  }, [paymentMethods]);
 
   // Handlers
   const handleSaveEdit = (input: TransactionInput) => {
@@ -79,19 +82,56 @@ export const TransactionsPage = () => {
     window.location.reload(); // Refresh to update the list
   };
 
-  // Group transactions by date
+  // Group transactions by selected groupBy type
   const groupedTransactions = useMemo(() => {
-    const groups = new Map<string, typeof filteredTransactions>();
+    // Get group key and label for a transaction
+    const getGroupKeyAndLabel = (transaction: Transaction): { key: string; label: string } => {
+      switch (groupBy) {
+        case 'date':
+          return { key: transaction.date, label: formatDate(transaction.date) };
+        case 'category': {
+          const categoryName = getCategoryName(transaction.categoryId);
+          return { key: transaction.categoryId, label: categoryName };
+        }
+        case 'member': {
+          const category = categories.find((c) => c.id === transaction.categoryId);
+          const member = members.find((m) => m.id === category?.memberId);
+          return { key: member?.id || 'unknown', label: member?.name || '不明' };
+        }
+        case 'account': {
+          const accountName = getAccountName(transaction.accountId);
+          return { key: transaction.accountId, label: accountName || '不明' };
+        }
+        case 'payment': {
+          if (transaction.paymentMethodId) {
+            const paymentName = getPaymentMethodName(transaction.paymentMethodId);
+            return { key: transaction.paymentMethodId, label: paymentName || '不明' };
+          }
+          return { key: 'direct', label: '口座直接' };
+        }
+        default:
+          return { key: transaction.date, label: formatDate(transaction.date) };
+      }
+    };
+
+    const groups = new Map<string, { label: string; transactions: typeof filteredTransactions }>();
     for (const t of filteredTransactions) {
-      const existing = groups.get(t.date);
+      const { key, label } = getGroupKeyAndLabel(t);
+      const existing = groups.get(key);
       if (existing) {
-        existing.push(t);
+        existing.transactions.push(t);
       } else {
-        groups.set(t.date, [t]);
+        groups.set(key, { label, transactions: [t] });
       }
     }
-    return Array.from(groups.entries()).sort((a, b) => b[0].localeCompare(a[0]));
-  }, [filteredTransactions]);
+    // Sort groups: for date, descending; for others, alphabetically
+    const entries = Array.from(groups.entries());
+    if (groupBy === 'date') {
+      return entries.sort((a, b) => b[0].localeCompare(a[0]));
+    } else {
+      return entries.sort((a, b) => a[1].label.localeCompare(b[1].label));
+    }
+  }, [filteredTransactions, groupBy, categories, members, getCategoryName, getAccountName, getPaymentMethodName]);
 
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-3 pb-24">
@@ -108,10 +148,10 @@ export const TransactionsPage = () => {
         </div>
       ) : (
         <div className="space-y-3">
-          {groupedTransactions.map(([date, transactions]) => (
-            <div key={date} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+          {groupedTransactions.map(([key, { label, transactions }]) => (
+            <div key={key} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
               <div className="px-4 py-2 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-700">
-                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{formatDate(date)}</p>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}</p>
               </div>
               <div className="divide-y divide-gray-50 dark:divide-gray-700">
                 {transactions.map((t) => {
@@ -164,6 +204,8 @@ export const TransactionsPage = () => {
         categories={categories}
         accounts={accounts}
         paymentMethods={paymentMethods}
+        groupBy={groupBy}
+        onGroupByChange={setGroupBy}
       />
 
       {/* Edit Transaction Modal */}

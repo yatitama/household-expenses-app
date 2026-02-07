@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Filter, Calendar, DollarSign, User, Tag, CreditCard, Wallet, ArrowUpDown, X, Search, RotateCcw } from 'lucide-react';
+import { Filter, Calendar, DollarSign, User, Tag, CreditCard, Wallet, ArrowUpDown, X, Search, RotateCcw, Grid3x3 } from 'lucide-react';
 import { FilterSidePanel } from './FilterSidePanel';
 import type { FilterOptions } from '../../hooks/useTransactionFilter';
+import type { GroupByType } from '../../pages/TransactionsPage';
 
 interface FloatingFilterMenuProps {
   filters: FilterOptions;
@@ -12,9 +13,11 @@ interface FloatingFilterMenuProps {
   categories: { id: string; name: string; color: string }[];
   accounts: { id: string; name: string }[];
   paymentMethods: { id: string; name: string }[];
+  groupBy: GroupByType;
+  onGroupByChange: (groupBy: GroupByType) => void;
 }
 
-type FilterType = 'type' | 'date' | 'member' | 'category' | 'account' | 'payment' | 'sort' | 'search';
+type FilterType = 'type' | 'date' | 'member' | 'category' | 'account' | 'payment' | 'sort' | 'search' | 'grouping';
 
 interface FilterMenuItem {
   type: FilterType;
@@ -34,6 +37,8 @@ export const FloatingFilterMenu = ({
   categories,
   accounts,
   paymentMethods,
+  groupBy,
+  onGroupByChange,
 }: FloatingFilterMenuProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activePanel, setActivePanel] = useState<FilterType | null>(null);
@@ -48,6 +53,7 @@ export const FloatingFilterMenu = ({
   const isPaymentActive = filters.paymentMethodIds.length > 0;
   const isSortActive = filters.sortBy !== 'date' || filters.sortOrder !== 'desc';
   const isSearchActive = filters.searchQuery !== '';
+  const isGroupingActive = groupBy !== 'date';
 
   // 各フィルターのアクティブ数を計算
   const searchActiveCount = isSearchActive ? 1 : 0;
@@ -58,6 +64,7 @@ export const FloatingFilterMenu = ({
   const accountActiveCount = filters.accountIds.length;
   const paymentActiveCount = filters.paymentMethodIds.length;
   const sortActiveCount = isSortActive ? 1 : 0;
+  const groupingActiveCount = isGroupingActive ? 1 : 0;
 
   const filterMenuItems: FilterMenuItem[] = [
     { type: 'search', icon: Search, label: '検索', color: 'bg-purple-500', isActive: isSearchActive, activeCount: searchActiveCount },
@@ -67,6 +74,7 @@ export const FloatingFilterMenu = ({
     { type: 'category', icon: Tag, label: 'カテゴリ', color: 'bg-pink-500', isActive: isCategoryActive, activeCount: categoryActiveCount },
     { type: 'account', icon: Wallet, label: '口座', color: 'bg-teal-500', isActive: isAccountActive, activeCount: accountActiveCount },
     { type: 'payment', icon: CreditCard, label: '支払方法', color: 'bg-indigo-500', isActive: isPaymentActive, activeCount: paymentActiveCount },
+    { type: 'grouping', icon: Grid3x3, label: 'グループ化', color: 'bg-amber-500', isActive: isGroupingActive, activeCount: groupingActiveCount },
     { type: 'sort', icon: ArrowUpDown, label: '並び替え', color: 'bg-gray-500', isActive: isSortActive, activeCount: sortActiveCount },
   ];
 
@@ -204,6 +212,8 @@ export const FloatingFilterMenu = ({
         categories={categories}
         accounts={accounts}
         paymentMethods={paymentMethods}
+        groupBy={groupBy}
+        onGroupByChange={onGroupByChange}
       />
     </>
   );
