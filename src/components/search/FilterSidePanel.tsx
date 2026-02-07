@@ -202,8 +202,8 @@ export const FilterSidePanel = ({
     <>
       {/* フローティングパネル */}
       <div
-        className={`fixed bottom-44 right-3 sm:right-5 w-full max-w-[calc(100vw-4rem)] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl z-50 transform transition-all duration-300 ${
-          isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
+        className={`fixed bottom-44 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl z-50 transition-opacity duration-300 ${
+          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         style={{
           maxHeight: 'calc(100vh - 10rem)',

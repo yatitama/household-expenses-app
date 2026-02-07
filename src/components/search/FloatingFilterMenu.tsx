@@ -116,7 +116,7 @@ export const FloatingFilterMenu = ({
           <div
             className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 py-2"
             style={{
-              maxWidth: 'calc(100vw - 4rem)',
+              maxWidth: 'calc(100vw - 5rem)',
               width: 'max-content'
             }}
           >
@@ -136,7 +136,7 @@ export const FloatingFilterMenu = ({
             <div className="w-px h-8 bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
 
             {/* スクロール可能なフィルターボタン */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2" style={{ maxWidth: 'calc(100vw - 8rem)' }}>
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2" style={{ maxWidth: 'calc(100vw - 12rem)' }}>
               {filterMenuItems.map((item) => {
                 const Icon = item.icon;
 
