@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Receipt } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { SearchBar } from '../components/search/SearchBar';
 import { FilterPanel } from '../components/search/FilterPanel';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
@@ -14,6 +15,7 @@ import type { Transaction, TransactionInput } from '../types';
 export const TransactionsPage = () => {
   const { filters, filteredTransactions, updateFilter, resetFilters, activeFilterCount } = useTransactionFilter();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  useBodyScrollLock(!!editingTransaction);
 
   const members = useMemo(() => memberService.getAll(), []);
   const categories = useMemo(() => categoryService.getAll(), []);

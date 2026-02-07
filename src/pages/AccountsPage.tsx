@@ -218,10 +218,6 @@ export const AccountsPage = () => {
         <PMTransactionsModal
           paymentMethod={viewingPM}
           onClose={() => { setViewingPM(null); refreshData(); }}
-          onAddTransaction={(pm) => {
-            setViewingPM(null);
-            setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId });
-          }}
         />
       )}
 

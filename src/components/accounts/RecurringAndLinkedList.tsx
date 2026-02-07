@@ -1,4 +1,4 @@
-import { Plus, Edit2, Trash2, RefreshCw, CreditCard, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, RefreshCw, CreditCard, ToggleLeft, ToggleRight } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { RecurringPayment, PaymentMethod, LinkedPaymentMethod } from '../../types';
@@ -57,26 +57,20 @@ export const RecurringAndLinkedList = ({
                         : <ToggleLeft size={16} className="text-gray-300 dark:text-gray-600" />
                       }
                     </button>
-                    <div
-                      className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
-                    >
-                      {getCategoryIcon(category?.icon || '', 12)}
-                    </div>
-                    <span className="truncate text-gray-700 dark:text-gray-300">{rp.name}</span>
-                    <span className="text-gray-400 dark:text-gray-500 flex-shrink-0">{freqLabel}</span>
-                  </div>
-                  <div className="flex items-center gap-1 flex-shrink-0 ml-2">
-                    <span className={`font-medium ${rp.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                      {formatCurrency(rp.amount)}
-                    </span>
-                    <button onClick={() => onEditRecurring(rp)} className="p-1 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400">
-                      <Edit2 size={12} />
-                    </button>
-                    <button onClick={() => onDeleteRecurring(rp.id)} className="p-1 text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400">
-                      <Trash2 size={12} />
+                    <button onClick={() => onEditRecurring(rp)} className="flex items-center gap-2 min-w-0 flex-1 text-left hover:opacity-70 transition-opacity">
+                      <div
+                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                      >
+                        {getCategoryIcon(category?.icon || '', 12)}
+                      </div>
+                      <span className="truncate text-gray-700 dark:text-gray-300">{rp.name}</span>
+                      <span className="text-gray-400 dark:text-gray-500 flex-shrink-0">{freqLabel}</span>
                     </button>
                   </div>
+                  <span className={`font-medium flex-shrink-0 ml-2 ${rp.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                    {formatCurrency(rp.amount)}
+                  </span>
                 </div>
               );
             })}
@@ -124,14 +118,9 @@ export const RecurringAndLinkedList = ({
                     </button>
                     <span className="text-gray-400 dark:text-gray-500 flex-shrink-0">{paymentLabel}</span>
                   </div>
-                  <div className="flex items-center gap-1 flex-shrink-0 ml-2">
-                    <span className="font-medium text-red-600 dark:text-red-400">
-                      {formatCurrency(unsettledAmount)}
-                    </span>
-                    <button onClick={() => onDeletePM(pm.id)} className="p-1 text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400" title="支払い手段削除">
-                      <Trash2 size={12} />
-                    </button>
-                  </div>
+                  <span className="font-medium text-red-600 dark:text-red-400 flex-shrink-0 ml-2">
+                    {formatCurrency(unsettledAmount)}
+                  </span>
                 </div>
               );
             })}
