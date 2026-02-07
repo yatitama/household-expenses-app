@@ -110,7 +110,7 @@ export const FloatingFilterMenu = ({
       )}
 
       {/* フローティングメニュー */}
-      <div ref={menuRef} className="fixed bottom-20 right-3 sm:right-4 z-40 flex items-end gap-2">
+      <div ref={menuRef} className="fixed bottom-20 right-3 sm:right-5 z-40 flex items-end gap-2">
         {/* 展開されたフィルターアイコン（横1列スクロール） */}
         {isExpanded && (
           <div
