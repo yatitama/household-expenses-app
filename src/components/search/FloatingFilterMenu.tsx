@@ -36,6 +36,7 @@ export const FloatingFilterMenu = ({
 }: FloatingFilterMenuProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activePanel, setActivePanel] = useState<FilterType | null>(null);
+  const [rotation, setRotation] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 各フィルターがアクティブかどうかを判定
@@ -59,12 +60,14 @@ export const FloatingFilterMenu = ({
     { type: 'sort', icon: ArrowUpDown, label: '並び替え', color: 'bg-gray-500', isActive: isSortActive },
   ];
 
-  // メニュー外クリックで閉じる
+  // パネルが開いているときはメニューを閉じない
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // パネルが開いている場合は何もしない
+      if (activePanel !== null) return;
+
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsExpanded(false);
-        setActivePanel(null);
       }
     };
 
@@ -72,7 +75,7 @@ export const FloatingFilterMenu = ({
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isExpanded]);
+  }, [isExpanded, activePanel]);
 
   // パネルを開く
   const handleFilterClick = (type: FilterType) => {
@@ -84,12 +87,14 @@ export const FloatingFilterMenu = ({
     setActivePanel(null);
   };
 
-  // メインボタンの角度計算（円形配置）
-  const getItemPosition = (index: number, total: number) => {
+  // メインボタンの角度計算（真上から真左の範囲に配置）
+  const getItemPosition = (index: number, itemsPerPage: number, currentRotation: number) => {
     const radius = 80; // ボタンからの距離
-    const startAngle = -90; // 上から開始
-    const angleStep = 360 / total;
-    const angle = (startAngle + angleStep * index) * (Math.PI / 180);
+    const startAngle = -90; // 真上から開始
+    const endAngle = 180; // 真左まで
+    const totalAngle = endAngle - startAngle; // 270度の範囲
+    const angleStep = totalAngle / (itemsPerPage - 1);
+    const angle = (startAngle + angleStep * index + currentRotation) * (Math.PI / 180);
 
     return {
       x: Math.cos(angle) * radius,
@@ -97,14 +102,31 @@ export const FloatingFilterMenu = ({
     };
   };
 
+  // 表示するアイテムの数（1ページあたり）
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(filterMenuItems.length / itemsPerPage);
+  const currentPage = Math.floor(rotation / 90) % totalPages;
+  const visibleItems = filterMenuItems.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  );
+
+  // 回転処理
+  const rotateNext = () => {
+    setRotation((prev) => prev - 90);
+  };
+
+  const rotatePrev = () => {
+    setRotation((prev) => prev + 90);
+  };
+
   return (
     <>
-      {/* オーバーレイ（メニュー展開時） */}
-      {(isExpanded || activePanel !== null) && (
+      {/* オーバーレイ（パネルが開いているときのみ） */}
+      {activePanel !== null && (
         <div
           className="fixed inset-0 bg-black/30 z-30"
           onClick={() => {
-            setIsExpanded(false);
             setActivePanel(null);
           }}
         />
@@ -115,8 +137,8 @@ export const FloatingFilterMenu = ({
         {/* 展開されたフィルターアイコン */}
         {isExpanded && (
           <div className="absolute bottom-0 right-0">
-            {filterMenuItems.map((item, index) => {
-              const pos = getItemPosition(index, filterMenuItems.length);
+            {visibleItems.map((item, index) => {
+              const pos = getItemPosition(index, itemsPerPage, rotation);
               const Icon = item.icon;
 
               return (
@@ -128,7 +150,6 @@ export const FloatingFilterMenu = ({
                   }`}
                   style={{
                     transform: `translate(${pos.x}px, ${pos.y}px)`,
-                    opacity: isExpanded ? 1 : 0,
                   }}
                   title={item.label}
                   aria-label={item.label}
@@ -137,15 +158,55 @@ export const FloatingFilterMenu = ({
                 </button>
               );
             })}
+
+            {/* 回転ボタン（次へ） */}
+            {totalPages > 1 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  rotateNext();
+                }}
+                className="absolute w-8 h-8 bg-gray-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 active:scale-95"
+                style={{
+                  transform: 'translate(-100px, 0px)',
+                }}
+                title="次のページ"
+                aria-label="次のページ"
+              >
+                <span className="text-xs">›</span>
+              </button>
+            )}
+
+            {/* 回転ボタン（前へ） */}
+            {totalPages > 1 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  rotatePrev();
+                }}
+                className="absolute w-8 h-8 bg-gray-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 active:scale-95"
+                style={{
+                  transform: 'translate(-100px, -40px)',
+                }}
+                title="前のページ"
+                aria-label="前のページ"
+              >
+                <span className="text-xs">‹</span>
+              </button>
+            )}
           </div>
         )}
 
         {/* メインフィルターボタン */}
         <button
           onClick={() => {
-            setIsExpanded(!isExpanded);
             if (isExpanded) {
+              // メニューが展開されている場合は閉じる
+              setIsExpanded(false);
               setActivePanel(null);
+            } else {
+              // メニューを展開する
+              setIsExpanded(true);
             }
           }}
           className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
