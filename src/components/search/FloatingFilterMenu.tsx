@@ -14,6 +14,7 @@ interface FloatingFilterMenuProps {
   paymentMethods: { id: string; name: string }[];
   isExpanded: boolean;
   setIsExpanded: (value: boolean) => void;
+  isGroupingPanelOpen: boolean;
 }
 
 type FilterType = 'type' | 'date' | 'member' | 'category' | 'account' | 'payment' | 'sort' | 'search';
@@ -38,6 +39,7 @@ export const FloatingFilterMenu = ({
   paymentMethods,
   isExpanded,
   setIsExpanded,
+  isGroupingPanelOpen,
 }: FloatingFilterMenuProps) => {
   const [activePanel, setActivePanel] = useState<FilterType | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -99,6 +101,11 @@ export const FloatingFilterMenu = ({
   const handleClosePanel = () => {
     setActivePanel(null);
   };
+
+  // Hide when grouping panel is open
+  if (isGroupingPanelOpen) {
+    return null;
+  }
 
   return (
     <>
