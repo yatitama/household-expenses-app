@@ -6,6 +6,7 @@ import {
   Music, Book, Plane, MoreHorizontal, Banknote,
   Train, Bus, Bike, Baby, Dog, Cat, Pill,
   Stethoscope, Scissors, Sparkles, Dumbbell,
+  Users, User, UserCircle, UserRound, CircleUser,
   Tag,
 } from 'lucide-react';
 
@@ -16,6 +17,7 @@ export const ICON_COMPONENTS: Record<string, React.ComponentType<{ size?: number
   Music, Book, Plane, MoreHorizontal, Banknote,
   Train, Bus, Bike, Baby, Dog, Cat, Pill,
   Stethoscope, Scissors, Sparkles, Dumbbell,
+  Users, User, UserCircle, UserRound, CircleUser,
 };
 
 export const ICON_NAMES = Object.keys(ICON_COMPONENTS);
