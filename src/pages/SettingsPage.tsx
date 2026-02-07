@@ -1,25 +1,58 @@
 import { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, Edit2, Moon, Sun } from 'lucide-react';
+import { Database, Download, Upload, Users, Tag, ChevronDown, ChevronUp, Plus, Moon, Sun, Wallet, CreditCard } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
+import { AccountModal } from '../components/accounts/modals/AccountModal';
+import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
+import { ACCOUNT_TYPE_LABELS, PM_TYPE_LABELS } from '../components/accounts/constants';
 import { COMMON_MEMBER_ID } from '../types';
-import type { Member, MemberInput, Category, CategoryInput, TransactionType } from '../types';
+import type { Member, MemberInput, Category, CategoryInput, TransactionType, Account, AccountInput, PaymentMethod, PaymentMethodInput } from '../types';
 
 const COLORS = [
-  '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6',
-  '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e',
+  // Red系
+  '#fee2e2', '#fca5a5', '#f87171', '#ef4444', '#dc2626',
+  // Orange系
+  '#fed7aa', '#fdba74', '#fb923c', '#f97316', '#ea580c',
+  // Yellow系
+  '#fef3c7', '#fde047', '#facc15', '#eab308', '#ca8a04',
+  // Lime系
+  '#d9f99d', '#bef264', '#a3e635', '#84cc16', '#65a30d',
+  // Green系
+  '#bbf7d0', '#86efac', '#4ade80', '#22c55e', '#16a34a',
+  // Emerald系
+  '#a7f3d0', '#6ee7b7', '#34d399', '#10b981', '#059669',
+  // Teal系
+  '#99f6e4', '#5eead4', '#2dd4bf', '#14b8a6', '#0d9488',
+  // Cyan系
+  '#a5f3fc', '#67e8f9', '#22d3ee', '#06b6d4', '#0891b2',
+  // Blue系
+  '#bfdbfe', '#93c5fd', '#60a5fa', '#3b82f6', '#2563eb',
+  // Indigo系
+  '#c7d2fe', '#a5b4fc', '#818cf8', '#6366f1', '#4f46e5',
+  // Purple系
+  '#e9d5ff', '#d8b4fe', '#c084fc', '#a855f7', '#9333ea',
+  // Pink系
+  '#fbcfe8', '#f9a8d4', '#f472b6', '#ec4899', '#db2777',
+  // Rose系
+  '#fecdd3', '#fda4af', '#fb7185', '#f43f5e', '#e11d48',
+  // Gray系
+  '#e5e7eb', '#d1d5db', '#9ca3af', '#6b7280', '#4b5563',
 ];
 
 export const SettingsPage = () => {
   const { isDark, toggle: toggleDarkMode } = useDarkMode();
   const [membersOpen, setMembersOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [accountsOpen, setAccountsOpen] = useState(false);
+  const [paymentMethodsOpen, setPaymentMethodsOpen] = useState(false);
   const [members, setMembers] = useState<Member[]>(() => memberService.getAll());
   const [categories, setCategories] = useState<Category[]>(() => categoryService.getAll());
+  const [accounts, setAccounts] = useState<Account[]>(() => accountService.getAll());
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => accountService.getPaymentMethods());
   const [categoryFilterType, setCategoryFilterType] = useState<TransactionType>('expense');
 
   // Member modal state
@@ -30,6 +63,14 @@ export const SettingsPage = () => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
+  // Account modal state
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+
+  // Payment method modal state
+  const [isPMModalOpen, setIsPMModalOpen] = useState(false);
+  const [editingPM, setEditingPM] = useState<PaymentMethod | null>(null);
+
   // Confirm dialog state
   const [confirmDialogState, setConfirmDialogState] = useState<{
     isOpen: boolean;
@@ -38,10 +79,12 @@ export const SettingsPage = () => {
     onConfirm: () => void;
   }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
 
-  useBodyScrollLock(isMemberModalOpen || isCategoryModalOpen);
+  useBodyScrollLock(isMemberModalOpen || isCategoryModalOpen || isAccountModalOpen || isPMModalOpen);
 
   const refreshMembers = useCallback(() => setMembers(memberService.getAll()), []);
   const refreshCategories = useCallback(() => setCategories(categoryService.getAll()), []);
+  const refreshAccounts = useCallback(() => setAccounts(accountService.getAll()), []);
+  const refreshPaymentMethods = useCallback(() => setPaymentMethods(accountService.getPaymentMethods()), []);
 
   const filteredCategories = categories.filter((c) => c.type === categoryFilterType);
 
@@ -96,6 +139,58 @@ export const SettingsPage = () => {
       toast.success('カテゴリを追加しました');
     }
     refreshCategories(); setIsCategoryModalOpen(false);
+  };
+
+  // Account handlers
+  const handleAddAccount = () => { setEditingAccount(null); setIsAccountModalOpen(true); };
+  const handleEditAccount = (account: Account) => { setEditingAccount(account); setIsAccountModalOpen(true); };
+  const handleDeleteAccount = (id: string) => {
+    setConfirmDialogState({
+      isOpen: true,
+      title: '口座を削除',
+      message: 'この口座を削除してもよろしいですか？',
+      onConfirm: () => {
+        accountService.delete(id);
+        refreshAccounts();
+        toast.success('口座を削除しました');
+      },
+    });
+  };
+  const handleSaveAccount = (input: AccountInput) => {
+    if (editingAccount) {
+      accountService.update(editingAccount.id, input);
+      toast.success('口座を更新しました');
+    } else {
+      accountService.create(input);
+      toast.success('口座を追加しました');
+    }
+    refreshAccounts(); setIsAccountModalOpen(false);
+  };
+
+  // Payment method handlers
+  const handleAddPM = () => { setEditingPM(null); setIsPMModalOpen(true); };
+  const handleEditPM = (pm: PaymentMethod) => { setEditingPM(pm); setIsPMModalOpen(true); };
+  const handleDeletePM = (id: string) => {
+    setConfirmDialogState({
+      isOpen: true,
+      title: '支払い手段を削除',
+      message: 'この支払い手段を削除してもよろしいですか？',
+      onConfirm: () => {
+        accountService.deletePaymentMethod(id);
+        refreshPaymentMethods();
+        toast.success('支払い手段を削除しました');
+      },
+    });
+  };
+  const handleSavePM = (input: PaymentMethodInput) => {
+    if (editingPM) {
+      accountService.updatePaymentMethod(editingPM.id, input);
+      toast.success('支払い手段を更新しました');
+    } else {
+      accountService.createPaymentMethod(input);
+      toast.success('支払い手段を追加しました');
+    }
+    refreshPaymentMethods(); setIsPMModalOpen(false);
   };
 
   // Data management
@@ -232,30 +327,22 @@ export const SettingsPage = () => {
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {members.map((member) => (
-                  <div key={member.id} className="flex items-center justify-between py-3">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                        style={{ backgroundColor: member.color }}
-                      >
-                        {member.name.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{member.name}</p>
-                        {member.isDefault && <p className="text-xs text-gray-400 dark:text-gray-500">デフォルト</p>}
-                      </div>
+                  <button
+                    key={member.id}
+                    onClick={() => handleEditMember(member)}
+                    className="w-full flex items-center gap-3 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                  >
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+                      style={{ backgroundColor: member.color }}
+                    >
+                      {member.name.charAt(0)}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <button onClick={() => handleEditMember(member)} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <Edit2 size={14} />
-                      </button>
-                      {!member.isDefault && (
-                        <button onClick={() => handleDeleteMember(member)} className="p-2 text-gray-400 hover:text-red-600">
-                          <Trash2 size={14} />
-                        </button>
-                      )}
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{member.name}</p>
+                      {member.isDefault && <p className="text-xs text-gray-400 dark:text-gray-500">デフォルト</p>}
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
@@ -317,28 +404,142 @@ export const SettingsPage = () => {
                 {filteredCategories.map((category) => {
                   const member = getMember(category.memberId);
                   return (
-                    <div key={category.id} className="flex items-center justify-between py-3">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-9 h-9 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: `${category.color}20`, color: category.color }}
-                        >
-                          {getCategoryIcon(category.icon, 18)}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{member?.name || '共通'}</p>
-                        </div>
+                    <button
+                      key={category.id}
+                      onClick={() => handleEditCategory(category)}
+                      className="w-full flex items-center gap-3 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                    >
+                      <div
+                        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                      >
+                        {getCategoryIcon(category.icon, 18)}
                       </div>
-                      <div className="flex items-center gap-1">
-                        <button onClick={() => handleEditCategory(category)} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                          <Edit2 size={14} />
-                        </button>
-                        <button onClick={() => handleDeleteCategory(category.id)} className="p-2 text-gray-400 hover:text-red-600">
-                          <Trash2 size={14} />
-                        </button>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{member?.name || '共通'}</p>
                       </div>
-                    </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 口座管理 */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+        <button
+          onClick={() => setAccountsOpen(!accountsOpen)}
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+          aria-expanded={accountsOpen}
+        >
+          <div className="flex items-center gap-3">
+            <Wallet size={20} className="text-blue-600 dark:text-blue-400" />
+            <div className="text-left">
+              <p className="font-medium text-gray-900 dark:text-gray-100">口座管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">現金・銀行口座・電子マネーを追加・編集</p>
+            </div>
+          </div>
+          {accountsOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+        </button>
+
+        {accountsOpen && (
+          <div className="border-t border-gray-100 dark:border-gray-700 p-4 space-y-3">
+            <button
+              onClick={handleAddAccount}
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm"
+            >
+              <Plus size={16} />
+              口座を追加
+            </button>
+
+            {accounts.length === 0 ? (
+              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">口座がありません</p>
+            ) : (
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                {accounts.map((account) => {
+                  const member = getMember(account.memberId);
+                  return (
+                    <button
+                      key={account.id}
+                      onClick={() => handleEditAccount(account)}
+                      className="w-full flex items-center gap-3 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                    >
+                      <div
+                        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${account.color}20`, color: account.color }}
+                      >
+                        <Wallet size={18} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{account.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {member?.name || '共通'} • {ACCOUNT_TYPE_LABELS[account.type]}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 支払い手段管理 */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+        <button
+          onClick={() => setPaymentMethodsOpen(!paymentMethodsOpen)}
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+          aria-expanded={paymentMethodsOpen}
+        >
+          <div className="flex items-center gap-3">
+            <CreditCard size={20} className="text-purple-600 dark:text-purple-400" />
+            <div className="text-left">
+              <p className="font-medium text-gray-900 dark:text-gray-100">支払い手段管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">クレジットカード・デビットカードを追加・編集</p>
+            </div>
+          </div>
+          {paymentMethodsOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+        </button>
+
+        {paymentMethodsOpen && (
+          <div className="border-t border-gray-100 dark:border-gray-700 p-4 space-y-3">
+            <button
+              onClick={handleAddPM}
+              className="w-full flex items-center justify-center gap-2 bg-purple-600 text-white py-2.5 rounded-lg font-medium text-sm"
+            >
+              <Plus size={16} />
+              支払い手段を追加
+            </button>
+
+            {paymentMethods.length === 0 ? (
+              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">支払い手段がありません</p>
+            ) : (
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                {paymentMethods.map((pm) => {
+                  const member = getMember(pm.memberId);
+                  return (
+                    <button
+                      key={pm.id}
+                      onClick={() => handleEditPM(pm)}
+                      className="w-full flex items-center gap-3 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                    >
+                      <div
+                        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${pm.color}20`, color: pm.color }}
+                      >
+                        <CreditCard size={18} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{pm.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {member?.name || '共通'} • {PM_TYPE_LABELS[pm.type]}
+                        </p>
+                      </div>
+                    </button>
                   );
                 })}
               </div>
@@ -401,6 +602,7 @@ export const SettingsPage = () => {
           member={editingMember}
           onSave={handleSaveMember}
           onClose={() => setIsMemberModalOpen(false)}
+          onDelete={handleDeleteMember}
         />
       )}
 
@@ -412,6 +614,30 @@ export const SettingsPage = () => {
           members={members}
           onSave={handleSaveCategory}
           onClose={() => setIsCategoryModalOpen(false)}
+          onDelete={handleDeleteCategory}
+        />
+      )}
+
+      {/* Account Modal */}
+      {isAccountModalOpen && (
+        <AccountModal
+          account={editingAccount}
+          members={members}
+          onSave={handleSaveAccount}
+          onClose={() => setIsAccountModalOpen(false)}
+          onDelete={handleDeleteAccount}
+        />
+      )}
+
+      {/* Payment Method Modal */}
+      {isPMModalOpen && (
+        <PaymentMethodModal
+          paymentMethod={editingPM}
+          members={members}
+          accounts={accounts}
+          onSave={handleSavePM}
+          onClose={() => setIsPMModalOpen(false)}
+          onDelete={handleDeletePM}
         />
       )}
 
@@ -433,9 +659,10 @@ interface MemberModalProps {
   member: Member | null;
   onSave: (input: MemberInput) => void;
   onClose: () => void;
+  onDelete?: (member: Member) => void;
 }
 
-const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
+const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) => {
   const [name, setName] = useState(member?.name || '');
   const [color, setColor] = useState(member?.color || COLORS[0]);
 
@@ -476,13 +703,24 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
               ))}
             </div>
           </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
-              キャンセル
-            </button>
-            <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
-              保存
-            </button>
+          <div className="space-y-2 pt-2">
+            {member && !member.isDefault && onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(member); onClose(); }}
+                className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+              >
+                削除
+              </button>
+            )}
+            <div className="flex gap-3">
+              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+                キャンセル
+              </button>
+              <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
+                保存
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -497,9 +735,10 @@ interface CategoryModalProps {
   members: { id: string; name: string; color: string }[];
   onSave: (input: CategoryInput) => void;
   onClose: () => void;
+  onDelete?: (id: string) => void;
 }
 
-const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryModalProps) => {
+const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: CategoryModalProps) => {
   const [name, setName] = useState(category?.name || '');
   const [memberId, setMemberId] = useState(category?.memberId || COMMON_MEMBER_ID);
   const [color, setColor] = useState(category?.color || COLORS[0]);
@@ -584,13 +823,24 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
               })}
             </div>
           </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
-              キャンセル
-            </button>
-            <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
-              保存
-            </button>
+          <div className="space-y-2 pt-2">
+            {category && onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(category.id); onClose(); }}
+                className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+              >
+                削除
+              </button>
+            )}
+            <div className="flex gap-3">
+              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+                キャンセル
+              </button>
+              <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
+                保存
+              </button>
+            </div>
           </div>
         </form>
       </div>

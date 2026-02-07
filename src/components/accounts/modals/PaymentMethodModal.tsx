@@ -11,9 +11,10 @@ interface PaymentMethodModalProps {
   accounts: Account[];
   onSave: (input: PaymentMethodInput) => void;
   onClose: () => void;
+  onDelete?: (id: string) => void;
 }
 
-export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, onClose }: PaymentMethodModalProps) => {
+export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, onClose, onDelete }: PaymentMethodModalProps) => {
   const [name, setName] = useState(paymentMethod?.name || '');
   const [memberId, setMemberId] = useState(paymentMethod?.memberId || COMMON_MEMBER_ID);
   const [pmType, setPmType] = useState<PaymentMethodType>(paymentMethod?.type || 'credit_card');
@@ -231,13 +232,24 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
             </div>
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
-              キャンセル
-            </button>
-            <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-purple-600 text-white font-medium">
-              保存
-            </button>
+          <div className="space-y-2 pt-2">
+            {paymentMethod && onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(paymentMethod.id); onClose(); }}
+                className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+              >
+                削除
+              </button>
+            )}
+            <div className="flex gap-3">
+              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+                キャンセル
+              </button>
+              <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-purple-600 text-white font-medium">
+                保存
+              </button>
+            </div>
           </div>
         </form>
       </div>

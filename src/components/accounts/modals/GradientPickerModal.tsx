@@ -2,16 +2,47 @@ import { useState } from 'react';
 import { X, Wallet } from 'lucide-react';
 
 const GRADIENT_PRESETS: { from: string; to: string; label: string }[] = [
+  // 暖色系
+  { from: '#fee2e2', to: '#fca5a5', label: 'ライトレッド' },
+  { from: '#f87171', to: '#ef4444', label: 'レッド' },
+  { from: '#ef4444', to: '#dc2626', label: 'ディープレッド' },
+  { from: '#fed7aa', to: '#fb923c', label: 'ライトオレンジ' },
+  { from: '#fb923c', to: '#f97316', label: 'オレンジ' },
+  { from: '#f97316', to: '#ea580c', label: 'ディープオレンジ' },
+  { from: '#fef3c7', to: '#fde047', label: 'ライトイエロー' },
+  { from: '#facc15', to: '#eab308', label: 'イエロー' },
+  { from: '#eab308', to: '#ca8a04', label: 'ゴールド' },
+  // グリーン系
+  { from: '#d9f99d', to: '#bef264', label: 'ライトライム' },
+  { from: '#a3e635', to: '#84cc16', label: 'ライム' },
+  { from: '#bbf7d0', to: '#4ade80', label: 'ライトグリーン' },
+  { from: '#4ade80', to: '#22c55e', label: 'グリーン' },
+  { from: '#22c55e', to: '#16a34a', label: 'ディープグリーン' },
+  { from: '#a7f3d0', to: '#34d399', label: 'エメラルド' },
+  { from: '#10b981', to: '#059669', label: 'ダークエメラルド' },
+  // 青・水色系
+  { from: '#99f6e4', to: '#2dd4bf', label: 'ティール' },
+  { from: '#14b8a6', to: '#0d9488', label: 'ダークティール' },
+  { from: '#a5f3fc', to: '#22d3ee', label: 'シアン' },
+  { from: '#06b6d4', to: '#0891b2', label: 'ダークシアン' },
+  { from: '#bfdbfe', to: '#60a5fa', label: 'スカイブルー' },
   { from: '#3b82f6', to: '#2563eb', label: 'ブルー' },
+  { from: '#c7d2fe', to: '#818cf8', label: 'ライトインディゴ' },
   { from: '#6366f1', to: '#4f46e5', label: 'インディゴ' },
-  { from: '#8b5cf6', to: '#7c3aed', label: 'パープル' },
+  // 紫・ピンク系
+  { from: '#e9d5ff', to: '#c084fc', label: 'ライトパープル' },
+  { from: '#a855f7', to: '#9333ea', label: 'パープル' },
+  { from: '#8b5cf6', to: '#7c3aed', label: 'ディープパープル' },
+  { from: '#fbcfe8', to: '#f472b6', label: 'ライトピンク' },
   { from: '#ec4899', to: '#db2777', label: 'ピンク' },
-  { from: '#14b8a6', to: '#0d9488', label: 'ティール' },
-  { from: '#22c55e', to: '#16a34a', label: 'グリーン' },
-  { from: '#f97316', to: '#ea580c', label: 'オレンジ' },
-  { from: '#ef4444', to: '#dc2626', label: 'レッド' },
+  { from: '#fecdd3', to: '#fb7185', label: 'ローズ' },
+  { from: '#f43f5e', to: '#e11d48', label: 'ディープローズ' },
+  // グレー・ダーク系
+  { from: '#e5e7eb', to: '#9ca3af', label: 'ライトグレー' },
+  { from: '#9ca3af', to: '#6b7280', label: 'グレー' },
+  { from: '#6b7280', to: '#4b5563', label: 'ダークグレー' },
   { from: '#64748b', to: '#475569', label: 'スレート' },
-  { from: '#1e293b', to: '#0f172a', label: 'ダーク' },
+  { from: '#334155', to: '#1e293b', label: 'ダークスレート' },
 ];
 
 interface GradientPickerModalProps {
