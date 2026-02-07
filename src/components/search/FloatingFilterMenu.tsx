@@ -110,11 +110,11 @@ export const FloatingFilterMenu = ({
       )}
 
       {/* フローティングメニュー */}
-      <div ref={menuRef} className="fixed bottom-20 right-2 sm:right-3 z-40 flex items-end gap-2">
+      <div ref={menuRef} className="fixed bottom-20 right-3 sm:right-4 z-40 flex items-end gap-2">
         {/* 展開されたフィルターアイコン（横1列スクロール） */}
         {isExpanded && (
           <div
-            className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 py-5"
+            className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 py-2"
             style={{
               maxWidth: 'calc(100vw - 4rem)',
               width: 'max-content'
@@ -125,7 +125,7 @@ export const FloatingFilterMenu = ({
               onClick={() => {
                 resetFilters();
               }}
-              className="w-10 h-10 bg-gray-600 dark:bg-gray-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0"
+              className="w-10 h-10 my-2 bg-gray-600 dark:bg-gray-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0"
               title="全てリセット"
               aria-label="全てリセット"
             >
@@ -136,7 +136,7 @@ export const FloatingFilterMenu = ({
             <div className="w-px h-8 bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
 
             {/* スクロール可能なフィルターボタン */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide" style={{ maxWidth: 'calc(100vw - 8rem)' }}>
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2" style={{ maxWidth: 'calc(100vw - 8rem)' }}>
               {filterMenuItems.map((item) => {
                 const Icon = item.icon;
 
