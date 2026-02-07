@@ -21,24 +21,24 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-dialog-title"
       aria-describedby="confirm-dialog-message"
     >
-      <div className="premium-card p-6 max-w-sm w-full mx-4 animate-scale-in">
-        <h3 id="confirm-dialog-title" className="text-lg font-bold bg-gradient-to-r from-brand-700 to-accent-700 bg-clip-text text-transparent dark:from-brand-300 dark:to-accent-300 mb-2">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 max-w-sm w-full mx-4">
+        <h3 id="confirm-dialog-title" className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
           {title}
         </h3>
-        <p id="confirm-dialog-message" className="text-brand-700 dark:text-brand-300 mb-6">
+        <p id="confirm-dialog-message" className="text-gray-600 dark:text-gray-400 mb-6">
           {message}
         </p>
 
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="btn-secondary flex-1 px-4 py-2"
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700"
           >
             キャンセル
           </button>
@@ -47,10 +47,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
               onConfirm();
               onClose();
             }}
-            className={`flex-1 px-4 py-2 rounded-lg font-semibold text-white transition-all shadow-card hover:shadow-card-hover ${
+            className={`flex-1 px-4 py-2 rounded-lg font-medium text-white ${
               confirmVariant === 'danger'
                 ? 'bg-red-600 hover:bg-red-700'
-                : 'bg-gradient-to-r from-brand-600 to-accent-600 hover:from-brand-700 hover:to-accent-700'
+                : 'bg-blue-600 hover:bg-blue-700'
             }`}
           >
             {confirmText}
