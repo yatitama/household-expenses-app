@@ -3,6 +3,7 @@ export interface Member {
   id: string;
   name: string;
   color: string;
+  icon?: string;
   isDefault?: boolean;
 }
 

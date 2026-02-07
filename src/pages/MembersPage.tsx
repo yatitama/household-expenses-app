@@ -5,6 +5,7 @@ import { ArrowLeft, Plus, Edit2, Trash2, Users } from 'lucide-react';
 import { memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
+import { ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import type { Member, MemberInput } from '../types';
 
 const COLORS = [
@@ -99,10 +100,10 @@ export const MembersPage = () => {
             <div key={member.id} className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-white"
                   style={{ backgroundColor: member.color }}
                 >
-                  {member.name.charAt(0)}
+                  {member.icon ? getCategoryIcon(member.icon, 20) : member.name.charAt(0)}
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">{member.name}</p>
@@ -157,12 +158,14 @@ interface MemberModalProps {
 const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
   const [name, setName] = useState(member?.name || '');
   const [color, setColor] = useState(member?.color || COLORS[0]);
+  const [icon, setIcon] = useState(member?.icon || 'Users');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
       name,
       color,
+      icon,
       isDefault: member?.isDefault,
     });
   };
@@ -183,6 +186,27 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+          </div>
+
+          {/* アイコン */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">アイコン</label>
+            <div className="grid grid-cols-8 gap-2">
+              {ICON_NAMES.map((iconName) => (
+                <button
+                  key={iconName}
+                  type="button"
+                  onClick={() => setIcon(iconName)}
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
+                    icon === iconName
+                      ? 'bg-blue-100 text-blue-600 ring-2 ring-blue-500'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {getCategoryIcon(iconName, 20)}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* 色 */}

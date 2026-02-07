@@ -2,6 +2,7 @@ import { PlusCircle, GripHorizontal, ChevronDown, ChevronRight } from 'lucide-re
 import { useState } from 'react';
 import { categoryService } from '../../services/storage';
 import { formatCurrency } from '../../utils/formatters';
+import { getCategoryIcon } from '../../utils/categoryIcons';
 import { ACCOUNT_TYPE_ICONS } from './AccountIcons';
 import { ACCOUNT_TYPE_LABELS } from './constants';
 import { RecurringAndLinkedList } from './RecurringAndLinkedList';
@@ -91,22 +92,7 @@ export const AccountCard = ({
 
       {/* 口座情報 */}
       <div className="space-y-0.5">
-        {/* メンバーバッジとプラスボタン */}
-        <div className="flex justify-between items-center">
-          {member ? (
-            <span
-              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium text-white"
-              style={{ backgroundColor: member.color }}
-            >
-              {member.name}
-            </span>
-          ) : <div></div>}
-          <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 -mr-2" title="取引追加" aria-label="取引を追加">
-            <PlusCircle size={18} />
-          </button>
-        </div>
-
-        {/* 口座アイコンと口座名 */}
+        {/* 口座アイコン、メンバーアイコン、口座名、プラスボタン */}
         <div className="flex items-center gap-3">
           <button onClick={onView} className="flex-shrink-0">
             <div
@@ -116,8 +102,19 @@ export const AccountCard = ({
               {ACCOUNT_TYPE_ICONS[account.type]}
             </div>
           </button>
+          {member?.icon && (
+            <div
+              className="w-6 h-6 rounded-full flex items-center justify-center text-white flex-shrink-0"
+              style={{ backgroundColor: member.color }}
+            >
+              {getCategoryIcon(member.icon, 14)}
+            </div>
+          )}
           <button onClick={onView} className="text-left flex-1 min-w-0">
             <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{account.name}</p>
+          </button>
+          <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 -mr-2 flex-shrink-0" title="取引追加" aria-label="取引を追加">
+            <PlusCircle size={18} />
           </button>
         </div>
 
