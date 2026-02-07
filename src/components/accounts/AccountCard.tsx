@@ -90,54 +90,56 @@ export const AccountCard = ({
       </div>
 
       {/* 口座情報 */}
-      <div className="flex items-start gap-3">
-        <button onClick={onView} className="flex-shrink-0">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white"
-            style={{ backgroundColor: account.color }}
-          >
-            {ACCOUNT_TYPE_ICONS[account.type]}
-          </div>
-        </button>
-        <div className="flex-1 min-w-0">
-          {/* メンバーバッジとプラスボタン */}
-          <div className="flex justify-between items-center mb-0.5">
-            {member && (
-              <span
-                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium text-white"
-                style={{ backgroundColor: member.color }}
-              >
-                {member.name}
-              </span>
-            )}
-            <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 -mr-2" title="取引追加" aria-label="取引を追加">
-              <PlusCircle size={18} />
-            </button>
-          </div>
-          {/* 口座名 */}
-          <button onClick={onView} className="text-left w-full mb-1">
+      <div className="space-y-0.5">
+        {/* メンバーバッジとプラスボタン */}
+        <div className="flex justify-between items-center">
+          {member ? (
+            <span
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium text-white"
+              style={{ backgroundColor: member.color }}
+            >
+              {member.name}
+            </span>
+          ) : <div></div>}
+          <button onClick={onAddTransaction} className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 -mr-2" title="取引追加" aria-label="取引を追加">
+            <PlusCircle size={18} />
+          </button>
+        </div>
+
+        {/* 口座アイコンと口座名 */}
+        <div className="flex items-center gap-3">
+          <button onClick={onView} className="flex-shrink-0">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center text-white"
+              style={{ backgroundColor: account.color }}
+            >
+              {ACCOUNT_TYPE_ICONS[account.type]}
+            </div>
+          </button>
+          <button onClick={onView} className="text-left flex-1 min-w-0">
             <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{account.name}</p>
           </button>
-          {/* 銀行タイプと金額 */}
-          <div className="flex justify-between items-center gap-2">
-            <button onClick={onView} className="text-left">
-              <p className="text-xs text-gray-500 dark:text-gray-400 break-words">{ACCOUNT_TYPE_LABELS[account.type]}</p>
-            </button>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              {((totalPendingData && (totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0 || totalPendingData.recurringIncome > 0)) || pendingAmount > 0) && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); setIsPendingDetailsOpen(!isPendingDetailsOpen); }}
-                  className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                  title={isPendingDetailsOpen ? "詳細を閉じる" : "詳細を表示"}
-                  aria-label={isPendingDetailsOpen ? "詳細を閉じる" : "詳細を表示"}
-                >
-                  {isPendingDetailsOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                </button>
-              )}
-              <button onClick={onView} className="text-right">
-                <p className="text-xl font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatCurrency(account.balance)}</p>
+        </div>
+
+        {/* 銀行タイプと金額 */}
+        <div className="flex justify-between items-center gap-2 pl-13">
+          <button onClick={onView} className="text-left">
+            <p className="text-xs text-gray-500 dark:text-gray-400 break-words">{ACCOUNT_TYPE_LABELS[account.type]}</p>
+          </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {((totalPendingData && (totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0 || totalPendingData.recurringIncome > 0)) || pendingAmount > 0) && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setIsPendingDetailsOpen(!isPendingDetailsOpen); }}
+                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                title={isPendingDetailsOpen ? "詳細を閉じる" : "詳細を表示"}
+                aria-label={isPendingDetailsOpen ? "詳細を閉じる" : "詳細を表示"}
+              >
+                {isPendingDetailsOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
               </button>
-            </div>
+            )}
+            <button onClick={onView} className="text-right">
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatCurrency(account.balance)}</p>
+            </button>
           </div>
         </div>
       </div>
