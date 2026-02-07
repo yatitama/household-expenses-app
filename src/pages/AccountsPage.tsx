@@ -9,7 +9,6 @@ import { getPendingAmountByAccount, getPendingAmountByPaymentMethod, getTotalPen
 import { AssetCard } from '../components/accounts/AssetCard';
 import { AccountCard } from '../components/accounts/AccountCard';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
-import { AccountTransactionsModal } from '../components/accounts/modals/AccountTransactionsModal';
 import { PMTransactionsModal } from '../components/accounts/modals/PMTransactionsModal';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
@@ -33,7 +32,6 @@ export const AccountsPage = () => {
   const members = memberService.getAll();
 
   // Modal state
-  const [viewingAccount, setViewingAccount] = useState<Account | null>(null);
   const [viewingPM, setViewingPM] = useState<PaymentMethod | null>(null);
   const [addTransactionTarget, setAddTransactionTarget] = useState<{ accountId?: string; paymentMethodId?: string } | null>(null);
   const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
@@ -49,7 +47,7 @@ export const AccountsPage = () => {
   const pendingByPM = getPendingAmountByPaymentMethod();
   const totalPendingByAccount = getTotalPendingByAccount();
 
-  const isAnyModalOpen = !!viewingAccount || !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isLinkedPMModalOpen || isGradientPickerOpen;
+  const isAnyModalOpen = !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isLinkedPMModalOpen || isGradientPickerOpen;
   useBodyScrollLock(isAnyModalOpen);
 
   // Handlers
@@ -64,7 +62,7 @@ export const AccountsPage = () => {
   };
 
   const closeAllModals = () => {
-    setViewingAccount(null); setViewingPM(null);
+    setViewingPM(null);
     setAddTransactionTarget(null); setIsRecurringModalOpen(false);
     setIsLinkedPMModalOpen(false); setIsGradientPickerOpen(false);
   };
@@ -148,7 +146,6 @@ export const AccountsPage = () => {
                   allPaymentMethods={paymentMethods}
                   pendingByPM={pendingByPM}
                   recurringPayments={accountRecurrings}
-                  onView={() => setViewingAccount(account)}
                   onAddTransaction={() => setAddTransactionTarget({ accountId: account.id })}
                   onAddRecurring={() => handleAddRecurring({ accountId: account.id })}
                   onEditRecurring={handleEditRecurring}
@@ -202,13 +199,6 @@ export const AccountsPage = () => {
       )}
 
       {/* モーダル群 */}
-      {viewingAccount && (
-        <AccountTransactionsModal
-          account={viewingAccount}
-          onClose={() => { setViewingAccount(null); refreshData(); }}
-        />
-      )}
-
       {viewingPM && (
         <PMTransactionsModal
           paymentMethod={viewingPM}

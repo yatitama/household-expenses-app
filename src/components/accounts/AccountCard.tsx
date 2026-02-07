@@ -6,6 +6,7 @@ import { getCategoryIcon } from '../../utils/categoryIcons';
 import { ACCOUNT_TYPE_ICONS } from './AccountIcons';
 import { ACCOUNT_TYPE_LABELS } from './constants';
 import { RecurringAndLinkedList } from './RecurringAndLinkedList';
+import { RecentTransactions } from './RecentTransactions';
 import type { Account, Member, RecurringPayment, PaymentMethod, LinkedPaymentMethod } from '../../types';
 
 interface AccountCardProps {
@@ -22,7 +23,6 @@ interface AccountCardProps {
   allPaymentMethods: PaymentMethod[];
   pendingByPM: Record<string, number>;
   recurringPayments: RecurringPayment[];
-  onView: () => void;
   onAddTransaction: () => void;
   onAddRecurring: () => void;
   onEditRecurring: (rp: RecurringPayment) => void;
@@ -44,7 +44,7 @@ interface AccountCardProps {
 
 export const AccountCard = ({
   account, member, pendingAmount, totalPendingData, linkedPaymentMethodsData, allPaymentMethods, pendingByPM, recurringPayments,
-  onView, onAddTransaction, onAddRecurring,
+  onAddTransaction, onAddRecurring,
   onEditRecurring, onToggleRecurring,
   onAddLinkedPM, onToggleLinkedPM,
   onViewPM,
@@ -93,22 +93,22 @@ export const AccountCard = ({
       {/* 口座情報 */}
       <div className="flex gap-3">
         {/* 口座アイコン - 2段結合・上下中央配置 */}
-        <button onClick={onView} className="flex-shrink-0 self-center">
+        <div className="flex-shrink-0 self-center">
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center text-white"
             style={{ backgroundColor: account.color }}
           >
             {ACCOUNT_TYPE_ICONS[account.type]}
           </div>
-        </button>
+        </div>
 
         {/* 右側コンテンツ */}
         <div className="flex-1 min-w-0 space-y-0.5">
           {/* 口座名とプラスボタン */}
           <div className="flex items-center gap-3">
-            <button onClick={onView} className="text-left flex-1 min-w-0">
+            <div className="text-left flex-1 min-w-0">
               <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{account.name}</p>
-            </button>
+            </div>
             {member?.icon && (
               <div
                 className="w-6 h-6 rounded-full flex items-center justify-center text-white flex-shrink-0"
@@ -124,9 +124,9 @@ export const AccountCard = ({
 
           {/* 銀行タイプと金額 */}
           <div className="flex justify-between items-center gap-2">
-            <button onClick={onView} className="text-left">
+            <div className="text-left">
               <p className="text-xs text-gray-500 dark:text-gray-400 break-words">{ACCOUNT_TYPE_LABELS[account.type]}</p>
-            </button>
+            </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {((totalPendingData && (totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0 || totalPendingData.recurringIncome > 0)) || pendingAmount > 0) && (
                 <button
@@ -138,9 +138,9 @@ export const AccountCard = ({
                   {isPendingDetailsOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                 </button>
               )}
-              <button onClick={onView} className="text-right">
+              <div className="text-right">
                 <p className="text-xl font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatCurrency(account.balance)}</p>
-              </button>
+              </div>
             </div>
           </div>
         </div>
@@ -175,6 +175,9 @@ export const AccountCard = ({
         getPaymentMethod={getPaymentMethod}
         getUnsettledAmount={getUnsettledAmount}
       />
+      <div className="mt-4">
+        <RecentTransactions accountId={account.id} />
+      </div>
     </div>
   );
 };
