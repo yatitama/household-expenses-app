@@ -11,7 +11,6 @@ import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { calculatePaymentDate } from '../../../utils/billingUtils';
 import { PM_TYPE_ICONS } from '../AccountIcons';
 import { EditTransactionModal } from './EditTransactionModal';
-import { ConfirmDialog } from '../../feedback/ConfirmDialog';
 import { revertTransactionBalance, applyTransactionBalance } from '../balanceHelpers';
 import type { PaymentMethod, Transaction, TransactionInput } from '../../../types';
 
@@ -28,7 +27,6 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onAddTransaction }
       .sort((a, b) => b.date.localeCompare(a.date));
   });
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; transaction: Transaction | null }>({ isOpen: false, transaction: null });
 
   const allPMs = paymentMethodService.getAll();
   const allAccounts = accountService.getAll();
@@ -42,18 +40,6 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onAddTransaction }
         .filter((t) => t.paymentMethodId === paymentMethod.id)
         .sort((a, b) => b.date.localeCompare(a.date))
     );
-  };
-
-  const handleDelete = (transaction: Transaction) => {
-    setDeleteConfirm({ isOpen: true, transaction });
-  };
-
-  const confirmDeleteTransaction = () => {
-    if (!deleteConfirm.transaction) return;
-    revertTransactionBalance(deleteConfirm.transaction);
-    transactionService.delete(deleteConfirm.transaction.id);
-    refreshTransactions();
-    toast.success('取引を削除しました');
   };
 
   const handleSaveEdit = (input: TransactionInput) => {
@@ -130,7 +116,11 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onAddTransaction }
                       const settlementLabel = settlementDate ? format(settlementDate, 'M/d') + '引落' : null;
                       const isSettled = !!transaction.settledAt;
                       return (
-                        <div key={transaction.id} className="p-3">
+                        <button
+                          key={transaction.id}
+                          onClick={() => setEditingTransaction(transaction)}
+                          className="w-full p-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                        >
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3 min-w-0 flex-1">
                               <div
@@ -152,19 +142,11 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onAddTransaction }
                                 {transaction.memo && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{transaction.memo}</p>}
                               </div>
                             </div>
-                            <div className="flex items-center gap-1 flex-shrink-0 ml-2">
-                              <p className={`font-bold text-sm ${isExpense ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                                {isExpense ? '-' : '+'}{formatCurrency(transaction.amount)}
-                              </p>
-                              <button onClick={() => setEditingTransaction(transaction)} className="p-1.5 text-gray-400 hover:text-blue-600 dark:text-gray-500 dark:hover:text-blue-400">
-                                <Edit2 size={14} />
-                              </button>
-                              <button onClick={() => handleDelete(transaction)} className="p-1.5 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400">
-                                <Trash2 size={14} />
-                              </button>
-                            </div>
+                            <p className={`font-bold text-sm flex-shrink-0 ml-2 ${isExpense ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                              {isExpense ? '-' : '+'}{formatCurrency(transaction.amount)}
+                            </p>
                           </div>
-                        </div>
+                        </button>
                       );
                     })}
                   </div>
@@ -185,19 +167,19 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, onAddTransaction }
             members={members}
             onSave={handleSaveEdit}
             onClose={() => setEditingTransaction(null)}
+            onDelete={(id) => {
+              const transaction = transactionService.getAll().find((t) => t.id === id);
+              if (transaction) {
+                revertTransactionBalance(transaction);
+                transactionService.delete(id);
+                refreshTransactions();
+                toast.success('取引を削除しました');
+                setEditingTransaction(null);
+              }
+            }}
           />
         </div>
       )}
-
-      <ConfirmDialog
-        isOpen={deleteConfirm.isOpen}
-        onClose={() => setDeleteConfirm({ isOpen: false, transaction: null })}
-        onConfirm={confirmDeleteTransaction}
-        title="取引を削除"
-        message="この取引を削除してもよろしいですか？この操作は取り消せません。"
-        confirmText="削除"
-        confirmVariant="danger"
-      />
     </div>
   );
 };
