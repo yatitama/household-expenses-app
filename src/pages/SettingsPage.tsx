@@ -1,8 +1,64 @@
-import { Link } from 'react-router-dom';
-import { Database, Download, Upload, Trash2, Users, Tag, ChevronRight } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, Edit2 } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService } from '../services/storage';
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
+import { COMMON_MEMBER_ID } from '../types';
+import type { Member, MemberInput, Category, CategoryInput, TransactionType } from '../types';
+
+const COLORS = [
+  '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6',
+  '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e',
+];
 
 export const SettingsPage = () => {
+  const [membersOpen, setMembersOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [members, setMembers] = useState<Member[]>(() => memberService.getAll());
+  const [categories, setCategories] = useState<Category[]>(() => categoryService.getAll());
+  const [categoryFilterType, setCategoryFilterType] = useState<TransactionType>('expense');
+
+  // Member modal state
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState<Member | null>(null);
+
+  // Category modal state
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+
+  useBodyScrollLock(isMemberModalOpen || isCategoryModalOpen);
+
+  const refreshMembers = useCallback(() => setMembers(memberService.getAll()), []);
+  const refreshCategories = useCallback(() => setCategories(categoryService.getAll()), []);
+
+  const filteredCategories = categories.filter((c) => c.type === categoryFilterType);
+
+  // Member handlers
+  const handleAddMember = () => { setEditingMember(null); setIsMemberModalOpen(true); };
+  const handleEditMember = (member: Member) => { setEditingMember(member); setIsMemberModalOpen(true); };
+  const handleDeleteMember = (member: Member) => {
+    if (member.isDefault) { alert('デフォルトメンバーは削除できません'); return; }
+    if (confirm('このメンバーを削除しますか？')) { memberService.delete(member.id); refreshMembers(); }
+  };
+  const handleSaveMember = (input: MemberInput) => {
+    if (editingMember) { memberService.update(editingMember.id, input); }
+    else { memberService.create(input); }
+    refreshMembers(); setIsMemberModalOpen(false);
+  };
+
+  // Category handlers
+  const handleAddCategory = () => { setEditingCategory(null); setIsCategoryModalOpen(true); };
+  const handleEditCategory = (category: Category) => { setEditingCategory(category); setIsCategoryModalOpen(true); };
+  const handleDeleteCategory = (id: string) => {
+    if (confirm('このカテゴリを削除しますか？')) { categoryService.delete(id); refreshCategories(); }
+  };
+  const handleSaveCategory = (input: CategoryInput) => {
+    if (editingCategory) { categoryService.update(editingCategory.id, input); }
+    else { categoryService.create(input); }
+    refreshCategories(); setIsCategoryModalOpen(false);
+  };
+
+  // Data management
   const handleExport = () => {
     const data = {
       members: memberService.getAll(),
@@ -12,7 +68,6 @@ export const SettingsPage = () => {
       budgets: budgetService.getAll(),
       exportedAt: new Date().toISOString(),
     };
-
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -29,7 +84,6 @@ export const SettingsPage = () => {
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
-
       try {
         const text = await file.text();
         const data = JSON.parse(text) as {
@@ -39,23 +93,11 @@ export const SettingsPage = () => {
           categories?: unknown[];
           budgets?: unknown[];
         };
-
-        if (data.members) {
-          localStorage.setItem('household_members', JSON.stringify(data.members));
-        }
-        if (data.categories) {
-          localStorage.setItem('household_categories', JSON.stringify(data.categories));
-        }
-        if (data.accounts) {
-          localStorage.setItem('household_accounts', JSON.stringify(data.accounts));
-        }
-        if (data.transactions) {
-          localStorage.setItem('household_transactions', JSON.stringify(data.transactions));
-        }
-        if (data.budgets) {
-          localStorage.setItem('household_budgets', JSON.stringify(data.budgets));
-        }
-
+        if (data.members) localStorage.setItem('household_members', JSON.stringify(data.members));
+        if (data.categories) localStorage.setItem('household_categories', JSON.stringify(data.categories));
+        if (data.accounts) localStorage.setItem('household_accounts', JSON.stringify(data.accounts));
+        if (data.transactions) localStorage.setItem('household_transactions', JSON.stringify(data.transactions));
+        if (data.budgets) localStorage.setItem('household_budgets', JSON.stringify(data.budgets));
         alert('データをインポートしました。ページを再読み込みします。');
         window.location.reload();
       } catch {
@@ -78,39 +120,157 @@ export const SettingsPage = () => {
     }
   };
 
+  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
+
   return (
     <div className="p-4 space-y-4">
       <h2 className="text-xl font-bold text-gray-800">設定</h2>
 
-      {/* マスター管理 */}
+      {/* メンバー管理 */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <Link
-          to="/settings/members"
-          className="flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors"
+        <button
+          onClick={() => setMembersOpen(!membersOpen)}
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+          aria-expanded={membersOpen}
         >
           <div className="flex items-center gap-3">
             <Users size={20} className="text-blue-600" />
-            <div>
+            <div className="text-left">
               <p className="font-medium text-gray-900">メンバー管理</p>
               <p className="text-xs text-gray-500">家族のメンバーを追加・編集</p>
             </div>
           </div>
-          <ChevronRight size={20} className="text-gray-400" />
-        </Link>
+          {membersOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+        </button>
 
-        <Link
-          to="/settings/categories"
-          className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+        {membersOpen && (
+          <div className="border-t border-gray-100 p-4 space-y-3">
+            <button
+              onClick={handleAddMember}
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm"
+            >
+              <Plus size={16} />
+              メンバーを追加
+            </button>
+
+            {members.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-4">メンバーがいません</p>
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {members.map((member) => (
+                  <div key={member.id} className="flex items-center justify-between py-3">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                        style={{ backgroundColor: member.color }}
+                      >
+                        {member.name.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{member.name}</p>
+                        {member.isDefault && <p className="text-xs text-gray-400">デフォルト</p>}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => handleEditMember(member)} className="p-2 text-gray-400 hover:text-gray-600">
+                        <Edit2 size={14} />
+                      </button>
+                      {!member.isDefault && (
+                        <button onClick={() => handleDeleteMember(member)} className="p-2 text-gray-400 hover:text-red-600">
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* カテゴリ管理 */}
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <button
+          onClick={() => setCategoriesOpen(!categoriesOpen)}
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+          aria-expanded={categoriesOpen}
         >
           <div className="flex items-center gap-3">
             <Tag size={20} className="text-green-600" />
-            <div>
+            <div className="text-left">
               <p className="font-medium text-gray-900">カテゴリ管理</p>
               <p className="text-xs text-gray-500">収支カテゴリを追加・編集</p>
             </div>
           </div>
-          <ChevronRight size={20} className="text-gray-400" />
-        </Link>
+          {categoriesOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+        </button>
+
+        {categoriesOpen && (
+          <div className="border-t border-gray-100 p-4 space-y-3">
+            {/* Type toggle */}
+            <div className="flex rounded-lg overflow-hidden border border-gray-300">
+              <button
+                onClick={() => setCategoryFilterType('expense')}
+                className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                  categoryFilterType === 'expense' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'
+                }`}
+              >
+                支出
+              </button>
+              <button
+                onClick={() => setCategoryFilterType('income')}
+                className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                  categoryFilterType === 'income' ? 'bg-green-500 text-white' : 'bg-white text-gray-700'
+                }`}
+              >
+                収入
+              </button>
+            </div>
+
+            <button
+              onClick={handleAddCategory}
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm"
+            >
+              <Plus size={16} />
+              カテゴリを追加
+            </button>
+
+            {filteredCategories.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-4">カテゴリがありません</p>
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {filteredCategories.map((category) => {
+                  const member = getMember(category.memberId);
+                  return (
+                    <div key={category.id} className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-9 h-9 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                        >
+                          {getCategoryIcon(category.icon, 18)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{category.name}</p>
+                          <p className="text-xs text-gray-500">{member?.name || '共通'}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => handleEditCategory(category)} className="p-2 text-gray-400 hover:text-gray-600">
+                          <Edit2 size={14} />
+                        </button>
+                        <button onClick={() => handleDeleteCategory(category.id)} className="p-2 text-gray-400 hover:text-red-600">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* データ管理 */}
@@ -127,7 +287,7 @@ export const SettingsPage = () => {
           >
             <Download size={20} className="text-blue-600" />
             <div className="text-left">
-              <p className="font-medium text-gray-900">データをエクスポート</p>
+              <p className="font-medium text-gray-900 text-sm">データをエクスポート</p>
               <p className="text-xs text-gray-500">JSONファイルとしてダウンロード</p>
             </div>
           </button>
@@ -138,7 +298,7 @@ export const SettingsPage = () => {
           >
             <Upload size={20} className="text-green-600" />
             <div className="text-left">
-              <p className="font-medium text-gray-900">データをインポート</p>
+              <p className="font-medium text-gray-900 text-sm">データをインポート</p>
               <p className="text-xs text-gray-500">JSONファイルから復元</p>
             </div>
           </button>
@@ -149,7 +309,7 @@ export const SettingsPage = () => {
           >
             <Trash2 size={20} className="text-red-600" />
             <div className="text-left">
-              <p className="font-medium text-red-600">データを初期化</p>
+              <p className="font-medium text-red-600 text-sm">データを初期化</p>
               <p className="text-xs text-gray-500">すべてのデータを削除</p>
             </div>
           </button>
@@ -158,9 +318,197 @@ export const SettingsPage = () => {
 
       {/* バージョン情報 */}
       <div className="bg-white rounded-xl shadow-sm p-4">
-        <p className="text-center text-sm text-gray-500">
-          家計簿アプリ v1.0.0
-        </p>
+        <p className="text-center text-sm text-gray-500">家計簿アプリ v1.0.0</p>
+      </div>
+
+      {/* Member Modal */}
+      {isMemberModalOpen && (
+        <MemberModal
+          member={editingMember}
+          onSave={handleSaveMember}
+          onClose={() => setIsMemberModalOpen(false)}
+        />
+      )}
+
+      {/* Category Modal */}
+      {isCategoryModalOpen && (
+        <CategoryModal
+          category={editingCategory}
+          type={categoryFilterType}
+          members={members}
+          onSave={handleSaveCategory}
+          onClose={() => setIsCategoryModalOpen(false)}
+        />
+      )}
+    </div>
+  );
+};
+
+// Member Modal
+interface MemberModalProps {
+  member: Member | null;
+  onSave: (input: MemberInput) => void;
+  onClose: () => void;
+}
+
+const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
+  const [name, setName] = useState(member?.name || '');
+  const [color, setColor] = useState(member?.color || COLORS[0]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave({ name, color, isDefault: member?.isDefault });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+      <div className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto">
+        <h3 className="text-lg font-bold mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">名前</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="例: 太郎"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">色</label>
+            <div className="flex gap-2 flex-wrap">
+              {COLORS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setColor(c)}
+                  className={`w-8 h-8 rounded-full transition-transform ${
+                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''
+                  }`}
+                  style={{ backgroundColor: c }}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 text-gray-700 font-medium">
+              キャンセル
+            </button>
+            <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
+              保存
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// Category Modal
+interface CategoryModalProps {
+  category: Category | null;
+  type: TransactionType;
+  members: { id: string; name: string; color: string }[];
+  onSave: (input: CategoryInput) => void;
+  onClose: () => void;
+}
+
+const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryModalProps) => {
+  const [name, setName] = useState(category?.name || '');
+  const [memberId, setMemberId] = useState(category?.memberId || COMMON_MEMBER_ID);
+  const [color, setColor] = useState(category?.color || COLORS[0]);
+  const [icon, setIcon] = useState(category?.icon || ICON_NAMES[0]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave({ name, type, memberId, color, icon });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+      <div className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto">
+        <h3 className="text-lg font-bold mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">名前</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="例: 食費"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">対象メンバー</label>
+            <div className="flex flex-wrap gap-2">
+              {members.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => setMemberId(m.id)}
+                  className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                    memberId === m.id
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                  }`}
+                >
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: m.color }} />
+                  {m.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">色</label>
+            <div className="flex gap-2 flex-wrap">
+              {COLORS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setColor(c)}
+                  className={`w-8 h-8 rounded-full transition-transform ${
+                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''
+                  }`}
+                  style={{ backgroundColor: c }}
+                />
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">アイコン</label>
+            <div className="grid grid-cols-6 gap-2">
+              {ICON_NAMES.map((i) => {
+                const IconComponent = ICON_COMPONENTS[i];
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setIcon(i)}
+                    className={`w-10 h-10 rounded-lg border flex items-center justify-center transition-colors ${
+                      icon === i
+                        ? 'border-blue-500 bg-blue-50 text-blue-600'
+                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <IconComponent size={20} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 text-gray-700 font-medium">
+              キャンセル
+            </button>
+            <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
+              保存
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
