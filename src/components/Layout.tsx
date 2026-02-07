@@ -45,7 +45,7 @@ const SideNavItem = ({ to, icon, label }: NavItemProps) => {
 
 const navItems: NavItemProps[] = [
   { to: '/', icon: <Home size={24} />, label: 'ホーム' },
-  { to: '/transactions', icon: <List size={24} />, label: '取引' },
+  { to: '/transactions', icon: <List size={24} />, label: '履歴' },
   { to: '/stats', icon: <TrendingUp size={24} />, label: '統計' },
   { to: '/settings', icon: <Settings size={24} />, label: '設定' },
 ];
