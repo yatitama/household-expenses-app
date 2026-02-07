@@ -3,6 +3,8 @@
 @theme {
   --animate-slide-in-left: slide-in-left 0.3s ease-out;
   --animate-slide-in-right: slide-in-right 0.3s ease-out;
+  --animate-fade-in: fade-in 0.4s ease-out;
+  --animate-scale-in: scale-in 0.3s ease-out;
 }
 
 @keyframes slide-in-left {
@@ -15,14 +17,57 @@
   100% { transform: translateX(0); opacity: 1; }
 }
 
+@keyframes fade-in {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
 body {
-  @apply bg-gray-50 text-gray-900;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  @apply text-gray-900;
 }
 
 .dark body {
-  background-color: #0f172a;
-  color: #f1f5f9;
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  @apply text-gray-100;
+}
+
+/* グラスカードスタイル */
+.glass-card {
+  @apply backdrop-blur-md bg-white/80 border border-white/20 shadow-glass;
+}
+
+.dark .glass-card {
+  @apply bg-slate-800/60 border-slate-700/50;
+}
+
+/* プレミアムカードスタイル */
+.premium-card {
+  @apply bg-white rounded-xl shadow-card hover:shadow-card-hover transition-all duration-300;
+}
+
+.dark .premium-card {
+  @apply bg-slate-800 border border-slate-700/50;
+}
+
+/* プレミアムボタンスタイル */
+.btn-primary {
+  @apply bg-gradient-to-r from-brand-600 to-accent-600 text-white font-semibold rounded-lg px-4 py-2.5 shadow-brand hover:shadow-accent transition-all duration-300 hover:scale-105;
+}
+
+.btn-secondary {
+  @apply bg-white/80 backdrop-blur-sm text-brand-700 font-semibold rounded-lg px-4 py-2.5 border border-brand-200 hover:bg-brand-50 transition-all duration-300;
+}
+
+.dark .btn-secondary {
+  @apply bg-slate-700/80 text-brand-300 border-slate-600 hover:bg-slate-600;
 }
 
 .sr-only {

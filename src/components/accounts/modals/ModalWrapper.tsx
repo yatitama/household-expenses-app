@@ -20,7 +20,7 @@ export const ModalWrapper = ({ onClose, title, children, size = 'md', zIndex = 5
 
   return (
     <div
-      className={`fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center`}
+      className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center`}
       style={{ zIndex }}
       onClick={onClose}
       role="dialog"
@@ -29,20 +29,22 @@ export const ModalWrapper = ({ onClose, title, children, size = 'md', zIndex = 5
     >
       <div
         ref={modalRef}
-        className={`bg-white dark:bg-slate-800 w-full ${sizeClass} sm:rounded-xl rounded-t-xl max-h-[90vh] overflow-hidden flex flex-col`}
+        className={`premium-card w-full ${sizeClass} sm:rounded-xl rounded-t-xl max-h-[90vh] overflow-hidden flex flex-col animate-scale-in`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-800">
-          <h2 id="modal-title" className="text-lg font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+        <div className="p-4 md:p-5 border-b border-brand-100 dark:border-brand-800 flex items-center justify-between sticky top-0 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm">
+          <h2 id="modal-title" className="text-lg font-bold bg-gradient-to-r from-brand-700 to-accent-700 bg-clip-text text-transparent dark:from-brand-300 dark:to-accent-300">
+            {title}
+          </h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            className="p-2 text-brand-500 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 transition-colors"
             aria-label="閉じる"
           >
             <X size={20} />
           </button>
         </div>
-        <div className="p-4 overflow-y-auto">{children}</div>
+        <div className="p-4 md:p-5 overflow-y-auto">{children}</div>
       </div>
     </div>
   );

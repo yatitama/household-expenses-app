@@ -28,8 +28,10 @@ const createDefaultFilters = (): FilterOptions => ({
 
 export const useTransactionFilter = () => {
   const [filters, setFilters] = useState<FilterOptions>(createDefaultFilters);
-  const allTransactions = transactionService.getAll();
-  const categories = categoryService.getAll();
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const allTransactions = useMemo(() => transactionService.getAll(), [refreshKey]);
+  const categories = useMemo(() => categoryService.getAll(), [refreshKey]);
 
   const filteredTransactions = useMemo(() => {
     let result = [...allTransactions];
@@ -115,6 +117,10 @@ export const useTransactionFilter = () => {
     setFilters(createDefaultFilters());
   }, []);
 
+  const refreshTransactions = useCallback(() => {
+    setRefreshKey((prev) => prev + 1);
+  }, []);
+
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.searchQuery) count++;
@@ -133,5 +139,6 @@ export const useTransactionFilter = () => {
     updateFilter,
     resetFilters,
     activeFilterCount,
+    refreshTransactions,
   };
 };
