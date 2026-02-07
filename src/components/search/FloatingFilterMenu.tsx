@@ -110,10 +110,10 @@ export const FloatingFilterMenu = ({
       )}
 
       {/* フローティングメニュー */}
-      <div ref={menuRef} className="fixed bottom-20 right-4 sm:right-6 z-40 flex items-end gap-2">
+      <div ref={menuRef} className="fixed bottom-20 left-4 right-4 sm:left-6 sm:right-6 z-40 flex items-end justify-end gap-2">
         {/* 展開されたフィルターアイコン（横1列スクロール） */}
         {isExpanded && (
-          <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 py-2">
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 py-3 flex-1 mr-2">
             {/* 全フィルターリセットボタン */}
             <button
               onClick={() => {
@@ -130,7 +130,7 @@ export const FloatingFilterMenu = ({
             <div className="w-px h-8 bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
 
             {/* スクロール可能なフィルターボタン */}
-            <div className="flex items-center gap-2 overflow-x-auto max-w-[calc(100vw-14rem)] sm:max-w-[calc(100vw-16rem)] scrollbar-hide">
+            <div className="flex items-center gap-2 overflow-x-auto flex-1 scrollbar-hide">
               {filterMenuItems.map((item) => {
                 const Icon = item.icon;
 
