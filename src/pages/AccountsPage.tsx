@@ -17,7 +17,7 @@ import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPa
 import { LinkedPaymentMethodModal } from '../components/accounts/modals/LinkedPaymentMethodModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import type { Account, PaymentMethod, RecurringPayment, LinkedPaymentMethod } from '../types';
+import type { Account, RecurringPayment } from '../types';
 
 export const AccountsPage = () => {
   const navigate = useNavigate();

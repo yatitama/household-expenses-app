@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { format, subMonths, addMonths } from 'date-fns';
+import { subMonths, addMonths } from 'date-fns';
 import { MonthlyTrendChart } from '../components/charts/MonthlyTrendChart';
 import { CategoryPieChart } from '../components/charts/CategoryPieChart';
 import { MemberBarChart } from '../components/charts/MemberBarChart';
@@ -13,7 +13,6 @@ export const StatsPage = () => {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
-  const monthLabel = format(currentDate, 'yyyy年M月');
 
   const handlePrevMonth = () => setCurrentDate((d) => subMonths(d, 1));
   const handleNextMonth = () => setCurrentDate((d) => addMonths(d, 1));

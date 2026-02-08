@@ -25,8 +25,6 @@ export const getDarkModeAwareColor = (
   darkColor?: string,
   opacity?: number
 ): { light: string; dark: string } => {
-  const isDark = document.documentElement.classList.contains('dark');
-
   // 背景色の場合は透明度を上げ、ダークモードで見やすくする
   if (opacity !== undefined) {
     return {
