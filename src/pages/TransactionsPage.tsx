@@ -150,7 +150,15 @@ export const TransactionsPage = () => {
 
   return (
     <div className="pb-20">
-      {/* Sticky Filter Bar at Top */}
+      {/* ページタイトル */}
+      <div className="p-4 md:p-6 lg:p-8 space-y-3">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">取引履歴</h2>
+
+        {/* Results count */}
+        <p className="text-xs text-gray-500 dark:text-gray-400">{filteredTransactions.length}件の取引</p>
+      </div>
+
+      {/* Sticky Filter Bar */}
       <div className="sticky top-0 z-30 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-4 md:p-6 lg:p-8">
         <SimpleFilterBar
           filters={filters}
@@ -167,14 +175,8 @@ export const TransactionsPage = () => {
         />
       </div>
 
-      {/* Main Content */}
-      <div className="p-4 md:p-6 lg:p-8 space-y-3">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">取引履歴</h2>
-
-        {/* Results count */}
-        <p className="text-xs text-gray-500 dark:text-gray-400">{filteredTransactions.length}件の取引</p>
-
-        {/* Transaction list */}
+      {/* Transaction list */}
+      <div className="p-4 md:p-6 lg:p-8">
         {filteredTransactions.length === 0 ? (
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
             <Receipt size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
