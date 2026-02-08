@@ -278,7 +278,7 @@ export const FloatingFilterMenu = ({
               }
             }}
             className={`min-w-[56px] min-h-[56px] rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
-              isExpanded ? 'bg-danger-600' : activeFilterCount > 0 ? 'bg-primary-700' : 'bg-gray-900 dark:bg-gray-800'
+              isExpanded ? 'bg-red-600' : activeFilterCount > 0 ? 'bg-primary-700' : 'bg-gray-900 dark:bg-gray-800'
             } text-white active:scale-95 relative`}
             aria-label={isExpanded ? 'フィルターを閉じる' : 'フィルターを開く'}
           >
