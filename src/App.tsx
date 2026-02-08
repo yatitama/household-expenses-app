@@ -6,6 +6,7 @@ import { AccountsPage } from './pages/AccountsPage';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { StatsPage } from './pages/StatsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { HelpPage } from './pages/HelpPage';
 import { ErrorBoundary } from './components/feedback/ErrorBoundary';
 import { initializeDefaultData } from './services/initialData';
 import { runMigrations } from './services/storage';
@@ -26,6 +27,7 @@ export const App = () => {
           <Route path="transactions" element={<TransactionsPage />} />
           <Route path="stats" element={<StatsPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="help" element={<HelpPage />} />
         </Route>
       </Routes>
 

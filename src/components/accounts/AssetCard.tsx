@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Wallet, Palette, ChevronDown, ChevronUp } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
+import { Tooltip } from '../feedback/Tooltip';
 import { ACCOUNT_TYPE_ICONS_SM } from './AccountIcons';
 import type { Account, Member } from '../../types';
 
@@ -109,8 +110,15 @@ export const AssetCard = ({
               <span className="font-medium">+{formatCurrency(totalIncome)}</span>
             </p>
           )}
-          <p className="flex justify-between pt-1 border-t border-white/20">
-            <span className="opacity-80">実質残高:</span>
+          <p className="flex justify-between items-center pt-1 border-t border-white/20">
+            <span className="opacity-80 flex items-center gap-1">
+              実質残高
+              <Tooltip
+                label="実質残高について"
+                text="カード請求や定期支払などを考慮した、実際に使用可能な残高です"
+                position="bottom"
+              />
+            </span>
             <span className="font-bold">{formatCurrency(totalBalance - netPending)}</span>
           </p>
         </div>
