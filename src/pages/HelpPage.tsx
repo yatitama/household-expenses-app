@@ -71,7 +71,7 @@ export const HelpPage = () => {
                 <ChevronRight size={20} className="text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100">{feature.title}</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{feature.description}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{feature.description}</p>
                 </div>
               </div>
             </div>
@@ -92,6 +92,36 @@ export const HelpPage = () => {
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{term.description}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* キーボードショートカット */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-50">キーボードショートカット</h2>
+        <div className="space-y-2">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="font-medium text-gray-900 dark:text-gray-100">新しい取引を追加</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">ホームページから素早く取引を登録</p>
+              </div>
+              <kbd className="px-3 py-1.5 bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded text-sm font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Cmd/Ctrl + N
+              </kbd>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="font-medium text-gray-900 dark:text-gray-100">モーダルを閉じる</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">取引追加・編集画面を閉じる</p>
+              </div>
+              <kbd className="px-3 py-1.5 bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded text-sm font-mono text-gray-700 dark:text-gray-300">
+                Esc
+              </kbd>
+            </div>
+          </div>
         </div>
       </section>
 

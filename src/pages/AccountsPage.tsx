@@ -1,7 +1,9 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Wallet } from 'lucide-react';
 import { memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { getPendingAmountByAccount, getPendingAmountByPaymentMethod, getTotalPendingByAccount } from '../utils/billingUtils';
@@ -18,6 +20,7 @@ import { EmptyState } from '../components/feedback/EmptyState';
 import type { Account, PaymentMethod, RecurringPayment, LinkedPaymentMethod } from '../types';
 
 export const AccountsPage = () => {
+  const navigate = useNavigate();
   const {
     accounts, paymentMethods, recurringPayments, linkedPaymentMethods, appSettings,
     refreshData,
@@ -28,48 +31,32 @@ export const AccountsPage = () => {
   } = useAccountOperations();
 
   const members = memberService.getAll();
-
-  // Modal state
-  const [viewingPM, setViewingPM] = useState<PaymentMethod | null>(null);
-  const [addTransactionTarget, setAddTransactionTarget] = useState<{ accountId?: string; paymentMethodId?: string } | null>(null);
-  const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
-  const [editingRecurring, setEditingRecurring] = useState<RecurringPayment | null>(null);
-  const [recurringTarget, setRecurringTarget] = useState<{ accountId?: string; paymentMethodId?: string } | null>(null);
-  const [isLinkedPMModalOpen, setIsLinkedPMModalOpen] = useState(false);
-  const [editingLinkedPM, setEditingLinkedPM] = useState<LinkedPaymentMethod | null>(null);
-  const [linkedPMTarget, setLinkedPMTarget] = useState<{ accountId: string } | null>(null);
+  const { activeModal, openModal, closeModal } = useModalManager();
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
 
   const pendingByAccount = getPendingAmountByAccount();
   const pendingByPM = getPendingAmountByPaymentMethod();
   const totalPendingByAccount = getTotalPendingByAccount();
 
-  const isAnyModalOpen = !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isLinkedPMModalOpen;
-  useBodyScrollLock(isAnyModalOpen);
+  useBodyScrollLock(!!activeModal);
 
   // Handlers
   const handleAddRecurring = (target: { accountId?: string; paymentMethodId?: string }) => {
-    setEditingRecurring(null); setRecurringTarget(target); setIsRecurringModalOpen(true);
+    openModal({ type: 'recurring', data: { editing: null, target } });
   };
   const handleEditRecurring = (rp: RecurringPayment) => {
-    setEditingRecurring(rp); setRecurringTarget(null); setIsRecurringModalOpen(true);
+    openModal({ type: 'recurring', data: { editing: rp, target: null } });
   };
   const handleAddLinkedPM = (target: { accountId: string }) => {
-    setEditingLinkedPM(null); setLinkedPMTarget(target); setIsLinkedPMModalOpen(true);
-  };
-
-  const closeAllModals = () => {
-    setViewingPM(null);
-    setAddTransactionTarget(null); setIsRecurringModalOpen(false);
-    setIsLinkedPMModalOpen(false);
+    openModal({ type: 'linked-pm', data: { editing: null, accountId: target.accountId } });
   };
 
   const keyboardOptions = useMemo(() => ({
     onNewTransaction: () => {
-      if (accounts.length > 0) setAddTransactionTarget({ accountId: accounts[0].id });
+      if (accounts.length > 0) openModal({ type: 'add-transaction', data: { accountId: accounts[0].id } });
     },
-    onCloseModal: closeAllModals,
-  }), [accounts]);
+    onCloseModal: closeModal,
+  }), [accounts, openModal]);
 
   useKeyboardShortcuts(keyboardOptions);
 
@@ -122,6 +109,10 @@ export const AccountsPage = () => {
               icon={<Wallet size={32} className="text-gray-500 dark:text-gray-400" />}
               title="口座がありません"
               description="設定から口座を追加してください"
+              action={{
+                label: "設定を開く",
+                onClick: () => navigate('/settings')
+              }}
             />
           </div>
         ) : (
@@ -151,13 +142,13 @@ export const AccountsPage = () => {
               pendingByAccount={pendingByAccount}
               pendingByPM={pendingByPM}
               totalPendingByAccount={totalPendingByAccount}
-              onAddTransaction={(target) => setAddTransactionTarget(target)}
+              onAddTransaction={(target) => openModal({ type: 'add-transaction', data: target })}
               onAddRecurring={handleAddRecurring}
               onEditRecurring={handleEditRecurring}
               onToggleRecurring={handleToggleRecurring}
               onAddLinkedPM={handleAddLinkedPM}
               onToggleLinkedPM={handleToggleLinkedPM}
-              onViewPM={(pm) => setViewingPM(pm)}
+              onViewPM={(pm) => openModal({ type: 'viewing-pm', data: pm })}
             />
 
             {/* 紐づきなし支払い手段 */}
@@ -178,8 +169,8 @@ export const AccountsPage = () => {
                         linkedAccountName={undefined}
                         pendingAmount={pendingByPM[pm.id] || 0}
                         recurringPayments={pmRecurrings}
-                        onView={() => setViewingPM(pm)}
-                        onAddTransaction={() => setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
+                        onView={() => openModal({ type: 'viewing-pm', data: pm })}
+                        onAddTransaction={() => openModal({ type: 'add-transaction', data: { paymentMethodId: pm.id, accountId: pm.linkedAccountId } })}
                         onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
                         onEditRecurring={handleEditRecurring}
                         onToggleRecurring={handleToggleRecurring}
@@ -194,42 +185,42 @@ export const AccountsPage = () => {
       </div>
 
       {/* モーダル群 */}
-      {viewingPM && (
+      {activeModal?.type === 'viewing-pm' && activeModal.data && (
         <PMTransactionsModal
-          paymentMethod={viewingPM}
-          onClose={() => { setViewingPM(null); refreshData(); }}
+          paymentMethod={activeModal.data}
+          onClose={() => { closeModal(); refreshData(); }}
         />
       )}
 
-      {addTransactionTarget && (
+      {activeModal?.type === 'add-transaction' && activeModal.data && (
         <AddTransactionModal
-          defaultAccountId={addTransactionTarget.accountId}
-          defaultPaymentMethodId={addTransactionTarget.paymentMethodId}
+          defaultAccountId={activeModal.data.accountId}
+          defaultPaymentMethodId={activeModal.data.paymentMethodId}
           onSaved={refreshData}
-          onClose={() => { setAddTransactionTarget(null); refreshData(); }}
+          onClose={() => { closeModal(); refreshData(); }}
         />
       )}
 
-      {isRecurringModalOpen && (
+      {activeModal?.type === 'recurring' && activeModal.data && (
         <RecurringPaymentModal
-          recurringPayment={editingRecurring}
-          defaultAccountId={recurringTarget?.accountId}
-          defaultPaymentMethodId={recurringTarget?.paymentMethodId}
+          recurringPayment={activeModal.data.editing}
+          defaultAccountId={activeModal.data.target?.accountId}
+          defaultPaymentMethodId={activeModal.data.target?.paymentMethodId}
           accounts={accounts}
           paymentMethods={paymentMethods}
-          onSave={(input) => { handleSaveRecurring(input, editingRecurring); setIsRecurringModalOpen(false); }}
-          onClose={() => setIsRecurringModalOpen(false)}
+          onSave={(input) => { handleSaveRecurring(input, activeModal.data.editing); closeModal(); }}
+          onClose={() => closeModal()}
         />
       )}
 
-      {isLinkedPMModalOpen && (
+      {activeModal?.type === 'linked-pm' && activeModal.data && (
         <LinkedPaymentMethodModal
-          linkedPaymentMethod={editingLinkedPM}
-          defaultAccountId={linkedPMTarget?.accountId}
+          linkedPaymentMethod={activeModal.data.editing}
+          defaultAccountId={activeModal.data.accountId}
           accounts={accounts}
           paymentMethods={paymentMethods}
-          onSave={(input) => { handleSaveLinkedPM(input, editingLinkedPM); setIsLinkedPMModalOpen(false); }}
-          onClose={() => setIsLinkedPMModalOpen(false)}
+          onSave={(input) => { handleSaveLinkedPM(input, activeModal.data.editing); closeModal(); }}
+          onClose={() => closeModal()}
         />
       )}
 

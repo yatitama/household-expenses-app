@@ -223,7 +223,7 @@ export const FloatingFilterMenu = ({
 
                       {/* 各フィルターのアクティブ数バッジ */}
                       {item.activeCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white dark:border-slate-800">
+                        <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-sm rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white dark:border-slate-800">
                           {item.activeCount}
                         </span>
                       )}
@@ -242,7 +242,7 @@ export const FloatingFilterMenu = ({
                 >
                   <ArrowUpDown size={18} />
                   {sortActiveCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white dark:border-slate-800">
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-sm rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white dark:border-slate-800">
                       {sortActiveCount}
                     </span>
                   )}
@@ -286,7 +286,7 @@ export const FloatingFilterMenu = ({
 
             {/* アクティブフィルター数のバッジ */}
             {!isExpanded && activeFilterCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold border border-white dark:border-gray-800">
+              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center font-bold border border-white dark:border-gray-800">
                 {activeFilterCount}
               </span>
             )}

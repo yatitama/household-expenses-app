@@ -45,7 +45,7 @@ export class ErrorBoundary extends React.Component<
 
             {isDevelopment && this.state.error && (
               <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-900 rounded-lg text-left max-h-32 overflow-auto">
-                <p className="text-xs font-mono text-gray-900 dark:text-gray-200 break-words">
+                <p className="text-sm font-mono text-gray-900 dark:text-gray-200 break-words">
                   {this.state.error.message}
                 </p>
               </div>
@@ -66,7 +66,7 @@ export class ErrorBoundary extends React.Component<
               </button>
             </div>
 
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
               問題が解決しない場合は、ブラウザのキャッシュをクリアしてお試しください。
             </p>
           </div>

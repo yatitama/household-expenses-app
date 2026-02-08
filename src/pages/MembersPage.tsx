@@ -108,7 +108,7 @@ export const MembersPage = () => {
                 <div>
                   <p className="font-medium text-gray-900">{member.name}</p>
                   {member.isDefault && (
-                    <p className="text-xs text-gray-400">デフォルト</p>
+                    <p className="text-sm text-gray-400">デフォルト</p>
                   )}
                 </div>
               </div>

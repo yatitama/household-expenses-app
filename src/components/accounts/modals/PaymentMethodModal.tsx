@@ -164,7 +164,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
             return (
               <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-3 space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">締め日</label>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">締め日</label>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-500 dark:text-gray-400">毎月</span>
                     <input
@@ -179,7 +179,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">引き落とし日</label>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">引き落とし日</label>
                   <div className="flex items-center gap-2">
                     <select
                       value={paymentMonthOffset}
@@ -204,7 +204,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                 <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-2.5 mt-2">
                   <div className="flex items-start gap-1.5">
                     <Info size={14} className="text-purple-400 flex-shrink-0 mt-0.5" />
-                    <div className="text-xs text-purple-700 dark:text-purple-300 space-y-1">
+                    <div className="text-sm text-purple-700 dark:text-purple-300 space-y-1">
                       <p className="font-medium">引き落としの例（{cd}日締め・{offsetLabel}{pd}日払い）</p>
                       <p>1月{cd}日の取引 → <span className="font-medium">{payMonth1}月{pd}日</span>に引き落とし</p>
                       <p>{nextDayMonth}月{nextDayDate}日の取引 → <span className="font-medium">{payMonth2}月{pd}日</span>に引き落とし</p>

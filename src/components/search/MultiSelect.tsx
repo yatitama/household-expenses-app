@@ -22,7 +22,7 @@ export const MultiSelect = ({ label, options, selectedIds, onChange }: MultiSele
 
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-gray-600 mb-1">{label}</label>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => {
           const isSelected = selectedIds.includes(option.id);
@@ -31,7 +31,7 @@ export const MultiSelect = ({ label, options, selectedIds, onChange }: MultiSele
               key={option.id}
               type="button"
               onClick={() => handleToggle(option.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                 isSelected
                   ? 'bg-blue-600 text-white border-blue-600'
                   : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'

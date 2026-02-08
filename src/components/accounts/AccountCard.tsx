@@ -103,7 +103,7 @@ export const AccountCard = ({
 
           {/* 銀行タイプと金額 */}
           <div className="flex justify-between items-center gap-2">
-            <p className="text-xs text-gray-500 dark:text-gray-400">{ACCOUNT_TYPE_LABELS[account.type]}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{ACCOUNT_TYPE_LABELS[account.type]}</p>
             <p className="text-lg font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatCurrency(account.balance)}</p>
           </div>
 
@@ -112,13 +112,15 @@ export const AccountCard = ({
             <div className="mt-1">
               <button
                 onClick={(e) => { e.stopPropagation(); setIsPendingDetailsOpen(!isPendingDetailsOpen); }}
-                className="text-xs text-primary-600 dark:text-primary-400 hover:underline font-medium flex items-center gap-1"
+                className="text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium flex items-center gap-1"
+                aria-label={isPendingDetailsOpen ? '予定額を非表示' : '予定額を表示'}
+                aria-expanded={isPendingDetailsOpen}
               >
                 {isPendingDetailsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                 予定額を表示
               </button>
               {isPendingDetailsOpen && (
-                <div className="mt-1 text-xs text-gray-600 dark:text-gray-400 space-y-0.5 pl-2 border-l-2 border-gray-300 dark:border-gray-600">
+                <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 space-y-0.5 pl-2 border-l-2 border-gray-300 dark:border-gray-600">
                   {totalPendingData ? (
                     <>
                       {(totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0) && (
@@ -155,7 +157,9 @@ export const AccountCard = ({
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={() => setIsPaymentMethodDetailsOpen(!isPaymentMethodDetailsOpen)}
-            className="text-xs font-semibold text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors flex items-center gap-1 mb-3"
+            className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors flex items-center gap-1 mb-3"
+            aria-label={isPaymentMethodDetailsOpen ? '支払い方法・定期支払を非表示' : '支払い方法・定期支払を表示'}
+            aria-expanded={isPaymentMethodDetailsOpen}
           >
             {isPaymentMethodDetailsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             支払い方法・定期支払 ({recurringPayments.length + linkedPaymentMethodsData.length})

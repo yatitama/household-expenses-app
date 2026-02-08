@@ -29,14 +29,14 @@ export const MonthlyTrendChart = () => {
   const hasData = data.some((d) => d.income > 0 || d.expense > 0);
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4" aria-label="月別収支推移チャート（過去6ヶ月）">
       <h3 className="text-base font-semibold text-gray-900 dark:text-gray-50 mb-4">月別収支推移（過去6ヶ月）</h3>
       {!hasData ? (
         <div className="h-[250px] md:h-[300px] flex items-center justify-center">
           <p className="text-sm text-gray-400">データがありません</p>
         </div>
       ) : (
-        <div className="h-[250px] md:h-[300px]">
+        <div className="h-[250px] md:h-[300px]" role="img" aria-label="月別の収入と支出を示すラインチャート">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />

@@ -28,14 +28,14 @@ export const MemberBarChart = ({ year, month }: MemberBarChartProps) => {
   const data = useMemo(() => getMemberStats(year, month), [year, month]);
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4" aria-label="メンバー別支出チャート（当月）">
       <h3 className="text-base font-semibold text-gray-900 dark:text-gray-50 mb-4">メンバー別支出（当月）</h3>
       {data.length === 0 ? (
         <div className="h-[250px] md:h-[300px] flex items-center justify-center">
           <p className="text-sm text-gray-400">データがありません</p>
         </div>
       ) : (
-        <div className="h-[250px] md:h-[300px]">
+        <div className="h-[250px] md:h-[300px]" role="img" aria-label="メンバー別の支出を示した棒グラフ">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />

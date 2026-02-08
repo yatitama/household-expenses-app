@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
-import { X, Check, CheckCircle } from 'lucide-react';
+import { X } from 'lucide-react';
 import {
   accountService, transactionService, categoryService,
   memberService, paymentMethodService,
@@ -43,7 +43,6 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
   const [pmId, setPmId] = useState<string | undefined>(defaultPaymentMethodId);
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [memo, setMemo] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
 
   const filteredCategories = categories.filter((c) => c.type === type);
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
@@ -58,6 +57,14 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
     if (pm) {
       setPmId(id);
       setAccountId(pm.linkedAccountId);
+    }
+  };
+
+  const handleSelectAccount = (id: string) => {
+    setAccountId(id);
+    // 口座選択時の支払い方法リセットを通知
+    if (pmId) {
+      setPmId(undefined);
     }
   };
 
@@ -103,14 +110,10 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
       }
     }
 
-    setShowSuccess(true);
+    // toast通知で統一し、自動でモーダルを閉じる
+    toast.success('取引を追加しました');
     onSaved();
-    setTimeout(() => {
-      setShowSuccess(false);
-      setAmount('');
-      setCategoryId('');
-      setMemo('');
-    }, 1000);
+    onClose();
   };
 
   return (
@@ -119,22 +122,14 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
         className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {showSuccess ? (
-          <div className="py-8 text-center">
-            <CheckCircle size={48} className="mx-auto text-green-500 mb-3" />
-            <p className="text-lg font-bold text-green-700 dark:text-green-400">登録しました！</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">続けて入力できます</p>
-          </div>
-        ) : (
-          <>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
-              <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
-                <X size={20} />
-              </button>
-            </div>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
+            <X size={20} />
+          </button>
+        </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
               <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
                 <button
                   type="button"
@@ -193,11 +188,11 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                         >
                           {getCategoryIcon(category.icon, 16)}
                         </div>
-                        <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                        <span className="text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                           {category.name}
                         </span>
                         {member && member.id !== 'common' && (
-                          <span className="text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                          <span className="text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
                         )}
                       </button>
                     );
@@ -212,7 +207,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {accounts.length > 0 && (
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
                       <div className="space-y-1">
                         {accounts.map((acct) => (
                           <button
@@ -238,7 +233,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
 
                   {type === 'expense' && paymentMethods.length > 0 && (
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
                       <div className="space-y-1">
                         {paymentMethods.map((pm) => {
                           const linked = allAccounts.find((a) => a.id === pm.linkedAccountId);
@@ -257,7 +252,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                                 <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: pm.color }} />
                                 <div className="text-left">
                                   <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">{pm.name}</span>
-                                  {linked && <p className="text-xs text-gray-500 dark:text-gray-400">→ {linked.name}</p>}
+                                  {linked && <p className="text-sm text-gray-500 dark:text-gray-400">→ {linked.name}</p>}
                                 </div>
                               </div>
                               {pmId === pm.id && <Check size={16} className="text-purple-500" />}
@@ -306,9 +301,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                   {type === 'expense' ? '支出を登録' : '収入を登録'}
                 </button>
               </div>
-            </form>
-          </>
-        )}
+        </form>
       </div>
     </div>
   );
