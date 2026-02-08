@@ -151,11 +151,11 @@ export const TransactionsPage = () => {
   return (
     <div className="pb-20">
       {/* ページタイトル */}
-      <div className="p-4 md:p-6 lg:p-8 space-y-3">
+      <div className="p-4 md:p-6 lg:p-8 pb-0">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">取引履歴</h2>
 
         {/* Results count */}
-        <p className="text-xs text-gray-500 dark:text-gray-400">{filteredTransactions.length}件の取引</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{filteredTransactions.length}件の取引</p>
       </div>
 
       {/* Sticky Filter Bar */}
