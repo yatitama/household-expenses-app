@@ -124,7 +124,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
               <button
                 type="button"
                 onClick={() => { onDelete(account.id); onClose(); }}
-                className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+                className="w-full py-2 px-4 rounded-lg bg-danger-600 text-white font-medium hover:bg-danger-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-danger-600 transition-colors"
               >
                 削除
               </button>
@@ -133,7 +133,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
               <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
                 キャンセル
               </button>
-              <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-primary-700 text-white hover:bg-primary-800 font-medium">
+              <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-primary-700 text-white hover:bg-primary-800 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600">
                 保存
               </button>
             </div>

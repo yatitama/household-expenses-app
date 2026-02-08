@@ -36,7 +36,7 @@ export const ModalWrapper = ({ onClose, title, children, size = 'md', zIndex = 5
           <h2 id="modal-title" className="text-lg font-bold text-gray-900 dark:text-gray-100">{title}</h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg"
             aria-label="閉じる"
           >
             <X size={20} />
