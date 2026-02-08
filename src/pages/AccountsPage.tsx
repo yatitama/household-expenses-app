@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Wallet, Plus } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 import { memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
@@ -161,23 +161,6 @@ export const AccountsPage = () => {
               onToggleLinkedPM={handleToggleLinkedPM}
               onViewPM={(pm) => setViewingPM(pm)}
             />
-
-            {/* クイックアクションバー */}
-            <div className="flex gap-2 justify-center py-2">
-              <button
-                onClick={() => setAddTransactionTarget({ accountId: accounts[0].id })}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white rounded-lg font-medium transition-colors text-sm"
-              >
-                <Plus size={18} />
-                取引を追加
-              </button>
-              <button
-                onClick={() => handleAddRecurring({ accountId: accounts[0].id })}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-900 dark:text-gray-100 rounded-lg font-medium transition-colors text-sm"
-              >
-                📅 定期支払
-              </button>
-            </div>
 
             {/* 紐づきなし支払い手段 */}
             {unlinkedPMs.length > 0 && (
