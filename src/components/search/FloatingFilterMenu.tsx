@@ -142,11 +142,11 @@ export const FloatingFilterMenu = ({
       {/* グループ化パネル */}
       {isGroupingPanelOpen && (
         <div
-          className="fixed bottom-40 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl z-50"
+          className="fixed bottom-40 left-4 right-4 bg-gray-900 dark:bg-gray-950 rounded-2xl shadow-2xl shadow-black/50 z-50 border border-white/10"
           style={{ maxHeight: 'calc(100vh - 10rem)' }}
         >
-          <div className="p-3 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">グループ化</h3>
+          <div className="p-3 border-b border-white/10">
+            <h3 className="text-sm font-bold text-white">グループ化</h3>
           </div>
           <div className="p-3 space-y-2">
             {groupingOptions.map((option) => {
@@ -162,7 +162,7 @@ export const FloatingFilterMenu = ({
                   className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 flex items-center gap-2 ${
                     isSelected
                       ? `${info.color} text-white shadow-lg`
-                      : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                      : 'bg-white/10 text-white/80 hover:bg-white/15'
                   }`}
                 >
                   <OptionIcon size={16} />
@@ -182,7 +182,7 @@ export const FloatingFilterMenu = ({
           {/* 展開されたフィルターアイコン（横1列スクロール） */}
           {isExpanded && (
             <div
-              className="absolute bottom-0 right-14 flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 mr-2"
+              className="absolute bottom-0 right-14 flex items-center gap-2 bg-gray-900 dark:bg-gray-950 rounded-full shadow-2xl shadow-black/50 px-3 mr-2 border border-white/10"
               style={{
                 maxWidth: 'calc(100vw - 4.5rem)',
                 width: 'max-content',
@@ -202,7 +202,7 @@ export const FloatingFilterMenu = ({
               </button>
 
               {/* 区切り線 */}
-              <div className="w-px h-8 bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
+              <div className="w-px h-8 bg-white/20 flex-shrink-0" />
 
               {/* スクロール可能なボタン（フィルター・ソート・グルーピング） */}
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2 flex-1 min-w-0">
@@ -214,7 +214,7 @@ export const FloatingFilterMenu = ({
                       key={item.type}
                       onClick={() => handleFilterClick(item.type)}
                       className={`w-10 h-10 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
-                        item.isActive ? 'ring-4 ring-white dark:ring-gray-300' : ''
+                        item.isActive ? 'ring-4 ring-white' : 'opacity-80 hover:opacity-100'
                       }`}
                       title={item.label}
                       aria-label={item.label}
@@ -235,7 +235,7 @@ export const FloatingFilterMenu = ({
                 <button
                   onClick={() => handleFilterClick('sort')}
                   className={`w-10 h-10 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
-                    isSortActive ? 'ring-4 ring-white dark:ring-gray-300' : ''
+                    isSortActive ? 'ring-4 ring-white' : 'opacity-80 hover:opacity-100'
                   }`}
                   title="並び替え"
                   aria-label="並び替え"
@@ -278,7 +278,7 @@ export const FloatingFilterMenu = ({
               }
             }}
             className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
-              isExpanded ? 'bg-red-500' : activeFilterCount > 0 ? 'bg-blue-600' : 'bg-gray-800 dark:bg-gray-700'
+              isExpanded ? 'bg-red-500' : activeFilterCount > 0 ? 'bg-blue-600' : 'bg-gray-900 dark:bg-gray-800'
             } text-white active:scale-95 relative`}
             aria-label={isExpanded ? 'フィルターを閉じる' : 'フィルターを開く'}
           >
