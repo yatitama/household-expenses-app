@@ -101,7 +101,7 @@ export const SimpleFilterBar = ({
 
       <div className="space-y-3">
         {/* フィルターチップ */}
-        <div className="flex items-center gap-2 overflow-x-auto py-3">
+        <div className="flex items-center gap-2 overflow-x-auto pb-3">
           <div className="flex gap-2 flex-nowrap">
             {filterChips.map((chip) => (
               <button
