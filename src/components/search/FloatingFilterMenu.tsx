@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Filter, Calendar, DollarSign, User, Tag, CreditCard, Wallet, ArrowUpDown, X, Search, RotateCcw } from 'lucide-react';
+import { Filter, Calendar, DollarSign, User, Tag, CreditCard, Wallet, ArrowUpDown, X, Search, RotateCcw, ArrowUp, ArrowDown } from 'lucide-react';
 import { FilterSidePanel } from './FilterSidePanel';
 import type { FilterOptions } from '../../hooks/useTransactionFilter';
+import type { GroupByType } from '../../pages/TransactionsPage';
 
 interface FloatingFilterMenuProps {
   filters: FilterOptions;
@@ -14,7 +15,9 @@ interface FloatingFilterMenuProps {
   paymentMethods: { id: string; name: string }[];
   isExpanded: boolean;
   setIsExpanded: (value: boolean) => void;
-  isGroupingPanelOpen: boolean;
+  groupBy: GroupByType;
+  groupOrder: 'asc' | 'desc';
+  onGroupByChange: (groupBy: GroupByType) => void;
 }
 
 type FilterType = 'type' | 'date' | 'member' | 'category' | 'account' | 'payment' | 'sort' | 'search';
@@ -39,10 +42,35 @@ export const FloatingFilterMenu = ({
   paymentMethods,
   isExpanded,
   setIsExpanded,
-  isGroupingPanelOpen,
+  groupBy,
+  groupOrder,
+  onGroupByChange,
 }: FloatingFilterMenuProps) => {
   const [activePanel, setActivePanel] = useState<FilterType | null>(null);
+  const [isGroupingPanelOpen, setIsGroupingPanelOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Grouping helpers
+  const getGroupingInfo = (type: GroupByType) => {
+    switch (type) {
+      case 'date': return { icon: Calendar, label: '日付', color: 'bg-green-500' };
+      case 'category': return { icon: Tag, label: 'カテゴリ', color: 'bg-pink-500' };
+      case 'member': return { icon: User, label: 'メンバー', color: 'bg-orange-500' };
+      case 'account': return { icon: Wallet, label: '口座', color: 'bg-teal-500' };
+      case 'payment': return { icon: CreditCard, label: '支払い方法', color: 'bg-indigo-500' };
+    }
+  };
+
+  const currentGrouping = getGroupingInfo(groupBy);
+  const CurrentGroupIcon = currentGrouping.icon;
+
+  const groupingOptions: Array<{ value: GroupByType; label: string }> = [
+    { value: 'date', label: '日付' },
+    { value: 'category', label: 'カテゴリ' },
+    { value: 'member', label: 'メンバー' },
+    { value: 'account', label: '口座' },
+    { value: 'payment', label: '支払い方法' },
+  ];
 
   // 各フィルターがアクティブかどうかを判定
   const isTypeActive = filters.transactionType !== 'all';
@@ -64,6 +92,7 @@ export const FloatingFilterMenu = ({
   const paymentActiveCount = filters.paymentMethodIds.length;
   const sortActiveCount = isSortActive ? 1 : 0;
 
+  // 並び替えは縦積みボタンに移動したためメニューから除外
   const filterMenuItems: FilterMenuItem[] = [
     { type: 'search', icon: Search, label: '検索', color: 'bg-purple-500', isActive: isSearchActive, activeCount: searchActiveCount },
     { type: 'type', icon: DollarSign, label: '種別', color: 'bg-blue-500', isActive: isTypeActive, activeCount: typeActiveCount },
@@ -72,14 +101,12 @@ export const FloatingFilterMenu = ({
     { type: 'category', icon: Tag, label: 'カテゴリ', color: 'bg-pink-500', isActive: isCategoryActive, activeCount: categoryActiveCount },
     { type: 'account', icon: Wallet, label: '口座', color: 'bg-teal-500', isActive: isAccountActive, activeCount: accountActiveCount },
     { type: 'payment', icon: CreditCard, label: '支払方法', color: 'bg-indigo-500', isActive: isPaymentActive, activeCount: paymentActiveCount },
-    { type: 'sort', icon: ArrowUpDown, label: '並び替え', color: 'bg-gray-500', isActive: isSortActive, activeCount: sortActiveCount },
   ];
 
   // パネルが開いているときはメニューを閉じない
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // パネルが開いている場合は何もしない
-      if (activePanel !== null) return;
+      if (activePanel !== null || isGroupingPanelOpen) return;
 
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsExpanded(false);
@@ -90,117 +117,181 @@ export const FloatingFilterMenu = ({
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isExpanded, activePanel]);
+  }, [isExpanded, activePanel, isGroupingPanelOpen]);
 
-  // パネルを開く
   const handleFilterClick = (type: FilterType) => {
     setActivePanel(type);
   };
 
-  // パネルを閉じる
   const handleClosePanel = () => {
     setActivePanel(null);
   };
 
-  // Hide when grouping panel is open
-  if (isGroupingPanelOpen) {
-    return null;
-  }
-
   return (
     <>
       {/* オーバーレイ（パネルが開いているときのみ） */}
-      {activePanel !== null && (
+      {(activePanel !== null || isGroupingPanelOpen) && (
         <div
           className="fixed inset-0 bg-black/30 z-30"
           onClick={() => {
             setActivePanel(null);
+            setIsGroupingPanelOpen(false);
           }}
         />
       )}
 
+      {/* グループ化パネル */}
+      {isGroupingPanelOpen && (
+        <div
+          className="fixed bottom-44 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl z-50"
+          style={{ maxHeight: 'calc(100vh - 10rem)' }}
+        >
+          <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">グループ化</h3>
+          </div>
+          <div className="p-3 space-y-2">
+            {groupingOptions.map((option) => {
+              const info = getGroupingInfo(option.value);
+              const OptionIcon = info.icon;
+              const isSelected = groupBy === option.value;
+              const OrderIcon = groupOrder === 'desc' ? ArrowDown : ArrowUp;
+
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => onGroupByChange(option.value)}
+                  className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 flex items-center gap-2 ${
+                    isSelected
+                      ? `${info.color} text-white shadow-lg`
+                      : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  <OptionIcon size={16} />
+                  <span className="flex-1 text-left">{option.label}</span>
+                  {isSelected && <OrderIcon size={16} />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* フローティングメニュー */}
-      <div ref={menuRef} className="fixed bottom-20 right-3 sm:right-5 z-40">
-        {/* 展開されたフィルターアイコン（横1列スクロール） */}
+      <div ref={menuRef} className="fixed right-3 sm:right-5 bottom-20 z-40 flex flex-col items-end gap-3">
+        {/* 展開時の縦積みボタン（上からグループ化、並び替え） */}
         {isExpanded && (
-          <div
-            className="absolute bottom-0 right-14 flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 py-2 mr-2"
-            style={{
-              maxWidth: 'calc(100vw - 8rem)',
-              width: 'max-content'
-            }}
-          >
-            {/* 全フィルターリセットボタン */}
+          <>
+            {/* グループ化ボタン */}
             <button
-              onClick={() => {
-                resetFilters();
-              }}
-              className="w-10 h-10 my-2 bg-gray-600 dark:bg-gray-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0"
-              title="全てリセット"
-              aria-label="全てリセット"
+              onClick={() => setIsGroupingPanelOpen(!isGroupingPanelOpen)}
+              className={`w-14 h-14 ${isGroupingPanelOpen ? 'bg-red-500' : currentGrouping.color} text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95`}
+              aria-label={`グループ化: ${currentGrouping.label}`}
+              title={`グループ化: ${currentGrouping.label}`}
             >
-              <RotateCcw size={18} />
+              {isGroupingPanelOpen ? <X size={24} /> : <CurrentGroupIcon size={24} />}
             </button>
 
-            {/* 区切り線 */}
-            <div className="w-px h-8 bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
-
-            {/* スクロール可能なフィルターボタン */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2" style={{ maxWidth: 'calc(100vw - 12rem)' }}>
-              {filterMenuItems.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <button
-                    key={item.type}
-                    onClick={() => handleFilterClick(item.type)}
-                    className={`w-10 h-10 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
-                      item.isActive ? 'ring-4 ring-white dark:ring-gray-300' : ''
-                    }`}
-                    title={item.label}
-                    aria-label={item.label}
-                  >
-                    <Icon size={18} />
-
-                    {/* 各フィルターのアクティブ数バッジ */}
-                    {item.activeCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
-                        {item.activeCount}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+            {/* 並び替えボタン */}
+            <button
+              onClick={() => handleFilterClick('sort')}
+              className={`w-14 h-14 bg-gray-500 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95 relative ${
+                isSortActive ? 'ring-4 ring-white dark:ring-gray-300' : ''
+              }`}
+              aria-label="並び替え"
+              title="並び替え"
+            >
+              <ArrowUpDown size={24} />
+              {sortActiveCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+                  {sortActiveCount}
+                </span>
+              )}
+            </button>
+          </>
         )}
 
-        {/* メインフィルターボタン */}
-        <button
-          onClick={() => {
-            if (isExpanded) {
-              // メニューが展開されている場合は閉じる
-              setIsExpanded(false);
-              setActivePanel(null);
-            } else {
-              // メニューを展開する
-              setIsExpanded(true);
-            }
-          }}
-          className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
-            isExpanded ? 'bg-red-500' : activeFilterCount > 0 ? 'bg-blue-600' : 'bg-gray-800 dark:bg-gray-700'
-          } text-white active:scale-95 relative`}
-          aria-label={isExpanded ? 'フィルターを閉じる' : 'フィルターを開く'}
-        >
-          {isExpanded ? <X size={24} /> : <Filter size={24} />}
+        {/* メインボタン行（横メニュー + フィルターボタン） */}
+        <div className="relative">
+          {/* 展開されたフィルターアイコン（横1列スクロール） */}
+          {isExpanded && (
+            <div
+              className="absolute bottom-0 right-14 flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 py-2 mr-2"
+              style={{
+                maxWidth: 'calc(100vw - 8rem)',
+                width: 'max-content'
+              }}
+            >
+              {/* 全フィルターリセットボタン */}
+              <button
+                onClick={() => {
+                  resetFilters();
+                }}
+                className="w-10 h-10 my-2 bg-gray-600 dark:bg-gray-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0"
+                title="全てリセット"
+                aria-label="全てリセット"
+              >
+                <RotateCcw size={18} />
+              </button>
 
-          {/* アクティブフィルター数のバッジ */}
-          {!isExpanded && activeFilterCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
-              {activeFilterCount}
-            </span>
+              {/* 区切り線 */}
+              <div className="w-px h-8 bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
+
+              {/* スクロール可能なフィルターボタン */}
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2" style={{ maxWidth: 'calc(100vw - 12rem)' }}>
+                {filterMenuItems.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <button
+                      key={item.type}
+                      onClick={() => handleFilterClick(item.type)}
+                      className={`w-10 h-10 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
+                        item.isActive ? 'ring-4 ring-white dark:ring-gray-300' : ''
+                      }`}
+                      title={item.label}
+                      aria-label={item.label}
+                    >
+                      <Icon size={18} />
+
+                      {/* 各フィルターのアクティブ数バッジ */}
+                      {item.activeCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+                          {item.activeCount}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           )}
-        </button>
+
+          {/* メインフィルターボタン */}
+          <button
+            onClick={() => {
+              if (isExpanded) {
+                setIsExpanded(false);
+                setActivePanel(null);
+                setIsGroupingPanelOpen(false);
+              } else {
+                setIsExpanded(true);
+              }
+            }}
+            className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
+              isExpanded ? 'bg-red-500' : activeFilterCount > 0 ? 'bg-blue-600' : 'bg-gray-800 dark:bg-gray-700'
+            } text-white active:scale-95 relative`}
+            aria-label={isExpanded ? 'フィルターを閉じる' : 'フィルターを開く'}
+          >
+            {isExpanded ? <X size={24} /> : <Filter size={24} />}
+
+            {/* アクティブフィルター数のバッジ */}
+            {!isExpanded && activeFilterCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* フィルターサイドパネル */}
