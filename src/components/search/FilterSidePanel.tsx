@@ -76,7 +76,7 @@ export const FilterSidePanel = ({
                 value={filters.searchQuery}
                 onChange={(e) => updateFilter('searchQuery', e.target.value)}
                 placeholder="メモやカテゴリ名で検索"
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
               />
             </div>
           ),
@@ -98,7 +98,7 @@ export const FilterSidePanel = ({
                   className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 ${
                     filters.transactionType === value
                       ? `${colorClass} text-white shadow-lg`
-                      : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                      : 'bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-slate-500'
                   }`}
                 >
                   {label}
@@ -202,7 +202,7 @@ export const FilterSidePanel = ({
     <>
       {/* フローティングパネル */}
       <div
-        className={`fixed bottom-44 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl z-50 transition-opacity duration-300 ${
+        className={`fixed bottom-44 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl shadow-black/30 z-50 transition-opacity duration-300 border border-gray-200 dark:border-slate-600 ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         style={{
@@ -210,11 +210,11 @@ export const FilterSidePanel = ({
         }}
       >
         {/* ヘッダー */}
-        <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-slate-600">
           <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">{title}</h3>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors active:scale-95"
+            className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors active:scale-95"
             aria-label="閉じる"
           >
             <X size={18} className="text-gray-600 dark:text-gray-400" />
@@ -227,10 +227,10 @@ export const FilterSidePanel = ({
         </div>
 
         {/* フッター（リセットボタン） */}
-        <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 rounded-b-2xl">
+        <div className="p-3 border-t border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-b-2xl">
           <button
             onClick={resetCurrentFilter}
-            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 active:scale-95 transition-all text-sm font-medium"
+            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium border border-gray-200 dark:border-slate-500"
           >
             <RotateCcw size={14} />
             このフィルターをリセット
