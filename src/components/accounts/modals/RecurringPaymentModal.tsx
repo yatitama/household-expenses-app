@@ -141,8 +141,8 @@ export const RecurringPaymentModal = ({
                 onClick={() => setFrequency('monthly')}
                 className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                   frequency === 'monthly'
-                    ? 'bg-primary-700 text-white hover:bg-primary-800 border-blue-600'
-                    : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                 }`}
               >
                 毎月
@@ -152,8 +152,8 @@ export const RecurringPaymentModal = ({
                 onClick={() => setFrequency('yearly')}
                 className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                   frequency === 'yearly'
-                    ? 'bg-primary-700 text-white hover:bg-primary-800 border-blue-600'
-                    : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                 }`}
               >
                 毎年
@@ -310,7 +310,7 @@ export const RecurringPaymentModal = ({
             <button
               type="submit"
               disabled={!name || !amount || !categoryId || (!accountId && !pmId)}
-              className="flex-1 py-2.5 px-4 rounded-lg bg-primary-700 text-white hover:bg-primary-800 font-medium disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium disabled:opacity-50"
             >
               保存
             </button>

@@ -214,10 +214,10 @@ export const FilterSidePanel = ({
           <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">{title}</h3>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors active:scale-95"
+            className="p-1.5 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors active:scale-95"
             aria-label="閉じる"
           >
-            <X size={18} className="text-gray-700 dark:text-gray-300" />
+            <X size={18} className="text-gray-800 dark:text-gray-200" />
           </button>
         </div>
 

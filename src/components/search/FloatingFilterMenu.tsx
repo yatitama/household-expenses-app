@@ -93,7 +93,7 @@ export const FloatingFilterMenu = ({
 
   const filterMenuItems: FilterMenuItem[] = [
     { type: 'search', icon: Search, label: '検索', color: 'bg-purple-500', isActive: isSearchActive, activeCount: searchActiveCount },
-    { type: 'type', icon: DollarSign, label: '種別', color: 'bg-primary-600', isActive: isTypeActive, activeCount: typeActiveCount },
+    { type: 'type', icon: DollarSign, label: '種別', color: 'bg-blue-600', isActive: isTypeActive, activeCount: typeActiveCount },
     { type: 'date', icon: Calendar, label: '期間', color: 'bg-green-500', isActive: isDateActive, activeCount: dateActiveCount },
     { type: 'member', icon: User, label: 'メンバー', color: 'bg-orange-500', isActive: isMemberActive, activeCount: memberActiveCount },
     { type: 'category', icon: Tag, label: 'カテゴリ', color: 'bg-pink-500', isActive: isCategoryActive, activeCount: categoryActiveCount },
