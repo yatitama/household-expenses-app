@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AccountCard } from './AccountCard';
 import type { Account, Member, RecurringPayment, PaymentMethod, LinkedPaymentMethod } from '../../types';
@@ -26,6 +26,9 @@ interface AccountsCarouselProps {
   onViewPM: (pm: PaymentMethod) => void;
 }
 
+const SWIPE_THRESHOLD = 50; // 最小スワイプ距離（px）
+const TOUCH_TIMEOUT = 500; // タップ判定時間（ms）
+
 export const AccountsCarousel = ({
   accounts,
   members,
@@ -44,37 +47,68 @@ export const AccountsCarousel = ({
   onViewPM,
 }: AccountsCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const touchStartTime = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
 
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? accounts.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev === accounts.length - 1 ? 0 : prev + 1));
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    setTouchEnd(e.changedTouches[0].clientX);
-    handleSwipe();
-  };
-
-  const handleSwipe = () => {
-    if (touchStart - touchEnd > 50) {
-      handleNext();
+  const goToSlide = useCallback((index: number) => {
+    if (index !== currentIndex) {
+      setIsTransitioning(true);
+      setCurrentIndex(index);
+      setTimeout(() => setIsTransitioning(false), 300);
     }
-    if (touchEnd - touchStart > 50) {
-      handlePrev();
+  }, [currentIndex]);
+
+  const handlePrev = useCallback(() => {
+    const newIndex = currentIndex === 0 ? accounts.length - 1 : currentIndex - 1;
+    goToSlide(newIndex);
+  }, [currentIndex, accounts.length, goToSlide]);
+
+  const handleNext = useCallback(() => {
+    const newIndex = currentIndex === accounts.length - 1 ? 0 : currentIndex + 1;
+    goToSlide(newIndex);
+  }, [currentIndex, accounts.length, goToSlide]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    // イベントターゲットがボタンやクリック可能要素の場合はスキップ
+    const target = e.target as HTMLElement;
+    if (target.closest('button')) {
+      return;
     }
-  };
+
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    touchStartTime.current = Date.now();
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const touchEndTime = Date.now();
+
+      const diffX = touchStartX.current - touchEndX;
+      const diffY = Math.abs(touchStartY.current - touchEndY);
+      const duration = touchEndTime - touchStartTime.current;
+
+      // タップかスワイプか判定
+      const isSwipe = Math.abs(diffX) > SWIPE_THRESHOLD && diffY < SWIPE_THRESHOLD && duration < TOUCH_TIMEOUT;
+
+      if (isSwipe) {
+        if (diffX > 0) {
+          handleNext();
+        } else {
+          handlePrev();
+        }
+      }
+    },
+    [handleNext, handlePrev]
+  );
 
   if (accounts.length === 0) return null;
 
@@ -109,10 +143,12 @@ export const AccountsCarousel = ({
         ref={containerRef}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className="relative overflow-hidden"
+        className="relative overflow-hidden rounded-xl"
+        style={{ touchAction: 'pan-y' }}
       >
         <div
-          className="transition-transform duration-300 ease-out"
+          ref={innerRef}
+          className={`transition-transform ${isTransitioning ? 'duration-300 ease-out' : ''}`}
           style={{
             transform: `translateX(-${currentIndex * 100}%)`,
           }}
@@ -124,7 +160,7 @@ export const AccountsCarousel = ({
                 (rp) => rp.accountId === account.id && !rp.paymentMethodId
               );
               return (
-                <div key={account.id} className="w-full flex-shrink-0">
+                <div key={account.id} className="w-full flex-shrink-0 min-w-0">
                   <AccountCard
                     account={account}
                     member={getMember(account.memberId)}
@@ -151,11 +187,11 @@ export const AccountsCarousel = ({
 
       {/* ドット インジケーター */}
       {accounts.length > 1 && (
-        <div className="flex justify-center gap-1">
+        <div className="flex justify-center gap-1 pb-2">
           {accounts.map((_, index) => (
             <button
               key={index}
-              onClick={() => setCurrentIndex(index)}
+              onClick={() => goToSlide(index)}
               className={`w-1.5 h-1.5 rounded-full transition-all ${
                 index === currentIndex
                   ? 'bg-primary-600 w-5'
