@@ -44,21 +44,21 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
       <div className="bg-white dark:bg-slate-800 w-full sm:max-w-md md:max-w-lg sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto">
         <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{paymentMethod ? '支払い手段を編集' : '支払い手段を追加'}</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">名前</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">名前</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 夫クレジットカード"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-600"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">所有者</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">所有者</label>
             <div className="flex flex-wrap gap-2">
               {members.map((member) => (
                 <button
@@ -79,7 +79,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">種類</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">種類</label>
             <div className="grid grid-cols-2 gap-2">
               {(Object.entries(PM_TYPE_LABELS) as [PaymentMethodType, string][]).map(([value, label]) => (
                 <button
@@ -104,7 +104,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">引き落とし先口座</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">引き落とし先口座</label>
             {accounts.length === 0 ? (
               <p className="text-sm text-gray-500 dark:text-gray-400">先に口座を登録してください</p>
             ) : (
@@ -132,7 +132,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">請求タイミング</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">請求タイミング</label>
             <div className="grid grid-cols-2 gap-2">
               {(Object.entries(BILLING_TYPE_LABELS) as [BillingType, string][]).map(([value, label]) => (
                 <button
@@ -216,7 +216,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
           })()}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">色</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">色</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button

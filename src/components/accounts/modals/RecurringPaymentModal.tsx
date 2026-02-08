@@ -84,15 +84,15 @@ export const RecurringPaymentModal = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">名前</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">名前</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 家賃、携帯料金、Netflix"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-600"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             />
           </div>
@@ -119,7 +119,7 @@ export const RecurringPaymentModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">金額</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">金額</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
               <input
@@ -134,7 +134,7 @@ export const RecurringPaymentModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">頻度</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">頻度</label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
@@ -193,7 +193,7 @@ export const RecurringPaymentModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">カテゴリ</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">カテゴリ</label>
             <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto">
               {filteredCategories.map((category) => {
                 const member = getMember(category.memberId);
@@ -225,7 +225,7 @@ export const RecurringPaymentModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
               {type === 'expense' ? '支払い元' : '入金先'}
             </label>
             <div className="space-y-2 max-h-32 overflow-y-auto">
@@ -283,7 +283,7 @@ export const RecurringPaymentModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">メモ</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">メモ</label>
             <input
               type="text"
               value={memo}

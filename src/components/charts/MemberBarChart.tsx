@@ -17,8 +17,8 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (!active || !payload || !payload[0]) return null;
   const data = payload[0].payload;
   return (
-    <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-3">
-      <p className="text-sm font-medium text-gray-700">{data.memberName}</p>
+    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3">
+      <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{data.memberName}</p>
       <p className="text-sm font-bold" style={{ color: data.color }}>{formatCurrency(data.amount)}</p>
     </div>
   );
@@ -28,8 +28,8 @@ export const MemberBarChart = ({ year, month }: MemberBarChartProps) => {
   const data = useMemo(() => getMemberStats(year, month), [year, month]);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
-      <h3 className="text-sm font-bold text-gray-800 mb-3">メンバー別支出（当月）</h3>
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-50 mb-4">メンバー別支出（当月）</h3>
       {data.length === 0 ? (
         <div className="h-[250px] md:h-[300px] flex items-center justify-center">
           <p className="text-sm text-gray-400">データがありません</p>
