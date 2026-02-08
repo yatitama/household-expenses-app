@@ -125,13 +125,13 @@ export const LinkedPaymentMethodModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 font-medium"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 font-medium"
             >
               キャンセル
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-primary-700 text-white hover:bg-primary-800 rounded-lg hover:bg-blue-700 font-medium"
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium"
             >
               保存
             </button>
