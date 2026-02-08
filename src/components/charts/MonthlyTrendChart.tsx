@@ -12,10 +12,10 @@ interface CustomTooltipProps {
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (!active || !payload) return null;
   return (
-    <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-3">
-      <p className="text-sm font-medium text-gray-700 mb-1">{label}</p>
+    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3">
+      <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">{label}</p>
       {payload.map((entry, i) => (
-        <p key={i} className="text-sm" style={{ color: entry.color }}>
+        <p key={i} className="text-sm font-medium dark:text-gray-300" style={{ color: entry.color }}>
           {entry.name}: {formatCurrency(entry.value)}
         </p>
       ))}
@@ -29,8 +29,8 @@ export const MonthlyTrendChart = () => {
   const hasData = data.some((d) => d.income > 0 || d.expense > 0);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
-      <h3 className="text-sm font-bold text-gray-800 mb-3">月別収支推移（過去6ヶ月）</h3>
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-50 mb-4">月別収支推移（過去6ヶ月）</h3>
       {!hasData ? (
         <div className="h-[250px] md:h-[300px] flex items-center justify-center">
           <p className="text-sm text-gray-400">データがありません</p>
@@ -39,11 +39,11 @@ export const MonthlyTrendChart = () => {
         <div className="h-[250px] md:h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-              <XAxis dataKey="label" tick={{ fontSize: 12 }} stroke="#9ca3af" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="label" tick={{ fontSize: 12, fill: '#6b7280' }} stroke="#d1d5db" />
               <YAxis
-                tick={{ fontSize: 11 }}
-                stroke="#9ca3af"
+                tick={{ fontSize: 11, fill: '#6b7280' }}
+                stroke="#d1d5db"
                 tickFormatter={(v: number) => v >= 10000 ? `${Math.round(v / 10000)}万` : String(v)}
                 width={45}
               />

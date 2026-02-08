@@ -11,8 +11,8 @@ export const BudgetProgressBars = ({ year, month }: BudgetProgressBarsProps) => 
   const data = useMemo(() => getBudgetProgress(year, month), [year, month]);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
-      <h3 className="text-sm font-bold text-gray-800 mb-3">予算 vs 実績（当月）</h3>
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-50 mb-4">予算 vs 実績（当月）</h3>
       {data.length === 0 ? (
         <div className="py-8 flex items-center justify-center">
           <p className="text-sm text-gray-400">予算が設定されていません</p>
@@ -27,23 +27,23 @@ export const BudgetProgressBars = ({ year, month }: BudgetProgressBarsProps) => 
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-sm font-medium text-gray-700">{item.categoryName}</span>
+                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">{item.categoryName}</span>
                   </div>
-                  <span className={`text-xs font-bold ${isOver ? 'text-red-600' : 'text-gray-500'}`}>
+                  <span className={`text-xs font-bold ${isOver ? 'text-danger-600' : 'text-gray-600 dark:text-gray-400'}`}>
                     {item.percentage}%
                   </span>
                 </div>
-                <div className="relative h-3 bg-gray-100 rounded-full overflow-hidden">
+                <div className="relative h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div
                     className={`absolute inset-y-0 left-0 rounded-full transition-all duration-700 ${
-                      isOver ? 'bg-red-500' : 'bg-blue-500'
+                      isOver ? 'bg-danger-600' : 'bg-primary-600'
                     }`}
                     style={{ width: `${barWidth}%` }}
                   />
                 </div>
-                <div className="flex justify-between mt-1">
-                  <span className="text-xs text-gray-500">{formatCurrency(item.actual)}</span>
-                  <span className="text-xs text-gray-400">/ {formatCurrency(item.budget)}</span>
+                <div className="flex justify-between mt-1.5">
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{formatCurrency(item.actual)}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-500">/ {formatCurrency(item.budget)}</span>
                 </div>
               </div>
             );

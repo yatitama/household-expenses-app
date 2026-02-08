@@ -66,7 +66,7 @@ export const EditTransactionModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">取引を編集</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
             <button
               type="button"
@@ -89,7 +89,7 @@ export const EditTransactionModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">金額</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">金額</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
               <input
@@ -103,7 +103,7 @@ export const EditTransactionModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">カテゴリ</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">カテゴリ</label>
             <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto">
               {filteredCategories.map((category) => {
                 const member = getMember(category.memberId);
@@ -137,7 +137,7 @@ export const EditTransactionModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
               {type === 'expense' ? '支払い元' : '入金先'}
             </label>
             <div className="space-y-2 max-h-40 overflow-y-auto">
@@ -201,7 +201,7 @@ export const EditTransactionModal = ({
           </div>
 
           <div className="overflow-x-hidden">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">日付</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">日付</label>
             <input
               type="date"
               value={date}
@@ -212,7 +212,7 @@ export const EditTransactionModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">メモ</label>
+            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">メモ</label>
             <input
               type="text"
               value={memo}
