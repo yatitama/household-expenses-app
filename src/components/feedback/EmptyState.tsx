@@ -2,6 +2,7 @@ interface EmptyStateProps {
   icon: React.ReactNode;
   title: string;
   description: string;
+  iconColor?: string;
   action?: {
     label: string;
     onClick: () => void;
@@ -12,12 +13,15 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   icon,
   title,
   description,
+  iconColor = 'text-gray-400',
   action,
 }) => {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
       <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mb-4">
-        {icon}
+        <div className={iconColor}>
+          {icon}
+        </div>
       </div>
 
       <h3 className="text-lg font-bold mb-2 text-gray-900 dark:text-gray-100">{title}</h3>

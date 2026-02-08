@@ -214,7 +214,7 @@ export const FloatingFilterMenu = ({
                       key={item.type}
                       onClick={() => handleFilterClick(item.type)}
                       className={`min-w-[44px] h-11 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
-                        item.isActive ? 'ring-2 ring-white opacity-100' : 'opacity-60 hover:opacity-80'
+                        item.isActive ? 'ring-2 ring-white opacity-100' : 'opacity-75 hover:opacity-100'
                       }`}
                       title={item.label}
                       aria-label={item.label}
@@ -235,7 +235,7 @@ export const FloatingFilterMenu = ({
                 <button
                   onClick={() => handleFilterClick('sort')}
                   className={`min-w-[44px] h-11 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
-                    isSortActive ? 'ring-2 ring-white opacity-100' : 'opacity-60 hover:opacity-80'
+                    isSortActive ? 'ring-2 ring-white opacity-100' : 'opacity-75 hover:opacity-100'
                   }`}
                   title="並び替え"
                   aria-label="並び替え"

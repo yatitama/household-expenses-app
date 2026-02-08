@@ -131,7 +131,7 @@ export const AccountCard = ({
               {((totalPendingData && (totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0 || totalPendingData.recurringIncome > 0)) || pendingAmount > 0) && (
                 <button
                   onClick={(e) => { e.stopPropagation(); setIsPendingDetailsOpen(!isPendingDetailsOpen); }}
-                  className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 transition-colors"
+                  className="p-2 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 transition-colors"
                   title={isPendingDetailsOpen ? "詳細を閉じる" : "詳細を表示"}
                   aria-label={isPendingDetailsOpen ? "詳細を閉じる" : "詳細を表示"}
                   aria-expanded={isPendingDetailsOpen}

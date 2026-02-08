@@ -217,7 +217,7 @@ export const FilterSidePanel = ({
             className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors active:scale-95"
             aria-label="閉じる"
           >
-            <X size={18} className="text-gray-600 dark:text-gray-400" />
+            <X size={18} className="text-gray-700 dark:text-gray-300" />
           </button>
         </div>
 
