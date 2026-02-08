@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Filter, Calendar, DollarSign, User, Tag, CreditCard, Wallet, ArrowUpDown, X, Search, RotateCcw, ArrowUp, ArrowDown } from 'lucide-react';
+import { Filter, Calendar, DollarSign, User, Tag, CreditCard, Wallet, ArrowUpDown, X, Search, RotateCcw, ArrowUp, ArrowDown, Layers } from 'lucide-react';
 import { FilterSidePanel } from './FilterSidePanel';
 import type { FilterOptions } from '../../hooks/useTransactionFilter';
 import type { GroupByType } from '../../pages/TransactionsPage';
@@ -62,7 +62,6 @@ export const FloatingFilterMenu = ({
   };
 
   const currentGrouping = getGroupingInfo(groupBy);
-  const CurrentGroupIcon = currentGrouping.icon;
 
   const groupingOptions: Array<{ value: GroupByType; label: string }> = [
     { value: 'date', label: '日付' },
@@ -119,7 +118,8 @@ export const FloatingFilterMenu = ({
   }, [isExpanded, activePanel, isGroupingPanelOpen]);
 
   const handleFilterClick = (type: FilterType) => {
-    setActivePanel(type);
+    setActivePanel(activePanel === type ? null : type);
+    setIsGroupingPanelOpen(false);
   };
 
   const handleClosePanel = () => {
@@ -184,7 +184,7 @@ export const FloatingFilterMenu = ({
             <div
               className="absolute bottom-0 right-14 flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 mr-2"
               style={{
-                maxWidth: 'calc(100vw - 8rem)',
+                maxWidth: 'calc(100vw - 4.5rem)',
                 width: 'max-content',
                 height: '3.5rem',
               }}
@@ -232,9 +232,6 @@ export const FloatingFilterMenu = ({
                 })}
               </div>
 
-              {/* ソート・グルーピング区切り線 */}
-              <div className="w-px h-8 bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
-
               {/* 並び替えボタン */}
               <button
                 onClick={() => handleFilterClick('sort')}
@@ -254,12 +251,17 @@ export const FloatingFilterMenu = ({
 
               {/* グループ化ボタン */}
               <button
-                onClick={() => setIsGroupingPanelOpen(!isGroupingPanelOpen)}
-                className={`w-10 h-10 ${isGroupingPanelOpen ? 'bg-red-500' : currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0`}
+                onClick={() => {
+                  if (!isGroupingPanelOpen) {
+                    setActivePanel(null);
+                  }
+                  setIsGroupingPanelOpen(!isGroupingPanelOpen);
+                }}
+                className={`w-10 h-10 ${currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0`}
                 aria-label={`グループ化: ${currentGrouping.label}`}
                 title={`グループ化: ${currentGrouping.label}`}
               >
-                {isGroupingPanelOpen ? <X size={18} /> : <CurrentGroupIcon size={18} />}
+                <Layers size={18} />
               </button>
             </div>
           )}
