@@ -142,7 +142,7 @@ export const FloatingFilterMenu = ({
       {/* グループ化パネル */}
       {isGroupingPanelOpen && (
         <div
-          className="fixed bottom-40 left-4 right-4 bg-gray-900 dark:bg-gray-950 rounded-2xl shadow-2xl shadow-black/50 z-50 border border-white/10"
+          className="fixed bottom-40 left-4 right-4 bg-gray-800 dark:bg-gray-900 rounded-2xl shadow-2xl shadow-black/50 z-50 border border-white/10"
           style={{ maxHeight: 'calc(100vh - 10rem)' }}
         >
           <div className="p-3 border-b border-white/10">
@@ -162,7 +162,7 @@ export const FloatingFilterMenu = ({
                   className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 flex items-center gap-2 ${
                     isSelected
                       ? `${info.color} text-white shadow-lg`
-                      : 'bg-white/10 text-white/80 hover:bg-white/15'
+                      : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                   }`}
                 >
                   <OptionIcon size={16} />
@@ -182,9 +182,9 @@ export const FloatingFilterMenu = ({
           {/* 展開されたフィルターアイコン（横1列スクロール） */}
           {isExpanded && (
             <div
-              className="absolute bottom-0 right-14 flex items-center gap-2 bg-gray-900 dark:bg-gray-950 rounded-full shadow-2xl shadow-black/50 px-3 mr-2 border border-white/10"
+              className="absolute bottom-0 right-14 flex items-center gap-2 bg-gray-800 dark:bg-gray-900 rounded-full shadow-2xl shadow-black/50 px-3 mr-2 border border-white/10"
               style={{
-                maxWidth: 'calc(100vw - 4.5rem)',
+                maxWidth: 'calc(100vw - 5rem)',
                 width: 'max-content',
                 height: '3.5rem',
               }}
