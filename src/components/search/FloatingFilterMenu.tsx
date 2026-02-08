@@ -92,7 +92,6 @@ export const FloatingFilterMenu = ({
   const paymentActiveCount = filters.paymentMethodIds.length;
   const sortActiveCount = isSortActive ? 1 : 0;
 
-  // 並び替えは縦積みボタンに移動したためメニューから除外
   const filterMenuItems: FilterMenuItem[] = [
     { type: 'search', icon: Search, label: '検索', color: 'bg-purple-500', isActive: isSearchActive, activeCount: searchActiveCount },
     { type: 'type', icon: DollarSign, label: '種別', color: 'bg-blue-500', isActive: isTypeActive, activeCount: typeActiveCount },
@@ -143,7 +142,7 @@ export const FloatingFilterMenu = ({
       {/* グループ化パネル */}
       {isGroupingPanelOpen && (
         <div
-          className="fixed bottom-44 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl z-50"
+          className="fixed bottom-40 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl z-50"
           style={{ maxHeight: 'calc(100vh - 10rem)' }}
         >
           <div className="p-3 border-b border-gray-200 dark:border-gray-700">
@@ -178,47 +177,16 @@ export const FloatingFilterMenu = ({
 
       {/* フローティングメニュー */}
       <div ref={menuRef} className="fixed right-3 sm:right-5 bottom-20 z-40 flex flex-col items-end gap-3">
-        {/* 展開時の縦積みボタン（上からグループ化、並び替え） */}
-        {isExpanded && (
-          <>
-            {/* グループ化ボタン */}
-            <button
-              onClick={() => setIsGroupingPanelOpen(!isGroupingPanelOpen)}
-              className={`w-14 h-14 ${isGroupingPanelOpen ? 'bg-red-500' : currentGrouping.color} text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95`}
-              aria-label={`グループ化: ${currentGrouping.label}`}
-              title={`グループ化: ${currentGrouping.label}`}
-            >
-              {isGroupingPanelOpen ? <X size={24} /> : <CurrentGroupIcon size={24} />}
-            </button>
-
-            {/* 並び替えボタン */}
-            <button
-              onClick={() => handleFilterClick('sort')}
-              className={`w-14 h-14 bg-gray-500 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95 relative ${
-                isSortActive ? 'ring-4 ring-white dark:ring-gray-300' : ''
-              }`}
-              aria-label="並び替え"
-              title="並び替え"
-            >
-              <ArrowUpDown size={24} />
-              {sortActiveCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
-                  {sortActiveCount}
-                </span>
-              )}
-            </button>
-          </>
-        )}
-
         {/* メインボタン行（横メニュー + フィルターボタン） */}
         <div className="relative">
           {/* 展開されたフィルターアイコン（横1列スクロール） */}
           {isExpanded && (
             <div
-              className="absolute bottom-0 right-14 flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 py-2 mr-2"
+              className="absolute bottom-0 right-14 flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-xl px-3 mr-2"
               style={{
                 maxWidth: 'calc(100vw - 8rem)',
-                width: 'max-content'
+                width: 'max-content',
+                height: '3.5rem',
               }}
             >
               {/* 全フィルターリセットボタン */}
@@ -226,7 +194,7 @@ export const FloatingFilterMenu = ({
                 onClick={() => {
                   resetFilters();
                 }}
-                className="w-10 h-10 my-2 bg-gray-600 dark:bg-gray-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0"
+                className="w-10 h-10 bg-gray-600 dark:bg-gray-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0"
                 title="全てリセット"
                 aria-label="全てリセット"
               >
@@ -237,7 +205,7 @@ export const FloatingFilterMenu = ({
               <div className="w-px h-8 bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
 
               {/* スクロール可能なフィルターボタン */}
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2" style={{ maxWidth: 'calc(100vw - 12rem)' }}>
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide" style={{ maxWidth: 'calc(100vw - 16rem)' }}>
                 {filterMenuItems.map((item) => {
                   const Icon = item.icon;
 
@@ -263,6 +231,36 @@ export const FloatingFilterMenu = ({
                   );
                 })}
               </div>
+
+              {/* ソート・グルーピング区切り線 */}
+              <div className="w-px h-8 bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
+
+              {/* 並び替えボタン */}
+              <button
+                onClick={() => handleFilterClick('sort')}
+                className={`w-10 h-10 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
+                  isSortActive ? 'ring-4 ring-white dark:ring-gray-300' : ''
+                }`}
+                title="並び替え"
+                aria-label="並び替え"
+              >
+                <ArrowUpDown size={18} />
+                {sortActiveCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+                    {sortActiveCount}
+                  </span>
+                )}
+              </button>
+
+              {/* グループ化ボタン */}
+              <button
+                onClick={() => setIsGroupingPanelOpen(!isGroupingPanelOpen)}
+                className={`w-10 h-10 ${isGroupingPanelOpen ? 'bg-red-500' : currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0`}
+                aria-label={`グループ化: ${currentGrouping.label}`}
+                title={`グループ化: ${currentGrouping.label}`}
+              >
+                {isGroupingPanelOpen ? <X size={18} /> : <CurrentGroupIcon size={18} />}
+              </button>
             </div>
           )}
 
