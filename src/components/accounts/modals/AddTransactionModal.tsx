@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
-import { X } from 'lucide-react';
+import { X, Check } from 'lucide-react';
 import {
   accountService, transactionService, categoryService,
   memberService, paymentMethodService,
@@ -57,14 +57,6 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
     if (pm) {
       setPmId(id);
       setAccountId(pm.linkedAccountId);
-    }
-  };
-
-  const handleSelectAccount = (id: string) => {
-    setAccountId(id);
-    // 口座選択時の支払い方法リセットを通知
-    if (pmId) {
-      setPmId(undefined);
     }
   };
 
