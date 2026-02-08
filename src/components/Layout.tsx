@@ -13,8 +13,8 @@ const BottomNavItem = ({ to, icon, label }: NavItemProps) => {
       to={to}
       end
       className={({ isActive }) =>
-        `flex flex-col items-center gap-1 px-3 py-2 text-xs transition-colors ${
-          isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
+        `flex flex-col items-center gap-1 px-3 py-2.5 text-xs font-medium transition-colors ${
+          isActive ? 'text-primary-700 dark:text-primary-400' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
         }`
       }
     >
@@ -30,10 +30,10 @@ const SideNavItem = ({ to, icon, label }: NavItemProps) => {
       to={to}
       end
       className={({ isActive }) =>
-        `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+        `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 ${
           isActive
-            ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
-            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-slate-700'
+            ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'
         }`
       }
     >
@@ -56,7 +56,7 @@ export const Layout = () => {
       {/* デスクトップ: サイドバーナビゲーション */}
       <nav aria-label="メインナビゲーション" className="hidden md:flex md:flex-col md:w-64 bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-gray-700 fixed inset-y-0 left-0">
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">家計簿</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">家計簿</h1>
         </div>
         <div className="flex-1 px-3 py-4 space-y-1">
           {navItems.map((item) => (
@@ -66,14 +66,14 @@ export const Layout = () => {
       </nav>
 
       {/* メインコンテンツ */}
-      <main className="flex-1 overflow-auto pb-20 md:pb-0 md:ml-64">
-        <div className="max-w-7xl mx-auto">
+      <main className="flex-1 overflow-auto pb-24 md:pb-0 md:ml-64">
+        <div className="max-w-6xl mx-auto">
           <Outlet />
         </div>
       </main>
 
       {/* モバイル: ボトムナビゲーション */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700 h-16" aria-label="メインナビゲーション">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700 h-20" aria-label="メインナビゲーション">
         <div className="flex justify-around items-center h-full">
           {navItems.map((item) => (
             <BottomNavItem key={item.to} {...item} />

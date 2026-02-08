@@ -153,7 +153,7 @@ export const TransactionsPage = () => {
 
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-3 pb-24">
-      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">取引履歴</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">取引履歴</h2>
 
       {/* Results count */}
       <p className="text-xs text-gray-500 dark:text-gray-400">{filteredTransactions.length}件の取引</p>
@@ -205,7 +205,7 @@ export const TransactionsPage = () => {
                         <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                           {getCategoryName(t.categoryId)}
                         </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                           {groupBy !== 'date' && `${formatDate(t.date)} - `}{source}{t.memo ? ` - ${t.memo}` : ''}
                         </p>
                       </div>

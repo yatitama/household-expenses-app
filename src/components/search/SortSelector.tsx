@@ -13,7 +13,7 @@ export const SortSelector = ({ sortBy, sortOrder, onSortByChange, onSortOrderCha
       <select
         value={sortBy}
         onChange={(e) => onSortByChange(e.target.value as 'date' | 'amount' | 'category')}
-        className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-600"
         aria-label="並び替え基準"
       >
         <option value="date">日付</option>

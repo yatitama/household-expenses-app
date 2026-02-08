@@ -41,7 +41,7 @@ export const PaymentMethodCard = ({
             <p className="text-xs text-gray-500 dark:text-gray-400">{PM_TYPE_LABELS[paymentMethod.type]} ・ {BILLING_TYPE_LABELS[paymentMethod.billingType]}</p>
             <div className="flex items-center gap-1 mt-0.5">
               <Link2 size={12} className={linkedAccountName ? 'text-gray-400' : 'text-amber-500'} />
-              <span className={`text-xs ${linkedAccountName ? 'text-gray-400 dark:text-gray-500' : 'text-amber-500 font-medium'}`}>
+              <span className={`text-xs ${linkedAccountName ? 'text-gray-500 dark:text-gray-400' : 'text-amber-500 font-medium'}`}>
                 {linkedAccountName || '引き落とし先未設定'}
               </span>
             </div>

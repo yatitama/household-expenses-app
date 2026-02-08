@@ -26,7 +26,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {action && (
         <button
           onClick={action.onClick}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+          className="px-4 py-2 bg-primary-700 text-white rounded-lg font-medium hover:bg-primary-800"
         >
           {action.label}
         </button>

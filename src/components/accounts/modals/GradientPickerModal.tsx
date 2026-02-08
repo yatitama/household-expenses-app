@@ -106,7 +106,7 @@ export const GradientPickerModal = ({ currentFrom, currentTo, onSave, onClose }:
           </button>
           <button
             onClick={() => onSave(selectedFrom, selectedTo)}
-            className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium"
+            className="flex-1 py-2.5 px-4 rounded-lg bg-primary-700 text-white hover:bg-primary-800 font-medium"
           >
             保存
           </button>

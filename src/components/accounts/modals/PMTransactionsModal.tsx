@@ -128,7 +128,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose }: PMTransactionsMo
                                     </p>
                                   </div>
                                 )}
-                                {transaction.memo && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{transaction.memo}</p>}
+                                {transaction.memo && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">{transaction.memo}</p>}
                               </div>
                             </div>
                             <p className={`font-bold text-sm flex-shrink-0 ml-2 ${isExpense ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
