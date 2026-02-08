@@ -182,7 +182,7 @@ export const FloatingFilterMenu = ({
           {/* 展開されたフィルターアイコン（横1列スクロール） */}
           {isExpanded && (
             <div
-              className="absolute bottom-0 right-14 flex items-center gap-2 bg-gray-700 dark:bg-gray-800 rounded-full shadow-2xl shadow-black/50 px-3 mr-2 border border-white/10"
+              className="absolute bottom-0 right-14 flex items-center gap-3 bg-gray-200 dark:bg-gray-700 rounded-full shadow-2xl shadow-black/50 px-4 mr-2 border border-white/10"
               style={{
                 maxWidth: 'calc(100vw - 5rem)',
                 width: 'max-content',
