@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { Receipt } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
-import { FloatingFilterMenu } from '../components/search/FloatingFilterMenu';
+import { SimpleFilterBar } from '../components/search/SimpleFilterBar';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
 import { categoryService, memberService, accountService, paymentMethodService, transactionService } from '../services/storage';
 import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
@@ -20,7 +20,6 @@ export const TransactionsPage = () => {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
   const [groupOrder, setGroupOrder] = useState<'asc' | 'desc'>('desc');
-  const [isFilterMenuExpanded, setIsFilterMenuExpanded] = useState(false);
   useBodyScrollLock(!!editingTransaction);
 
   // URLパラメータからフィルターを初期化
@@ -222,8 +221,8 @@ export const TransactionsPage = () => {
         </div>
       )}
 
-      {/* Floating Filter Menu */}
-      <FloatingFilterMenu
+      {/* Simple Filter Bar */}
+      <SimpleFilterBar
         filters={filters}
         updateFilter={updateFilter}
         resetFilters={resetFilters}
@@ -232,8 +231,6 @@ export const TransactionsPage = () => {
         categories={categories}
         accounts={accounts}
         paymentMethods={paymentMethods}
-        isExpanded={isFilterMenuExpanded}
-        setIsExpanded={setIsFilterMenuExpanded}
         groupBy={groupBy}
         groupOrder={groupOrder}
         onGroupByChange={handleGroupByChange}

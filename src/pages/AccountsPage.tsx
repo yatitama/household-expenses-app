@@ -13,7 +13,6 @@ import { PMTransactionsModal } from '../components/accounts/modals/PMTransaction
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { LinkedPaymentMethodModal } from '../components/accounts/modals/LinkedPaymentMethodModal';
-import { GradientPickerModal } from '../components/accounts/modals/GradientPickerModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
 import type { Account, PaymentMethod, RecurringPayment, LinkedPaymentMethod } from '../types';
@@ -40,13 +39,12 @@ export const AccountsPage = () => {
   const [editingLinkedPM, setEditingLinkedPM] = useState<LinkedPaymentMethod | null>(null);
   const [linkedPMTarget, setLinkedPMTarget] = useState<{ accountId: string } | null>(null);
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
-  const [isGradientPickerOpen, setIsGradientPickerOpen] = useState(false);
 
   const pendingByAccount = getPendingAmountByAccount();
   const pendingByPM = getPendingAmountByPaymentMethod();
   const totalPendingByAccount = getTotalPendingByAccount();
 
-  const isAnyModalOpen = !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isLinkedPMModalOpen || isGradientPickerOpen;
+  const isAnyModalOpen = !!viewingPM || !!addTransactionTarget || isRecurringModalOpen || isLinkedPMModalOpen;
   useBodyScrollLock(isAnyModalOpen);
 
   // Handlers
@@ -63,7 +61,7 @@ export const AccountsPage = () => {
   const closeAllModals = () => {
     setViewingPM(null);
     setAddTransactionTarget(null); setIsRecurringModalOpen(false);
-    setIsLinkedPMModalOpen(false); setIsGradientPickerOpen(false);
+    setIsLinkedPMModalOpen(false);
   };
 
   const keyboardOptions = useMemo(() => ({
@@ -111,7 +109,7 @@ export const AccountsPage = () => {
             onToggleBreakdown={() => setIsBreakdownOpen(!isBreakdownOpen)}
             gradientFrom={appSettings.totalAssetGradientFrom}
             gradientTo={appSettings.totalAssetGradientTo}
-            onChangeGradient={() => setIsGradientPickerOpen(true)}
+            onSaveGradient={handleSaveGradient}
           />
         )}
       </div>
@@ -232,15 +230,6 @@ export const AccountsPage = () => {
           paymentMethods={paymentMethods}
           onSave={(input) => { handleSaveLinkedPM(input, editingLinkedPM); setIsLinkedPMModalOpen(false); }}
           onClose={() => setIsLinkedPMModalOpen(false)}
-        />
-      )}
-
-      {isGradientPickerOpen && (
-        <GradientPickerModal
-          currentFrom={appSettings.totalAssetGradientFrom}
-          currentTo={appSettings.totalAssetGradientTo}
-          onSave={(from, to) => { handleSaveGradient(from, to); setIsGradientPickerOpen(false); }}
-          onClose={() => setIsGradientPickerOpen(false)}
         />
       )}
 
