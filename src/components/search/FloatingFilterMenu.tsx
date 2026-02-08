@@ -142,11 +142,11 @@ export const FloatingFilterMenu = ({
       {/* グループ化パネル */}
       {isGroupingPanelOpen && (
         <div
-          className="fixed bottom-40 left-4 right-4 bg-gray-800 dark:bg-gray-900 rounded-2xl shadow-2xl shadow-black/50 z-50 border border-white/10"
+          className="fixed bottom-40 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl shadow-black/30 z-50 border border-gray-200 dark:border-slate-600"
           style={{ maxHeight: 'calc(100vh - 10rem)' }}
         >
-          <div className="p-3 border-b border-white/10">
-            <h3 className="text-sm font-bold text-white">グループ化</h3>
+          <div className="p-3 border-b border-gray-200 dark:border-slate-600">
+            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">グループ化</h3>
           </div>
           <div className="p-3 space-y-2">
             {groupingOptions.map((option) => {
@@ -162,7 +162,7 @@ export const FloatingFilterMenu = ({
                   className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 flex items-center gap-2 ${
                     isSelected
                       ? `${info.color} text-white shadow-lg`
-                      : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                      : 'bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-slate-500'
                   }`}
                 >
                   <OptionIcon size={16} />
@@ -182,7 +182,7 @@ export const FloatingFilterMenu = ({
           {/* 展開されたフィルターアイコン（横1列スクロール） */}
           {isExpanded && (
             <div
-              className="absolute bottom-0 right-14 flex items-center gap-2 bg-gray-800 dark:bg-gray-900 rounded-full shadow-2xl shadow-black/50 px-3 mr-2 border border-white/10"
+              className="absolute bottom-0 right-14 flex items-center gap-2 bg-gray-700 dark:bg-gray-800 rounded-full shadow-2xl shadow-black/50 px-3 mr-2 border border-white/10"
               style={{
                 maxWidth: 'calc(100vw - 5rem)',
                 width: 'max-content',
@@ -214,7 +214,7 @@ export const FloatingFilterMenu = ({
                       key={item.type}
                       onClick={() => handleFilterClick(item.type)}
                       className={`w-10 h-10 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
-                        item.isActive ? 'ring-4 ring-white' : 'opacity-80 hover:opacity-100'
+                        item.isActive ? 'ring-4 ring-white opacity-100' : 'opacity-60 hover:opacity-80'
                       }`}
                       title={item.label}
                       aria-label={item.label}
@@ -235,7 +235,7 @@ export const FloatingFilterMenu = ({
                 <button
                   onClick={() => handleFilterClick('sort')}
                   className={`w-10 h-10 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
-                    isSortActive ? 'ring-4 ring-white' : 'opacity-80 hover:opacity-100'
+                    isSortActive ? 'ring-4 ring-white opacity-100' : 'opacity-60 hover:opacity-80'
                   }`}
                   title="並び替え"
                   aria-label="並び替え"
@@ -256,7 +256,7 @@ export const FloatingFilterMenu = ({
                     }
                     setIsGroupingPanelOpen(!isGroupingPanelOpen);
                   }}
-                  className={`w-10 h-10 ${currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0`}
+                  className={`w-10 h-10 ${currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0 ring-4 ring-white opacity-100`}
                   aria-label={`グループ化: ${currentGrouping.label}`}
                   title={`グループ化: ${currentGrouping.label}`}
                 >
