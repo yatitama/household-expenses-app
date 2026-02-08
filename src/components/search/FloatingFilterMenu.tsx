@@ -205,7 +205,7 @@ export const FloatingFilterMenu = ({
               <div className="w-px h-8 bg-gray-400 dark:bg-gray-500 flex-shrink-0" />
 
               {/* スクロール可能なボタン（フィルター・ソート・グルーピング） */}
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2 flex-1 min-w-0">
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2 flex-1 min-w-0 px-3">
                 {filterMenuItems.map((item) => {
                   const Icon = item.icon;
 
