@@ -182,7 +182,7 @@ export const FloatingFilterMenu = ({
           {/* 展開されたフィルターアイコン（横1列スクロール） */}
           {isExpanded && (
             <div
-              className="absolute bottom-0 right-14 flex items-center gap-3 bg-gray-200 dark:bg-gray-700 rounded-full shadow-2xl shadow-black/50 px-4 mr-2 border border-white/10"
+              className="absolute bottom-0 right-14 flex items-center gap-3 bg-gray-200 dark:bg-gray-700 rounded-full shadow-2xl shadow-black/50 px-6 mr-2 border border-white/10"
               style={{
                 maxWidth: 'calc(100vw - 5rem)',
                 width: 'max-content',
@@ -202,7 +202,7 @@ export const FloatingFilterMenu = ({
               </button>
 
               {/* 区切り線 */}
-              <div className="w-px h-8 bg-white/20 flex-shrink-0" />
+              <div className="w-px h-8 bg-gray-400 dark:bg-gray-500 flex-shrink-0" />
 
               {/* スクロール可能なボタン（フィルター・ソート・グルーピング） */}
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2 flex-1 min-w-0">
@@ -214,7 +214,7 @@ export const FloatingFilterMenu = ({
                       key={item.type}
                       onClick={() => handleFilterClick(item.type)}
                       className={`w-10 h-10 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
-                        item.isActive ? 'ring-4 ring-white opacity-100' : 'opacity-60 hover:opacity-80'
+                        item.isActive ? 'ring-2 ring-white opacity-100' : 'opacity-60 hover:opacity-80'
                       }`}
                       title={item.label}
                       aria-label={item.label}
@@ -235,7 +235,7 @@ export const FloatingFilterMenu = ({
                 <button
                   onClick={() => handleFilterClick('sort')}
                   className={`w-10 h-10 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
-                    isSortActive ? 'ring-4 ring-white opacity-100' : 'opacity-60 hover:opacity-80'
+                    isSortActive ? 'ring-2 ring-white opacity-100' : 'opacity-60 hover:opacity-80'
                   }`}
                   title="並び替え"
                   aria-label="並び替え"
@@ -256,7 +256,7 @@ export const FloatingFilterMenu = ({
                     }
                     setIsGroupingPanelOpen(!isGroupingPanelOpen);
                   }}
-                  className={`w-10 h-10 ${currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0 ring-4 ring-white opacity-100`}
+                  className={`w-10 h-10 ${currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0 ring-2 ring-white opacity-100`}
                   aria-label={`グループ化: ${currentGrouping.label}`}
                   title={`グループ化: ${currentGrouping.label}`}
                 >
