@@ -20,7 +20,7 @@ export const ModalWrapper = ({ onClose, title, children, size = 'md', zIndex = 5
 
   return (
     <div
-      className={`fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center`}
+      className={`fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center animate-fade-in`}
       style={{ zIndex }}
       onClick={onClose}
       role="dialog"
@@ -29,7 +29,7 @@ export const ModalWrapper = ({ onClose, title, children, size = 'md', zIndex = 5
     >
       <div
         ref={modalRef}
-        className={`bg-white dark:bg-slate-800 w-full ${sizeClass} sm:rounded-xl rounded-t-xl max-h-[90vh] overflow-hidden flex flex-col`}
+        className={`bg-white dark:bg-slate-800 w-full ${sizeClass} sm:rounded-xl rounded-t-xl max-h-[90vh] overflow-hidden flex flex-col animate-slide-up sm:animate-none`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-800">

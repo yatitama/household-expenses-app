@@ -299,8 +299,9 @@ export const SettingsPage = () => {
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
         <button
           onClick={() => setMembersOpen(!membersOpen)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={membersOpen}
+          aria-label={membersOpen ? 'メンバー管理を折りたたむ' : 'メンバー管理を展開'}
         >
           <div className="flex items-center gap-3">
             <Users size={20} className="text-blue-600 dark:text-blue-400" />
@@ -353,8 +354,9 @@ export const SettingsPage = () => {
       {/* カテゴリ管理 */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
         <button
+          aria-label={categoriesOpen ? "カテゴリ管理を折りたたむ" : "カテゴリ管理を展開"}
           onClick={() => setCategoriesOpen(!categoriesOpen)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={categoriesOpen}
         >
           <div className="flex items-center gap-3">
@@ -431,8 +433,9 @@ export const SettingsPage = () => {
       {/* 口座管理 */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
         <button
+          aria-label={accountsOpen ? "口座管理を折りたたむ" : "口座管理を展開"}
           onClick={() => setAccountsOpen(!accountsOpen)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={accountsOpen}
         >
           <div className="flex items-center gap-3">
@@ -491,8 +494,9 @@ export const SettingsPage = () => {
       {/* 支払い手段管理 */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
         <button
+          aria-label={paymentMethodsOpen ? "支払い手段管理を折りたたむ" : "支払い手段管理を展開"}
           onClick={() => setPaymentMethodsOpen(!paymentMethodsOpen)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={paymentMethodsOpen}
         >
           <div className="flex items-center gap-3">

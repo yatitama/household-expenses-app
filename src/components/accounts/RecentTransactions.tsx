@@ -85,7 +85,9 @@ export const RecentTransactions = ({ accountId }: RecentTransactionsProps) => {
       <div className="flex justify-between items-center mb-1.5">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="text-sm text-gray-600 dark:text-gray-400 font-medium flex items-center gap-1.5 hover:text-gray-800 dark:hover:text-gray-200"
+          className="text-sm text-gray-600 dark:text-gray-400 font-medium flex items-center gap-1.5 hover:text-gray-800 dark:hover:text-gray-200 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors p-1 -ml-1"
+          aria-label={isOpen ? '最近の取引を非表示' : '最近の取引を表示'}
+          aria-expanded={isOpen}
         >
           {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           <Receipt size={12} />
