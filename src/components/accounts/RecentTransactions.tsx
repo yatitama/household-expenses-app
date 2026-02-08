@@ -31,7 +31,7 @@ export const RecentTransactions = ({ accountId }: RecentTransactionsProps) => {
 
     return filtered
       .sort((a, b) => b.date.localeCompare(a.date))
-      .slice(0, 5);
+      .slice(0, 3);
   }, [accountId]);
 
   const categories = useMemo(() => categoryService.getAll(), []);

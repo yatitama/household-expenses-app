@@ -213,7 +213,7 @@ export const FloatingFilterMenu = ({
                     <button
                       key={item.type}
                       onClick={() => handleFilterClick(item.type)}
-                      className={`w-10 h-10 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
+                      className={`min-w-[44px] h-11 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
                         item.isActive ? 'ring-2 ring-white opacity-100' : 'opacity-60 hover:opacity-80'
                       }`}
                       title={item.label}
@@ -223,7 +223,7 @@ export const FloatingFilterMenu = ({
 
                       {/* 各フィルターのアクティブ数バッジ */}
                       {item.activeCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+                        <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white dark:border-slate-800">
                           {item.activeCount}
                         </span>
                       )}
@@ -234,7 +234,7 @@ export const FloatingFilterMenu = ({
                 {/* 並び替えボタン */}
                 <button
                   onClick={() => handleFilterClick('sort')}
-                  className={`w-10 h-10 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
+                  className={`min-w-[44px] h-11 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
                     isSortActive ? 'ring-2 ring-white opacity-100' : 'opacity-60 hover:opacity-80'
                   }`}
                   title="並び替え"
@@ -242,7 +242,7 @@ export const FloatingFilterMenu = ({
                 >
                   <ArrowUpDown size={18} />
                   {sortActiveCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white dark:border-slate-800">
                       {sortActiveCount}
                     </span>
                   )}
@@ -256,7 +256,7 @@ export const FloatingFilterMenu = ({
                     }
                     setIsGroupingPanelOpen(!isGroupingPanelOpen);
                   }}
-                  className={`w-10 h-10 ${currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0 ring-2 ring-white opacity-100`}
+                  className={`min-w-[44px] h-11 ${currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0 ring-2 ring-white opacity-100`}
                   aria-label={`グループ化: ${currentGrouping.label}`}
                   title={`グループ化: ${currentGrouping.label}`}
                 >
@@ -277,7 +277,7 @@ export const FloatingFilterMenu = ({
                 setIsExpanded(true);
               }
             }}
-            className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
+            className={`min-w-[56px] min-h-[56px] rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
               isExpanded ? 'bg-danger-600' : activeFilterCount > 0 ? 'bg-primary-700' : 'bg-gray-900 dark:bg-gray-800'
             } text-white active:scale-95 relative`}
             aria-label={isExpanded ? 'フィルターを閉じる' : 'フィルターを開く'}
@@ -286,7 +286,7 @@ export const FloatingFilterMenu = ({
 
             {/* アクティブフィルター数のバッジ */}
             {!isExpanded && activeFilterCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold border border-white dark:border-gray-800">
                 {activeFilterCount}
               </span>
             )}

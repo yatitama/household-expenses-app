@@ -95,13 +95,13 @@ export const GradientPickerModal = ({ currentFrom, currentTo, onSave, onClose }:
                 className="w-8 h-8 rounded-full flex-shrink-0"
                 style={{ background: `linear-gradient(135deg, ${preset.from}, ${preset.to})` }}
               />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{preset.label}</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-200">{preset.label}</span>
             </button>
           ))}
         </div>
 
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+          <button onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium">
             キャンセル
           </button>
           <button

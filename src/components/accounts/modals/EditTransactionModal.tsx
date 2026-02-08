@@ -72,7 +72,7 @@ export const EditTransactionModal = ({
               type="button"
               onClick={() => { setType('expense'); setCategoryId(''); }}
               className={`flex-1 py-2.5 font-medium transition-colors ${
-                type === 'expense' ? 'bg-red-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                type === 'expense' ? 'bg-red-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
               }`}
             >
               支出
@@ -81,7 +81,7 @@ export const EditTransactionModal = ({
               type="button"
               onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
               className={`flex-1 py-2.5 font-medium transition-colors ${
-                type === 'income' ? 'bg-green-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                type === 'income' ? 'bg-green-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
               }`}
             >
               収入
@@ -89,7 +89,7 @@ export const EditTransactionModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">金額</label>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">金額</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
               <input
@@ -103,7 +103,7 @@ export const EditTransactionModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">カテゴリ</label>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
             <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto">
               {filteredCategories.map((category) => {
                 const member = getMember(category.memberId);
@@ -124,7 +124,7 @@ export const EditTransactionModal = ({
                     >
                       {getCategoryIcon(category.icon, 16)}
                     </div>
-                    <span className="text-xs text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight">
+                    <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                       {category.name}
                     </span>
                     {member && member.id !== 'common' && (
@@ -137,7 +137,7 @@ export const EditTransactionModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
               {type === 'expense' ? '支払い元' : '入金先'}
             </label>
             <div className="space-y-2 max-h-40 overflow-y-auto">
@@ -201,7 +201,7 @@ export const EditTransactionModal = ({
           </div>
 
           <div className="overflow-x-hidden">
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">日付</label>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">日付</label>
             <input
               type="date"
               value={date}
@@ -212,7 +212,7 @@ export const EditTransactionModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">メモ</label>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">メモ</label>
             <input
               type="text"
               value={memo}
@@ -233,7 +233,7 @@ export const EditTransactionModal = ({
               </button>
             )}
             <div className="flex gap-3">
-              <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+              <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium">
                 キャンセル
               </button>
               <button

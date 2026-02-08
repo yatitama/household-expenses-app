@@ -75,23 +75,23 @@ export const AccountCard = ({
       } ${isDragOver ? 'border-2 border-blue-400 bg-blue-50/60 dark:bg-blue-900/20' : 'border-2 border-transparent'}`}
     >
       {/* 並び替えアイコン - 上部中央 */}
-      <div className="flex justify-center -mt-2 mb-2">
+      <div className="flex justify-center -mt-1 mb-1">
         <button
           onMouseDown={(e) => e.stopPropagation()}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
           onTouchCancel={onTouchCancel}
-          className="cursor-grab active:cursor-grabbing p-1 min-w-[44px] min-h-[32px] flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 rounded-lg active:bg-gray-100 dark:active:bg-gray-700"
+          className="cursor-grab active:cursor-grabbing p-1.5 min-w-[44px] min-h-[32px] flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg active:bg-gray-300 dark:active:bg-gray-500 transition-colors"
           style={{ touchAction: 'none', WebkitTouchCallout: 'none' } as React.CSSProperties}
           title="ドラッグして並び替え"
         >
-          <GripHorizontal size={20} />
+          <GripHorizontal size={18} />
         </button>
       </div>
 
       {/* 口座情報 */}
-      <div className="flex gap-3">
+      <div className="flex gap-2.5">
         {/* 口座アイコン - 2段結合・上下中央配置 */}
         <div className="flex-shrink-0 self-center">
           <div
@@ -103,7 +103,7 @@ export const AccountCard = ({
         </div>
 
         {/* 右側コンテンツ */}
-        <div className="flex-1 min-w-0 space-y-0.5">
+        <div className="flex-1 min-w-0 space-y-0">
           {/* 口座名とプラスボタン */}
           <div className="flex items-center gap-3">
             <div className="text-left flex-1 min-w-0">
@@ -146,7 +146,7 @@ export const AccountCard = ({
         </div>
       </div>
       {isPendingDetailsOpen && (
-        <div className="mt-2 text-right text-xs text-gray-500 dark:text-gray-400 space-y-0.5 pr-2">
+        <div className="mt-1.5 text-right text-xs text-gray-500 dark:text-gray-400 space-y-0.5 pr-2">
           {totalPendingData ? (
             <>
               {(totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0) && (
@@ -155,13 +155,14 @@ export const AccountCard = ({
               {totalPendingData.recurringIncome > 0 && (
                 <p>入る予定: +{formatCurrency(totalPendingData.recurringIncome)}</p>
               )}
-              <p className="font-medium text-gray-700 dark:text-gray-300">実質: {formatCurrency(account.balance - totalPendingData.totalPending)}</p>
+              <p className="font-medium text-gray-900 dark:text-gray-200">実質: {formatCurrency(account.balance - totalPendingData.totalPending)}</p>
             </>
           ) : pendingAmount > 0 ? (
             <p>引落後: {formatCurrency(account.balance - pendingAmount)}</p>
           ) : null}
         </div>
       )}
+      <div className="mt-2.5">
       <RecurringAndLinkedList
         recurringItems={recurringPayments}
         linkedItems={linkedPaymentMethodsData}
@@ -175,7 +176,8 @@ export const AccountCard = ({
         getPaymentMethod={getPaymentMethod}
         getUnsettledAmount={getUnsettledAmount}
       />
-      <div className="mt-4">
+      </div>
+      <div className="mt-3">
         <RecentTransactions accountId={account.id} />
       </div>
     </div>

@@ -29,7 +29,7 @@ export const StatsPage = () => {
           <button onClick={handlePrevMonth} className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="前月">
             <ChevronLeft size={20} />
           </button>
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[100px] text-center">{monthLabel}</span>
+          <span className="text-sm font-medium text-gray-900 dark:text-gray-200 min-w-[100px] text-center">{monthLabel}</span>
           <button onClick={handleNextMonth} className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="翌月">
             <ChevronRight size={20} />
           </button>

@@ -18,7 +18,7 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   const data = payload[0].payload;
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3">
-      <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{data.memberName}</p>
+      <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">{data.memberName}</p>
       <p className="text-sm font-bold" style={{ color: data.color }}>{formatCurrency(data.amount)}</p>
     </div>
   );

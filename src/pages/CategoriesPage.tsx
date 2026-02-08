@@ -82,7 +82,7 @@ export const CategoriesPage = () => {
         <button
           onClick={() => setFilterType('expense')}
           className={`flex-1 py-2 font-medium transition-colors ${
-            filterType === 'expense' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'
+            filterType === 'expense' ? 'bg-red-500 text-white' : 'bg-white text-gray-900'
           }`}
         >
           支出
@@ -90,7 +90,7 @@ export const CategoriesPage = () => {
         <button
           onClick={() => setFilterType('income')}
           className={`flex-1 py-2 font-medium transition-colors ${
-            filterType === 'income' ? 'bg-green-500 text-white' : 'bg-white text-gray-700'
+            filterType === 'income' ? 'bg-green-500 text-white' : 'bg-white text-gray-900'
           }`}
         >
           収入

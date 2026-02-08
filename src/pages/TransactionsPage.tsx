@@ -81,7 +81,6 @@ export const TransactionsPage = () => {
 
     toast.success('取引を更新しました');
     setEditingTransaction(null);
-    window.location.reload(); // Refresh to update the list
   };
 
   const handleDelete = (id: string) => {
@@ -94,7 +93,6 @@ export const TransactionsPage = () => {
     toast.success('取引を削除しました');
     setEditingTransaction(null);
     window.location.reload(); // Refresh to update the list
-  };
 
   // Group transactions by selected groupBy type
   const groupedTransactions = useMemo(() => {
@@ -152,7 +150,7 @@ export const TransactionsPage = () => {
   }, [filteredTransactions, groupBy, groupOrder, categories, members, getCategoryName, getAccountName, getPaymentMethodName]);
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-3 pb-24">
+    <div className="p-4 md:p-6 lg:p-8 space-y-3 pb-20">
       <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">取引履歴</h2>
 
       {/* Results count */}

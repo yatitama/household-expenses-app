@@ -64,7 +64,7 @@ export const LinkedPaymentMethodModal = ({
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">支払い手段</label>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">支払い手段</label>
             <select
               value={paymentMethodId}
               onChange={(e) => setPaymentMethodId(e.target.value)}
@@ -87,7 +87,7 @@ export const LinkedPaymentMethodModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">支払い口座</label>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">支払い口座</label>
             <select
               value={accountId}
               onChange={(e) => setAccountId(e.target.value)}
@@ -107,7 +107,7 @@ export const LinkedPaymentMethodModal = ({
           </div>
 
           <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">有効</span>
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-200">有効</span>
             <button
               type="button"
               onClick={() => setIsActive(!isActive)}
@@ -125,7 +125,7 @@ export const LinkedPaymentMethodModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 font-medium"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 font-medium"
             >
               キャンセル
             </button>
