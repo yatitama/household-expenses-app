@@ -92,7 +92,7 @@ export const TransactionsPage = () => {
 
     toast.success('取引を削除しました');
     setEditingTransaction(null);
-    window.location.reload(); // Refresh to update the list
+  };
 
   // Group transactions by selected groupBy type
   const groupedTransactions = useMemo(() => {
