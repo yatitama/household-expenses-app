@@ -96,7 +96,7 @@ export const EditTransactionModal = ({
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full text-xl font-bold pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full text-xl font-bold pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
@@ -128,7 +128,7 @@ export const EditTransactionModal = ({
                       {category.name}
                     </span>
                     {member && member.id !== 'common' && (
-                      <span className="text-xs text-gray-400 dark:text-gray-500 leading-none">{member.name}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
                     )}
                   </button>
                 );
@@ -143,7 +143,7 @@ export const EditTransactionModal = ({
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {accounts.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mb-1">口座</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
                   <div className="space-y-1">
                     {accounts.map((acct) => (
                       <button
@@ -168,7 +168,7 @@ export const EditTransactionModal = ({
               )}
               {type === 'expense' && paymentMethods.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mb-1">支払い手段</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
                   <div className="space-y-1">
                     {paymentMethods.map((pm) => {
                       const linked = accounts.find((a) => a.id === pm.linkedAccountId);
@@ -187,7 +187,7 @@ export const EditTransactionModal = ({
                             <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: pm.color }} />
                             <div className="text-left">
                               <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">{pm.name}</span>
-                              {linked && <p className="text-xs text-gray-400 dark:text-gray-500">→ {linked.name}</p>}
+                              {linked && <p className="text-xs text-gray-500 dark:text-gray-400">→ {linked.name}</p>}
                             </div>
                           </div>
                           {pmId === pm.id && <Check size={16} className="text-purple-500" />}
@@ -206,7 +206,7 @@ export const EditTransactionModal = ({
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
               style={{ minWidth: 0, maxWidth: '100%' }}
             />
           </div>
@@ -218,7 +218,7 @@ export const EditTransactionModal = ({
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder="任意"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
             />
           </div>
 
@@ -239,7 +239,7 @@ export const EditTransactionModal = ({
               <button
                 type="submit"
                 disabled={!amount || !categoryId || (!accountId && !pmId)}
-                className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium disabled:opacity-50"
+                className="flex-1 py-2.5 px-4 rounded-lg bg-primary-700 text-white hover:bg-primary-800 font-medium disabled:opacity-50"
               >
                 保存
               </button>

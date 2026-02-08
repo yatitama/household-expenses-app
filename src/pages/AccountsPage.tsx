@@ -116,13 +116,13 @@ export const AccountsPage = () => {
       {/* 口座セクション */}
       <div>
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-base font-bold text-gray-700 dark:text-gray-300">口座</h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">口座</h3>
         </div>
 
         {accounts.length === 0 ? (
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm">
             <EmptyState
-              icon={<Wallet size={32} className="text-gray-400 dark:text-gray-500" />}
+              icon={<Wallet size={32} className="text-gray-500 dark:text-gray-400" />}
               title="口座がありません"
               description="設定から口座を追加してください"
             />
@@ -174,7 +174,7 @@ export const AccountsPage = () => {
       {unlinkedPMs.length > 0 && (
         <div>
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-base font-bold text-gray-700 dark:text-gray-300">引き落とし先未設定</h3>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">引き落とし先未設定</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {unlinkedPMs.map((pm) => {

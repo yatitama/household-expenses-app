@@ -52,7 +52,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 夫クレジットカード"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-600"
               required
             />
           </div>
@@ -68,7 +68,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                     memberId === member.id
                       ? 'bg-purple-600 text-white border-purple-600'
-                      : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
@@ -93,7 +93,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                     pmType === value
                       ? 'bg-purple-600 text-white border-purple-600'
-                      : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
                   {PM_TYPE_ICONS[value]}
@@ -142,7 +142,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                     billingType === value
                       ? 'bg-purple-600 text-white border-purple-600'
-                      : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
                   {label}
@@ -173,7 +173,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                       max="31"
                       value={closingDay}
                       onChange={(e) => setClosingDay(e.target.value)}
-                      className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
                     />
                     <span className="text-sm text-gray-500 dark:text-gray-400">日</span>
                   </div>
@@ -184,7 +184,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     <select
                       value={paymentMonthOffset}
                       onChange={(e) => setPaymentMonthOffset(e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                     >
                       <option value="0">当月</option>
                       <option value="1">翌月</option>
@@ -196,7 +196,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                       max="31"
                       value={paymentDay}
                       onChange={(e) => setPaymentDay(e.target.value)}
-                      className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
                     />
                     <span className="text-sm text-gray-500 dark:text-gray-400">日</span>
                   </div>

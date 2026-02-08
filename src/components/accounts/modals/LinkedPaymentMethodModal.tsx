@@ -68,7 +68,7 @@ export const LinkedPaymentMethodModal = ({
             <select
               value={paymentMethodId}
               onChange={(e) => setPaymentMethodId(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-600"
               required
             >
               <option value="">選択してください</option>
@@ -91,7 +91,7 @@ export const LinkedPaymentMethodModal = ({
             <select
               value={accountId}
               onChange={(e) => setAccountId(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-600"
               required
             >
               <option value="">選択してください</option>
@@ -131,7 +131,7 @@ export const LinkedPaymentMethodModal = ({
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              className="flex-1 px-4 py-2 bg-primary-700 text-white hover:bg-primary-800 rounded-lg hover:bg-blue-700 font-medium"
             >
               保存
             </button>

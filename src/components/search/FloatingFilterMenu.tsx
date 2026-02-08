@@ -93,7 +93,7 @@ export const FloatingFilterMenu = ({
 
   const filterMenuItems: FilterMenuItem[] = [
     { type: 'search', icon: Search, label: '検索', color: 'bg-purple-500', isActive: isSearchActive, activeCount: searchActiveCount },
-    { type: 'type', icon: DollarSign, label: '種別', color: 'bg-blue-500', isActive: isTypeActive, activeCount: typeActiveCount },
+    { type: 'type', icon: DollarSign, label: '種別', color: 'bg-primary-600', isActive: isTypeActive, activeCount: typeActiveCount },
     { type: 'date', icon: Calendar, label: '期間', color: 'bg-green-500', isActive: isDateActive, activeCount: dateActiveCount },
     { type: 'member', icon: User, label: 'メンバー', color: 'bg-orange-500', isActive: isMemberActive, activeCount: memberActiveCount },
     { type: 'category', icon: Tag, label: 'カテゴリ', color: 'bg-pink-500', isActive: isCategoryActive, activeCount: categoryActiveCount },
@@ -278,7 +278,7 @@ export const FloatingFilterMenu = ({
               }
             }}
             className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
-              isExpanded ? 'bg-red-500' : activeFilterCount > 0 ? 'bg-blue-600' : 'bg-gray-900 dark:bg-gray-800'
+              isExpanded ? 'bg-danger-600' : activeFilterCount > 0 ? 'bg-primary-700' : 'bg-gray-900 dark:bg-gray-800'
             } text-white active:scale-95 relative`}
             aria-label={isExpanded ? 'フィルターを閉じる' : 'フィルターを開く'}
           >

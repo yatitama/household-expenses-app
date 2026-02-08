@@ -265,7 +265,7 @@ export const SettingsPage = () => {
 
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-4">
-      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">設定</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">設定</h2>
 
       {/* ダークモード切り替え */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
@@ -323,7 +323,7 @@ export const SettingsPage = () => {
             </button>
 
             {members.length === 0 ? (
-              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">メンバーがいません</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">メンバーがいません</p>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {members.map((member) => (
@@ -340,7 +340,7 @@ export const SettingsPage = () => {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{member.name}</p>
-                      {member.isDefault && <p className="text-xs text-gray-400 dark:text-gray-500">デフォルト</p>}
+                      {member.isDefault && <p className="text-xs text-gray-500 dark:text-gray-400">デフォルト</p>}
                     </div>
                   </button>
                 ))}
@@ -398,7 +398,7 @@ export const SettingsPage = () => {
             </button>
 
             {filteredCategories.length === 0 ? (
-              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">カテゴリがありません</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">カテゴリがありません</p>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredCategories.map((category) => {
@@ -456,7 +456,7 @@ export const SettingsPage = () => {
             </button>
 
             {accounts.length === 0 ? (
-              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">口座がありません</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">口座がありません</p>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {accounts.map((account) => {
@@ -516,7 +516,7 @@ export const SettingsPage = () => {
             </button>
 
             {paymentMethods.length === 0 ? (
-              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">支払い手段がありません</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">支払い手段がありません</p>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {paymentMethods.map((pm) => {

@@ -63,7 +63,7 @@ export const FilterPanel = ({
                       ? value === 'income' ? 'bg-green-500 text-white'
                         : value === 'expense' ? 'bg-red-500 text-white'
                         : 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-600 hover:bg-gray-50'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   {label}
@@ -131,7 +131,7 @@ export const FilterPanel = ({
           {activeFilterCount > 0 && (
             <button
               onClick={resetFilters}
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
               <RotateCcw size={14} />
               フィルタをリセット

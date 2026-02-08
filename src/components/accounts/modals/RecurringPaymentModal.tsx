@@ -92,7 +92,7 @@ export const RecurringPaymentModal = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 家賃、携帯料金、Netflix"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-600"
               required
             />
           </div>
@@ -127,7 +127,7 @@ export const RecurringPaymentModal = ({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0"
-                className="w-full text-lg font-bold pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full text-lg font-bold pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
@@ -141,8 +141,8 @@ export const RecurringPaymentModal = ({
                 onClick={() => setFrequency('monthly')}
                 className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                   frequency === 'monthly'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                    ? 'bg-primary-700 text-white hover:bg-primary-800 border-blue-600'
+                    : 'bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
                 }`}
               >
                 毎月
@@ -152,8 +152,8 @@ export const RecurringPaymentModal = ({
                 onClick={() => setFrequency('yearly')}
                 className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                   frequency === 'yearly'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                    ? 'bg-primary-700 text-white hover:bg-primary-800 border-blue-600'
+                    : 'bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
                 }`}
               >
                 毎年
@@ -168,7 +168,7 @@ export const RecurringPaymentModal = ({
                 <select
                   value={monthOfYear}
                   onChange={(e) => setMonthOfYear(e.target.value)}
-                  className="border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                 >
                   {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                     <option key={m} value={m}>{m}月</option>
@@ -185,7 +185,7 @@ export const RecurringPaymentModal = ({
                   max="31"
                   value={dayOfMonth}
                   onChange={(e) => setDayOfMonth(e.target.value)}
-                  className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
                 />
                 <span className="text-sm text-gray-500 dark:text-gray-400">日</span>
               </div>
@@ -216,7 +216,7 @@ export const RecurringPaymentModal = ({
                     </div>
                     <span className="text-xs text-gray-700 dark:text-gray-300 truncate w-full text-center">{category.name}</span>
                     {member && member.id !== 'common' && (
-                      <span className="text-xs text-gray-400 dark:text-gray-500 leading-none">{member.name}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
                     )}
                   </button>
                 );
@@ -231,7 +231,7 @@ export const RecurringPaymentModal = ({
             <div className="space-y-2 max-h-32 overflow-y-auto">
               {accounts.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mb-1">口座</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
                   <div className="space-y-1">
                     {accounts.map((acct) => (
                       <button
@@ -256,7 +256,7 @@ export const RecurringPaymentModal = ({
               )}
               {type === 'expense' && paymentMethods.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mb-1">支払い手段</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
                   <div className="space-y-1">
                     {paymentMethods.map((pm) => (
                       <button
@@ -289,7 +289,7 @@ export const RecurringPaymentModal = ({
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder="任意"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
             />
           </div>
 
@@ -310,7 +310,7 @@ export const RecurringPaymentModal = ({
             <button
               type="submit"
               disabled={!name || !amount || !categoryId || (!accountId && !pmId)}
-              className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 rounded-lg bg-primary-700 text-white hover:bg-primary-800 font-medium disabled:opacity-50"
             >
               保存
             </button>
