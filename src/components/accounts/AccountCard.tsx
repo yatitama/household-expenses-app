@@ -40,6 +40,7 @@ export const AccountCard = ({
   onViewPM,
 }: AccountCardProps) => {
   const [isPendingDetailsOpen, setIsPendingDetailsOpen] = useState(false);
+  const [isPaymentMethodDetailsOpen, setIsPaymentMethodDetailsOpen] = useState(false);
   const categories = categoryService.getAll();
   const getPaymentMethod = (id: string) => allPaymentMethods.find((pm) => pm.id === id);
   const getUnsettledAmount = (paymentMethodId: string) => pendingByPM[paymentMethodId] || 0;
@@ -153,14 +154,14 @@ export const AccountCard = ({
       {(recurringPayments.length > 0 || linkedPaymentMethodsData.length > 0) && (
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <button
-            onClick={() => setIsPendingDetailsOpen(!isPendingDetailsOpen)}
+            onClick={() => setIsPaymentMethodDetailsOpen(!isPaymentMethodDetailsOpen)}
             className="text-xs font-semibold text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors flex items-center gap-1 mb-3"
           >
-            {isPendingDetailsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            {isPaymentMethodDetailsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             支払い方法・定期支払 ({recurringPayments.length + linkedPaymentMethodsData.length})
           </button>
 
-          {isPendingDetailsOpen && (
+          {isPaymentMethodDetailsOpen && (
             <div className="space-y-2">
               <RecurringAndLinkedList
                 recurringItems={recurringPayments}
