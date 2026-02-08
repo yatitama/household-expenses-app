@@ -60,7 +60,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   onClick={() => setMemberId(member.id)}
                   className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                     memberId === member.id
-                      ? 'bg-primary-700 text-white hover:bg-primary-800 border-primary-700'
+                      ? 'bg-blue-600 text-white border-blue-600'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
@@ -81,7 +81,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   onClick={() => setAccountType(value)}
                   className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                     accountType === value
-                      ? 'bg-primary-700 text-white hover:bg-primary-800 border-blue-600'
+                      ? 'bg-blue-600 text-white border-blue-600'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
@@ -111,7 +111,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-8 h-8 rounded-full transition-transform ${
-                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''
+                    color === c ? 'ring-2 ring-offset-2 ring-blue-600 scale-110' : ''
                   }`}
                   style={{ backgroundColor: c }}
                 />
@@ -130,10 +130,10 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
               </button>
             )}
             <div className="flex gap-3">
-              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium">
+              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-slate-600">
                 キャンセル
               </button>
-              <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-primary-700 text-white hover:bg-primary-800 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600">
+              <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
                 保存
               </button>
             </div>
