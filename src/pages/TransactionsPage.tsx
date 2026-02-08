@@ -149,92 +149,97 @@ export const TransactionsPage = () => {
   }, [filteredTransactions, groupBy, groupOrder, categories, members, getCategoryName, getAccountName, getPaymentMethodName]);
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-3 pb-20">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">取引履歴</h2>
+    <div className="pb-20">
+      {/* Sticky Filter Bar at Top */}
+      <div className="sticky top-0 z-30 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-4 md:p-6 lg:p-8">
+        <SimpleFilterBar
+          filters={filters}
+          updateFilter={updateFilter}
+          resetFilters={resetFilters}
+          activeFilterCount={activeFilterCount}
+          members={members}
+          categories={categories}
+          accounts={accounts}
+          paymentMethods={paymentMethods}
+          groupBy={groupBy}
+          groupOrder={groupOrder}
+          onGroupByChange={handleGroupByChange}
+        />
+      </div>
 
-      {/* Results count */}
-      <p className="text-xs text-gray-500 dark:text-gray-400">{filteredTransactions.length}件の取引</p>
+      {/* Main Content */}
+      <div className="p-4 md:p-6 lg:p-8 space-y-3">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">取引履歴</h2>
 
-      {/* Transaction list */}
-      {filteredTransactions.length === 0 ? (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
-          <Receipt size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
-          <p className="text-sm text-gray-500 dark:text-gray-400">取引がありません</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {groupedTransactions.map(([key, { label, transactions }]) => {
-            // グループ内の合計を計算
-            const groupTotal = transactions.reduce((sum, t) => {
-              return sum + (t.type === 'income' ? t.amount : -t.amount);
-            }, 0);
+        {/* Results count */}
+        <p className="text-xs text-gray-500 dark:text-gray-400">{filteredTransactions.length}件の取引</p>
 
-            return (
-              <div key={key} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
-                <div className="px-4 py-2 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}</p>
-                  <p className={`text-xs font-bold ${
-                    groupTotal >= 0 ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {groupTotal >= 0 ? '+' : ''}{formatCurrency(groupTotal)}
-                  </p>
-                </div>
-              <div className="divide-y divide-gray-50 dark:divide-gray-700">
-                {transactions.map((t) => {
-                  const color = getCategoryColor(t.categoryId);
-                  const source = t.paymentMethodId
-                    ? getPaymentMethodName(t.paymentMethodId)
-                    : getAccountName(t.accountId);
+        {/* Transaction list */}
+        {filteredTransactions.length === 0 ? (
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
+            <Receipt size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+            <p className="text-sm text-gray-500 dark:text-gray-400">取引がありません</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {groupedTransactions.map(([key, { label, transactions }]) => {
+              // グループ内の合計を計算
+              const groupTotal = transactions.reduce((sum, t) => {
+                return sum + (t.type === 'income' ? t.amount : -t.amount);
+              }, 0);
 
-                  return (
-                    <button
-                      key={t.id}
-                      onClick={() => setEditingTransaction(t)}
-                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
-                    >
-                      <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-                        style={{ backgroundColor: `${color}20`, color }}
+              return (
+                <div key={key} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+                  <div className="px-4 py-2 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}</p>
+                    <p className={`text-xs font-bold ${
+                      groupTotal >= 0 ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {groupTotal >= 0 ? '+' : ''}{formatCurrency(groupTotal)}
+                    </p>
+                  </div>
+                <div className="divide-y divide-gray-50 dark:divide-gray-700">
+                  {transactions.map((t) => {
+                    const color = getCategoryColor(t.categoryId);
+                    const source = t.paymentMethodId
+                      ? getPaymentMethodName(t.paymentMethodId)
+                      : getAccountName(t.accountId);
+
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => setEditingTransaction(t)}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
                       >
-                        {getCategoryIcon(getCategoryIconName(t.categoryId), 18)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
-                          {getCategoryName(t.categoryId)}
+                        <div
+                          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                          style={{ backgroundColor: `${color}20`, color }}
+                        >
+                          {getCategoryIcon(getCategoryIconName(t.categoryId), 18)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                            {getCategoryName(t.categoryId)}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {groupBy !== 'date' && `${formatDate(t.date)} - `}{source}{t.memo ? ` - ${t.memo}` : ''}
+                          </p>
+                        </div>
+                        <p className={`text-sm font-bold shrink-0 ${
+                          t.type === 'income' ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                          {groupBy !== 'date' && `${formatDate(t.date)} - `}{source}{t.memo ? ` - ${t.memo}` : ''}
-                        </p>
-                      </div>
-                      <p className={`text-sm font-bold shrink-0 ${
-                        t.type === 'income' ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
-                      </p>
-                    </button>
-                  );
-                })}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Simple Filter Bar */}
-      <SimpleFilterBar
-        filters={filters}
-        updateFilter={updateFilter}
-        resetFilters={resetFilters}
-        activeFilterCount={activeFilterCount}
-        members={members}
-        categories={categories}
-        accounts={accounts}
-        paymentMethods={paymentMethods}
-        groupBy={groupBy}
-        groupOrder={groupOrder}
-        onGroupByChange={handleGroupByChange}
-      />
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {/* Edit Transaction Modal */}
       {editingTransaction && (

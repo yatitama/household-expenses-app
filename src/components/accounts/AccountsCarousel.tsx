@@ -148,40 +148,39 @@ export const AccountsCarousel = ({
       >
         <div
           ref={innerRef}
-          className={`transition-transform ${isTransitioning ? 'duration-300 ease-out' : ''}`}
+          className={`flex gap-3 transition-transform ${isTransitioning ? 'duration-300 ease-out' : ''}`}
           style={{
             transform: `translateX(-${currentIndex * 100}%)`,
+            width: `${accounts.length * 100}%`,
           }}
         >
-          <div className="flex gap-3">
-            {accounts.map((account) => {
-              const accountLinkedPMs = linkedPaymentMethods.filter((lpm) => lpm.accountId === account.id);
-              const accountRecurrings = recurringPayments.filter(
-                (rp) => rp.accountId === account.id && !rp.paymentMethodId
-              );
-              return (
-                <div key={account.id} className="w-full flex-shrink-0 min-w-0">
-                  <AccountCard
-                    account={account}
-                    member={getMember(account.memberId)}
-                    pendingAmount={pendingByAccount[account.id] || 0}
-                    totalPendingData={totalPendingByAccount[account.id]}
-                    linkedPaymentMethodsData={accountLinkedPMs}
-                    allPaymentMethods={paymentMethods}
-                    pendingByPM={pendingByPM}
-                    recurringPayments={accountRecurrings}
-                    onAddTransaction={() => onAddTransaction({ accountId: account.id })}
-                    onAddRecurring={() => onAddRecurring({ accountId: account.id })}
-                    onEditRecurring={onEditRecurring}
-                    onToggleRecurring={onToggleRecurring}
-                    onAddLinkedPM={() => onAddLinkedPM({ accountId: account.id })}
-                    onToggleLinkedPM={onToggleLinkedPM}
-                    onViewPM={onViewPM}
-                  />
-                </div>
-              );
-            })}
-          </div>
+          {accounts.map((account) => {
+            const accountLinkedPMs = linkedPaymentMethods.filter((lpm) => lpm.accountId === account.id);
+            const accountRecurrings = recurringPayments.filter(
+              (rp) => rp.accountId === account.id && !rp.paymentMethodId
+            );
+            return (
+              <div key={account.id} className="w-full flex-shrink-0 min-w-0">
+                <AccountCard
+                  account={account}
+                  member={getMember(account.memberId)}
+                  pendingAmount={pendingByAccount[account.id] || 0}
+                  totalPendingData={totalPendingByAccount[account.id]}
+                  linkedPaymentMethodsData={accountLinkedPMs}
+                  allPaymentMethods={paymentMethods}
+                  pendingByPM={pendingByPM}
+                  recurringPayments={accountRecurrings}
+                  onAddTransaction={() => onAddTransaction({ accountId: account.id })}
+                  onAddRecurring={() => onAddRecurring({ accountId: account.id })}
+                  onEditRecurring={onEditRecurring}
+                  onToggleRecurring={onToggleRecurring}
+                  onAddLinkedPM={() => onAddLinkedPM({ accountId: account.id })}
+                  onToggleLinkedPM={onToggleLinkedPM}
+                  onViewPM={onViewPM}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -194,7 +193,7 @@ export const AccountsCarousel = ({
               onClick={() => goToSlide(index)}
               className={`w-1.5 h-1.5 rounded-full transition-all ${
                 index === currentIndex
-                  ? 'bg-primary-600 w-5'
+                  ? 'bg-gray-800 dark:bg-gray-300 w-5'
                   : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
               }`}
               aria-label={`口座 ${index + 1}`}
