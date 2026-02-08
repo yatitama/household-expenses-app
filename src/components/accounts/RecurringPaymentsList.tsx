@@ -57,7 +57,7 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onToggle, getCateg
                         >
                           {getCategoryIcon(category?.icon || '', 14)}
                         </div>
-                        <span className="truncate text-gray-700 dark:text-gray-300">{rp.name}</span>
+                        <span className="truncate text-gray-900 dark:text-gray-200">{rp.name}</span>
                         <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-xs">{freqLabel}</span>
                       </button>
                     </div>

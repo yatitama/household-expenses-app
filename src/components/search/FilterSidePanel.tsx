@@ -68,7 +68,7 @@ export const FilterSidePanel = ({
           title: '検索',
           content: (
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-900 dark:text-gray-200 mb-2">
                 キーワード検索
               </label>
               <input
@@ -178,7 +178,7 @@ export const FilterSidePanel = ({
           title: '並び替え',
           content: (
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-900 dark:text-gray-200 mb-2">
                 並び順
               </label>
               <SortSelector

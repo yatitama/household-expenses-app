@@ -39,7 +39,7 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ message }) => {
       <div className="bg-white dark:bg-slate-800 rounded-xl p-8 flex flex-col items-center shadow-xl border border-gray-200 dark:border-gray-700">
         <LoadingSpinner size="lg" />
         {message && (
-          <p className="mt-4 text-gray-800 dark:text-gray-200 font-semibold text-center">
+          <p className="mt-4 text-gray-900 dark:text-gray-200 font-semibold text-center">
             {message}
           </p>
         )}

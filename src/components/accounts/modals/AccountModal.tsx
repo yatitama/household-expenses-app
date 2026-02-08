@@ -36,7 +36,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
         <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-gray-100">{account ? '口座を編集' : '口座を追加'}</h3>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
               名前
               <span className="text-danger-600 ml-1">*</span>
             </label>
@@ -51,7 +51,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">所有者</label>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">所有者</label>
             <div className="flex flex-wrap gap-2">
               {members.map((member) => (
                 <button
@@ -61,7 +61,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                     memberId === member.id
                       ? 'bg-primary-700 text-white hover:bg-primary-800 border-primary-700'
-                      : 'bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
@@ -72,7 +72,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">種類</label>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">種類</label>
             <div className="grid grid-cols-3 gap-2">
               {(Object.entries(ACCOUNT_TYPE_LABELS) as [AccountType, string][]).map(([value, label]) => (
                 <button
@@ -82,7 +82,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                     accountType === value
                       ? 'bg-primary-700 text-white hover:bg-primary-800 border-blue-600'
-                      : 'bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
                   {ACCOUNT_TYPE_ICONS[value]}
@@ -93,7 +93,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">残高</label>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">残高</label>
             <input
               type="number"
               value={balance}
@@ -103,7 +103,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">色</label>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">色</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button
@@ -130,7 +130,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
               </button>
             )}
             <div className="flex gap-3">
-              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium">
                 キャンセル
               </button>
               <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-primary-700 text-white hover:bg-primary-800 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600">

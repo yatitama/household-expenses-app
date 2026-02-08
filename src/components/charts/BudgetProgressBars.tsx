@@ -27,7 +27,7 @@ export const BudgetProgressBars = ({ year, month }: BudgetProgressBarsProps) => 
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">{item.categoryName}</span>
+                    <span className="text-sm font-semibold text-gray-900 dark:text-gray-200">{item.categoryName}</span>
                   </div>
                   <span className={`text-xs font-bold ${isOver ? 'text-danger-600' : 'text-gray-600 dark:text-gray-400'}`}>
                     {item.percentage}%

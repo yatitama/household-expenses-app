@@ -374,7 +374,7 @@ export const SettingsPage = () => {
               <button
                 onClick={() => setCategoryFilterType('expense')}
                 className={`flex-1 py-2 text-sm font-medium transition-colors ${
-                  categoryFilterType === 'expense' ? 'bg-red-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                  categoryFilterType === 'expense' ? 'bg-red-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
                 }`}
               >
                 支出
@@ -382,7 +382,7 @@ export const SettingsPage = () => {
               <button
                 onClick={() => setCategoryFilterType('income')}
                 className={`flex-1 py-2 text-sm font-medium transition-colors ${
-                  categoryFilterType === 'income' ? 'bg-green-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                  categoryFilterType === 'income' ? 'bg-green-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
                 }`}
               >
                 収入
@@ -677,7 +677,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
         <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">名前</label>
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
             <input
               type="text"
               value={name}
@@ -688,7 +688,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">色</label>
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button
@@ -714,7 +714,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
               </button>
             )}
             <div className="flex gap-3">
-              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium">
                 キャンセル
               </button>
               <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
@@ -755,7 +755,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
         <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">名前</label>
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
             <input
               type="text"
               value={name}
@@ -766,7 +766,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">対象メンバー</label>
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">対象メンバー</label>
             <div className="flex flex-wrap gap-2">
               {members.map((m) => (
                 <button
@@ -776,7 +776,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                   className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
                     memberId === m.id
                       ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: m.color }} />
@@ -786,7 +786,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">色</label>
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button
@@ -802,7 +802,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">アイコン</label>
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">アイコン</label>
             <div className="grid grid-cols-6 gap-2">
               {ICON_NAMES.map((i) => {
                 const IconComponent = ICON_COMPONENTS[i];
@@ -834,7 +834,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
               </button>
             )}
             <div className="flex gap-3">
-              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium">
                 キャンセル
               </button>
               <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
