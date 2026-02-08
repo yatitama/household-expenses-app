@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
-import { Wallet } from 'lucide-react';
+import { Wallet, Plus } from 'lucide-react';
 import { memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
-import { useAccountDragAndDrop } from '../hooks/accounts/useAccountDragAndDrop';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { getPendingAmountByAccount, getPendingAmountByPaymentMethod, getTotalPendingByAccount } from '../utils/billingUtils';
 import { AssetCard } from '../components/accounts/AssetCard';
-import { AccountCard } from '../components/accounts/AccountCard';
+import { AccountsCarousel } from '../components/accounts/AccountsCarousel';
+import { PendingExpenseSection } from '../components/accounts/PendingExpenseSection';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
 import { PMTransactionsModal } from '../components/accounts/modals/PMTransactionsModal';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
@@ -28,7 +28,6 @@ export const AccountsPage = () => {
     confirmDialog, closeConfirmDialog,
   } = useAccountOperations();
 
-  const dragAndDrop = useAccountDragAndDrop(accounts, refreshData);
   const members = memberService.getAll();
 
   // Modal state
@@ -95,30 +94,30 @@ export const AccountsPage = () => {
   const unlinkedPMs = paymentMethods.filter((pm) => !pm.linkedAccountId);
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-4">
-      {/* 総資産カード */}
-      <AssetCard
-        totalBalance={totalBalance}
-        totalExpense={totalExpense}
-        totalIncome={totalIncome}
-        netPending={netPending}
-        accounts={accounts}
-        groupedAccounts={groupedAccounts}
-        totalPendingByAccount={totalPendingByAccount}
-        getMember={getMember}
-        isBreakdownOpen={isBreakdownOpen}
-        onToggleBreakdown={() => setIsBreakdownOpen(!isBreakdownOpen)}
-        gradientFrom={appSettings.totalAssetGradientFrom}
-        gradientTo={appSettings.totalAssetGradientTo}
-        onChangeGradient={() => setIsGradientPickerOpen(true)}
-      />
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+      {/* 総資産カード（固定ヘッダー） */}
+      <div className="sticky top-0 z-40 bg-gray-50 dark:bg-slate-900 pt-4 md:pt-6 lg:pt-8 px-4 md:px-6 lg:px-8">
+        {accounts.length > 0 && (
+          <AssetCard
+            totalBalance={totalBalance}
+            totalExpense={totalExpense}
+            totalIncome={totalIncome}
+            netPending={netPending}
+            accounts={accounts}
+            groupedAccounts={groupedAccounts}
+            totalPendingByAccount={totalPendingByAccount}
+            getMember={getMember}
+            isBreakdownOpen={isBreakdownOpen}
+            onToggleBreakdown={() => setIsBreakdownOpen(!isBreakdownOpen)}
+            gradientFrom={appSettings.totalAssetGradientFrom}
+            gradientTo={appSettings.totalAssetGradientTo}
+            onChangeGradient={() => setIsGradientPickerOpen(true)}
+          />
+        )}
+      </div>
 
-      {/* 口座セクション */}
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">口座</h3>
-        </div>
-
+      {/* メインコンテンツエリア */}
+      <div className="p-4 md:p-6 lg:p-8 space-y-4">
         {accounts.length === 0 ? (
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm">
             <EmptyState
@@ -128,75 +127,90 @@ export const AccountsPage = () => {
             />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {accounts.map((account) => {
-              const member = getMember(account.memberId);
-              const accountLinkedPMs = linkedPaymentMethods.filter((lpm) => lpm.accountId === account.id);
-              const accountRecurrings = recurringPayments.filter(
-                (rp) => rp.accountId === account.id && !rp.paymentMethodId
-              );
-              return (
-                <AccountCard
-                  key={account.id}
-                  account={account}
-                  member={member}
-                  pendingAmount={pendingByAccount[account.id] || 0}
-                  totalPendingData={totalPendingByAccount[account.id]}
-                  linkedPaymentMethodsData={accountLinkedPMs}
-                  allPaymentMethods={paymentMethods}
-                  pendingByPM={pendingByPM}
-                  recurringPayments={accountRecurrings}
-                  onAddTransaction={() => setAddTransactionTarget({ accountId: account.id })}
-                  onAddRecurring={() => handleAddRecurring({ accountId: account.id })}
-                  onEditRecurring={handleEditRecurring}
-                  onToggleRecurring={handleToggleRecurring}
-                  onAddLinkedPM={() => handleAddLinkedPM({ accountId: account.id })}
-                  onToggleLinkedPM={handleToggleLinkedPM}
-                  onViewPM={(pm) => setViewingPM(pm)}
-                  isDragging={dragAndDrop.draggedAccountId === account.id}
-                  isDragOver={dragAndDrop.dragOverAccountId === account.id}
-                  onDragStart={() => dragAndDrop.handleDragStart(account.id)}
-                  onDragOver={(e) => dragAndDrop.handleDragOver(e, account.id)}
-                  onDrop={(e) => dragAndDrop.handleDrop(e, account.id)}
-                  onDragEnd={dragAndDrop.handleDragEnd}
-                  onTouchStart={(e) => dragAndDrop.handleTouchStart(e, account.id)}
-                  onTouchMove={dragAndDrop.handleTouchMove}
-                  onTouchEnd={dragAndDrop.handleTouchEnd}
-                  onTouchCancel={dragAndDrop.handleTouchCancel}
-                />
-              );
-            })}
-          </div>
+          <>
+            {/* 支出予測セクション */}
+            {(totalExpense > 0 || totalIncome > 0) && (
+              <PendingExpenseSection
+                totalCardPending={Object.values(totalPendingByAccount).reduce(
+                  (sum, v) => sum + v.cardPending, 0
+                )}
+                totalRecurringExpense={Object.values(totalPendingByAccount).reduce(
+                  (sum, v) => sum + v.recurringExpense, 0
+                )}
+                totalRecurringIncome={Object.values(totalPendingByAccount).reduce(
+                  (sum, v) => sum + v.recurringIncome, 0
+                )}
+              />
+            )}
+
+            {/* 口座カルーセル */}
+            <AccountsCarousel
+              accounts={accounts}
+              members={members}
+              paymentMethods={paymentMethods}
+              linkedPaymentMethods={linkedPaymentMethods}
+              recurringPayments={recurringPayments}
+              pendingByAccount={pendingByAccount}
+              pendingByPM={pendingByPM}
+              totalPendingByAccount={totalPendingByAccount}
+              onAddTransaction={(target) => setAddTransactionTarget(target)}
+              onAddRecurring={handleAddRecurring}
+              onEditRecurring={handleEditRecurring}
+              onToggleRecurring={handleToggleRecurring}
+              onAddLinkedPM={handleAddLinkedPM}
+              onToggleLinkedPM={handleToggleLinkedPM}
+              onViewPM={(pm) => setViewingPM(pm)}
+            />
+
+            {/* クイックアクションバー */}
+            <div className="flex gap-2 justify-center py-2">
+              <button
+                onClick={() => setAddTransactionTarget({ accountId: accounts[0].id })}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white rounded-lg font-medium transition-colors text-sm"
+              >
+                <Plus size={18} />
+                取引を追加
+              </button>
+              <button
+                onClick={() => handleAddRecurring({ accountId: accounts[0].id })}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-900 dark:text-gray-100 rounded-lg font-medium transition-colors text-sm"
+              >
+                📅 定期支払
+              </button>
+            </div>
+
+            {/* 紐づきなし支払い手段 */}
+            {unlinkedPMs.length > 0 && (
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    紐付未設定のカード ({unlinkedPMs.length}件)
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {unlinkedPMs.map((pm) => {
+                    const pmRecurrings = recurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
+                    return (
+                      <PaymentMethodCard
+                        key={pm.id}
+                        paymentMethod={pm}
+                        linkedAccountName={undefined}
+                        pendingAmount={pendingByPM[pm.id] || 0}
+                        recurringPayments={pmRecurrings}
+                        onView={() => setViewingPM(pm)}
+                        onAddTransaction={() => setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
+                        onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
+                        onEditRecurring={handleEditRecurring}
+                        onToggleRecurring={handleToggleRecurring}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
-
-      {/* 紐づきなし支払い手段 */}
-      {unlinkedPMs.length > 0 && (
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">引き落とし先未設定</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {unlinkedPMs.map((pm) => {
-              const pmRecurrings = recurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
-              return (
-                <PaymentMethodCard
-                  key={pm.id}
-                  paymentMethod={pm}
-                  linkedAccountName={undefined}
-                  pendingAmount={pendingByPM[pm.id] || 0}
-                  recurringPayments={pmRecurrings}
-                  onView={() => setViewingPM(pm)}
-                  onAddTransaction={() => setAddTransactionTarget({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
-                  onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
-                  onEditRecurring={handleEditRecurring}
-                  onToggleRecurring={handleToggleRecurring}
-                />
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       {/* モーダル群 */}
       {viewingPM && (

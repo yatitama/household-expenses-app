@@ -115,7 +115,7 @@ export const FloatingFilterMenu = ({
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isExpanded, activePanel, isGroupingPanelOpen]);
+  }, [isExpanded, activePanel, isGroupingPanelOpen, setIsExpanded]);
 
   const handleFilterClick = (type: FilterType) => {
     setActivePanel(activePanel === type ? null : type);
