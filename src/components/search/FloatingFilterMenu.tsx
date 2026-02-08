@@ -204,8 +204,8 @@ export const FloatingFilterMenu = ({
               {/* 区切り線 */}
               <div className="w-px h-8 bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
 
-              {/* スクロール可能なフィルターボタン */}
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide" style={{ maxWidth: 'calc(100vw - 16rem)' }}>
+              {/* スクロール可能なボタン（フィルター・ソート・グルーピング） */}
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2 flex-1 min-w-0">
                 {filterMenuItems.map((item) => {
                   const Icon = item.icon;
 
@@ -230,39 +230,39 @@ export const FloatingFilterMenu = ({
                     </button>
                   );
                 })}
+
+                {/* 並び替えボタン */}
+                <button
+                  onClick={() => handleFilterClick('sort')}
+                  className={`w-10 h-10 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
+                    isSortActive ? 'ring-4 ring-white dark:ring-gray-300' : ''
+                  }`}
+                  title="並び替え"
+                  aria-label="並び替え"
+                >
+                  <ArrowUpDown size={18} />
+                  {sortActiveCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+                      {sortActiveCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* グループ化ボタン */}
+                <button
+                  onClick={() => {
+                    if (!isGroupingPanelOpen) {
+                      setActivePanel(null);
+                    }
+                    setIsGroupingPanelOpen(!isGroupingPanelOpen);
+                  }}
+                  className={`w-10 h-10 ${currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0`}
+                  aria-label={`グループ化: ${currentGrouping.label}`}
+                  title={`グループ化: ${currentGrouping.label}`}
+                >
+                  <Layers size={18} />
+                </button>
               </div>
-
-              {/* 並び替えボタン */}
-              <button
-                onClick={() => handleFilterClick('sort')}
-                className={`w-10 h-10 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
-                  isSortActive ? 'ring-4 ring-white dark:ring-gray-300' : ''
-                }`}
-                title="並び替え"
-                aria-label="並び替え"
-              >
-                <ArrowUpDown size={18} />
-                {sortActiveCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
-                    {sortActiveCount}
-                  </span>
-                )}
-              </button>
-
-              {/* グループ化ボタン */}
-              <button
-                onClick={() => {
-                  if (!isGroupingPanelOpen) {
-                    setActivePanel(null);
-                  }
-                  setIsGroupingPanelOpen(!isGroupingPanelOpen);
-                }}
-                className={`w-10 h-10 ${currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0`}
-                aria-label={`グループ化: ${currentGrouping.label}`}
-                title={`グループ化: ${currentGrouping.label}`}
-              >
-                <Layers size={18} />
-              </button>
             </div>
           )}
 
