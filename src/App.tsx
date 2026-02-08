@@ -37,18 +37,29 @@ export const App = () => {
             background: '#fff',
             color: '#1f2937',
             borderRadius: '0.75rem',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb',
           },
           success: {
             iconTheme: {
-              primary: '#22c55e',
+              primary: '#16a34a',
               secondary: '#fff',
+            },
+            style: {
+              background: '#f0fdf4',
+              color: '#166534',
+              border: '1px solid #dcfce7',
             },
           },
           error: {
             iconTheme: {
-              primary: '#ef4444',
+              primary: '#dc2626',
               secondary: '#fff',
+            },
+            style: {
+              background: '#fef2f2',
+              color: '#991b1b',
+              border: '1px solid #fee2e2',
             },
           },
         }}

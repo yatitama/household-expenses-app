@@ -64,7 +64,7 @@ export const GradientPickerModal = ({ currentFrom, currentTo, onSave, onClose }:
       >
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">総資産の背景色</h3>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
             <X size={20} />
           </button>
         </div>
@@ -106,7 +106,7 @@ export const GradientPickerModal = ({ currentFrom, currentTo, onSave, onClose }:
           </button>
           <button
             onClick={() => onSave(selectedFrom, selectedTo)}
-            className="flex-1 py-2.5 px-4 rounded-lg bg-primary-700 text-white hover:bg-primary-800 font-medium"
+            className="flex-1 py-2.5 px-4 rounded-lg bg-primary-700 text-white hover:bg-primary-800 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600"
           >
             保存
           </button>

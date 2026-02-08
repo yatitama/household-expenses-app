@@ -237,7 +237,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
               <button
                 type="button"
                 onClick={() => { onDelete(paymentMethod.id); onClose(); }}
-                className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+                className="w-full py-2 px-4 rounded-lg bg-danger-600 text-white font-medium hover:bg-danger-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-danger-600 transition-colors"
               >
                 削除
               </button>
