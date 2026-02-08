@@ -164,7 +164,7 @@ export const RecurringPaymentModal = ({
           <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-3">
             {frequency === 'yearly' && (
               <div className="mb-3">
-                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">月</label>
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">月</label>
                 <select
                   value={monthOfYear}
                   onChange={(e) => setMonthOfYear(e.target.value)}
@@ -177,7 +177,7 @@ export const RecurringPaymentModal = ({
               </div>
             )}
             <div>
-              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">日</label>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">日</label>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -214,9 +214,9 @@ export const RecurringPaymentModal = ({
                     >
                       {getCategoryIcon(category.icon, 14)}
                     </div>
-                    <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center">{category.name}</span>
+                    <span className="text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center">{category.name}</span>
                     {member && member.id !== 'common' && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
                     )}
                   </button>
                 );
@@ -231,7 +231,7 @@ export const RecurringPaymentModal = ({
             <div className="space-y-2 max-h-32 overflow-y-auto">
               {accounts.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
                   <div className="space-y-1">
                     {accounts.map((acct) => (
                       <button
@@ -256,7 +256,7 @@ export const RecurringPaymentModal = ({
               )}
               {type === 'expense' && paymentMethods.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
                   <div className="space-y-1">
                     {paymentMethods.map((pm) => (
                       <button

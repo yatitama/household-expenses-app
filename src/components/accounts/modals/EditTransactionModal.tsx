@@ -124,11 +124,11 @@ export const EditTransactionModal = ({
                     >
                       {getCategoryIcon(category.icon, 16)}
                     </div>
-                    <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                    <span className="text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                       {category.name}
                     </span>
                     {member && member.id !== 'common' && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
                     )}
                   </button>
                 );
@@ -143,7 +143,7 @@ export const EditTransactionModal = ({
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {accounts.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
                   <div className="space-y-1">
                     {accounts.map((acct) => (
                       <button
@@ -168,7 +168,7 @@ export const EditTransactionModal = ({
               )}
               {type === 'expense' && paymentMethods.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
                   <div className="space-y-1">
                     {paymentMethods.map((pm) => {
                       const linked = accounts.find((a) => a.id === pm.linkedAccountId);
@@ -187,7 +187,7 @@ export const EditTransactionModal = ({
                             <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: pm.color }} />
                             <div className="text-left">
                               <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">{pm.name}</span>
-                              {linked && <p className="text-xs text-gray-500 dark:text-gray-400">→ {linked.name}</p>}
+                              {linked && <p className="text-sm text-gray-500 dark:text-gray-400">→ {linked.name}</p>}
                             </div>
                           </div>
                           {pmId === pm.id && <Check size={16} className="text-purple-500" />}

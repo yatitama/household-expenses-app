@@ -74,7 +74,7 @@ export const AssetCard = ({
       {/* インラインカラーピッカー */}
       {isColorPickerOpen && (
         <div className="absolute top-12 right-4 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-3 z-50 min-w-[200px]">
-          <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100 mb-2">グラデーション色</h4>
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">グラデーション色</h4>
           <div className="space-y-2">
             {PRESET_GRADIENTS.map((preset) => (
               <button
@@ -89,7 +89,7 @@ export const AssetCard = ({
                   className="w-6 h-6 rounded-md flex-shrink-0"
                   style={{ background: `linear-gradient(to right, ${preset.from}, ${preset.to})` }}
                 />
-                <span className="text-xs text-gray-700 dark:text-gray-300">{preset.label}</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">{preset.label}</span>
               </button>
             ))}
           </div>
@@ -128,7 +128,7 @@ export const AssetCard = ({
         <div className="mt-3 pt-3 border-t border-white/20">
           <button
             onClick={onToggleBreakdown}
-            className="flex items-center gap-1 text-xs font-medium opacity-70 mb-2"
+            className="flex items-center gap-1 text-sm font-medium opacity-70 mb-2"
           >
             {isBreakdownOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             内訳
@@ -149,12 +149,12 @@ export const AssetCard = ({
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-1.5">
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: member?.color || '#d1d5db' }} />
-                        <span className="text-xs font-medium opacity-90">{member?.name || '不明'}</span>
+                        <span className="text-sm font-medium opacity-90">{member?.name || '不明'}</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-xs font-bold">{formatCurrency(memberTotal)}</span>
+                        <span className="text-sm font-bold">{formatCurrency(memberTotal)}</span>
                         {(memberExpense > 0 || memberIncome > 0) && (
-                          <span className="text-xs opacity-70 ml-1">（実質: {formatCurrency(memberTotal - memberNetPending)}）</span>
+                          <span className="text-sm opacity-70 ml-1">（実質: {formatCurrency(memberTotal - memberNetPending)}）</span>
                         )}
                       </div>
                     </div>
@@ -169,12 +169,12 @@ export const AssetCard = ({
                               <div className="w-5 h-5 rounded-full flex items-center justify-center">
                                 {ACCOUNT_TYPE_ICONS_SM[account.type]}
                               </div>
-                              <span className="text-xs opacity-90">{account.name}</span>
+                              <span className="text-sm opacity-90">{account.name}</span>
                             </div>
                             <div className="text-right">
-                              <span className="font-medium text-xs">{formatCurrency(account.balance)}</span>
+                              <span className="font-medium text-sm">{formatCurrency(account.balance)}</span>
                               {(hasExpense || hasIncome) && pendingData && (
-                                <p className="text-xs opacity-60">実質: {formatCurrency(account.balance - pendingData.totalPending)}</p>
+                                <p className="text-sm opacity-60">実質: {formatCurrency(account.balance - pendingData.totalPending)}</p>
                               )}
                             </div>
                           </div>

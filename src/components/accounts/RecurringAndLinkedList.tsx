@@ -73,7 +73,7 @@ export const RecurringAndLinkedList = ({
                             {getCategoryIcon(category?.icon || '', 14)}
                           </div>
                           <span className="truncate text-gray-900 dark:text-gray-200">{rp.name}</span>
-                          <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-xs">{freqLabel}</span>
+                          <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-sm">{freqLabel}</span>
                         </button>
                       </div>
                       <span className={`font-medium flex-shrink-0 ml-2 ${rp.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
@@ -132,7 +132,7 @@ export const RecurringAndLinkedList = ({
                         <button onClick={() => onViewPM(pm)} className="truncate text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
                           {pm.name}
                         </button>
-                        <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-xs">{paymentLabel}</span>
+                        <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-sm">{paymentLabel}</span>
                       </div>
                       <span className="font-medium text-red-600 dark:text-red-400 flex-shrink-0 ml-2">
                         {formatCurrency(unsettledAmount)}

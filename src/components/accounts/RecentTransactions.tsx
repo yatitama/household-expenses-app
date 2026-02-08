@@ -111,7 +111,7 @@ export const RecentTransactions = ({ accountId }: RecentTransactionsProps) => {
               {groupedTransactions.map(([date, transactionsForDate]) => (
                 <div key={date} className="bg-gray-50 dark:bg-slate-700/50 rounded-lg overflow-hidden">
                   <div className="px-3 py-1.5 bg-gray-100 dark:bg-slate-700 border-b border-gray-200 dark:border-gray-600">
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{formatDate(date)}</p>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{formatDate(date)}</p>
                   </div>
                   <div className="divide-y divide-gray-100 dark:divide-gray-600">
                     {transactionsForDate.map((t) => {
@@ -132,14 +132,14 @@ export const RecentTransactions = ({ accountId }: RecentTransactionsProps) => {
                             {getCategoryIcon(getCategoryIconName(t.categoryId), 16)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate">
+                            <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                               {getCategoryName(t.categoryId)}
                             </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                               {source}{t.memo ? ` - ${t.memo}` : ''}
                             </p>
                           </div>
-                          <p className={`text-xs font-bold shrink-0 ${
+                          <p className={`text-sm font-bold shrink-0 ${
                             t.type === 'income' ? 'text-green-600' : 'text-red-600'
                           }`}>
                             {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}

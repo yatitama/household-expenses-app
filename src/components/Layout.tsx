@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { Home, List, TrendingUp, Menu, X } from 'lucide-react';
+import { Home, List, TrendingUp, Settings as SettingsIcon, Menu, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 interface NavItemProps {
@@ -18,9 +18,10 @@ const BottomNavItem = ({ to, icon, label }: NavItemProps) => {
           isActive ? 'text-primary-700 dark:text-primary-400' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
         }`
       }
+      title={label}
     >
       <span className="[&>svg]:w-5 [&>svg]:h-5">{icon}</span>
-      <span className="text-center">{label}</span>
+      <span className="text-center text-sm">{label}</span>
     </NavLink>
   );
 };
@@ -48,19 +49,20 @@ const navItems: NavItemProps[] = [
   { to: '/', icon: <Home size={24} />, label: 'ホーム' },
   { to: '/transactions', icon: <List size={24} />, label: '履歴' },
   { to: '/stats', icon: <TrendingUp size={24} />, label: '統計' },
+  { to: '/settings', icon: <SettingsIcon size={24} />, label: '設定' },
 ];
 
-interface MenuDropdownProps {
+interface SideDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const MenuDropdown = ({ isOpen, onClose }: MenuDropdownProps) => {
-  const menuRef = useRef<HTMLDivElement>(null);
+const SideDrawer = ({ isOpen, onClose }: SideDrawerProps) => {
+  const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (drawerRef.current && !drawerRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -74,44 +76,44 @@ const MenuDropdown = ({ isOpen, onClose }: MenuDropdownProps) => {
   if (!isOpen) return null;
 
   return (
-    <div
-      ref={menuRef}
-      className="absolute bottom-16 right-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 min-w-[180px]"
-    >
-      <nav className="flex flex-col">
-        <NavLink
-          to="/settings"
-          onClick={onClose}
-          className={({ isActive }) =>
-            `flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${
-              isActive
-                ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
-                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'
-            }`
-          }
-        >
-          <span>⚙️ 設定</span>
-        </NavLink>
-        <NavLink
-          to="/help"
-          onClick={onClose}
-          className={({ isActive }) =>
-            `flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${
-              isActive
-                ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
-                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'
-            }`
-          }
-        >
-          <span>ℹ️ ヘルプ</span>
-        </NavLink>
-      </nav>
-    </div>
+    <>
+      {/* オーバーレイ */}
+      <div
+        className="fixed inset-0 bg-black/50 z-40"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      {/* ドロワー */}
+      <div
+        ref={drawerRef}
+        className="fixed bottom-16 left-0 right-0 bg-white dark:bg-slate-800 rounded-t-lg shadow-lg z-50 max-h-[60vh] overflow-y-auto"
+      >
+        <div className="border-b border-gray-200 dark:border-gray-700 p-4">
+          <h2 className="font-semibold text-gray-900 dark:text-gray-50">メニュー</h2>
+        </div>
+        <nav className="flex flex-col">
+          <NavLink
+            to="/help"
+            onClick={onClose}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${
+                isActive
+                  ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+                  : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-700'
+              }`
+            }
+          >
+            <span>ℹ️</span>
+            <span>ヘルプ</span>
+          </NavLink>
+        </nav>
+      </div>
+    </>
   );
 };
 
 export const Layout = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex bg-gray-50 dark:bg-slate-900">
@@ -125,9 +127,9 @@ export const Layout = () => {
             <SideNavItem key={item.to} {...item} icon={<span className="[&>svg]:size-5">{item.icon}</span>} />
           ))}
           <SideNavItem
-            to="/settings"
-            icon={<span className="[&>svg]:size-5">⚙️</span>}
-            label="設定"
+            to="/help"
+            icon={<span className="[&>svg]:size-5">ℹ️</span>}
+            label="ヘルプ"
           />
         </div>
       </nav>
@@ -139,32 +141,33 @@ export const Layout = () => {
         </div>
       </main>
 
-      {/* モバイル: ボトムナビゲーション */}
+      {/* モバイル: ボトムナビゲーション（4項目 + ドロワー） */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700 h-16" aria-label="メインナビゲーション">
         <div className="flex justify-around items-center h-full">
           {navItems.map((item) => (
             <BottomNavItem key={item.to} {...item} />
           ))}
           {/* メニューボタン */}
-          <div className="relative">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`flex flex-col items-center gap-0.5 px-3 py-2 text-sm font-medium transition-colors min-w-[56px] min-h-[56px] ${
-                isMenuOpen
-                  ? 'text-primary-700 dark:text-primary-400'
-                  : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
-              }`}
-              aria-label="メニュー"
-            >
-              <span className="[&>svg]:w-5 [&>svg]:h-5">
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </span>
-              <span className="text-center">メニュー</span>
-            </button>
-            <MenuDropdown isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
-          </div>
+          <button
+            onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+            className={`flex flex-col items-center gap-0.5 px-3 py-2 text-sm font-medium transition-colors min-w-[56px] min-h-[56px] ${
+              isDrawerOpen
+                ? 'text-primary-700 dark:text-primary-400'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+            }`}
+            aria-label="メニュー"
+            title="メニュー"
+          >
+            <span className="[&>svg]:w-5 [&>svg]:h-5">
+              {isDrawerOpen ? <X size={24} /> : <Menu size={24} />}
+            </span>
+            <span className="text-center text-sm">その他</span>
+          </button>
         </div>
       </nav>
+
+      {/* モバイル: サイドドロワー */}
+      <SideDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
     </div>
   );
 };

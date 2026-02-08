@@ -29,7 +29,7 @@ export const PaymentMethodCard = ({
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
       <div className="flex justify-between items-start">
-        <button onClick={onView} className="flex items-center gap-3 flex-1 text-left">
+        <button onClick={onView} className="flex items-center gap-3 flex-1 text-left" aria-label={`${paymentMethod.name}の詳細を表示`}>
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center text-white"
             style={{ backgroundColor: paymentMethod.color }}
@@ -38,10 +38,10 @@ export const PaymentMethodCard = ({
           </div>
           <div className="min-w-0">
             <p className="font-medium text-gray-900 dark:text-gray-100">{paymentMethod.name}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{PM_TYPE_LABELS[paymentMethod.type]} ・ {BILLING_TYPE_LABELS[paymentMethod.billingType]}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{PM_TYPE_LABELS[paymentMethod.type]} ・ {BILLING_TYPE_LABELS[paymentMethod.billingType]}</p>
             <div className="flex items-center gap-1 mt-0.5">
               <Link2 size={12} className={linkedAccountName ? 'text-gray-400' : 'text-amber-500'} />
-              <span className={`text-xs ${linkedAccountName ? 'text-gray-500 dark:text-gray-400' : 'text-amber-500 font-medium'}`}>
+              <span className={`text-sm ${linkedAccountName ? 'text-gray-500 dark:text-gray-400' : 'text-amber-500 font-medium'}`}>
                 {linkedAccountName || '引き落とし先未設定'}
               </span>
             </div>

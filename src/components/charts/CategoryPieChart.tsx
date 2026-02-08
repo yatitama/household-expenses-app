@@ -21,7 +21,7 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3">
       <p className="text-sm font-semibold dark:text-gray-200" style={{ color: data.color }}>{data.categoryName}</p>
       <p className="text-sm font-medium text-gray-800 dark:text-gray-300 mt-1">{formatCurrency(data.amount)}</p>
-      <p className="text-xs text-gray-500 dark:text-gray-400">{data.percentage}%</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">{data.percentage}%</p>
     </div>
   );
 };
@@ -57,7 +57,7 @@ export const CategoryPieChart = ({ year, month }: CategoryPieChartProps) => {
   }, [data]);
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4" aria-label="カテゴリ別支出チャート（当月）">
       <h3 className="text-base font-semibold text-gray-900 dark:text-gray-50 mb-4">カテゴリ別支出（当月）</h3>
       {data.length === 0 ? (
         <div className="h-[250px] md:h-[300px] flex items-center justify-center">
@@ -65,7 +65,7 @@ export const CategoryPieChart = ({ year, month }: CategoryPieChartProps) => {
         </div>
       ) : (
         <>
-          <div className="h-[250px] md:h-[300px]">
+          <div className="h-[250px] md:h-[300px]" role="img" aria-label="支出をカテゴリ別に示した円グラフ">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -103,7 +103,7 @@ export const CategoryPieChart = ({ year, month }: CategoryPieChartProps) => {
             {data.slice(0, 6).map((item) => (
               <div key={item.categoryId} className="flex items-center gap-1">
                 <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                <span className="text-xs text-gray-600">{item.categoryName}</span>
+                <span className="text-sm text-gray-600">{item.categoryName}</span>
               </div>
             ))}
           </div>

@@ -155,7 +155,7 @@ export const TransactionsPage = () => {
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">取引履歴</h2>
 
         {/* Results count */}
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{filteredTransactions.length}件の取引</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{filteredTransactions.length}件の取引</p>
       </div>
 
       {/* Sticky Filter Bar */}
@@ -193,8 +193,8 @@ export const TransactionsPage = () => {
               return (
                 <div key={key} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
                   <div className="px-4 py-2 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}</p>
-                    <p className={`text-xs font-bold ${
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</p>
+                    <p className={`text-sm font-bold ${
                       groupTotal >= 0 ? 'text-green-600' : 'text-red-600'
                     }`}>
                       {groupTotal >= 0 ? '+' : ''}{formatCurrency(groupTotal)}
@@ -223,7 +223,7 @@ export const TransactionsPage = () => {
                           <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                             {getCategoryName(t.categoryId)}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                             {groupBy !== 'date' && `${formatDate(t.date)} - `}{source}{t.memo ? ` - ${t.memo}` : ''}
                           </p>
                         </div>

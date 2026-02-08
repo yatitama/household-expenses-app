@@ -45,6 +45,7 @@ const COLORS = [
 
 export const SettingsPage = () => {
   const { isDark, toggle: toggleDarkMode } = useDarkMode();
+  // デフォルトで全セクション折りたたみ（モバイルファースト）
   const [membersOpen, setMembersOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [accountsOpen, setAccountsOpen] = useState(false);
@@ -274,7 +275,7 @@ export const SettingsPage = () => {
             {isDark ? <Moon size={20} className="text-indigo-400" /> : <Sun size={20} className="text-yellow-500" />}
             <div>
               <p className="font-medium text-gray-900 dark:text-gray-100">ダークモード</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{isDark ? 'ダークモード有効' : 'ライトモード有効'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{isDark ? 'ダークモード有効' : 'ライトモード有効'}</p>
             </div>
           </div>
           <button
@@ -307,7 +308,7 @@ export const SettingsPage = () => {
             <Users size={20} className="text-blue-600 dark:text-blue-400" />
             <div className="text-left">
               <p className="font-medium text-gray-900 dark:text-gray-100">メンバー管理</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">家族のメンバーを追加・編集</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">家族のメンバーを追加・編集</p>
             </div>
           </div>
           {membersOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
@@ -341,7 +342,7 @@ export const SettingsPage = () => {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{member.name}</p>
-                      {member.isDefault && <p className="text-xs text-gray-500 dark:text-gray-400">デフォルト</p>}
+                      {member.isDefault && <p className="text-sm text-gray-500 dark:text-gray-400">デフォルト</p>}
                     </div>
                   </button>
                 ))}
@@ -363,7 +364,7 @@ export const SettingsPage = () => {
             <Tag size={20} className="text-green-600 dark:text-green-400" />
             <div className="text-left">
               <p className="font-medium text-gray-900 dark:text-gray-100">カテゴリ管理</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">収支カテゴリを追加・編集</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">収支カテゴリを追加・編集</p>
             </div>
           </div>
           {categoriesOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
@@ -419,7 +420,7 @@ export const SettingsPage = () => {
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{member?.name || '共通'}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{member?.name || '共通'}</p>
                       </div>
                     </button>
                   );
@@ -442,7 +443,7 @@ export const SettingsPage = () => {
             <Wallet size={20} className="text-blue-600 dark:text-blue-400" />
             <div className="text-left">
               <p className="font-medium text-gray-900 dark:text-gray-100">口座管理</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">現金・銀行口座・電子マネーを追加・編集</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">現金・銀行口座・電子マネーを追加・編集</p>
             </div>
           </div>
           {accountsOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
@@ -478,7 +479,7 @@ export const SettingsPage = () => {
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{account.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                           {member?.name || '共通'} • {ACCOUNT_TYPE_LABELS[account.type]}
                         </p>
                       </div>
@@ -503,7 +504,7 @@ export const SettingsPage = () => {
             <CreditCard size={20} className="text-purple-600 dark:text-purple-400" />
             <div className="text-left">
               <p className="font-medium text-gray-900 dark:text-gray-100">支払い手段管理</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">クレジットカード・デビットカードを追加・編集</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">クレジットカード・デビットカードを追加・編集</p>
             </div>
           </div>
           {paymentMethodsOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
@@ -539,7 +540,7 @@ export const SettingsPage = () => {
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{pm.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                           {member?.name || '共通'} • {PM_TYPE_LABELS[pm.type]}
                         </p>
                       </div>
@@ -567,7 +568,7 @@ export const SettingsPage = () => {
             <Download size={20} className="text-blue-600 dark:text-blue-400" />
             <div className="text-left">
               <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">データをエクスポート</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">JSONファイルとしてダウンロード</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">JSONファイルとしてダウンロード</p>
             </div>
           </button>
 
@@ -578,7 +579,7 @@ export const SettingsPage = () => {
             <Upload size={20} className="text-green-600 dark:text-green-400" />
             <div className="text-left">
               <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">データをインポート</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">JSONファイルから復元</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">JSONファイルから復元</p>
             </div>
           </button>
 
@@ -589,7 +590,7 @@ export const SettingsPage = () => {
             <Trash2 size={20} className="text-red-600" />
             <div className="text-left">
               <p className="font-medium text-red-600 text-sm">データを初期化</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">すべてのデータを削除</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">すべてのデータを削除</p>
             </div>
           </button>
         </div>

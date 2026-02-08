@@ -112,6 +112,8 @@ export const SimpleFilterBar = ({
                     ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 ring-1 ring-primary-300 dark:ring-primary-700'
                     : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                 }`}
+                aria-label={chip.isActive ? `${chip.label}フィルターを削除` : `${chip.label}でフィルター`}
+                aria-pressed={chip.isActive}
               >
                 {chip.label}
               </button>
@@ -132,12 +134,13 @@ export const SimpleFilterBar = ({
         </div>
 
         {/* グループ化オプション */}
-        <div className="flex items-center gap-2 text-xs">
+        <div className="flex items-center gap-2 text-sm">
           <span className="text-gray-600 dark:text-gray-400">グループ化:</span>
           <select
             value={groupBy}
             onChange={(e) => onGroupByChange(e.target.value as GroupByType)}
-            className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-xs transition-colors"
+            className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-sm transition-colors"
+            aria-label="取引のグループ化方法を選択"
           >
             <option value="date">日付</option>
             <option value="category">カテゴリ</option>
@@ -149,7 +152,8 @@ export const SimpleFilterBar = ({
           <select
             value={groupOrder}
             onChange={() => onGroupByChange(groupBy)}
-            className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-xs transition-colors"
+            className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-sm transition-colors"
+            aria-label="取引の並び順を選択"
           >
             <option value="desc">▼ 降順</option>
             <option value="asc">▲ 昇順</option>

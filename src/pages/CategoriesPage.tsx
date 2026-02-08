@@ -127,7 +127,7 @@ export const CategoriesPage = () => {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">{category.name}</p>
-                    <p className="text-xs text-gray-500">{member?.name || '共通'}</p>
+                    <p className="text-sm text-gray-500">{member?.name || '共通'}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

@@ -128,18 +128,18 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
                                 {pm && (
                                   <div className="flex items-center gap-1">
                                     <CreditCard size={10} className="text-purple-400 flex-shrink-0" />
-                                    <p className="text-xs text-purple-500 dark:text-purple-400 truncate">{pm.name}</p>
+                                    <p className="text-sm text-purple-500 dark:text-purple-400 truncate">{pm.name}</p>
                                   </div>
                                 )}
                                 {settlementDate && (
                                   <div className="flex items-center gap-1 mt-0.5">
                                     <Calendar size={10} className={isSettled ? 'text-green-400' : 'text-orange-400'} />
-                                    <p className={`text-xs ${isSettled ? 'text-green-500 dark:text-green-400' : 'text-orange-500 dark:text-orange-400'}`}>
+                                    <p className={`text-sm ${isSettled ? 'text-green-500 dark:text-green-400' : 'text-orange-500 dark:text-orange-400'}`}>
                                       {settlementLabel}{isSettled ? '（精算済）' : ''}
                                     </p>
                                   </div>
                                 )}
-                                {transaction.memo && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">{transaction.memo}</p>}
+                                {transaction.memo && <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 truncate">{transaction.memo}</p>}
                               </div>
                             </div>
                             <p className={`font-bold text-sm flex-shrink-0 ml-2 ${isExpense ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
