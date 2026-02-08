@@ -5,7 +5,6 @@ import { Receipt } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { FloatingFilterMenu } from '../components/search/FloatingFilterMenu';
-import { GroupingButton } from '../components/search/GroupingButton';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
 import { categoryService, memberService, accountService, paymentMethodService, transactionService } from '../services/storage';
 import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
@@ -22,7 +21,6 @@ export const TransactionsPage = () => {
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
   const [groupOrder, setGroupOrder] = useState<'asc' | 'desc'>('desc');
   const [isFilterMenuExpanded, setIsFilterMenuExpanded] = useState(false);
-  const [isGroupingPanelOpen, setIsGroupingPanelOpen] = useState(false);
   useBodyScrollLock(!!editingTransaction);
 
   // URLパラメータからフィルターを初期化
@@ -226,16 +224,6 @@ export const TransactionsPage = () => {
         </div>
       )}
 
-      {/* Grouping Button */}
-      <GroupingButton
-        groupBy={groupBy}
-        groupOrder={groupOrder}
-        onGroupByChange={handleGroupByChange}
-        isFilterMenuExpanded={isFilterMenuExpanded}
-        isPanelOpen={isGroupingPanelOpen}
-        setIsPanelOpen={setIsGroupingPanelOpen}
-      />
-
       {/* Floating Filter Menu */}
       <FloatingFilterMenu
         filters={filters}
@@ -248,7 +236,9 @@ export const TransactionsPage = () => {
         paymentMethods={paymentMethods}
         isExpanded={isFilterMenuExpanded}
         setIsExpanded={setIsFilterMenuExpanded}
-        isGroupingPanelOpen={isGroupingPanelOpen}
+        groupBy={groupBy}
+        groupOrder={groupOrder}
+        onGroupByChange={handleGroupByChange}
       />
 
       {/* Edit Transaction Modal */}
