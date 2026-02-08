@@ -92,12 +92,19 @@ const MenuDropdown = ({ isOpen, onClose }: MenuDropdownProps) => {
         >
           <span>⚙️ 設定</span>
         </NavLink>
-        <button
+        <NavLink
+          to="/help"
           onClick={onClose}
-          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors w-full text-left"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${
+              isActive
+                ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700'
+            }`
+          }
         >
           <span>ℹ️ ヘルプ</span>
-        </button>
+        </NavLink>
       </nav>
     </div>
   );
