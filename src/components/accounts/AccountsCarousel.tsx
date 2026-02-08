@@ -148,10 +148,9 @@ export const AccountsCarousel = ({
       >
         <div
           ref={innerRef}
-          className={`flex gap-3 transition-transform ${isTransitioning ? 'duration-300 ease-out' : ''}`}
+          className={`flex flex-nowrap gap-3 transition-transform ${isTransitioning ? 'duration-300 ease-out' : ''}`}
           style={{
             transform: `translateX(-${currentIndex * 100}%)`,
-            width: `${accounts.length * 100}%`,
           }}
         >
           {accounts.map((account) => {

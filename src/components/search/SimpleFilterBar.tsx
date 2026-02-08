@@ -67,13 +67,13 @@ export const SimpleFilterBar = ({
   return (
     <div className="space-y-3">
       {/* フィルターチップ */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2">
+      <div className="flex items-center gap-2 overflow-x-auto pb-3">
         <div className="flex gap-2 flex-nowrap">
           {filterChips.map((chip) => (
             <button
               key={chip.id}
               onClick={chip.onClear}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+              className={`px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all active:scale-95 touch-action-manipulation ${
                 chip.isActive
                   ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 ring-1 ring-primary-300 dark:ring-primary-700'
                   : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
@@ -88,11 +88,11 @@ export const SimpleFilterBar = ({
         {activeFilterCount > 0 && (
           <button
             onClick={resetFilters}
-            className="flex-shrink-0 p-1.5 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+            className="flex-shrink-0 p-2.5 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors active:scale-95 touch-action-manipulation"
             title="フィルターをリセット"
             aria-label="フィルターをリセット"
           >
-            <RotateCcw size={16} />
+            <RotateCcw size={18} />
           </button>
         )}
       </div>
