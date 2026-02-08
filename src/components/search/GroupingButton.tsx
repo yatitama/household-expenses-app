@@ -129,15 +129,17 @@ export const GroupingButton = ({
       )}
 
       {/* Floating Button */}
-      <button
-        ref={buttonRef}
-        onClick={() => setIsPanelOpen(!isPanelOpen)}
-        className={`fixed bottom-20 left-3 sm:left-5 z-40 w-14 h-14 ${isPanelOpen ? 'bg-red-500' : currentGrouping.color} text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95`}
-        aria-label={isPanelOpen ? 'グループ化を閉じる' : `グループ化: ${currentGrouping.label}`}
-        title={isPanelOpen ? 'グループ化を閉じる' : `グループ化: ${currentGrouping.label}`}
-      >
-        {isPanelOpen ? <X size={24} /> : <CurrentIcon size={24} />}
-      </button>
+      <div className="fixed bottom-20 left-3 sm:left-5 z-40">
+        <button
+          ref={buttonRef}
+          onClick={() => setIsPanelOpen(!isPanelOpen)}
+          className={`w-14 h-14 ${isPanelOpen ? 'bg-red-500' : currentGrouping.color} text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95`}
+          aria-label={isPanelOpen ? 'グループ化を閉じる' : `グループ化: ${currentGrouping.label}`}
+          title={isPanelOpen ? 'グループ化を閉じる' : `グループ化: ${currentGrouping.label}`}
+        >
+          {isPanelOpen ? <X size={24} /> : <CurrentIcon size={24} />}
+        </button>
+      </div>
     </>
   );
 };

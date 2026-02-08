@@ -42,7 +42,7 @@ export const FloatingFilterMenu = ({
   isGroupingPanelOpen,
 }: FloatingFilterMenuProps) => {
   const [activePanel, setActivePanel] = useState<FilterType | null>(null);
-  const menuRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // 各フィルターがアクティブかどうかを判定
   const isTypeActive = filters.transactionType !== 'all';
@@ -120,7 +120,7 @@ export const FloatingFilterMenu = ({
       )}
 
       {/* フローティングメニュー */}
-      <div className="fixed bottom-20 right-3 sm:right-5 z-40">
+      <div ref={menuRef} className="fixed bottom-20 right-3 sm:right-5 z-40">
         {/* 展開されたフィルターアイコン（横1列スクロール） */}
         {isExpanded && (
           <div
@@ -177,7 +177,6 @@ export const FloatingFilterMenu = ({
 
         {/* メインフィルターボタン */}
         <button
-          ref={menuRef}
           onClick={() => {
             if (isExpanded) {
               // メニューが展開されている場合は閉じる
