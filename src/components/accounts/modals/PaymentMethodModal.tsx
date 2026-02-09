@@ -68,7 +68,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   onClick={() => setMemberId(member.id)}
                   className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     memberId === member.id
-                      ? 'bg-purple-600 text-white border-purple-600'
+                      ? 'bg-blue-600 text-white border-blue-600'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
@@ -93,7 +93,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   }}
                   className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     pmType === value
-                      ? 'bg-purple-600 text-white border-purple-600'
+                      ? 'bg-blue-600 text-white border-blue-600'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
@@ -117,7 +117,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     onClick={() => setLinkedAccountId(acct.id)}
                     className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
                       linkedAccountId === acct.id
-                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                     }`}
                   >
@@ -125,7 +125,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                       <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
                       <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{acct.name}</span>
                     </div>
-                    {linkedAccountId === acct.id && <Check size={14} className="sm:w-4 sm:h-4 text-purple-500" />}
+                    {linkedAccountId === acct.id && <Check size={14} className="sm:w-4 sm:h-4 text-blue-500" />}
                   </button>
                 ))}
               </div>
@@ -142,7 +142,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   onClick={() => setBillingType(value)}
                   className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     billingType === value
-                      ? 'bg-purple-600 text-white border-purple-600'
+                      ? 'bg-blue-600 text-white border-blue-600'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
@@ -202,10 +202,10 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">日</span>
                   </div>
                 </div>
-                <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-2 sm:p-2.5 mt-2">
+                <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-2 sm:p-2.5 mt-2">
                   <div className="flex items-start gap-1.5">
-                    <Info size={12} className="sm:w-3.5 sm:h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
-                    <div className="text-xs sm:text-sm text-purple-700 dark:text-purple-300 space-y-1">
+                    <Info size={12} className="sm:w-3.5 sm:h-3.5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <div className="text-xs sm:text-sm text-blue-700 dark:text-blue-300 space-y-1">
                       <p className="font-medium">引き落としの例（{cd}日締め・{offsetLabel}{pd}日払い）</p>
                       <p>1月{cd}日の取引 → <span className="font-medium">{payMonth1}月{pd}日</span>に引き落とし</p>
                       <p>{nextDayMonth}月{nextDayDate}日の取引 → <span className="font-medium">{payMonth2}月{pd}日</span>に引き落とし</p>
@@ -225,7 +225,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-8 h-8 rounded-full transition-transform ${
-                    color === c ? 'ring-2 ring-offset-2 ring-purple-500 scale-110' : ''
+                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''
                   }`}
                   style={{ backgroundColor: c }}
                 />
