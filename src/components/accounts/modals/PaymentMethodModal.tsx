@@ -43,30 +43,30 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
       <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md md:max-w-lg sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
-        <div className="overflow-y-auto flex-1 p-4">
-          <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{paymentMethod ? '支払い手段を編集' : '支払い手段を追加'}</h3>
-          <div className="space-y-5">
+        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
+          <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{paymentMethod ? '支払い手段を編集' : '支払い手段を追加'}</h3>
+          <div className="space-y-4 sm:space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">名前</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">名前</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 夫クレジットカード"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">所有者</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">所有者</label>
             <div className="flex flex-wrap gap-2">
               {members.map((member) => (
                 <button
                   key={member.id}
                   type="button"
                   onClick={() => setMemberId(member.id)}
-                  className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                  className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     memberId === member.id
                       ? 'bg-purple-600 text-white border-purple-600'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
@@ -80,7 +80,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">種類</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">種類</label>
             <div className="grid grid-cols-2 gap-2">
               {(Object.entries(PM_TYPE_LABELS) as [PaymentMethodType, string][]).map(([value, label]) => (
                 <button
@@ -91,7 +91,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     if (value === 'credit_card') setBillingType('monthly');
                     if (value === 'debit_card') setBillingType('immediate');
                   }}
-                  className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                  className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     pmType === value
                       ? 'bg-purple-600 text-white border-purple-600'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
@@ -105,7 +105,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">引き落とし先口座</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">引き落とし先口座</label>
             {accounts.length === 0 ? (
               <p className="text-sm text-gray-500 dark:text-gray-400">先に口座を登録してください</p>
             ) : (
@@ -115,17 +115,17 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     key={acct.id}
                     type="button"
                     onClick={() => setLinkedAccountId(acct.id)}
-                    className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-colors ${
+                    className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
                       linkedAccountId === acct.id
                         ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
-                      <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">{acct.name}</span>
+                      <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
+                      <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{acct.name}</span>
                     </div>
-                    {linkedAccountId === acct.id && <Check size={16} className="text-purple-500" />}
+                    {linkedAccountId === acct.id && <Check size={14} className="sm:w-4 sm:h-4 text-purple-500" />}
                   </button>
                 ))}
               </div>
@@ -133,14 +133,14 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">請求タイミング</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">請求タイミング</label>
             <div className="grid grid-cols-2 gap-2">
               {(Object.entries(BILLING_TYPE_LABELS) as [BillingType, string][]).map(([value, label]) => (
                 <button
                   key={value}
                   type="button"
                   onClick={() => setBillingType(value)}
-                  className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                  className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     billingType === value
                       ? 'bg-purple-600 text-white border-purple-600'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
@@ -165,27 +165,27 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
             return (
               <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-3 space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">締め日</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">締め日</label>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">毎月</span>
+                    <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">毎月</span>
                     <input
                       type="number"
                       min="1"
                       max="31"
                       value={closingDay}
                       onChange={(e) => setClosingDay(e.target.value)}
-                      className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
+                      className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
                     />
-                    <span className="text-sm text-gray-500 dark:text-gray-400">日</span>
+                    <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">日</span>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">引き落とし日</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">引き落とし日</label>
                   <div className="flex items-center gap-2">
                     <select
                       value={paymentMonthOffset}
                       onChange={(e) => setPaymentMonthOffset(e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
+                      className="border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                     >
                       <option value="0">当月</option>
                       <option value="1">翌月</option>
@@ -197,15 +197,15 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                       max="31"
                       value={paymentDay}
                       onChange={(e) => setPaymentDay(e.target.value)}
-                      className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
+                      className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
                     />
-                    <span className="text-sm text-gray-500 dark:text-gray-400">日</span>
+                    <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">日</span>
                   </div>
                 </div>
-                <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-2.5 mt-2">
+                <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-2 sm:p-2.5 mt-2">
                   <div className="flex items-start gap-1.5">
-                    <Info size={14} className="text-purple-400 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-purple-700 dark:text-purple-300 space-y-1">
+                    <Info size={12} className="sm:w-3.5 sm:h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
+                    <div className="text-xs sm:text-sm text-purple-700 dark:text-purple-300 space-y-1">
                       <p className="font-medium">引き落としの例（{cd}日締め・{offsetLabel}{pd}日払い）</p>
                       <p>1月{cd}日の取引 → <span className="font-medium">{payMonth1}月{pd}日</span>に引き落とし</p>
                       <p>{nextDayMonth}月{nextDayDate}日の取引 → <span className="font-medium">{payMonth2}月{pd}日</span>に引き落とし</p>
@@ -217,7 +217,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
           })()}
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">色</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">色</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button
@@ -235,21 +235,21 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
 
           </div>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-2">
+        <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 space-y-2">
           {paymentMethod && onDelete && (
             <button
               type="button"
               onClick={() => { onDelete(paymentMethod.id); onClose(); }}
-              className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
+              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
             >
               削除
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-slate-600">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
               キャンセル
             </button>
-            <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-purple-700 text-white font-medium hover:bg-purple-800">
+            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-purple-700 text-white font-medium text-sm hover:bg-purple-800">
               保存
             </button>
           </div>
