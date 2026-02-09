@@ -49,8 +49,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             }}
             className={`flex-1 px-4 py-2 rounded-lg font-medium text-white ${
               confirmVariant === 'danger'
-                ? 'bg-danger-600 hover:bg-danger-700'
-                : 'bg-primary-700 hover:bg-primary-800'
+                ? 'bg-red-600 hover:bg-red-700'
+                : 'bg-blue-600 hover:bg-blue-700'
             }`}
           >
             {confirmText}
