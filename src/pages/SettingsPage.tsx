@@ -270,17 +270,17 @@ export const SettingsPage = () => {
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   return (
-    <div className="p-3 md:p-6 lg:p-8 space-y-3 md:space-y-4">
-      <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">設定</h2>
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-2.5 sm:space-y-3 md:space-y-4">
+      <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">設定</h2>
 
       {/* ダークモード切り替え */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl shadow-sm p-3 md:p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-3.5 md:p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 md:gap-3">
-            {isDark ? <Moon size={18} className="md:w-5 md:h-5 text-indigo-400" /> : <Sun size={18} className="md:w-5 md:h-5 text-yellow-500" />}
+          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
+            {isDark ? <Moon size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-indigo-400" /> : <Sun size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-yellow-500" />}
             <div>
-              <p className="text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">ダークモード</p>
-              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{isDark ? 'ダークモード有効' : 'ライトモード有効'}</p>
+              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">ダークモード</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{isDark ? 'ダークモード有効' : 'ライトモード有効'}</p>
             </div>
           </div>
           <button
@@ -302,52 +302,52 @@ export const SettingsPage = () => {
       </div>
 
       {/* メンバー管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
         <button
           onClick={() => setMembersOpen(!membersOpen)}
-          className="w-full flex items-center justify-between p-3 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={membersOpen}
           aria-label={membersOpen ? 'メンバー管理を折りたたむ' : 'メンバー管理を展開'}
         >
-          <div className="flex items-center gap-2 md:gap-3">
-            <Users size={18} className="md:w-5 md:h-5 text-blue-600 dark:text-blue-400" />
+          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
+            <Users size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-blue-600 dark:text-blue-400" />
             <div className="text-left">
-              <p className="text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">メンバー管理</p>
-              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">家族のメンバーを追加・編集</p>
+              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">メンバー管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">家族のメンバーを追加・編集</p>
             </div>
           </div>
-          {membersOpen ? <ChevronUp size={18} className="md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={18} className="md:w-5 md:h-5 text-gray-400" />}
+          {membersOpen ? <ChevronUp size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" />}
         </button>
 
         {membersOpen && (
-          <div className="border-t border-gray-100 dark:border-gray-700 p-4 space-y-3">
+          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             <button
               onClick={handleAddMember}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm"
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg font-medium text-xs sm:text-sm"
             >
               <Plus size={16} />
               メンバーを追加
             </button>
 
             {members.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">メンバーがいません</p>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">メンバーがいません</p>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {members.map((member) => (
                   <button
                     key={member.id}
                     onClick={() => handleEditMember(member)}
-                    className="w-full flex items-center gap-3 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                    className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
                   >
                     <div
-                      className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+                      className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0"
                       style={{ backgroundColor: member.color }}
                     >
                       {member.name.charAt(0)}
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{member.name}</p>
-                      {member.isDefault && <p className="text-sm text-gray-500 dark:text-gray-400">デフォルト</p>}
+                      <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{member.name}</p>
+                      {member.isDefault && <p className="text-xs text-gray-500 dark:text-gray-400">デフォルト</p>}
                     </div>
                   </button>
                 ))}
@@ -358,30 +358,30 @@ export const SettingsPage = () => {
       </div>
 
       {/* カテゴリ管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
         <button
           aria-label={categoriesOpen ? "カテゴリ管理を折りたたむ" : "カテゴリ管理を展開"}
           onClick={() => setCategoriesOpen(!categoriesOpen)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={categoriesOpen}
         >
-          <div className="flex items-center gap-3">
-            <Tag size={20} className="text-green-600 dark:text-green-400" />
+          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
+            <Tag size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-green-600 dark:text-green-400" />
             <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-gray-100">カテゴリ管理</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">収支カテゴリを追加・編集</p>
+              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">カテゴリ管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">収支カテゴリを追加・編集</p>
             </div>
           </div>
-          {categoriesOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+          {categoriesOpen ? <ChevronUp size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" />}
         </button>
 
         {categoriesOpen && (
-          <div className="border-t border-gray-100 dark:border-gray-700 p-4 space-y-3">
+          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             {/* Type toggle */}
             <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
               <button
                 onClick={() => setCategoryFilterType('expense')}
-                className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
                   categoryFilterType === 'expense' ? 'bg-red-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
                 }`}
               >
@@ -389,7 +389,7 @@ export const SettingsPage = () => {
               </button>
               <button
                 onClick={() => setCategoryFilterType('income')}
-                className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
                   categoryFilterType === 'income' ? 'bg-green-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
                 }`}
               >
@@ -399,14 +399,14 @@ export const SettingsPage = () => {
 
             <button
               onClick={handleAddCategory}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm"
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg font-medium text-xs sm:text-sm"
             >
               <Plus size={16} />
               カテゴリを追加
             </button>
 
             {filteredCategories.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">カテゴリがありません</p>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">カテゴリがありません</p>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredCategories.map((category) => {
@@ -415,17 +415,17 @@ export const SettingsPage = () => {
                     <button
                       key={category.id}
                       onClick={() => handleEditCategory(category)}
-                      className="w-full flex items-center gap-3 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
                     >
                       <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                        className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `${category.color}20`, color: category.color }}
                       >
-                        {getCategoryIcon(category.icon, 18)}
+                        {getCategoryIcon(category.icon, 16)}
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{member?.name || '共通'}</p>
+                        <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{member?.name || '共通'}</p>
                       </div>
                     </button>
                   );
@@ -437,35 +437,35 @@ export const SettingsPage = () => {
       </div>
 
       {/* 口座管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
         <button
           aria-label={accountsOpen ? "口座管理を折りたたむ" : "口座管理を展開"}
           onClick={() => setAccountsOpen(!accountsOpen)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={accountsOpen}
         >
-          <div className="flex items-center gap-3">
-            <Wallet size={20} className="text-blue-600 dark:text-blue-400" />
+          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
+            <Wallet size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-blue-600 dark:text-blue-400" />
             <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-gray-100">口座管理</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">現金・銀行口座・電子マネーを追加・編集</p>
+              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">口座管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">現金・銀行口座・電子マネーを追加・編集</p>
             </div>
           </div>
-          {accountsOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+          {accountsOpen ? <ChevronUp size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" />}
         </button>
 
         {accountsOpen && (
-          <div className="border-t border-gray-100 dark:border-gray-700 p-4 space-y-3">
+          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             <button
               onClick={handleAddAccount}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm"
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg font-medium text-xs sm:text-sm"
             >
               <Plus size={16} />
               口座を追加
             </button>
 
             {accounts.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">口座がありません</p>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">口座がありません</p>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {accounts.map((account) => {
@@ -474,17 +474,17 @@ export const SettingsPage = () => {
                     <button
                       key={account.id}
                       onClick={() => handleEditAccount(account)}
-                      className="w-full flex items-center gap-3 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
                     >
                       <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                        className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `${account.color}20`, color: account.color }}
                       >
-                        <Wallet size={18} />
+                        <Wallet size={16} className="sm:w-4.5 sm:h-4.5" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{account.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{account.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {member?.name || '共通'} • {ACCOUNT_TYPE_LABELS[account.type]}
                         </p>
                       </div>
@@ -498,35 +498,35 @@ export const SettingsPage = () => {
       </div>
 
       {/* 支払い手段管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
         <button
           aria-label={paymentMethodsOpen ? "支払い手段管理を折りたたむ" : "支払い手段管理を展開"}
           onClick={() => setPaymentMethodsOpen(!paymentMethodsOpen)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={paymentMethodsOpen}
         >
-          <div className="flex items-center gap-3">
-            <CreditCard size={20} className="text-purple-600 dark:text-purple-400" />
+          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
+            <CreditCard size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-purple-600 dark:text-purple-400" />
             <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-gray-100">支払い手段管理</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">クレジットカード・デビットカードを追加・編集</p>
+              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">支払い手段管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">クレジットカード・デビットカードを追加・編集</p>
             </div>
           </div>
-          {paymentMethodsOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+          {paymentMethodsOpen ? <ChevronUp size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" />}
         </button>
 
         {paymentMethodsOpen && (
-          <div className="border-t border-gray-100 dark:border-gray-700 p-4 space-y-3">
+          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             <button
               onClick={handleAddPM}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm"
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg font-medium text-xs sm:text-sm"
             >
               <Plus size={16} />
               支払い手段を追加
             </button>
 
             {paymentMethods.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">支払い手段がありません</p>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">支払い手段がありません</p>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {paymentMethods.map((pm) => {
@@ -535,17 +535,17 @@ export const SettingsPage = () => {
                     <button
                       key={pm.id}
                       onClick={() => handleEditPM(pm)}
-                      className="w-full flex items-center gap-3 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
                     >
                       <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                        className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `${pm.color}20`, color: pm.color }}
                       >
-                        <CreditCard size={18} />
+                        <CreditCard size={16} className="sm:w-4.5 sm:h-4.5" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{pm.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{pm.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {member?.name || '共通'} • {PM_TYPE_LABELS[pm.type]}
                         </p>
                       </div>
@@ -684,22 +684,22 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
       <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
-        <div className="overflow-y-auto flex-1 p-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
-          <div className="space-y-4">
+        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
+          <div className="space-y-3 sm:space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 太郎"
-                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
               <div className="flex gap-2 flex-wrap">
                 {COLORS.map((c) => (
                   <button
@@ -716,21 +716,21 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-2">
+        <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 space-y-2">
           {member && !member.isDefault && onDelete && (
             <button
               type="button"
               onClick={() => { onDelete(member); onClose(); }}
-              className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition-colors"
             >
               削除
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium hover:bg-gray-100 dark:hover:bg-slate-700">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100 dark:hover:bg-slate-700">
               キャンセル
             </button>
-            <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700">
+            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700">
               保存
             </button>
           </div>
@@ -764,29 +764,29 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
       <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
-        <div className="overflow-y-auto flex-1 p-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
-          <div className="space-y-4">
+        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
+          <div className="space-y-3 sm:space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 食費"
-                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">対象メンバー</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">対象メンバー</label>
               <div className="flex flex-wrap gap-2">
                 {members.map((m) => (
                   <button
                     key={m.id}
                     type="button"
                     onClick={() => setMemberId(m.id)}
-                    className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                    className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                       memberId === m.id
                         ? 'bg-blue-600 text-white border-blue-600'
                         : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
@@ -799,7 +799,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
               <div className="flex gap-2 flex-wrap">
                 {COLORS.map((c) => (
                   <button
@@ -815,7 +815,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">アイコン</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">アイコン</label>
               <div className="grid grid-cols-6 gap-2">
                 {ICON_NAMES.map((i) => {
                   const IconComponent = ICON_COMPONENTS[i];
@@ -824,13 +824,13 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                       key={i}
                       type="button"
                       onClick={() => setIcon(i)}
-                      className={`w-10 h-10 rounded-lg border flex items-center justify-center transition-colors ${
+                      className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg border flex items-center justify-center transition-colors ${
                         icon === i
                           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
                           : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
                       }`}
                     >
-                      <IconComponent size={20} />
+                      <IconComponent size={16} className="sm:w-5 sm:h-5" />
                     </button>
                   );
                 })}
@@ -838,21 +838,21 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-2">
+        <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 space-y-2">
           {category && onDelete && (
             <button
               type="button"
               onClick={() => { onDelete(category.id); onClose(); }}
-              className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition-colors"
             >
               削除
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium hover:bg-gray-100 dark:hover:bg-slate-700">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100 dark:hover:bg-slate-700">
               キャンセル
             </button>
-            <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700">
+            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700">
               保存
             </button>
           </div>
