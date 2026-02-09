@@ -35,7 +35,7 @@ export const RecurringAndLinkedList = ({
         <div className="flex justify-between items-center mb-1.5">
           <button
             onClick={() => setIsRecurringOpen(!isRecurringOpen)}
-            className="text-sm text-gray-600 dark:text-gray-400 font-medium flex items-center gap-1.5 hover:text-gray-800 dark:hover:text-gray-200"
+            className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium flex items-center gap-1.5 hover:text-gray-800 dark:hover:text-gray-200"
           >
             {isRecurringOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             <RefreshCw size={12} />
@@ -48,7 +48,7 @@ export const RecurringAndLinkedList = ({
         {isRecurringOpen && (
           <>
             {recurringItems.length === 0 ? (
-              <p className="text-sm text-gray-300 dark:text-gray-600">定期取引なし</p>
+              <p className="text-xs md:text-sm text-gray-300 dark:text-gray-600">定期取引なし</p>
             ) : (
               <div className="space-y-2">
                 {recurringItems.map((rp) => {
@@ -57,7 +57,7 @@ export const RecurringAndLinkedList = ({
                     ? `毎月${rp.dayOfMonth}日`
                     : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
                   return (
-                    <div key={rp.id} className={`flex items-center justify-between text-sm ${rp.isActive ? '' : 'opacity-40'}`}>
+                    <div key={rp.id} className={`flex items-center justify-between text-xs md:text-sm ${rp.isActive ? '' : 'opacity-40'}`}>
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <button onClick={() => onToggleRecurring(rp)} className="flex-shrink-0">
                           {rp.isActive
@@ -93,7 +93,7 @@ export const RecurringAndLinkedList = ({
         <div className="flex justify-between items-center mb-1.5">
           <button
             onClick={() => setIsLinkedOpen(!isLinkedOpen)}
-            className="text-sm text-gray-600 dark:text-gray-400 font-medium flex items-center gap-1.5 hover:text-gray-800 dark:hover:text-gray-200"
+            className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium flex items-center gap-1.5 hover:text-gray-800 dark:hover:text-gray-200"
           >
             {isLinkedOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             <CreditCard size={12} />
@@ -106,7 +106,7 @@ export const RecurringAndLinkedList = ({
         {isLinkedOpen && (
           <>
             {linkedItems.length === 0 ? (
-              <p className="text-sm text-gray-300 dark:text-gray-600">支払い手段なし</p>
+              <p className="text-xs md:text-sm text-gray-300 dark:text-gray-600">支払い手段なし</p>
             ) : (
               <div className="space-y-2">
                 {linkedItems.map((lpm) => {
@@ -115,7 +115,7 @@ export const RecurringAndLinkedList = ({
                   const unsettledAmount = getUnsettledAmount(pm.id);
                   const paymentLabel = pm.paymentDay ? `毎月${pm.paymentDay}日` : '支払日なし';
                   return (
-                    <div key={lpm.id} className={`flex items-center justify-between text-sm ${lpm.isActive ? '' : 'opacity-40'}`}>
+                    <div key={lpm.id} className={`flex items-center justify-between text-xs md:text-sm ${lpm.isActive ? '' : 'opacity-40'}`}>
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <button onClick={() => onToggleLinked(lpm)} className="flex-shrink-0">
                           {lpm.isActive

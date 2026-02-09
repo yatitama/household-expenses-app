@@ -1,5 +1,4 @@
-import { PlusCircle, ChevronDown, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { PlusCircle } from 'lucide-react';
 import { categoryService } from '../../services/storage';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
@@ -12,13 +11,6 @@ import type { Account, Member, RecurringPayment, PaymentMethod, LinkedPaymentMet
 interface AccountCardProps {
   account: Account;
   member?: Member;
-  pendingAmount: number;
-  totalPendingData?: {
-    cardPending: number;
-    recurringExpense: number;
-    recurringIncome: number;
-    totalPending: number;
-  };
   linkedPaymentMethodsData: LinkedPaymentMethod[];
   allPaymentMethods: PaymentMethod[];
   pendingByPM: Record<string, number>;
@@ -33,14 +25,12 @@ interface AccountCardProps {
 }
 
 export const AccountCard = ({
-  account, member, pendingAmount, totalPendingData, linkedPaymentMethodsData, allPaymentMethods, pendingByPM, recurringPayments,
+  account, member, linkedPaymentMethodsData, allPaymentMethods, pendingByPM, recurringPayments,
   onAddTransaction, onAddRecurring,
   onEditRecurring, onToggleRecurring,
   onAddLinkedPM, onToggleLinkedPM,
   onViewPM,
 }: AccountCardProps) => {
-  const [isPendingDetailsOpen, setIsPendingDetailsOpen] = useState(false);
-  const [isPaymentMethodDetailsOpen, setIsPaymentMethodDetailsOpen] = useState(false);
   const categories = categoryService.getAll();
   const getPaymentMethod = (id: string) => allPaymentMethods.find((pm) => pm.id === id);
   const getUnsettledAmount = (paymentMethodId: string) => pendingByPM[paymentMethodId] || 0;
@@ -107,81 +97,24 @@ export const AccountCard = ({
             <p className="text-base md:text-lg font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatCurrency(account.balance)}</p>
           </div>
 
-          {/* ペンディング詳細 */}
-          {((totalPendingData && (totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0 || totalPendingData.recurringIncome > 0)) || pendingAmount > 0) && (
-            <div className="mt-0.5 md:mt-1">
-              <button
-                onClick={(e) => { e.stopPropagation(); setIsPendingDetailsOpen(!isPendingDetailsOpen); }}
-                className="text-xs md:text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium flex items-center gap-1"
-                aria-label={isPendingDetailsOpen ? '予定額を非表示' : '予定額を表示'}
-                aria-expanded={isPendingDetailsOpen}
-              >
-                {isPendingDetailsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                予定額を表示
-              </button>
-              {isPendingDetailsOpen && (
-                <div className="mt-0.5 md:mt-1 text-xs md:text-sm text-gray-600 dark:text-gray-400 space-y-0.5 pl-2 border-l-2 border-gray-300 dark:border-gray-600">
-                  {totalPendingData ? (
-                    <>
-                      {(totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0) && (
-                        <p className="flex justify-between">
-                          <span>使う予定:</span>
-                          <span className="text-red-600 dark:text-red-400 font-medium">-{formatCurrency(totalPendingData.cardPending + totalPendingData.recurringExpense)}</span>
-                        </p>
-                      )}
-                      {totalPendingData.recurringIncome > 0 && (
-                        <p className="flex justify-between">
-                          <span>入る予定:</span>
-                          <span className="text-green-600 dark:text-green-400 font-medium">+{formatCurrency(totalPendingData.recurringIncome)}</span>
-                        </p>
-                      )}
-                      <p className="flex justify-between pt-1 border-t border-gray-300 dark:border-gray-600">
-                        <span>実質残高:</span>
-                        <span className="font-bold text-gray-900 dark:text-gray-100">{formatCurrency(account.balance - totalPendingData.totalPending)}</span>
-                      </p>
-                    </>
-                  ) : pendingAmount > 0 ? (
-                    <p className="flex justify-between">
-                      <span>引落後:</span>
-                      <span className="font-bold">{formatCurrency(account.balance - pendingAmount)}</span>
-                    </p>
-                  ) : null}
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
-      {/* 詳細セクション */}
+      {/* 定期取引・支払い手段セクション */}
       {(recurringPayments.length > 0 || linkedPaymentMethodsData.length > 0) && (
         <div className="mt-2 md:mt-4 pt-2 md:pt-4 border-t border-gray-200 dark:border-gray-700">
-          <button
-            onClick={() => setIsPaymentMethodDetailsOpen(!isPaymentMethodDetailsOpen)}
-            className="text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors flex items-center gap-1 mb-2 md:mb-3"
-            aria-label={isPaymentMethodDetailsOpen ? '支払い方法・定期支払を非表示' : '支払い方法・定期支払を表示'}
-            aria-expanded={isPaymentMethodDetailsOpen}
-          >
-            {isPaymentMethodDetailsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-            支払い方法・定期支払 ({recurringPayments.length + linkedPaymentMethodsData.length})
-          </button>
-
-          {isPaymentMethodDetailsOpen && (
-            <div className="space-y-2">
-              <RecurringAndLinkedList
-                recurringItems={recurringPayments}
-                linkedItems={linkedPaymentMethodsData}
-                onAddRecurring={onAddRecurring}
-                onEditRecurring={onEditRecurring}
-                onToggleRecurring={onToggleRecurring}
-                onAddLinked={onAddLinkedPM}
-                onToggleLinked={onToggleLinkedPM}
-                onViewPM={onViewPM}
-                getCategory={getCategory}
-                getPaymentMethod={getPaymentMethod}
-                getUnsettledAmount={getUnsettledAmount}
-              />
-            </div>
-          )}
+          <RecurringAndLinkedList
+            recurringItems={recurringPayments}
+            linkedItems={linkedPaymentMethodsData}
+            onAddRecurring={onAddRecurring}
+            onEditRecurring={onEditRecurring}
+            onToggleRecurring={onToggleRecurring}
+            onAddLinked={onAddLinkedPM}
+            onToggleLinked={onToggleLinkedPM}
+            onViewPM={onViewPM}
+            getCategory={getCategory}
+            getPaymentMethod={getPaymentMethod}
+            getUnsettledAmount={getUnsettledAmount}
+          />
         </div>
       )}
 
