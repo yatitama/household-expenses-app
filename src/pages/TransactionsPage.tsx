@@ -167,7 +167,7 @@ export const TransactionsPage = () => {
       {/* Fixed Filter Bar */}
       <div
         ref={filterBarRef}
-        className="fixed top-0 left-0 right-0 z-30 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-4 md:p-6 lg:p-8"
+        className="fixed top-0 left-0 right-0 z-30 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-3 md:p-6 lg:p-8"
       >
         <SimpleFilterBar
           filters={filters}
@@ -186,16 +186,16 @@ export const TransactionsPage = () => {
 
       {/* Transaction list */}
       <div
-        style={{ paddingTop: `${filterBarHeight + 16}px` }}
-        className="p-4 md:p-6 lg:p-8"
+        style={{ paddingTop: `${filterBarHeight + 12}px` }}
+        className="p-3 md:p-6 lg:p-8"
       >
         {filteredTransactions.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
-            <Receipt size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">取引がありません</p>
+          <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-8 text-center">
+            <Receipt size={40} className="md:w-12 md:h-12 mx-auto text-gray-300 dark:text-gray-600 mb-2 md:mb-3" />
+            <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">取引がありません</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2 md:space-y-3">
             {groupedTransactions.map(([key, { label, transactions }], groupIndex) => {
               // グループ内の合計を計算
               const groupTotal = transactions.reduce((sum, t) => {

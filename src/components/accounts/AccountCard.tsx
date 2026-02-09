@@ -49,14 +49,14 @@ export const AccountCard = ({
   return (
     <div
       data-account-id={account.id}
-      className={`bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border-2 border-transparent transition-all duration-200`}
+      className={`bg-white dark:bg-slate-800 rounded-lg md:rounded-xl p-3 md:p-4 shadow-sm border-2 border-transparent transition-all duration-200`}
     >
 
       {/* クイックアクションボタン */}
-      <div className="flex gap-2 mb-3">
+      <div className="flex gap-2 mb-2 md:mb-3">
         <button
           onClick={onAddTransaction}
-          className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/30 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-400 rounded-lg font-medium transition-colors text-sm"
+          className="flex-1 flex items-center justify-center gap-1 px-2 md:px-3 py-1.5 md:py-2 bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/30 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-400 rounded-lg font-medium transition-colors text-xs md:text-sm"
           title="取引を追加"
         >
           <PlusCircle size={16} />
@@ -64,7 +64,7 @@ export const AccountCard = ({
         </button>
         <button
           onClick={onAddRecurring}
-          className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-colors text-sm"
+          className="flex-1 flex items-center justify-center gap-1 px-2 md:px-3 py-1.5 md:py-2 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-colors text-xs md:text-sm"
           title="定期支払を設定"
         >
           <span>📅</span>
@@ -73,11 +73,11 @@ export const AccountCard = ({
       </div>
 
       {/* 口座情報 */}
-      <div className="flex gap-2.5">
+      <div className="flex gap-2 md:gap-2.5">
         {/* 口座アイコン */}
         <div className="flex-shrink-0 self-start">
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white"
+            className="w-8 md:w-10 h-8 md:h-10 rounded-full flex items-center justify-center text-white"
             style={{ backgroundColor: account.color }}
           >
             {ACCOUNT_TYPE_ICONS[account.type]}
@@ -85,15 +85,15 @@ export const AccountCard = ({
         </div>
 
         {/* 右側コンテンツ */}
-        <div className="flex-1 min-w-0 space-y-1">
+        <div className="flex-1 min-w-0 space-y-0.5 md:space-y-1">
           {/* 口座名 */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 md:gap-2">
             <div className="text-left flex-1 min-w-0">
-              <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{account.name}</p>
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{account.name}</p>
             </div>
             {member?.icon && (
               <div
-                className="w-6 h-6 rounded-full flex items-center justify-center text-white flex-shrink-0"
+                className="w-5 md:w-6 h-5 md:h-6 rounded-full flex items-center justify-center text-white flex-shrink-0"
                 style={{ backgroundColor: member.color }}
               >
                 {getCategoryIcon(member.icon, 14)}
@@ -103,16 +103,16 @@ export const AccountCard = ({
 
           {/* 銀行タイプと金額 */}
           <div className="flex justify-between items-center gap-2">
-            <p className="text-sm text-gray-500 dark:text-gray-400">{ACCOUNT_TYPE_LABELS[account.type]}</p>
-            <p className="text-lg font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatCurrency(account.balance)}</p>
+            <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{ACCOUNT_TYPE_LABELS[account.type]}</p>
+            <p className="text-base md:text-lg font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatCurrency(account.balance)}</p>
           </div>
 
           {/* ペンディング詳細 */}
           {((totalPendingData && (totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0 || totalPendingData.recurringIncome > 0)) || pendingAmount > 0) && (
-            <div className="mt-1">
+            <div className="mt-0.5 md:mt-1">
               <button
                 onClick={(e) => { e.stopPropagation(); setIsPendingDetailsOpen(!isPendingDetailsOpen); }}
-                className="text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium flex items-center gap-1"
+                className="text-xs md:text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium flex items-center gap-1"
                 aria-label={isPendingDetailsOpen ? '予定額を非表示' : '予定額を表示'}
                 aria-expanded={isPendingDetailsOpen}
               >
@@ -120,7 +120,7 @@ export const AccountCard = ({
                 予定額を表示
               </button>
               {isPendingDetailsOpen && (
-                <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 space-y-0.5 pl-2 border-l-2 border-gray-300 dark:border-gray-600">
+                <div className="mt-0.5 md:mt-1 text-xs md:text-sm text-gray-600 dark:text-gray-400 space-y-0.5 pl-2 border-l-2 border-gray-300 dark:border-gray-600">
                   {totalPendingData ? (
                     <>
                       {(totalPendingData.cardPending > 0 || totalPendingData.recurringExpense > 0) && (
@@ -154,10 +154,10 @@ export const AccountCard = ({
       </div>
       {/* 詳細セクション */}
       {(recurringPayments.length > 0 || linkedPaymentMethodsData.length > 0) && (
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-2 md:mt-4 pt-2 md:pt-4 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={() => setIsPaymentMethodDetailsOpen(!isPaymentMethodDetailsOpen)}
-            className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors flex items-center gap-1 mb-3"
+            className="text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors flex items-center gap-1 mb-2 md:mb-3"
             aria-label={isPaymentMethodDetailsOpen ? '支払い方法・定期支払を非表示' : '支払い方法・定期支払を表示'}
             aria-expanded={isPaymentMethodDetailsOpen}
           >
@@ -186,7 +186,7 @@ export const AccountCard = ({
       )}
 
       {/* 最近の取引 */}
-      <div className="mt-4">
+      <div className="mt-2 md:mt-4">
         <RecentTransactions accountId={account.id} />
       </div>
     </div>

@@ -20,19 +20,19 @@ export const StatsPage = () => {
   const { income, expense } = useMemo(() => getMonthlyTotal(year, month), [year, month]);
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-4">
+    <div className="p-3 md:p-6 lg:p-8 space-y-3 md:space-y-4">
       {/* Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">統計</h2>
-        <div className="flex items-center gap-2 justify-between md:justify-start">
-          <button onClick={handlePrevMonth} className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="前月">
-            <ChevronLeft size={20} />
+      <div className="flex flex-col gap-2 md:gap-4 md:flex-row md:items-center md:justify-between">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">統計</h2>
+        <div className="flex items-center gap-1.5 md:gap-2 justify-between md:justify-start">
+          <button onClick={handlePrevMonth} className="p-1 md:p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="前月">
+            <ChevronLeft size={18} className="md:w-5 md:h-5" />
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 md:gap-2">
             <select
               value={year}
               onChange={(e) => setCurrentDate(new Date(parseInt(e.target.value), month - 1, 1))}
-              className="px-2 py-1 text-sm bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+              className="px-2 py-0.5 md:py-1 text-xs md:text-sm bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
               aria-label="表示年を選択"
             >
               {Array.from({ length: 10 }, (_, i) => {
@@ -47,7 +47,7 @@ export const StatsPage = () => {
             <select
               value={month}
               onChange={(e) => setCurrentDate(new Date(year, parseInt(e.target.value) - 1, 1))}
-              className="px-2 py-1 text-sm bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+              className="px-2 py-0.5 md:py-1 text-xs md:text-sm bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
               aria-label="表示月を選択"
             >
               {Array.from({ length: 12 }, (_, i) => (
@@ -57,26 +57,26 @@ export const StatsPage = () => {
               ))}
             </select>
           </div>
-          <button onClick={handleNextMonth} className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="翌月">
-            <ChevronRight size={20} />
+          <button onClick={handleNextMonth} className="p-1 md:p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="翌月">
+            <ChevronRight size={18} className="md:w-5 md:h-5" />
           </button>
         </div>
       </div>
 
       {/* Monthly summary */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">収入</p>
-          <p className="text-lg font-bold text-green-600">{formatCurrency(income)}</p>
+      <div className="grid grid-cols-2 gap-2 md:gap-3">
+        <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl shadow-sm p-2.5 md:p-4">
+          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-0.5 md:mb-1">収入</p>
+          <p className="text-base md:text-lg font-bold text-green-600">{formatCurrency(income)}</p>
         </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">支出</p>
-          <p className="text-lg font-bold text-red-600">{formatCurrency(expense)}</p>
+        <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl shadow-sm p-2.5 md:p-4">
+          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-0.5 md:mb-1">支出</p>
+          <p className="text-base md:text-lg font-bold text-red-600">{formatCurrency(expense)}</p>
         </div>
       </div>
 
       {/* Charts */}
-      <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+      <div className="space-y-3 md:space-y-4 md:grid md:grid-cols-2 md:gap-4">
         <div className="md:col-span-2">
           <MonthlyTrendChart />
         </div>

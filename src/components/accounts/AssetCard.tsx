@@ -56,12 +56,12 @@ export const AssetCard = ({
 
   return (
     <div
-      className="rounded-xl p-4 text-white relative"
+      className="rounded-lg md:rounded-xl p-3 md:p-4 text-white relative"
       style={{ background: `linear-gradient(to right, ${gradientFrom}, ${gradientTo})` }}
     >
-      <div className="flex items-center gap-2 mb-1">
-        <Wallet size={20} />
-        <span className="text-sm opacity-90">総資産</span>
+      <div className="flex items-center gap-1.5 md:gap-2 mb-0.5 md:mb-1">
+        <Wallet size={16} className="md:w-5 md:h-5" />
+        <span className="text-xs md:text-sm opacity-90">総資産</span>
         <button
           onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
           className="ml-auto p-1 rounded-full hover:bg-white/20 transition-colors opacity-60 hover:opacity-100"
@@ -95,9 +95,9 @@ export const AssetCard = ({
           </div>
         </div>
       )}
-      <p className="text-2xl font-bold">{formatCurrency(totalBalance)}</p>
+      <p className="text-xl md:text-2xl font-bold">{formatCurrency(totalBalance)}</p>
       {(totalExpense > 0 || totalIncome > 0) && (
-        <div className="text-sm opacity-90 mt-2 space-y-0.5">
+        <div className="text-xs md:text-sm opacity-90 mt-1.5 md:mt-2 space-y-0.5">
           {totalExpense > 0 && (
             <p className="flex justify-between">
               <span className="opacity-80">使う予定:</span>
@@ -125,16 +125,16 @@ export const AssetCard = ({
       )}
 
       {accounts.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-white/20">
+        <div className="mt-2 md:mt-3 pt-2 md:pt-3 border-t border-white/20">
           <button
             onClick={onToggleBreakdown}
-            className="flex items-center gap-1 text-sm font-medium opacity-70 mb-2"
+            className="flex items-center gap-1 text-xs md:text-sm font-medium opacity-70 mb-1.5 md:mb-2"
           >
             {isBreakdownOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             内訳
           </button>
           {isBreakdownOpen && (
-            <div className="space-y-2.5 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+            <div className="space-y-1.5 md:space-y-2.5 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
               {Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
                 const member = getMember(memberId);
                 const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
@@ -146,10 +146,10 @@ export const AssetCard = ({
                 const memberNetPending = memberExpense - memberIncome;
                 return (
                   <div key={memberId}>
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: member?.color || '#d1d5db' }} />
-                        <span className="text-sm font-medium opacity-90">{member?.name || '不明'}</span>
+                    <div className="flex items-center justify-between mb-0.5 md:mb-1">
+                      <div className="flex items-center gap-1">
+                        <div className="w-1.5 md:w-2 h-1.5 md:h-2 rounded-full" style={{ backgroundColor: member?.color || '#d1d5db' }} />
+                        <span className="text-xs md:text-sm font-medium opacity-90">{member?.name || '不明'}</span>
                       </div>
                       <div className="text-right">
                         <span className="text-sm font-bold">{formatCurrency(memberTotal)}</span>
