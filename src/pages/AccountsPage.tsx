@@ -55,7 +55,7 @@ export const AccountsPage = () => {
       if (accounts.length > 0) openModal({ type: 'add-transaction', data: { accountId: accounts[0].id } });
     },
     onCloseModal: closeModal,
-  }), [accounts, openModal]);
+  }), [accounts, openModal, closeModal]);
 
   useKeyboardShortcuts(keyboardOptions);
 

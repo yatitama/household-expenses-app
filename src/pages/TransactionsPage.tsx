@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Receipt } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
@@ -16,6 +16,7 @@ export type GroupByType = 'date' | 'category' | 'member' | 'account' | 'payment'
 
 export const TransactionsPage = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const { filters, filteredTransactions, updateFilter, resetFilters, activeFilterCount } = useTransactionFilter();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
@@ -36,13 +37,25 @@ export const TransactionsPage = () => {
     return () => window.removeEventListener('resize', updateHeight);
   }, []);
 
-  // URLパラメータからフィルターを初期化
+  // URLパラメータと状態からフィルターを初期化
   useEffect(() => {
     const accountId = searchParams.get('accountId');
     if (accountId) {
       updateFilter('accountIds', [accountId]);
     }
-  }, [searchParams, updateFilter]);
+
+    // state からの遷移時に未精算フィルターを設定
+    const state = location.state as { accountId?: string; paymentMethodIds?: string[]; filterType?: string } | undefined;
+    if (state?.filterType === 'unsettled') {
+      if (state.accountId) {
+        updateFilter('accountIds', [state.accountId]);
+      }
+      if (state.paymentMethodIds) {
+        updateFilter('paymentMethodIds', state.paymentMethodIds);
+      }
+      updateFilter('unsettled', true);
+    }
+  }, [searchParams, location, updateFilter]);
 
   const members = useMemo(() => memberService.getAll(), []);
   const categories = useMemo(() => categoryService.getAll(), []);

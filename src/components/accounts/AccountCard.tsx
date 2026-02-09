@@ -1,9 +1,9 @@
 import { PlusCircle } from 'lucide-react';
 import { categoryService } from '../../services/storage';
-import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { ACCOUNT_TYPE_ICONS } from './AccountIcons';
 import { ACCOUNT_TYPE_LABELS } from './constants';
+import { AccountBalanceSchedule } from './AccountBalanceSchedule';
 import { RecurringAndLinkedList } from './RecurringAndLinkedList';
 import { RecentTransactions } from './RecentTransactions';
 import type { Account, Member, RecurringPayment, PaymentMethod, LinkedPaymentMethod } from '../../types';
@@ -91,14 +91,21 @@ export const AccountCard = ({
             )}
           </div>
 
-          {/* 銀行タイプと金額 */}
-          <div className="flex justify-between items-center gap-2">
-            <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{ACCOUNT_TYPE_LABELS[account.type]}</p>
-            <p className="text-base md:text-lg font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatCurrency(account.balance)}</p>
-          </div>
+          {/* 銀行タイプ */}
+          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{ACCOUNT_TYPE_LABELS[account.type]}</p>
 
         </div>
       </div>
+
+      {/* 残高・引き落とし予定・振り込み予定セクション */}
+      <div className="mt-3 md:mt-4">
+        <AccountBalanceSchedule
+          account={account}
+          linkedPaymentMethods={linkedPaymentMethodsData}
+          paymentMethods={allPaymentMethods}
+        />
+      </div>
+
       {/* 定期取引・支払い手段セクション */}
       {(recurringPayments.length > 0 || linkedPaymentMethodsData.length > 0) && (
         <div className="mt-2 md:mt-4 pt-2 md:pt-4 border-t border-gray-200 dark:border-gray-700">
