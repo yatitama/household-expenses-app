@@ -168,7 +168,7 @@ export const TransactionsPage = () => {
       </div>
 
       {/* Transaction list */}
-      <div className="pt-28 p-4 md:p-6 lg:p-8">
+      <div className="pt-40 p-4 md:p-6 lg:p-8">
         {filteredTransactions.length === 0 ? (
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
             <Receipt size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
