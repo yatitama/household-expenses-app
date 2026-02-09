@@ -78,23 +78,23 @@ export const RecurringPaymentModal = ({
         className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-y-auto flex-1 p-4">
+        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{recurringPayment ? '定期取引を編集' : '定期取引を追加'}</h3>
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{recurringPayment ? '定期取引を編集' : '定期取引を追加'}</h3>
             <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
-              <X size={20} />
+              <X size={18} className="sm:w-5 sm:h-5" />
             </button>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-4 sm:space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">名前</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">名前</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 家賃、携帯料金、Netflix"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             />
           </div>
@@ -103,7 +103,7 @@ export const RecurringPaymentModal = ({
             <button
               type="button"
               onClick={() => { setType('expense'); setCategoryId(''); }}
-              className={`flex-1 py-2 font-medium transition-colors ${
+              className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
                 type === 'expense' ? 'bg-red-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
               }`}
             >
@@ -112,7 +112,7 @@ export const RecurringPaymentModal = ({
             <button
               type="button"
               onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
-              className={`flex-1 py-2 font-medium transition-colors ${
+              className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
                 type === 'income' ? 'bg-green-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
               }`}
             >
@@ -121,7 +121,7 @@ export const RecurringPaymentModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">金額</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">金額</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
               <input
@@ -129,19 +129,19 @@ export const RecurringPaymentModal = ({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0"
-                className="w-full text-lg font-bold pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full text-base sm:text-lg font-bold pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">頻度</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">頻度</label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setFrequency('monthly')}
-                className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                   frequency === 'monthly'
                     ? 'bg-blue-600 text-white border-blue-600'
                     : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
@@ -152,7 +152,7 @@ export const RecurringPaymentModal = ({
               <button
                 type="button"
                 onClick={() => setFrequency('yearly')}
-                className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                   frequency === 'yearly'
                     ? 'bg-blue-600 text-white border-blue-600'
                     : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
@@ -166,11 +166,11 @@ export const RecurringPaymentModal = ({
           <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-3">
             {frequency === 'yearly' && (
               <div className="mb-3">
-                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">月</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">月</label>
                 <select
                   value={monthOfYear}
                   onChange={(e) => setMonthOfYear(e.target.value)}
-                  className="border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  className="border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                 >
                   {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                     <option key={m} value={m}>{m}月</option>
@@ -187,15 +187,15 @@ export const RecurringPaymentModal = ({
                   max="31"
                   value={dayOfMonth}
                   onChange={(e) => setDayOfMonth(e.target.value)}
-                  className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
                 />
-                <span className="text-sm text-gray-500 dark:text-gray-400">日</span>
+                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">日</span>
               </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
             <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto">
               {filteredCategories.map((category) => {
                 const member = getMember(category.memberId);
@@ -204,21 +204,21 @@ export const RecurringPaymentModal = ({
                     key={category.id}
                     type="button"
                     onClick={() => setCategoryId(category.id)}
-                    className={`flex flex-col items-center gap-1 p-1.5 rounded-lg border transition-colors ${
+                    className={`flex flex-col items-center gap-1 p-1 sm:p-1.5 rounded-lg border transition-colors ${
                       categoryId === category.id
                         ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                     }`}
                   >
                     <div
-                      className="w-6 h-6 rounded-full flex items-center justify-center"
+                      className="w-5 sm:w-6 h-5 sm:h-6 rounded-full flex items-center justify-center"
                       style={{ backgroundColor: `${category.color}20`, color: category.color }}
                     >
-                      {getCategoryIcon(category.icon, 14)}
+                      {getCategoryIcon(category.icon, 12)}
                     </div>
-                    <span className="text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center">{category.name}</span>
+                    <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center">{category.name}</span>
                     {member && member.id !== 'common' && (
-                      <span className="text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                      <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
                     )}
                   </button>
                 );
@@ -227,30 +227,30 @@ export const RecurringPaymentModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
               {type === 'expense' ? '支払い元' : '入金先'}
             </label>
             <div className="space-y-2 max-h-32 overflow-y-auto">
               {accounts.length > 0 && (
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
                   <div className="space-y-1">
                     {accounts.map((acct) => (
                       <button
                         key={acct.id}
                         type="button"
                         onClick={() => { setAccountId(acct.id); setPmId(undefined); }}
-                        className={`w-full flex items-center justify-between p-2 rounded-lg border transition-colors ${
+                        className={`w-full flex items-center justify-between p-1.5 sm:p-2 rounded-lg border transition-colors ${
                           accountId === acct.id && !pmId
                             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
                             : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: acct.color }} />
-                          <span className="text-sm text-gray-900 dark:text-gray-100">{acct.name}</span>
+                          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full" style={{ backgroundColor: acct.color }} />
+                          <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-100">{acct.name}</span>
                         </div>
-                        {accountId === acct.id && !pmId && <Check size={14} className="text-blue-500" />}
+                        {accountId === acct.id && !pmId && <Check size={12} className="sm:w-3.5 sm:h-3.5 text-blue-500" />}
                       </button>
                     ))}
                   </div>
@@ -258,24 +258,24 @@ export const RecurringPaymentModal = ({
               )}
               {type === 'expense' && paymentMethods.length > 0 && (
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
                   <div className="space-y-1">
                     {paymentMethods.map((pm) => (
                       <button
                         key={pm.id}
                         type="button"
                         onClick={() => { setPmId(pm.id); setAccountId(pm.linkedAccountId); }}
-                        className={`w-full flex items-center justify-between p-2 rounded-lg border transition-colors ${
+                        className={`w-full flex items-center justify-between p-1.5 sm:p-2 rounded-lg border transition-colors ${
                           pmId === pm.id
                             ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30'
                             : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pm.color }} />
-                          <span className="text-sm text-gray-900 dark:text-gray-100">{pm.name}</span>
+                          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full" style={{ backgroundColor: pm.color }} />
+                          <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-100">{pm.name}</span>
                         </div>
-                        {pmId === pm.id && <Check size={14} className="text-purple-500" />}
+                        {pmId === pm.id && <Check size={12} className="sm:w-3.5 sm:h-3.5 text-purple-500" />}
                       </button>
                     ))}
                   </div>
@@ -285,35 +285,35 @@ export const RecurringPaymentModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">メモ</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">メモ</label>
             <input
               type="text"
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder="任意"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
             />
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-900 dark:text-gray-200">有効</span>
+            <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200">有効</span>
             <button type="button" onClick={() => setIsActive(!isActive)}>
               {isActive
-                ? <ToggleRight size={28} className="text-green-500" />
-                : <ToggleLeft size={28} className="text-gray-300 dark:text-gray-600" />
+                ? <ToggleRight size={24} className="sm:w-7 sm:h-7 text-green-500" />
+                : <ToggleLeft size={24} className="sm:w-7 sm:h-7 text-gray-300 dark:text-gray-600" />
               }
             </button>
           </div>
           </div>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex gap-3">
-          <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-slate-600">
+        <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 flex gap-3">
+          <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
             キャンセル
           </button>
           <button
             type="submit"
             disabled={!name || !amount || !categoryId || (!accountId && !pmId)}
-            className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium disabled:opacity-50 hover:bg-blue-700"
+            className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium text-sm disabled:opacity-50 hover:bg-blue-700"
           >
             保存
           </button>
