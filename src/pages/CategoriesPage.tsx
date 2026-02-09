@@ -68,20 +68,20 @@ export const CategoriesPage = () => {
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
       {/* ヘッダー */}
-      <div className="flex items-center gap-3">
-        <button onClick={() => navigate('/settings')} className="p-2 -ml-2 text-gray-600">
-          <ArrowLeft size={20} />
+      <div className="flex items-center gap-2 sm:gap-3">
+        <button onClick={() => navigate('/settings')} className="p-2 -ml-2 text-gray-600 text-xs sm:text-base">
+          <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
         </button>
-        <h2 className="text-xl font-bold text-gray-800">カテゴリ管理</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800">カテゴリ管理</h2>
       </div>
 
       {/* タイプ切り替え */}
       <div className="flex rounded-lg overflow-hidden border border-gray-300">
         <button
           onClick={() => setFilterType('expense')}
-          className={`flex-1 py-2 font-medium transition-colors ${
+          className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
             filterType === 'expense' ? 'bg-red-500 text-white' : 'bg-white text-gray-900'
           }`}
         >
@@ -89,7 +89,7 @@ export const CategoriesPage = () => {
         </button>
         <button
           onClick={() => setFilterType('income')}
-          className={`flex-1 py-2 font-medium transition-colors ${
+          className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
             filterType === 'income' ? 'bg-green-500 text-white' : 'bg-white text-gray-900'
           }`}
         >
@@ -100,42 +100,42 @@ export const CategoriesPage = () => {
       {/* 追加ボタン */}
       <button
         onClick={handleAdd}
-        className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-lg font-medium"
+        className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base"
       >
-        <Plus size={20} />
+        <Plus size={16} className="sm:w-5 sm:h-5" />
         カテゴリを追加
       </button>
 
       {/* カテゴリ一覧 */}
       {filteredCategories.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-          <Tag size={48} className="mx-auto text-gray-300 mb-3" />
-          <p className="text-gray-500">カテゴリがありません</p>
+        <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-6 sm:p-8 text-center">
+          <Tag size={40} className="sm:w-12 sm:h-12 mx-auto text-gray-300 mb-2 sm:mb-3" />
+          <p className="text-xs sm:text-sm text-gray-500">カテゴリがありません</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm divide-y divide-gray-100">
+        <div className="bg-white rounded-lg sm:rounded-xl shadow-sm divide-y divide-gray-100">
           {filteredCategories.map((category) => {
             const member = getMember(category.memberId);
             return (
-              <div key={category.id} className="flex items-center justify-between p-4">
-                <div className="flex items-center gap-3">
+              <div key={category.id} className="flex items-center justify-between p-3 sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center"
+                    className="w-8 sm:w-10 h-8 sm:h-10 rounded-full flex items-center justify-center"
                     style={{ backgroundColor: `${category.color}20`, color: category.color }}
                   >
-                    {getCategoryIcon(category.icon, 20)}
+                    {getCategoryIcon(category.icon, 14)}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">{category.name}</p>
-                    <p className="text-sm text-gray-500">{member?.name || '共通'}</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-900">{category.name}</p>
+                    <p className="text-xs text-gray-500">{member?.name || '共通'}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => handleEdit(category)} className="p-2 text-gray-400 hover:text-gray-600">
-                    <Edit2 size={16} />
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <button onClick={() => handleEdit(category)} className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600">
+                    <Edit2 size={14} className="sm:w-4 sm:h-4" />
                   </button>
-                  <button onClick={() => handleDelete(category.id)} className="p-2 text-gray-400 hover:text-red-600">
-                    <Trash2 size={16} />
+                  <button onClick={() => handleDelete(category.id)} className="p-1.5 sm:p-2 text-gray-400 hover:text-red-600">
+                    <Trash2 size={14} className="sm:w-4 sm:h-4" />
                   </button>
                 </div>
               </div>
@@ -195,35 +195,35 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-bold mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-3 sm:p-4 max-h-[90vh] overflow-y-auto">
+        <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           {/* 名前 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">名前</label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">名前</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 食費"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           {/* メンバー */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">対象メンバー</label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">対象メンバー</label>
             <div className="flex flex-wrap gap-2">
               {members.map((member) => (
                 <button
                   key={member.id}
                   type="button"
                   onClick={() => setMemberId(member.id)}
-                  className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                  className={`flex items-center gap-2 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     memberId === member.id
                       ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                      : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
@@ -235,7 +235,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
 
           {/* 色 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">色</label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">色</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button
@@ -253,7 +253,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
 
           {/* アイコン */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">アイコン</label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">アイコン</label>
             <div className="grid grid-cols-6 gap-2">
               {ICON_NAMES.map((i) => {
                 const IconComponent = ICON_COMPONENTS[i];
@@ -262,13 +262,13 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
                     key={i}
                     type="button"
                     onClick={() => setIcon(i)}
-                    className={`w-10 h-10 rounded-lg border flex items-center justify-center transition-colors ${
+                    className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg border flex items-center justify-center transition-colors ${
                       icon === i
-                        ? 'border-blue-500 bg-blue-50 text-blue-600'
-                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                        : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
                     }`}
                   >
-                    <IconComponent size={20} />
+                    <IconComponent size={16} className="sm:w-5 sm:h-5" />
                   </button>
                 );
               })}
@@ -280,13 +280,13 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2 px-4 rounded-lg border border-gray-300 text-gray-700 font-medium"
+              className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-slate-700"
             >
               キャンセル
             </button>
             <button
               type="submit"
-              className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium"
+              className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700"
             >
               保存
             </button>
