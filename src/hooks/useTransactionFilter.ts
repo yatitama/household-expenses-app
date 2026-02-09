@@ -12,6 +12,7 @@ export interface FilterOptions {
   paymentMethodIds: string[];
   sortBy: 'date' | 'amount' | 'category';
   sortOrder: 'asc' | 'desc';
+  unsettled: boolean;
 }
 
 const createDefaultFilters = (): FilterOptions => ({
@@ -24,6 +25,7 @@ const createDefaultFilters = (): FilterOptions => ({
   paymentMethodIds: [],
   sortBy: 'date',
   sortOrder: 'desc',
+  unsettled: false,
 });
 
 export const useTransactionFilter = () => {
@@ -84,6 +86,11 @@ export const useTransactionFilter = () => {
       result = result.filter((t) => t.paymentMethodId && filters.paymentMethodIds.includes(t.paymentMethodId));
     }
 
+    // Unsettled filter (only payment method transactions without settledAt)
+    if (filters.unsettled) {
+      result = result.filter((t) => t.paymentMethodId && !t.settledAt);
+    }
+
     // Sort
     result.sort((a, b) => {
       let comparison = 0;
@@ -124,6 +131,7 @@ export const useTransactionFilter = () => {
     if (filters.transactionType !== 'all') count++;
     if (filters.accountIds.length > 0) count++;
     if (filters.paymentMethodIds.length > 0) count++;
+    if (filters.unsettled) count++;
     return count;
   }, [filters]);
 
