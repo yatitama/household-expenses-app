@@ -249,7 +249,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
             <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
               キャンセル
             </button>
-            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-purple-700 text-white font-medium text-sm hover:bg-purple-800">
+            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700">
               保存
             </button>
           </div>
