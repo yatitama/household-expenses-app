@@ -134,12 +134,12 @@ export const SimpleFilterBar = ({
         </div>
 
         {/* グループ化オプション */}
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-xs sm:text-sm">
           <span className="text-gray-600 dark:text-gray-400">グループ化:</span>
           <select
             value={groupBy}
             onChange={(e) => onGroupByChange(e.target.value as GroupByType)}
-            className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-sm transition-colors"
+            className="px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-xs sm:text-sm transition-colors"
             aria-label="取引のグループ化方法を選択"
           >
             <option value="date">日付</option>
@@ -152,7 +152,7 @@ export const SimpleFilterBar = ({
           <select
             value={groupOrder}
             onChange={() => onGroupByChange(groupBy)}
-            className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-sm transition-colors"
+            className="px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-xs sm:text-sm transition-colors"
             aria-label="取引の並び順を選択"
           >
             <option value="desc">▼ 降順</option>
