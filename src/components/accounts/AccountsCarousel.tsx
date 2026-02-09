@@ -1,13 +1,12 @@
 import { useState, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AccountCard } from './AccountCard';
-import type { Account, Member, RecurringPayment, PaymentMethod, LinkedPaymentMethod } from '../../types';
+import type { Account, Member, RecurringPayment, PaymentMethod } from '../../types';
 
 interface AccountsCarouselProps {
   accounts: Account[];
   members: Member[];
   paymentMethods: PaymentMethod[];
-  linkedPaymentMethods: LinkedPaymentMethod[];
   onAddTransaction: (target: { accountId?: string; paymentMethodId?: string }) => void;
   onAddRecurring: (target: { accountId?: string; paymentMethodId?: string }) => void;
   onEditRecurring: (rp: RecurringPayment) => void;
@@ -21,7 +20,6 @@ export const AccountsCarousel = ({
   accounts,
   members,
   paymentMethods,
-  linkedPaymentMethods,
   onAddTransaction,
   onAddRecurring,
   onEditRecurring,
@@ -135,13 +133,11 @@ export const AccountsCarousel = ({
           }}
         >
           {accounts.map((account) => {
-            const accountLinkedPMs = linkedPaymentMethods.filter((lpm) => lpm.accountId === account.id);
             return (
               <div key={account.id} className="w-full flex-shrink-0 min-w-0">
                 <AccountCard
                   account={account}
                   member={getMember(account.memberId)}
-                  linkedPaymentMethodsData={accountLinkedPMs}
                   allPaymentMethods={paymentMethods}
                   onAddTransaction={() => onAddTransaction({ accountId: account.id })}
                   onAddRecurring={() => onAddRecurring({ accountId: account.id })}

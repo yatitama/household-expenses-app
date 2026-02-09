@@ -21,7 +21,7 @@ import type { Account, RecurringPayment } from '../types';
 export const AccountsPage = () => {
   const navigate = useNavigate();
   const {
-    accounts, paymentMethods, recurringPayments, linkedPaymentMethods, appSettings,
+    accounts, paymentMethods, recurringPayments, appSettings,
     refreshData,
     handleSaveRecurring, handleToggleRecurring,
     handleSaveGradient,
@@ -131,7 +131,6 @@ export const AccountsPage = () => {
               accounts={accounts}
               members={members}
               paymentMethods={paymentMethods}
-              linkedPaymentMethods={linkedPaymentMethods}
               onAddTransaction={(target) => openModal({ type: 'add-transaction', data: target })}
               onAddRecurring={handleAddRecurring}
               onEditRecurring={handleEditRecurring}

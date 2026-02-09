@@ -4,12 +4,11 @@ import { ACCOUNT_TYPE_ICONS } from './AccountIcons';
 import { ACCOUNT_TYPE_LABELS } from './constants';
 import { AccountBalanceSchedule } from './AccountBalanceSchedule';
 import { RecentTransactions } from './RecentTransactions';
-import type { Account, Member, RecurringPayment, PaymentMethod, LinkedPaymentMethod } from '../../types';
+import type { Account, Member, RecurringPayment, PaymentMethod } from '../../types';
 
 interface AccountCardProps {
   account: Account;
   member?: Member;
-  linkedPaymentMethodsData: LinkedPaymentMethod[];
   allPaymentMethods: PaymentMethod[];
   onAddTransaction: () => void;
   onAddRecurring: () => void;
@@ -18,7 +17,7 @@ interface AccountCardProps {
 }
 
 export const AccountCard = ({
-  account, member, linkedPaymentMethodsData, allPaymentMethods,
+  account, member, allPaymentMethods,
   onAddTransaction, onAddRecurring,
   onEditRecurring, onToggleRecurring,
 }: AccountCardProps) => {
@@ -88,7 +87,6 @@ export const AccountCard = ({
       <div className="mt-3 md:mt-4">
         <AccountBalanceSchedule
           account={account}
-          linkedPaymentMethods={linkedPaymentMethodsData}
           paymentMethods={allPaymentMethods}
           onAddRecurring={onAddRecurring}
           onEditRecurring={onEditRecurring}

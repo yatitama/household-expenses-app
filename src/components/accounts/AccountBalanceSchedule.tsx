@@ -3,11 +3,10 @@ import { formatCurrency } from '../../utils/formatters';
 import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { ScheduleSection } from './ScheduleSection';
 import { IncomeSection } from './IncomeSection';
-import type { Account, PaymentMethod, LinkedPaymentMethod, RecurringPayment } from '../../types';
+import type { Account, PaymentMethod, RecurringPayment } from '../../types';
 
 interface AccountBalanceScheduleProps {
   account: Account;
-  linkedPaymentMethods: LinkedPaymentMethod[];
   paymentMethods: PaymentMethod[];
   onAddRecurring: () => void;
   onEditRecurring: (rp: RecurringPayment) => void;
@@ -16,7 +15,6 @@ interface AccountBalanceScheduleProps {
 
 export const AccountBalanceSchedule = ({
   account,
-  linkedPaymentMethods,
   paymentMethods,
   onAddRecurring,
   onEditRecurring,
@@ -24,11 +22,8 @@ export const AccountBalanceSchedule = ({
 }: AccountBalanceScheduleProps) => {
   const navigate = useNavigate();
 
-  // Get payment methods linked to this account
-  const linkedPMs = linkedPaymentMethods
-    .filter((lpm) => lpm.isActive)
-    .map((lpm) => paymentMethods.find((pm) => pm.id === lpm.paymentMethodId))
-    .filter((pm) => pm !== undefined) as PaymentMethod[];
+  // Get payment methods linked to this account (via linkedAccountId)
+  const linkedPMs = paymentMethods.filter((pm) => pm.linkedAccountId === account.id);
 
   // Get unsettled transactions for linked payment methods
   const unsettledTransactions = getUnsettledTransactions()
