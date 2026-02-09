@@ -95,9 +95,10 @@ export const RecentTransactions = ({ accountId }: RecentTransactionsProps) => {
         </button>
         <button
           onClick={handleViewAll}
-          className="text-blue-500 hover:text-blue-700 dark:text-blue-400 flex items-center"
+          className="text-xs md:text-sm text-blue-500 hover:text-blue-700 dark:text-blue-400 flex items-center gap-1"
           aria-label="すべて見る"
         >
+          すべて見る
           <ChevronRight size={16} />
         </button>
       </div>

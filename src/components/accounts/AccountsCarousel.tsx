@@ -9,14 +9,7 @@ interface AccountsCarouselProps {
   paymentMethods: PaymentMethod[];
   linkedPaymentMethods: LinkedPaymentMethod[];
   recurringPayments: RecurringPayment[];
-  pendingByAccount: Record<string, number>;
   pendingByPM: Record<string, number>;
-  totalPendingByAccount: Record<string, {
-    cardPending: number;
-    recurringExpense: number;
-    recurringIncome: number;
-    totalPending: number;
-  }>;
   onAddTransaction: (target: { accountId?: string; paymentMethodId?: string }) => void;
   onAddRecurring: (target: { accountId?: string; paymentMethodId?: string }) => void;
   onEditRecurring: (rp: RecurringPayment) => void;
@@ -35,9 +28,7 @@ export const AccountsCarousel = ({
   paymentMethods,
   linkedPaymentMethods,
   recurringPayments,
-  pendingByAccount,
   pendingByPM,
-  totalPendingByAccount,
   onAddTransaction,
   onAddRecurring,
   onEditRecurring,
@@ -163,8 +154,6 @@ export const AccountsCarousel = ({
                 <AccountCard
                   account={account}
                   member={getMember(account.memberId)}
-                  pendingAmount={pendingByAccount[account.id] || 0}
-                  totalPendingData={totalPendingByAccount[account.id]}
                   linkedPaymentMethodsData={accountLinkedPMs}
                   allPaymentMethods={paymentMethods}
                   pendingByPM={pendingByPM}

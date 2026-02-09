@@ -6,7 +6,7 @@ import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
-import { getPendingAmountByAccount, getPendingAmountByPaymentMethod, getTotalPendingByAccount } from '../utils/billingUtils';
+import { getPendingAmountByPaymentMethod, getTotalPendingByAccount } from '../utils/billingUtils';
 import { AssetCard } from '../components/accounts/AssetCard';
 import { AccountsCarousel } from '../components/accounts/AccountsCarousel';
 import { PendingExpenseSection } from '../components/accounts/PendingExpenseSection';
@@ -34,7 +34,6 @@ export const AccountsPage = () => {
   const { activeModal, openModal, closeModal } = useModalManager();
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
 
-  const pendingByAccount = getPendingAmountByAccount();
   const pendingByPM = getPendingAmountByPaymentMethod();
   const totalPendingByAccount = getTotalPendingByAccount();
 
@@ -139,9 +138,7 @@ export const AccountsPage = () => {
               paymentMethods={paymentMethods}
               linkedPaymentMethods={linkedPaymentMethods}
               recurringPayments={recurringPayments}
-              pendingByAccount={pendingByAccount}
               pendingByPM={pendingByPM}
-              totalPendingByAccount={totalPendingByAccount}
               onAddTransaction={(target) => openModal({ type: 'add-transaction', data: target })}
               onAddRecurring={handleAddRecurring}
               onEditRecurring={handleEditRecurring}
