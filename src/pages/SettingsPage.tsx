@@ -256,6 +256,11 @@ export const SettingsPage = () => {
         localStorage.removeItem('household_categories');
         localStorage.removeItem('household_budgets');
         localStorage.removeItem('household_card_billings');
+        localStorage.removeItem('household_payment_methods');
+        localStorage.removeItem('household_recurring_payments');
+        localStorage.removeItem('household_linked_payment_methods');
+        localStorage.removeItem('household_app_settings');
+        localStorage.removeItem('household_migration_version');
         toast.success('データを削除しました。再読み込みします。');
         setTimeout(() => window.location.reload(), 1000);
       },

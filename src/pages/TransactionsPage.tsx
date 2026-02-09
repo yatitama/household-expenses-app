@@ -150,14 +150,6 @@ export const TransactionsPage = () => {
 
   return (
     <div className="pb-20">
-      {/* ページタイトル */}
-      <div className="p-4 md:p-6 lg:p-8 pb-0">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">取引履歴</h2>
-
-        {/* Results count */}
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{filteredTransactions.length}件の取引</p>
-      </div>
-
       {/* Sticky Filter Bar */}
       <div className="sticky top-0 z-30 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-4 md:p-6 lg:p-8">
         <SimpleFilterBar
@@ -184,16 +176,20 @@ export const TransactionsPage = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {groupedTransactions.map(([key, { label, transactions }]) => {
+            {groupedTransactions.map(([key, { label, transactions }], groupIndex) => {
               // グループ内の合計を計算
               const groupTotal = transactions.reduce((sum, t) => {
                 return sum + (t.type === 'income' ? t.amount : -t.amount);
               }, 0);
 
               return (
-                <div key={key} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
-                  <div className="px-4 py-2 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</p>
+                <div key={key}>
+                  {groupIndex === 0 && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 px-4 mb-3">{filteredTransactions.length}件の取引</p>
+                  )}
+                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+                    <div className="px-4 py-2 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</p>
                     <p className={`text-sm font-bold ${
                       groupTotal >= 0 ? 'text-green-600' : 'text-red-600'
                     }`}>
@@ -236,7 +232,8 @@ export const TransactionsPage = () => {
                     );
                   })}
                 </div>
-              </div>
+                  </div>
+                </div>
               );
             })}
           </div>
