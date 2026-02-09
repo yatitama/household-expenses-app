@@ -132,7 +132,6 @@ export const AccountsPage = () => {
               members={members}
               paymentMethods={paymentMethods}
               onAddTransaction={(target) => openModal({ type: 'add-transaction', data: target })}
-              onAddRecurring={handleAddRecurring}
               onEditRecurring={handleEditRecurring}
               onToggleRecurring={handleToggleRecurring}
             />
