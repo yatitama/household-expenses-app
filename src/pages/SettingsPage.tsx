@@ -559,21 +559,29 @@ export const SettingsPage = () => {
       </div>
 
       {/* データ管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Database size={20} className="text-gray-600 dark:text-gray-400" />
-          <h3 className="font-bold text-gray-800 dark:text-gray-100">データ管理</h3>
-        </div>
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
+        <button
+          onClick={() => {}}
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+        >
+          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
+            <Database size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-600 dark:text-gray-400" />
+            <div className="text-left">
+              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">データ管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">データのエクスポート・インポート</p>
+            </div>
+          </div>
+        </button>
 
-        <div className="space-y-3">
+        <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
           <button
             onClick={handleExport}
             className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
           >
-            <Download size={20} className="text-blue-600 dark:text-blue-400" />
-            <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">データをエクスポート</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">JSONファイルとしてダウンロード</p>
+            <Download size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+            <div className="text-left min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">データをエクスポート</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">JSONファイルとしてダウンロード</p>
             </div>
           </button>
 
@@ -581,10 +589,10 @@ export const SettingsPage = () => {
             onClick={handleImport}
             className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
           >
-            <Upload size={20} className="text-green-600 dark:text-green-400" />
-            <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">データをインポート</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">JSONファイルから復元</p>
+            <Upload size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+            <div className="text-left min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">データをインポート</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">JSONファイルから復元</p>
             </div>
           </button>
 
@@ -592,10 +600,10 @@ export const SettingsPage = () => {
             onClick={handleReset}
             className="w-full flex items-center gap-3 p-3 rounded-lg border border-red-200 dark:border-red-800 hover:border-red-300 dark:hover:border-red-700 transition-colors"
           >
-            <Trash2 size={20} className="text-red-600" />
-            <div className="text-left">
-              <p className="font-medium text-red-600 text-sm">データを初期化</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">すべてのデータを削除</p>
+            <Trash2 size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-red-600 flex-shrink-0" />
+            <div className="text-left min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-red-600">データを初期化</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">すべてのデータを削除</p>
             </div>
           </button>
         </div>
