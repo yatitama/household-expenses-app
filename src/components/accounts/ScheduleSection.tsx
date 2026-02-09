@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, CreditCard, Calendar, Eye } from 'lucide-react';
+import { ChevronDown, ChevronRight, CreditCard, Calendar, Eye, ToggleLeft, ToggleRight } from 'lucide-react';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { categoryService } from '../../services/storage';
@@ -11,6 +11,9 @@ interface ScheduleSectionProps {
   upcomingExpense: RecurringPayment[];
   totalRecurringExpense: number;
   onViewUnsettled: () => void;
+  onAddRecurring: () => void;
+  onEditRecurring: (rp: RecurringPayment) => void;
+  onToggleRecurring: (rp: RecurringPayment) => void;
 }
 
 export const ScheduleSection = ({
@@ -19,6 +22,9 @@ export const ScheduleSection = ({
   upcomingExpense,
   totalRecurringExpense,
   onViewUnsettled,
+  onAddRecurring,
+  onEditRecurring,
+  onToggleRecurring,
 }: ScheduleSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const categories = categoryService.getAll();
@@ -35,25 +41,36 @@ export const ScheduleSection = ({
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-red-100 dark:border-red-900/30">
       {/* ヘッダー */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
-      >
-        <div className="flex items-center gap-2">
-          {isExpanded ? (
-            <ChevronDown size={18} className="text-gray-500 dark:text-gray-400" />
-          ) : (
-            <ChevronRight size={18} className="text-gray-500 dark:text-gray-400" />
-          )}
-          <Calendar size={16} className="text-red-600 dark:text-red-400" />
-          <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100">
-            引き落とし予定
+      <div className="flex items-center justify-between gap-2">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex-1 flex items-center justify-between hover:opacity-80 transition-opacity"
+        >
+          <div className="flex items-center gap-2">
+            {isExpanded ? (
+              <ChevronDown size={18} className="text-gray-500 dark:text-gray-400" />
+            ) : (
+              <ChevronRight size={18} className="text-gray-500 dark:text-gray-400" />
+            )}
+            <Calendar size={16} className="text-red-600 dark:text-red-400" />
+            <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100">
+              引き落とし予定
+            </span>
+          </div>
+          <span className="text-base md:text-lg font-bold text-red-600 dark:text-red-400">
+            {formatCurrency(totalCardPending + totalRecurringExpense)}
           </span>
-        </div>
-        <span className="text-base md:text-lg font-bold text-red-600 dark:text-red-400">
-          {formatCurrency(totalCardPending + totalRecurringExpense)}
-        </span>
-      </button>
+        </button>
+        {isExpanded && (
+          <button
+            onClick={onAddRecurring}
+            className="text-blue-600 dark:text-blue-400 hover:opacity-70 transition-opacity flex-shrink-0"
+            title="定期支出を追加"
+          >
+            <Eye size={16} />
+          </button>
+        )}
+      </div>
 
       {/* 展開時のコンテンツ */}
       {isExpanded && (
@@ -138,19 +155,33 @@ export const ScheduleSection = ({
                   return (
                     <div
                       key={rp.id}
-                      className="flex items-center justify-between text-xs md:text-sm gap-2"
+                      className={`flex items-center justify-between text-xs md:text-sm gap-2 ${rp.isActive ? '' : 'opacity-40'}`}
                     >
                       <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <div
-                          className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                        <button
+                          onClick={() => onToggleRecurring(rp)}
+                          className="flex-shrink-0 hover:opacity-70 transition-opacity"
                         >
-                          {getCategoryIcon(category?.icon || '', 12)}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{freqLabel}</p>
-                        </div>
+                          {rp.isActive
+                            ? <ToggleRight size={16} className="text-green-500" />
+                            : <ToggleLeft size={16} className="text-gray-300 dark:text-gray-600" />
+                          }
+                        </button>
+                        <button
+                          onClick={() => onEditRecurring(rp)}
+                          className="flex-1 flex items-center gap-2 min-w-0 hover:opacity-70 transition-opacity"
+                        >
+                          <div
+                            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                          >
+                            {getCategoryIcon(category?.icon || '', 12)}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{freqLabel}</p>
+                          </div>
+                        </button>
                       </div>
                       <span className="text-red-600 dark:text-red-400 font-semibold flex-shrink-0">
                         {formatCurrency(rp.amount)}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, TrendingUp } from 'lucide-react';
+import { ChevronDown, ChevronRight, TrendingUp, ToggleLeft, ToggleRight } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { categoryService } from '../../services/storage';
@@ -8,11 +8,15 @@ import type { RecurringPayment } from '../../types';
 interface IncomeSectionProps {
   upcomingIncome: RecurringPayment[];
   totalRecurringIncome: number;
+  onEditRecurring: (rp: RecurringPayment) => void;
+  onToggleRecurring: (rp: RecurringPayment) => void;
 }
 
 export const IncomeSection = ({
   upcomingIncome,
   totalRecurringIncome,
+  onEditRecurring,
+  onToggleRecurring,
 }: IncomeSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const categories = categoryService.getAll();
@@ -62,19 +66,33 @@ export const IncomeSection = ({
                 return (
                   <div
                     key={rp.id}
-                    className="flex items-center justify-between text-xs md:text-sm gap-2"
+                    className={`flex items-center justify-between text-xs md:text-sm gap-2 ${rp.isActive ? '' : 'opacity-40'}`}
                   >
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                      <button
+                        onClick={() => onToggleRecurring(rp)}
+                        className="flex-shrink-0 hover:opacity-70 transition-opacity"
                       >
-                        {getCategoryIcon(category?.icon || '', 12)}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{freqLabel}</p>
-                      </div>
+                        {rp.isActive
+                          ? <ToggleRight size={16} className="text-green-500" />
+                          : <ToggleLeft size={16} className="text-gray-300 dark:text-gray-600" />
+                        }
+                      </button>
+                      <button
+                        onClick={() => onEditRecurring(rp)}
+                        className="flex-1 flex items-center gap-2 min-w-0 hover:opacity-70 transition-opacity"
+                      >
+                        <div
+                          className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                        >
+                          {getCategoryIcon(category?.icon || '', 12)}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{freqLabel}</p>
+                        </div>
+                      </button>
                     </div>
                     <span className="text-green-600 dark:text-green-400 font-semibold flex-shrink-0">
                       {formatCurrency(rp.amount)}
