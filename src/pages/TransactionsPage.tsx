@@ -150,8 +150,8 @@ export const TransactionsPage = () => {
 
   return (
     <div className="pb-20">
-      {/* Sticky Filter Bar */}
-      <div className="sticky top-0 z-30 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-4 md:p-6 lg:p-8">
+      {/* Fixed Filter Bar */}
+      <div className="fixed top-0 left-0 right-0 z-30 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-4 md:p-6 lg:p-8">
         <SimpleFilterBar
           filters={filters}
           updateFilter={updateFilter}
@@ -168,7 +168,7 @@ export const TransactionsPage = () => {
       </div>
 
       {/* Transaction list */}
-      <div className="p-4 md:p-6 lg:p-8">
+      <div className="pt-28 p-4 md:p-6 lg:p-8">
         {filteredTransactions.length === 0 ? (
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
             <Receipt size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />

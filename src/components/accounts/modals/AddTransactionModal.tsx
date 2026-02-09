@@ -110,18 +110,20 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose} role="dialog" aria-modal="true" aria-label="取引を追加">
-      <div
-        className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto"
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
-            <X size={20} />
-          </button>
-        </div>
+        <div className="overflow-y-auto flex-1 p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
+            <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
+              <X size={20} />
+            </button>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-5">
               <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
                 <button
                   type="button"
@@ -279,22 +281,23 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                 />
               </div>
 
-              <div className="flex gap-3 pt-1">
-                <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-slate-600">
-                  キャンセル
-                </button>
-                <button
-                  type="submit"
-                  disabled={!amount || !categoryId || (!accountId && !pmId)}
-                  className={`flex-1 py-2.5 px-4 rounded-lg text-white font-medium disabled:opacity-50 ${
-                    type === 'expense' ? 'bg-red-500' : 'bg-green-500'
-                  }`}
-                >
-                  {type === 'expense' ? '支出を登録' : '収入を登録'}
-                </button>
-              </div>
-        </form>
-      </div>
+          </div>
+        </div>
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex gap-3">
+          <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-slate-600">
+            キャンセル
+          </button>
+          <button
+            type="submit"
+            disabled={!amount || !categoryId || (!accountId && !pmId)}
+            className={`flex-1 py-2.5 px-4 rounded-lg text-white font-medium disabled:opacity-50 ${
+              type === 'expense' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
+            }`}
+          >
+            {type === 'expense' ? '支出を登録' : '収入を登録'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

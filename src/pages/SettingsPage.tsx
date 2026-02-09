@@ -683,57 +683,59 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="例: 太郎"
-              className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
-            <div className="flex gap-2 flex-wrap">
-              {COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  className={`w-8 h-8 rounded-full transition-transform ${
-                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
-                  }`}
-                  style={{ backgroundColor: c }}
-                />
-              ))}
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+        <div className="overflow-y-auto flex-1 p-4">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="例: 太郎"
+                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
+              <div className="flex gap-2 flex-wrap">
+                {COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setColor(c)}
+                    className={`w-8 h-8 rounded-full transition-transform ${
+                      color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
+                    }`}
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-          <div className="space-y-2 pt-2">
-            {member && !member.isDefault && onDelete && (
-              <button
-                type="button"
-                onClick={() => { onDelete(member); onClose(); }}
-                className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
-              >
-                削除
-              </button>
-            )}
-            <div className="flex gap-3">
-              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium">
-                キャンセル
-              </button>
-              <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
-                保存
-              </button>
-            </div>
+        </div>
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-2">
+          {member && !member.isDefault && onDelete && (
+            <button
+              type="button"
+              onClick={() => { onDelete(member); onClose(); }}
+              className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+            >
+              削除
+            </button>
+          )}
+          <div className="flex gap-3">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium hover:bg-gray-100 dark:hover:bg-slate-700">
+              キャンセル
+            </button>
+            <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700">
+              保存
+            </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 };
@@ -761,99 +763,101 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="例: 食費"
-              className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">対象メンバー</label>
-            <div className="flex flex-wrap gap-2">
-              {members.map((m) => (
-                <button
-                  key={m.id}
-                  type="button"
-                  onClick={() => setMemberId(m.id)}
-                  className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
-                    memberId === m.id
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
-                  }`}
-                >
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: m.color }} />
-                  {m.name}
-                </button>
-              ))}
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+        <div className="overflow-y-auto flex-1 p-4">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="例: 食費"
+                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
             </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
-            <div className="flex gap-2 flex-wrap">
-              {COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  className={`w-8 h-8 rounded-full transition-transform ${
-                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
-                  }`}
-                  style={{ backgroundColor: c }}
-                />
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">アイコン</label>
-            <div className="grid grid-cols-6 gap-2">
-              {ICON_NAMES.map((i) => {
-                const IconComponent = ICON_COMPONENTS[i];
-                return (
+            <div>
+              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">対象メンバー</label>
+              <div className="flex flex-wrap gap-2">
+                {members.map((m) => (
                   <button
-                    key={i}
+                    key={m.id}
                     type="button"
-                    onClick={() => setIcon(i)}
-                    className={`w-10 h-10 rounded-lg border flex items-center justify-center transition-colors ${
-                      icon === i
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                        : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                    onClick={() => setMemberId(m.id)}
+                    className={`flex items-center gap-2 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
+                      memberId === m.id
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                     }`}
                   >
-                    <IconComponent size={20} />
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: m.color }} />
+                    {m.name}
                   </button>
-                );
-              })}
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
+              <div className="flex gap-2 flex-wrap">
+                {COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setColor(c)}
+                    className={`w-8 h-8 rounded-full transition-transform ${
+                      color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
+                    }`}
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">アイコン</label>
+              <div className="grid grid-cols-6 gap-2">
+                {ICON_NAMES.map((i) => {
+                  const IconComponent = ICON_COMPONENTS[i];
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setIcon(i)}
+                      className={`w-10 h-10 rounded-lg border flex items-center justify-center transition-colors ${
+                        icon === i
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                          : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                      }`}
+                    >
+                      <IconComponent size={20} />
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
-          <div className="space-y-2 pt-2">
-            {category && onDelete && (
-              <button
-                type="button"
-                onClick={() => { onDelete(category.id); onClose(); }}
-                className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
-              >
-                削除
-              </button>
-            )}
-            <div className="flex gap-3">
-              <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium">
-                キャンセル
-              </button>
-              <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium">
-                保存
-              </button>
-            </div>
+        </div>
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-2">
+          {category && onDelete && (
+            <button
+              type="button"
+              onClick={() => { onDelete(category.id); onClose(); }}
+              className="w-full py-2 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+            >
+              削除
+            </button>
+          )}
+          <div className="flex gap-3">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium hover:bg-gray-100 dark:hover:bg-slate-700">
+              キャンセル
+            </button>
+            <button type="submit" className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700">
+              保存
+            </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 };
