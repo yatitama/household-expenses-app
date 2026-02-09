@@ -3,7 +3,6 @@ import { getCategoryIcon } from '../../utils/categoryIcons';
 import { ACCOUNT_TYPE_ICONS } from './AccountIcons';
 import { ACCOUNT_TYPE_LABELS } from './constants';
 import { AccountBalanceSchedule } from './AccountBalanceSchedule';
-import { RecentTransactions } from './RecentTransactions';
 import type { Account, Member, RecurringPayment, PaymentMethod } from '../../types';
 
 interface AccountCardProps {
@@ -11,14 +10,13 @@ interface AccountCardProps {
   member?: Member;
   allPaymentMethods: PaymentMethod[];
   onAddTransaction: () => void;
-  onAddRecurring: () => void;
   onEditRecurring: (rp: RecurringPayment) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
 }
 
 export const AccountCard = ({
   account, member, allPaymentMethods,
-  onAddTransaction, onAddRecurring,
+  onAddTransaction,
   onEditRecurring, onToggleRecurring,
 }: AccountCardProps) => {
 
@@ -37,14 +35,6 @@ export const AccountCard = ({
         >
           <PlusCircle size={16} />
           <span>追加</span>
-        </button>
-        <button
-          onClick={onAddRecurring}
-          className="flex-1 flex items-center justify-center gap-1 px-2 md:px-3 py-1.5 md:py-2 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-colors text-xs md:text-sm"
-          title="定期支払を設定"
-        >
-          <span>📅</span>
-          <span>定期</span>
         </button>
       </div>
 
@@ -88,15 +78,9 @@ export const AccountCard = ({
         <AccountBalanceSchedule
           account={account}
           paymentMethods={allPaymentMethods}
-          onAddRecurring={onAddRecurring}
           onEditRecurring={onEditRecurring}
           onToggleRecurring={onToggleRecurring}
         />
-      </div>
-
-      {/* 最近の取引 */}
-      <div className="mt-2 md:mt-4">
-        <RecentTransactions accountId={account.id} />
       </div>
     </div>
   );
