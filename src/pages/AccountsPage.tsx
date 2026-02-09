@@ -155,7 +155,7 @@ export const AccountsPage = () => {
             {unlinkedPMs.length > 0 && (
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <h3 className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
                     紐付未設定のカード ({unlinkedPMs.length}件)
                   </h3>
                 </div>
