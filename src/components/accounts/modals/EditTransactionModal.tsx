@@ -61,12 +61,14 @@ export const EditTransactionModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[60]" onClick={onClose} role="dialog" aria-modal="true" aria-label="取引を編集">
-      <div
-        className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[85vh] overflow-y-auto"
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">取引を編集</h3>
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="overflow-y-auto flex-1 p-4">
+          <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">取引を編集</h3>
+          <div className="space-y-5">
           <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
             <button
               type="button"
@@ -222,31 +224,32 @@ export const EditTransactionModal = ({
             />
           </div>
 
-          <div className="space-y-2 pt-1">
-            {onDelete && (
-              <button
-                type="button"
-                onClick={() => { onDelete(transaction.id); onClose(); }}
-                className="w-full py-2.5 px-4 rounded-lg bg-danger-600 text-white font-medium hover:bg-danger-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-danger-600 transition-colors"
-              >
-                削除
-              </button>
-            )}
-            <div className="flex gap-3">
-              <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-slate-600">
-                キャンセル
-              </button>
-              <button
-                type="submit"
-                disabled={!amount || !categoryId || (!accountId && !pmId)}
-                className="flex-1 py-2.5 px-4 rounded-lg bg-primary-700 text-white hover:bg-primary-800 font-medium disabled:opacity-50"
-              >
-                保存
-              </button>
-            </div>
           </div>
-        </form>
-      </div>
+        </div>
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-2">
+          {onDelete && (
+            <button
+              type="button"
+              onClick={() => { onDelete(transaction.id); onClose(); }}
+              className="w-full py-2.5 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
+            >
+              削除
+            </button>
+          )}
+          <div className="flex gap-3">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-slate-600">
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              disabled={!amount || !categoryId || (!accountId && !pmId)}
+              className="flex-1 py-2.5 px-4 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium disabled:opacity-50"
+            >
+              保存
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 };
