@@ -270,17 +270,17 @@ export const SettingsPage = () => {
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-4">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">設定</h2>
+    <div className="p-3 md:p-6 lg:p-8 space-y-3 md:space-y-4">
+      <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">設定</h2>
 
       {/* ダークモード切り替え */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl shadow-sm p-3 md:p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {isDark ? <Moon size={20} className="text-indigo-400" /> : <Sun size={20} className="text-yellow-500" />}
+          <div className="flex items-center gap-2 md:gap-3">
+            {isDark ? <Moon size={18} className="md:w-5 md:h-5 text-indigo-400" /> : <Sun size={18} className="md:w-5 md:h-5 text-yellow-500" />}
             <div>
-              <p className="font-medium text-gray-900 dark:text-gray-100">ダークモード</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{isDark ? 'ダークモード有効' : 'ライトモード有効'}</p>
+              <p className="text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">ダークモード</p>
+              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{isDark ? 'ダークモード有効' : 'ライトモード有効'}</p>
             </div>
           </div>
           <button
@@ -302,21 +302,21 @@ export const SettingsPage = () => {
       </div>
 
       {/* メンバー管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl shadow-sm overflow-hidden">
         <button
           onClick={() => setMembersOpen(!membersOpen)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          className="w-full flex items-center justify-between p-3 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={membersOpen}
           aria-label={membersOpen ? 'メンバー管理を折りたたむ' : 'メンバー管理を展開'}
         >
-          <div className="flex items-center gap-3">
-            <Users size={20} className="text-blue-600 dark:text-blue-400" />
+          <div className="flex items-center gap-2 md:gap-3">
+            <Users size={18} className="md:w-5 md:h-5 text-blue-600 dark:text-blue-400" />
             <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-gray-100">メンバー管理</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">家族のメンバーを追加・編集</p>
+              <p className="text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">メンバー管理</p>
+              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">家族のメンバーを追加・編集</p>
             </div>
           </div>
-          {membersOpen ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+          {membersOpen ? <ChevronUp size={18} className="md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={18} className="md:w-5 md:h-5 text-gray-400" />}
         </button>
 
         {membersOpen && (

@@ -81,7 +81,7 @@ export const AccountsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       {/* 総資産カード（固定ヘッダー） */}
-      <div className="sticky top-0 z-40 bg-gray-50 dark:bg-slate-900 pt-4 md:pt-6 lg:pt-8 px-4 md:px-6 lg:px-8">
+      <div className="sticky top-0 z-40 bg-gray-50 dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6 px-3 md:px-6 lg:px-8">
         {accounts.length > 0 && (
           <AssetCard
             totalBalance={totalBalance}
@@ -102,7 +102,7 @@ export const AccountsPage = () => {
       </div>
 
       {/* メインコンテンツエリア */}
-      <div className="p-4 md:p-6 lg:p-8 space-y-4">
+      <div className="p-3 md:p-6 lg:p-8 space-y-3 md:space-y-4">
         {accounts.length === 0 ? (
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm">
             <EmptyState

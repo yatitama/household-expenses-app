@@ -14,14 +14,14 @@ const BottomNavItem = ({ to, icon, label }: NavItemProps) => {
       to={to}
       end
       className={({ isActive }) =>
-        `flex flex-col items-center gap-0.5 px-3 py-2 text-sm font-medium transition-colors min-w-[56px] min-h-[56px] ${
+        `flex flex-col items-center gap-0.5 px-2 py-1.5 text-xs md:text-sm font-medium transition-colors min-w-[48px] min-h-[48px] md:min-w-[56px] md:min-h-[56px] ${
           isActive ? 'text-primary-700 dark:text-primary-400' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
         }`
       }
       title={label}
     >
-      <span className="[&>svg]:w-5 [&>svg]:h-5">{icon}</span>
-      <span className="text-center text-sm">{label}</span>
+      <span className="[&>svg]:w-4 [&>svg]:h-4 md:[&>svg]:w-5 md:[&>svg]:h-5">{icon}</span>
+      <span className="text-center text-xs md:text-sm">{label}</span>
     </NavLink>
   );
 };
@@ -150,7 +150,7 @@ export const Layout = () => {
           {/* メニューボタン */}
           <button
             onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-            className={`flex flex-col items-center gap-0.5 px-3 py-2 text-sm font-medium transition-colors min-w-[56px] min-h-[56px] ${
+            className={`flex flex-col items-center gap-0.5 px-2 py-1.5 text-xs md:text-sm font-medium transition-colors min-w-[48px] min-h-[48px] md:min-w-[56px] md:min-h-[56px] ${
               isDrawerOpen
                 ? 'text-primary-700 dark:text-primary-400'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
@@ -158,10 +158,10 @@ export const Layout = () => {
             aria-label="メニュー"
             title="メニュー"
           >
-            <span className="[&>svg]:w-5 [&>svg]:h-5">
-              {isDrawerOpen ? <X size={24} /> : <Menu size={24} />}
+            <span className="[&>svg]:w-4 [&>svg]:h-4 md:[&>svg]:w-5 md:[&>svg]:h-5">
+              {isDrawerOpen ? <X size={20} /> : <Menu size={20} />}
             </span>
-            <span className="text-center text-sm">その他</span>
+            <span className="text-center text-xs md:text-sm">その他</span>
           </button>
         </div>
       </nav>

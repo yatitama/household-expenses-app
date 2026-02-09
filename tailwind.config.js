@@ -8,15 +8,21 @@ export default {
   theme: {
     extend: {
       fontSize: {
-        'caption': ['11px', { lineHeight: '1.4' }],
-        'label': ['12px', { lineHeight: '1.4' }],
-        'xs': ['13px', { lineHeight: '1.5' }],
-        'sm': ['14px', { lineHeight: '1.5' }],
-        'base': ['15px', { lineHeight: '1.6' }],
-        'lg': ['16px', { lineHeight: '1.6' }],
-        'xl': ['18px', { lineHeight: '1.6' }],
-        '2xl': ['20px', { lineHeight: '1.5' }],
-        '3xl': ['24px', { lineHeight: '1.4' }],
+        'caption': ['10px', { lineHeight: '1.4' }],
+        'label': ['11px', { lineHeight: '1.4' }],
+        'xs': ['12px', { lineHeight: '1.5' }],
+        'sm': ['13px', { lineHeight: '1.5' }],
+        'base': ['14px', { lineHeight: '1.6' }],
+        'lg': ['15px', { lineHeight: '1.6' }],
+        'xl': ['16px', { lineHeight: '1.6' }],
+        '2xl': ['18px', { lineHeight: '1.5' }],
+        '3xl': ['20px', { lineHeight: '1.4' }],
+      },
+      screens: {
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
       },
       fontWeight: {
         'light': '300',
