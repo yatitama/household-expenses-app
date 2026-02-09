@@ -3,26 +3,27 @@ import { formatCurrency } from '../../utils/formatters';
 import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { ScheduleSection } from './ScheduleSection';
 import { IncomeSection } from './IncomeSection';
-import type { Account, PaymentMethod, LinkedPaymentMethod } from '../../types';
+import type { Account, PaymentMethod, RecurringPayment } from '../../types';
 
 interface AccountBalanceScheduleProps {
   account: Account;
-  linkedPaymentMethods: LinkedPaymentMethod[];
   paymentMethods: PaymentMethod[];
+  onAddRecurring: () => void;
+  onEditRecurring: (rp: RecurringPayment) => void;
+  onToggleRecurring: (rp: RecurringPayment) => void;
 }
 
 export const AccountBalanceSchedule = ({
   account,
-  linkedPaymentMethods,
   paymentMethods,
+  onAddRecurring,
+  onEditRecurring,
+  onToggleRecurring,
 }: AccountBalanceScheduleProps) => {
   const navigate = useNavigate();
 
-  // Get payment methods linked to this account
-  const linkedPMs = linkedPaymentMethods
-    .filter((lpm) => lpm.isActive)
-    .map((lpm) => paymentMethods.find((pm) => pm.id === lpm.paymentMethodId))
-    .filter((pm) => pm !== undefined) as PaymentMethod[];
+  // Get payment methods linked to this account (via linkedAccountId)
+  const linkedPMs = paymentMethods.filter((pm) => pm.linkedAccountId === account.id);
 
   // Get unsettled transactions for linked payment methods
   const unsettledTransactions = getUnsettledTransactions()
@@ -75,6 +76,9 @@ export const AccountBalanceSchedule = ({
           upcomingExpense={upcomingExpense}
           totalRecurringExpense={totalRecurringExpense}
           onViewUnsettled={handleViewUnsettled}
+          onAddRecurring={onAddRecurring}
+          onEditRecurring={onEditRecurring}
+          onToggleRecurring={onToggleRecurring}
         />
       )}
 
@@ -83,6 +87,8 @@ export const AccountBalanceSchedule = ({
         <IncomeSection
           upcomingIncome={upcomingIncome}
           totalRecurringIncome={totalRecurringIncome}
+          onEditRecurring={onEditRecurring}
+          onToggleRecurring={onToggleRecurring}
         />
       )}
     </div>

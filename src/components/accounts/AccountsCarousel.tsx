@@ -1,22 +1,16 @@
 import { useState, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AccountCard } from './AccountCard';
-import type { Account, Member, RecurringPayment, PaymentMethod, LinkedPaymentMethod } from '../../types';
+import type { Account, Member, RecurringPayment, PaymentMethod } from '../../types';
 
 interface AccountsCarouselProps {
   accounts: Account[];
   members: Member[];
   paymentMethods: PaymentMethod[];
-  linkedPaymentMethods: LinkedPaymentMethod[];
-  recurringPayments: RecurringPayment[];
-  pendingByPM: Record<string, number>;
   onAddTransaction: (target: { accountId?: string; paymentMethodId?: string }) => void;
   onAddRecurring: (target: { accountId?: string; paymentMethodId?: string }) => void;
   onEditRecurring: (rp: RecurringPayment) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
-  onAddLinkedPM: (target: { accountId: string }) => void;
-  onToggleLinkedPM: (lpm: LinkedPaymentMethod) => void;
-  onViewPM: (pm: PaymentMethod) => void;
 }
 
 const SWIPE_THRESHOLD = 50; // 最小スワイプ距離（px）
@@ -26,16 +20,10 @@ export const AccountsCarousel = ({
   accounts,
   members,
   paymentMethods,
-  linkedPaymentMethods,
-  recurringPayments,
-  pendingByPM,
   onAddTransaction,
   onAddRecurring,
   onEditRecurring,
   onToggleRecurring,
-  onAddLinkedPM,
-  onToggleLinkedPM,
-  onViewPM,
 }: AccountsCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -145,26 +133,16 @@ export const AccountsCarousel = ({
           }}
         >
           {accounts.map((account) => {
-            const accountLinkedPMs = linkedPaymentMethods.filter((lpm) => lpm.accountId === account.id);
-            const accountRecurrings = recurringPayments.filter(
-              (rp) => rp.accountId === account.id && !rp.paymentMethodId
-            );
             return (
               <div key={account.id} className="w-full flex-shrink-0 min-w-0">
                 <AccountCard
                   account={account}
                   member={getMember(account.memberId)}
-                  linkedPaymentMethodsData={accountLinkedPMs}
                   allPaymentMethods={paymentMethods}
-                  pendingByPM={pendingByPM}
-                  recurringPayments={accountRecurrings}
                   onAddTransaction={() => onAddTransaction({ accountId: account.id })}
                   onAddRecurring={() => onAddRecurring({ accountId: account.id })}
                   onEditRecurring={onEditRecurring}
                   onToggleRecurring={onToggleRecurring}
-                  onAddLinkedPM={() => onAddLinkedPM({ accountId: account.id })}
-                  onToggleLinkedPM={onToggleLinkedPM}
-                  onViewPM={onViewPM}
                 />
               </div>
             );

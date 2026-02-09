@@ -1,40 +1,26 @@
 import { PlusCircle } from 'lucide-react';
-import { categoryService } from '../../services/storage';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { ACCOUNT_TYPE_ICONS } from './AccountIcons';
 import { ACCOUNT_TYPE_LABELS } from './constants';
 import { AccountBalanceSchedule } from './AccountBalanceSchedule';
-import { RecurringAndLinkedList } from './RecurringAndLinkedList';
 import { RecentTransactions } from './RecentTransactions';
-import type { Account, Member, RecurringPayment, PaymentMethod, LinkedPaymentMethod } from '../../types';
+import type { Account, Member, RecurringPayment, PaymentMethod } from '../../types';
 
 interface AccountCardProps {
   account: Account;
   member?: Member;
-  linkedPaymentMethodsData: LinkedPaymentMethod[];
   allPaymentMethods: PaymentMethod[];
-  pendingByPM: Record<string, number>;
-  recurringPayments: RecurringPayment[];
   onAddTransaction: () => void;
   onAddRecurring: () => void;
   onEditRecurring: (rp: RecurringPayment) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
-  onAddLinkedPM: () => void;
-  onToggleLinkedPM: (lpm: LinkedPaymentMethod) => void;
-  onViewPM: (pm: PaymentMethod) => void;
 }
 
 export const AccountCard = ({
-  account, member, linkedPaymentMethodsData, allPaymentMethods, pendingByPM, recurringPayments,
+  account, member, allPaymentMethods,
   onAddTransaction, onAddRecurring,
   onEditRecurring, onToggleRecurring,
-  onAddLinkedPM, onToggleLinkedPM,
-  onViewPM,
 }: AccountCardProps) => {
-  const categories = categoryService.getAll();
-  const getPaymentMethod = (id: string) => allPaymentMethods.find((pm) => pm.id === id);
-  const getUnsettledAmount = (paymentMethodId: string) => pendingByPM[paymentMethodId] || 0;
-  const getCategory = (id: string) => categories.find((c) => c.id === id);
 
   return (
     <div
@@ -101,29 +87,12 @@ export const AccountCard = ({
       <div className="mt-3 md:mt-4">
         <AccountBalanceSchedule
           account={account}
-          linkedPaymentMethods={linkedPaymentMethodsData}
           paymentMethods={allPaymentMethods}
+          onAddRecurring={onAddRecurring}
+          onEditRecurring={onEditRecurring}
+          onToggleRecurring={onToggleRecurring}
         />
       </div>
-
-      {/* 定期取引・支払い手段セクション */}
-      {(recurringPayments.length > 0 || linkedPaymentMethodsData.length > 0) && (
-        <div className="mt-2 md:mt-4 pt-2 md:pt-4 border-t border-gray-200 dark:border-gray-700">
-          <RecurringAndLinkedList
-            recurringItems={recurringPayments}
-            linkedItems={linkedPaymentMethodsData}
-            onAddRecurring={onAddRecurring}
-            onEditRecurring={onEditRecurring}
-            onToggleRecurring={onToggleRecurring}
-            onAddLinked={onAddLinkedPM}
-            onToggleLinked={onToggleLinkedPM}
-            onViewPM={onViewPM}
-            getCategory={getCategory}
-            getPaymentMethod={getPaymentMethod}
-            getUnsettledAmount={getUnsettledAmount}
-          />
-        </div>
-      )}
 
       {/* 最近の取引 */}
       <div className="mt-2 md:mt-4">
