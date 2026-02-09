@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Receipt } from 'lucide-react';
@@ -20,7 +20,21 @@ export const TransactionsPage = () => {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
   const [groupOrder, setGroupOrder] = useState<'asc' | 'desc'>('desc');
+  const [filterBarHeight, setFilterBarHeight] = useState(0);
+  const filterBarRef = useRef<HTMLDivElement>(null);
   useBodyScrollLock(!!editingTransaction);
+
+  // フィルターバーの高さを動的に計算
+  useEffect(() => {
+    const updateHeight = () => {
+      if (filterBarRef.current) {
+        setFilterBarHeight(filterBarRef.current.offsetHeight);
+      }
+    };
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
 
   // URLパラメータからフィルターを初期化
   useEffect(() => {
@@ -151,7 +165,10 @@ export const TransactionsPage = () => {
   return (
     <div className="pb-20">
       {/* Fixed Filter Bar */}
-      <div className="fixed top-0 left-0 right-0 z-30 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-4 md:p-6 lg:p-8">
+      <div
+        ref={filterBarRef}
+        className="fixed top-0 left-0 right-0 z-30 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-4 md:p-6 lg:p-8"
+      >
         <SimpleFilterBar
           filters={filters}
           updateFilter={updateFilter}
@@ -168,7 +185,10 @@ export const TransactionsPage = () => {
       </div>
 
       {/* Transaction list */}
-      <div className="pt-40 p-4 md:p-6 lg:p-8">
+      <div
+        style={{ paddingTop: `${filterBarHeight + 16}px` }}
+        className="p-4 md:p-6 lg:p-8"
+      >
         {filteredTransactions.length === 0 ? (
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
             <Receipt size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
