@@ -66,12 +66,12 @@ export const IncomeSection = ({
                 return (
                   <div
                     key={rp.id}
-                    className={`flex items-center justify-between text-xs md:text-sm gap-2 ${rp.isActive ? '' : 'opacity-40'}`}
+                    className={`flex items-start justify-between text-xs md:text-sm gap-2 ${rp.isActive ? '' : 'opacity-40'}`}
                   >
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="flex items-start gap-2 min-w-0 flex-1">
                       <button
                         onClick={() => onToggleRecurring(rp)}
-                        className="flex-shrink-0 hover:opacity-70 transition-opacity"
+                        className="flex-shrink-0 hover:opacity-70 transition-opacity mt-0.5"
                       >
                         {rp.isActive
                           ? <ToggleRight size={16} className="text-green-500" />
@@ -80,17 +80,17 @@ export const IncomeSection = ({
                       </button>
                       <button
                         onClick={() => onEditRecurring(rp)}
-                        className="flex-1 flex items-center gap-2 min-w-0 hover:opacity-70 transition-opacity"
+                        className="flex-1 flex items-start gap-2 min-w-0 hover:opacity-70 transition-opacity"
                       >
                         <div
-                          className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                          className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
                           style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
                         >
                           {getCategoryIcon(category?.icon || '', 12)}
                         </div>
                         <div className="min-w-0">
                           <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{freqLabel}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{freqLabel}</p>
                         </div>
                       </button>
                     </div>

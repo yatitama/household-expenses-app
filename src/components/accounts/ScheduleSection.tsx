@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronRight, CreditCard, Calendar, ArrowRight, ToggleLeft, ToggleRight } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
+import { calculateRecurringNextDate } from '../../utils/billingUtils';
 import { categoryService } from '../../services/storage';
 import type { Transaction, RecurringPayment, PaymentMethod } from '../../types';
 
@@ -79,18 +80,20 @@ export const ScheduleSection = ({
                   <button
                     key={cardInfo.paymentMethod.id}
                     onClick={() => onViewUnsettled(cardInfo.paymentMethod.id)}
-                    className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 dark:hover:bg-slate-700 rounded transition-colors text-left"
+                    className="w-full flex items-start justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 dark:hover:bg-slate-700 rounded transition-colors text-left min-w-0"
                   >
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="flex items-start gap-2 min-w-0 flex-1">
                       <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
                         style={{ backgroundColor: `${cardInfo.paymentMethod.color}20`, color: cardInfo.paymentMethod.color }}
                       >
                         <CreditCard size={12} />
                       </div>
-                      <span className="truncate text-gray-900 dark:text-gray-100">
-                        {cardInfo.paymentMethod.name}
-                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-gray-900 dark:text-gray-100">
+                          {cardInfo.paymentMethod.name}
+                        </p>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <span className="text-red-600 dark:text-red-400 font-semibold">
@@ -122,19 +125,33 @@ export const ScheduleSection = ({
               <div className="space-y-1.5 ml-6">
                 {upcomingExpense.map((rp) => {
                   const category = getCategory(rp.categoryId);
-                  const freqLabel = rp.frequency === 'monthly'
-                    ? `毎月${rp.dayOfMonth}日`
-                    : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
+
+                  // カード紐付けの場合は次回引き落とし日、そうでなければ次回実行日を表示
+                  let dateLabel = '';
+                  const nextDate = calculateRecurringNextDate(rp);
+                  if (nextDate) {
+                    if (rp.paymentMethodId) {
+                      dateLabel = `${nextDate.getMonth() + 1}月${nextDate.getDate()}日引き落とし`;
+                    } else {
+                      dateLabel = rp.frequency === 'monthly'
+                        ? `毎月${rp.dayOfMonth}日`
+                        : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
+                    }
+                  } else {
+                    dateLabel = rp.frequency === 'monthly'
+                      ? `毎月${rp.dayOfMonth}日`
+                      : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
+                  }
 
                   return (
                     <div
                       key={rp.id}
-                      className={`flex items-center justify-between text-xs md:text-sm gap-2 ${rp.isActive ? '' : 'opacity-40'}`}
+                      className={`flex items-start justify-between text-xs md:text-sm gap-2 ${rp.isActive ? '' : 'opacity-40'}`}
                     >
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className="flex items-start gap-2 min-w-0 flex-1">
                         <button
                           onClick={() => onToggleRecurring(rp)}
-                          className="flex-shrink-0 hover:opacity-70 transition-opacity"
+                          className="flex-shrink-0 hover:opacity-70 transition-opacity mt-0.5"
                         >
                           {rp.isActive
                             ? <ToggleRight size={16} className="text-green-500" />
@@ -143,17 +160,17 @@ export const ScheduleSection = ({
                         </button>
                         <button
                           onClick={() => onEditRecurring(rp)}
-                          className="flex-1 flex items-center gap-2 min-w-0 hover:opacity-70 transition-opacity"
+                          className="flex-1 flex items-start gap-2 min-w-0 hover:opacity-70 transition-opacity"
                         >
                           <div
-                            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
                             style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
                           >
                             {getCategoryIcon(category?.icon || '', 12)}
                           </div>
                           <div className="min-w-0">
                             <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{freqLabel}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
                           </div>
                         </button>
                       </div>

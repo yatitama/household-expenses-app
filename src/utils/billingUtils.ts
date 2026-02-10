@@ -199,6 +199,76 @@ export const calculateNextRecurringDate = (
 };
 
 /**
+ * 定期支払いの次回発生日を計算（カード紐付けの場合はカード引き落とし日を使用）
+ */
+export const calculateRecurringNextDate = (
+  recurring: RecurringPayment,
+  fromDate: Date = new Date()
+): Date | null => {
+  if (!recurring.isActive) return null;
+
+  // カード紐付けの場合は引き落とし日を使用
+  if (recurring.paymentMethodId) {
+    const pm = paymentMethodService.getById(recurring.paymentMethodId);
+    if (pm) {
+      const today = startOfDay(fromDate);
+      const { frequency, monthOfYear } = recurring;
+
+      if (frequency === 'monthly') {
+        // 月次の場合、翌月の引き落とし日を計算
+        const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+        // ダミー日付でカード引き落とし日を計算
+        const dummyDate = format(new Date(today.getFullYear(), today.getMonth(), 1), 'yyyy-MM-dd');
+        const paymentDate = calculatePaymentDate(dummyDate, pm);
+        if (!paymentDate) return null;
+
+        const paymentDay = paymentDate.getDate();
+
+        // 今月の引き落とし日
+        let nextDate = new Date(today.getFullYear(), today.getMonth(), paymentDay);
+        const nextDateStr = format(nextDate, 'yyyy-MM-dd');
+        const todayStr = format(today, 'yyyy-MM-dd');
+
+        if (isBefore(nextDate, today) || nextDateStr === todayStr) {
+          // 今日以前なら来月の引き落とし日
+          const nextMonth = addMonths(thisMonth, 1);
+          nextDate = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), paymentDay);
+        }
+
+        return startOfDay(nextDate);
+      }
+
+      // 年次の場合も同様に計算
+      if (frequency === 'yearly' && monthOfYear) {
+        const thisYearMonth = new Date(today.getFullYear(), monthOfYear - 1, 1);
+        const dummyDate = format(thisYearMonth, 'yyyy-MM-dd');
+        const paymentDate = calculatePaymentDate(dummyDate, pm);
+        if (!paymentDate) return null;
+
+        const paymentDay = paymentDate.getDate();
+
+        let nextDate = new Date(today.getFullYear(), monthOfYear - 1, paymentDay);
+        const nextDateStr = format(nextDate, 'yyyy-MM-dd');
+        const todayStr = format(today, 'yyyy-MM-dd');
+
+        if (isBefore(nextDate, today) || nextDateStr === todayStr) {
+          const nextYearMonth = new Date(today.getFullYear() + 1, monthOfYear - 1, 1);
+          nextDate = new Date(nextYearMonth.getFullYear(), nextYearMonth.getMonth(), paymentDay);
+        }
+
+        return startOfDay(nextDate);
+      }
+
+      return null;
+    }
+  }
+
+  // カード紐付けでない場合は通常の計算
+  return calculateNextRecurringDate(recurring, fromDate);
+};
+
+/**
  * 指定日数以内に発生する定期支払い・収入を取得
  */
 export const getUpcomingRecurringPayments = (days: number = 31): RecurringPayment[] => {
@@ -208,7 +278,7 @@ export const getUpcomingRecurringPayments = (days: number = 31): RecurringPaymen
 
   return all.filter((rp) => {
     if (!rp.isActive) return false;
-    const nextDate = calculateNextRecurringDate(rp, today);
+    const nextDate = calculateRecurringNextDate(rp, today);
     if (!nextDate) return false;
     return !isBefore(limitDate, nextDate);
   });
