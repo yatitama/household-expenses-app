@@ -7,7 +7,6 @@ interface AccountsCarouselProps {
   accounts: Account[];
   members: Member[];
   paymentMethods: PaymentMethod[];
-  onAddTransaction: (target: { accountId?: string; paymentMethodId?: string }) => void;
   onEditRecurring: (rp: RecurringPayment) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
 }
@@ -19,7 +18,6 @@ export const AccountsCarousel = ({
   accounts,
   members,
   paymentMethods,
-  onAddTransaction,
   onEditRecurring,
   onToggleRecurring,
 }: AccountsCarouselProps) => {
@@ -137,7 +135,6 @@ export const AccountsCarousel = ({
                   account={account}
                   member={getMember(account.memberId)}
                   allPaymentMethods={paymentMethods}
-                  onAddTransaction={() => onAddTransaction({ accountId: account.id })}
                   onEditRecurring={onEditRecurring}
                   onToggleRecurring={onToggleRecurring}
                 />

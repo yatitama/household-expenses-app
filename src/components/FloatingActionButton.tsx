@@ -51,14 +51,14 @@ export const FloatingActionButton = ({
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 flex flex-col gap-2">
           <button
             onClick={handleAddTransaction}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white dark:bg-slate-800 shadow-lg hover:shadow-xl transition-shadow border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-900 dark:text-gray-50"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 shadow-lg hover:shadow-xl transition-all border border-primary-200 dark:border-primary-800 text-sm font-medium text-primary-700 dark:text-primary-400"
             title="取引を追加"
           >
             <span>取引追加</span>
           </button>
           <button
             onClick={handleAddRecurring}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white dark:bg-slate-800 shadow-lg hover:shadow-xl transition-shadow border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-900 dark:text-gray-50"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 shadow-lg hover:shadow-xl transition-all border border-primary-200 dark:border-primary-800 text-sm font-medium text-primary-700 dark:text-primary-400"
             title="定期取引を追加"
           >
             <span>定期取引追加</span>

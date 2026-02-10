@@ -1,4 +1,3 @@
-import { PlusCircle } from 'lucide-react';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { ACCOUNT_TYPE_ICONS } from './AccountIcons';
 import { ACCOUNT_TYPE_LABELS } from './constants';
@@ -9,14 +8,12 @@ interface AccountCardProps {
   account: Account;
   member?: Member;
   allPaymentMethods: PaymentMethod[];
-  onAddTransaction: () => void;
   onEditRecurring: (rp: RecurringPayment) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
 }
 
 export const AccountCard = ({
   account, member, allPaymentMethods,
-  onAddTransaction,
   onEditRecurring, onToggleRecurring,
 }: AccountCardProps) => {
 
@@ -25,19 +22,6 @@ export const AccountCard = ({
       data-account-id={account.id}
       className={`bg-white dark:bg-slate-800 rounded-lg md:rounded-xl p-3 md:p-4 shadow-sm border-2 border-transparent transition-all duration-200`}
     >
-
-      {/* クイックアクションボタン */}
-      <div className="flex gap-2 mb-2 md:mb-3">
-        <button
-          onClick={onAddTransaction}
-          className="flex-1 flex items-center justify-center gap-1 px-2 md:px-3 py-1.5 md:py-2 bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/30 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-400 rounded-lg font-medium transition-colors text-xs md:text-sm"
-          title="取引を追加"
-        >
-          <PlusCircle size={16} />
-          <span>追加</span>
-        </button>
-      </div>
-
       {/* 口座情報 */}
       <div className="flex gap-2 md:gap-2.5">
         {/* 口座アイコン */}
