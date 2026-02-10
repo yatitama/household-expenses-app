@@ -49,7 +49,7 @@ export const FloatingActionButton = ({
 
       <div
         ref={menuRef}
-        className="fixed z-50 flex flex-col items-end gap-3"
+        className="fixed z-40 flex flex-col items-end gap-3"
         style={{
           bottom: 'calc(1.5rem + 64px)',
           right: '1.5rem',
