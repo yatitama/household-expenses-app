@@ -132,7 +132,6 @@ export const AccountsPage = () => {
               accounts={accounts}
               members={members}
               paymentMethods={paymentMethods}
-              onAddTransaction={(target) => openModal({ type: 'add-transaction', data: target })}
               onEditRecurring={handleEditRecurring}
               onToggleRecurring={handleToggleRecurring}
             />
@@ -156,7 +155,6 @@ export const AccountsPage = () => {
                         pendingAmount={pendingByPM[pm.id] || 0}
                         recurringPayments={pmRecurrings}
                         onView={() => openModal({ type: 'viewing-pm', data: pm })}
-                        onAddTransaction={() => openModal({ type: 'add-transaction', data: { paymentMethodId: pm.id, accountId: pm.linkedAccountId } })}
                         onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
                         onEditRecurring={handleEditRecurring}
                         onToggleRecurring={handleToggleRecurring}
@@ -212,8 +210,8 @@ export const AccountsPage = () => {
       {/* フローティングアクションボタン */}
       {accounts.length > 0 && (
         <FloatingActionButton
-          onAddTransaction={() => openModal({ type: 'add-transaction', data: { accountId: accounts[0].id } })}
-          onAddRecurring={() => handleAddRecurring({ accountId: accounts[0].id })}
+          onAddTransaction={() => openModal({ type: 'add-transaction', data: {} })}
+          onAddRecurring={() => handleAddRecurring({})}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
-import { PlusCircle, Link2 } from 'lucide-react';
+import { Link2 } from 'lucide-react';
 import { categoryService } from '../../services/storage';
 import { formatCurrency } from '../../utils/formatters';
 import { PM_TYPE_ICONS } from './AccountIcons';
@@ -12,7 +12,6 @@ interface PaymentMethodCardProps {
   pendingAmount: number;
   recurringPayments: RecurringPayment[];
   onView: () => void;
-  onAddTransaction: () => void;
   onAddRecurring: () => void;
   onEditRecurring: (rp: RecurringPayment) => void;
   onToggleRecurring: (rp: RecurringPayment) => void;
@@ -20,7 +19,7 @@ interface PaymentMethodCardProps {
 
 export const PaymentMethodCard = ({
   paymentMethod, linkedAccountName, pendingAmount, recurringPayments,
-  onView, onAddTransaction, onAddRecurring,
+  onView, onAddRecurring,
   onEditRecurring, onToggleRecurring,
 }: PaymentMethodCardProps) => {
   const categories = categoryService.getAll();
@@ -28,7 +27,7 @@ export const PaymentMethodCard = ({
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl shadow-sm p-3 md:p-4">
-      <div className="flex justify-between items-start">
+      <div className="flex items-start">
         <button onClick={onView} className="flex items-center gap-2 md:gap-3 flex-1 text-left" aria-label={`${paymentMethod.name}の詳細を表示`}>
           <div
             className="w-8 md:w-10 h-8 md:h-10 rounded-full flex items-center justify-center text-white flex-shrink-0"
@@ -46,9 +45,6 @@ export const PaymentMethodCard = ({
               </span>
             </div>
           </div>
-        </button>
-        <button onClick={onAddTransaction} className="p-1 md:p-2 text-purple-500 hover:text-purple-700 dark:text-purple-400 flex-shrink-0" title="取引追加" aria-label="取引を追加">
-          <PlusCircle size={16} className="md:w-4.5 md:h-4.5" />
         </button>
       </div>
       {pendingAmount > 0 && (
