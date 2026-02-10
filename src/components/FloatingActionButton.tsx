@@ -42,14 +42,14 @@ export const FloatingActionButton = ({
       {isOpen && (
         <button
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 bg-black/40 z-50 animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/40 z-40 animate-in fade-in duration-200"
           aria-label="メニューを閉じる"
         />
       )}
 
       <div
         ref={menuRef}
-        className="fixed z-40 flex flex-col items-end gap-3"
+        className="fixed z-50 flex flex-col items-end gap-3"
         style={{
           bottom: 'calc(1.5rem + 64px)',
           right: '1.5rem',
