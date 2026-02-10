@@ -57,7 +57,7 @@ export const GradientPickerModal = ({ currentFrom, currentTo, onSave, onClose }:
   const [selectedTo, setSelectedTo] = useState(currentTo);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
       <div
         className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}

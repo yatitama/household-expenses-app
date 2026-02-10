@@ -41,7 +41,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
       <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md md:max-w-lg sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{paymentMethod ? '支払い手段を編集' : '支払い手段を追加'}</h3>
