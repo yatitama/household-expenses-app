@@ -37,58 +37,59 @@ export const FloatingActionButton = ({
   };
 
   return (
-    <div
-      ref={menuRef}
-      className="fixed z-40 flex flex-col items-end gap-3"
-      style={{
-        bottom: 'calc(1.5rem + 64px)',
-        right: '1.5rem',
-      }}
-      onContextMenu={(e) => e.preventDefault()}
-    >
-      {/* メニュー項目 */}
+    <>
+      {/* 背景を暗くするオーバーレイ */}
       {isOpen && (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 flex flex-col gap-2">
-          <button
-            onClick={handleAddTransaction}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:shadow-xl transition-all border text-sm font-medium"
-            style={{
-              backgroundColor: 'rgb(239, 246, 255)',
-              borderColor: 'rgb(191, 219, 254)',
-              color: 'rgb(29, 78, 216)',
-            }}
-            title="取引を追加"
-          >
-            <span>取引追加</span>
-          </button>
-          <button
-            onClick={handleAddRecurring}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:shadow-xl transition-all border text-sm font-medium"
-            style={{
-              backgroundColor: 'rgb(239, 246, 255)',
-              borderColor: 'rgb(191, 219, 254)',
-              color: 'rgb(29, 78, 216)',
-            }}
-            title="定期取引を追加"
-          >
-            <span>定期取引追加</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-black/40 z-30 animate-in fade-in duration-200"
+          aria-label="メニューを閉じる"
+        />
       )}
 
-      {/* FABボタン */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-200"
+      <div
+        ref={menuRef}
+        className="fixed z-40 flex flex-col items-end gap-3"
         style={{
-          backgroundColor: 'rgb(37, 99, 235)',
+          bottom: 'calc(1.5rem + 64px)',
+          right: '1.5rem',
         }}
-        title={isOpen ? "メニューを閉じる" : "メニューを開く"}
-        aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
-        aria-expanded={isOpen}
+        onContextMenu={(e) => e.preventDefault()}
       >
-        {isOpen ? <X size={24} /> : <Plus size={24} />}
-      </button>
-    </div>
+        {/* メニュー項目 */}
+        {isOpen && (
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 flex flex-col gap-2">
+            <button
+              onClick={handleAddTransaction}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:shadow-lg transition-all bg-white dark:bg-slate-700 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-sm font-medium hover:bg-blue-50 dark:hover:bg-slate-600"
+              title="取引を追加"
+            >
+              <span>取引追加</span>
+            </button>
+            <button
+              onClick={handleAddRecurring}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:shadow-lg transition-all bg-white dark:bg-slate-700 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-sm font-medium hover:bg-blue-50 dark:hover:bg-slate-600"
+              title="定期取引を追加"
+            >
+              <span>定期取引追加</span>
+            </button>
+          </div>
+        )}
+
+        {/* FABボタン */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-200"
+          style={{
+            backgroundColor: 'rgb(37, 99, 235)',
+          }}
+          title={isOpen ? "メニューを閉じる" : "メニューを開く"}
+          aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
+          aria-expanded={isOpen}
+        >
+          {isOpen ? <X size={24} /> : <Plus size={24} />}
+        </button>
+      </div>
+    </>
   );
 };
