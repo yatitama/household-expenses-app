@@ -11,6 +11,7 @@ import { AssetCard } from '../components/accounts/AssetCard';
 import { AccountsCarousel } from '../components/accounts/AccountsCarousel';
 import { PendingExpenseSection } from '../components/accounts/PendingExpenseSection';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
+import { FloatingActionButton } from '../components/FloatingActionButton';
 import { PMTransactionsModal } from '../components/accounts/modals/PMTransactionsModal';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
@@ -207,6 +208,14 @@ export const AccountsPage = () => {
         confirmText="削除"
         confirmVariant="danger"
       />
+
+      {/* フローティングアクションボタン */}
+      {accounts.length > 0 && (
+        <FloatingActionButton
+          onAddTransaction={() => openModal({ type: 'add-transaction', data: { accountId: accounts[0].id } })}
+          onAddRecurring={() => handleAddRecurring({ accountId: accounts[0].id })}
+        />
+      )}
     </div>
   );
 };
