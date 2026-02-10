@@ -155,7 +155,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
             <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-slate-600 text-sm">
               キャンセル
             </button>
-            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 text-sm">
+            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>
               保存
             </button>
           </div>
