@@ -79,9 +79,9 @@ export const FloatingActionButton = ({
         {/* FABボタン */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-200"
+          className="flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:opacity-90"
           style={{
-            backgroundColor: 'rgb(37, 99, 235)',
+            backgroundColor: 'var(--theme-primary)',
           }}
           title={isOpen ? "メニューを閉じる" : "メニューを開く"}
           aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}

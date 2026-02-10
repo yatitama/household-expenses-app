@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { ACCOUNT_TYPE_LABELS, COLORS } from '../constants';
 import { ACCOUNT_TYPE_ICONS } from '../AccountIcons';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { getRecommendedColorsFromTheme } from '../../../utils/themes';
 import { COMMON_MEMBER_ID } from '../../../types';
 import type { Account, AccountType, AccountInput, Member } from '../../../types';
 
@@ -15,13 +13,11 @@ interface AccountModalProps {
 }
 
 export const AccountModal = ({ account, members, onSave, onClose, onDelete }: AccountModalProps) => {
-  const { currentTheme } = useTheme();
   const [name, setName] = useState(account?.name || '');
   const [memberId, setMemberId] = useState(account?.memberId || COMMON_MEMBER_ID);
   const [accountType, setAccountType] = useState<AccountType>(account?.type || 'bank');
   const [balance, setBalance] = useState(account?.balance.toString() || '0');
   const [color, setColor] = useState(account?.color || COLORS[0]);
-  const themeColors = getRecommendedColorsFromTheme(currentTheme);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,9 +61,10 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   onClick={() => setMemberId(member.id)}
                   className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     memberId === member.id
-                      ? 'bg-blue-600 text-white border-blue-600'
+                      ? 'text-white border-transparent'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
+                  style={memberId === member.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
                   {member.name}
@@ -86,9 +83,10 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   onClick={() => setAccountType(value)}
                   className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     accountType === value
-                      ? 'bg-blue-600 text-white border-blue-600'
+                      ? 'text-white border-transparent'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
+                  style={accountType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
                   {ACCOUNT_TYPE_ICONS[value]}
                   {label}
@@ -108,22 +106,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
           </div>
 
           <div>
-            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">テーマカラー推奨色</label>
-            <div className="flex gap-2 flex-wrap mb-4">
-              {themeColors.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  className={`w-10 h-10 rounded-full transition-transform border-2 ${
-                    color === c ? 'ring-2 ring-offset-2 ring-blue-600 scale-110 border-blue-600' : 'border-transparent'
-                  }`}
-                  style={{ backgroundColor: c }}
-                  title="テーマ推奨色"
-                />
-              ))}
-            </div>
-            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">全色</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">色</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button
@@ -131,7 +114,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-8 h-8 rounded-full transition-transform ${
-                    color === c && !themeColors.includes(c) ? 'ring-2 ring-offset-2 ring-blue-600 scale-110' : ''
+                    color === c ? 'ring-2 ring-offset-2 ring-blue-600 scale-110' : ''
                   }`}
                   style={{ backgroundColor: c }}
                 />

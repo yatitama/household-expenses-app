@@ -140,7 +140,7 @@ export type LinkedPaymentMethodInput = Omit<LinkedPaymentMethod, 'id' | 'created
 export const COMMON_MEMBER_ID = 'common';
 
 // テーマカラータイプ
-export type ThemeColor = 'blue' | 'green' | 'purple' | 'orange' | 'pink';
+export type ThemeColor = 'blue' | 'red' | 'green' | 'yellow' | 'purple' | 'pink' | 'cyan' | 'indigo' | 'rose' | 'teal' | 'orange' | 'lime' | 'sky';
 
 // テーマ色パレット
 export interface ThemeColorPalette {

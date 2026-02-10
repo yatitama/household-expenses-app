@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { Check, Info } from 'lucide-react';
 import { PM_TYPE_LABELS, BILLING_TYPE_LABELS, COLORS } from '../constants';
 import { PM_TYPE_ICONS } from '../AccountIcons';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { getRecommendedColorsFromTheme } from '../../../utils/themes';
 import { COMMON_MEMBER_ID } from '../../../types';
 import type { Account, PaymentMethod, PaymentMethodType, PaymentMethodInput, BillingType, Member } from '../../../types';
 
@@ -17,7 +15,6 @@ interface PaymentMethodModalProps {
 }
 
 export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, onClose, onDelete }: PaymentMethodModalProps) => {
-  const { currentTheme } = useTheme();
   const [name, setName] = useState(paymentMethod?.name || '');
   const [memberId, setMemberId] = useState(paymentMethod?.memberId || COMMON_MEMBER_ID);
   const [pmType, setPmType] = useState<PaymentMethodType>(paymentMethod?.type || 'credit_card');
@@ -27,7 +24,6 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
   const [paymentDay, setPaymentDay] = useState(paymentMethod?.paymentDay?.toString() || '10');
   const [paymentMonthOffset, setPaymentMonthOffset] = useState(paymentMethod?.paymentMonthOffset?.toString() || '1');
   const [color, setColor] = useState(paymentMethod?.color || COLORS[5]);
-  const themeColors = getRecommendedColorsFromTheme(currentTheme);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,9 +68,10 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   onClick={() => setMemberId(member.id)}
                   className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     memberId === member.id
-                      ? 'bg-blue-600 text-white border-blue-600'
+                      ? 'text-white border-transparent'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
+                  style={memberId === member.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
                   {member.name}
@@ -97,9 +94,10 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   }}
                   className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     pmType === value
-                      ? 'bg-blue-600 text-white border-blue-600'
+                      ? 'text-white border-transparent'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
+                  style={pmType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
                   {PM_TYPE_ICONS[value]}
                   {label}
@@ -221,22 +219,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
           })()}
 
           <div>
-            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">テーマカラー推奨色</label>
-            <div className="flex gap-2 flex-wrap mb-4">
-              {themeColors.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  className={`w-10 h-10 rounded-full transition-transform border-2 ${
-                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 border-blue-500' : 'border-transparent'
-                  }`}
-                  style={{ backgroundColor: c }}
-                  title="テーマ推奨色"
-                />
-              ))}
-            </div>
-            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">全色</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">色</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button
@@ -244,7 +227,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-8 h-8 rounded-full transition-transform ${
-                    color === c && !themeColors.includes(c) ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''
+                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''
                   }`}
                   style={{ backgroundColor: c }}
                 />
