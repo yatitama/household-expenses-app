@@ -241,3 +241,22 @@ export const getRecommendedColorsFromTheme = (theme: ThemeColor): string[] => {
   const palette = getThemePalette(theme);
   return [palette[400], palette[500], palette[600], palette[700]];
 };
+
+/**
+ * テーマカラーに基づいたグラデーションを取得
+ */
+export const getThemeGradient = (theme: ThemeColor): { from: string; to: string } => {
+  const palette = getThemePalette(theme);
+  return {
+    from: palette[400],
+    to: palette[700],
+  };
+};
+
+/**
+ * テーマカラーに基づいた薄い背景色を取得（口座残高など）
+ */
+export const getThemeLightBackground = (theme: ThemeColor): string => {
+  const palette = getThemePalette(theme);
+  return palette[100];
+};
