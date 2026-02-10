@@ -43,20 +43,43 @@ const saveThemeToStorage = (theme: ThemeColor): void => {
   }
 };
 
+/**
+ * CSS 変数を使用してテーマカラーをドキュメントに適用
+ */
+const applyThemeToCSSVariables = (theme: ThemeColor): void => {
+  const palette = THEME_COLORS[theme].palette;
+  const root = document.documentElement;
+
+  // テーマカラーの各段階を CSS 変数に設定
+  Object.entries(palette).forEach(([key, value]) => {
+    root.style.setProperty(`--theme-${key}`, value);
+  });
+
+  // プライマリカラー（UI 要素で使用）を設定
+  root.style.setProperty('--theme-primary', palette[500]);
+  root.style.setProperty('--theme-primary-dark', palette[600]);
+  root.style.setProperty('--theme-primary-light', palette[400]);
+
+  // data 属性を設定（CSS で参照可能）
+  root.setAttribute('data-theme', theme);
+};
+
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeColor>(DEFAULT_THEME);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // マウント時に localStorage からテーマを読み込む
+  // マウント時に localStorage からテーマを読み込み、CSS 変数を適用
   useEffect(() => {
     const theme = loadThemeFromStorage();
     setCurrentTheme(theme);
+    applyThemeToCSSVariables(theme);
     setIsLoaded(true);
   }, []);
 
   const handleSetTheme = (theme: ThemeColor): void => {
     setCurrentTheme(theme);
     saveThemeToStorage(theme);
+    applyThemeToCSSVariables(theme);
   };
 
   if (!isLoaded) {

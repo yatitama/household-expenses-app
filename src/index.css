@@ -5,6 +5,24 @@
   --animate-slide-in-right: slide-in-right 0.3s ease-out;
 }
 
+/* テーマカラーの CSS 変数（デフォルトはブルー） */
+:root {
+  --theme-50: #eff6ff;
+  --theme-100: #dbeafe;
+  --theme-200: #bfdbfe;
+  --theme-300: #93c5fd;
+  --theme-400: #60a5fa;
+  --theme-500: #3b82f6;
+  --theme-600: #2563eb;
+  --theme-700: #1d4ed8;
+  --theme-800: #1e40af;
+  --theme-900: #1e3a8a;
+
+  --theme-primary: #3b82f6;
+  --theme-primary-dark: #2563eb;
+  --theme-primary-light: #60a5fa;
+}
+
 @keyframes slide-in-left {
   0% { transform: translateX(100%); opacity: 0; }
   100% { transform: translateX(0); opacity: 1; }
@@ -45,4 +63,30 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
+}
+
+/* テーマカラーをプライマリカラーに対応させるユーティリティ */
+[class*="bg-blue-"] {
+  @supports (--css: variables) {
+    & {
+      --apply-theme-override: 1;
+    }
+  }
+}
+
+/* プライマリカラー対応（動的テーマ） */
+.btn-primary {
+  background-color: var(--theme-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--theme-primary-dark);
+}
+
+.focus\:ring-primary-600 {
+  --tw-ring-color: var(--theme-primary, #3b82f6) !important;
+}
+
+.text-primary-600 {
+  color: var(--theme-primary);
 }
