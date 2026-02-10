@@ -109,7 +109,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose} role="dialog" aria-modal="true" aria-label="取引を追加">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose} role="dialog" aria-modal="true" aria-label="取引を追加">
       <form
         onSubmit={handleSubmit}
         className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
