@@ -9,7 +9,6 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { getPendingAmountByPaymentMethod, getTotalPendingByAccount } from '../utils/billingUtils';
 import { AssetCard } from '../components/accounts/AssetCard';
 import { AccountsCarousel } from '../components/accounts/AccountsCarousel';
-import { PendingExpenseSection } from '../components/accounts/PendingExpenseSection';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { PMTransactionsModal } from '../components/accounts/modals/PMTransactionsModal';
@@ -108,21 +107,6 @@ export const AccountsPage = () => {
           </div>
         ) : (
           <>
-            {/* 支出予測セクション */}
-            {(totalExpense > 0 || totalIncome > 0) && (
-              <PendingExpenseSection
-                totalCardPending={Object.values(totalPendingByAccount).reduce(
-                  (sum, v) => sum + v.cardPending, 0
-                )}
-                totalRecurringExpense={Object.values(totalPendingByAccount).reduce(
-                  (sum, v) => sum + v.recurringExpense, 0
-                )}
-                totalRecurringIncome={Object.values(totalPendingByAccount).reduce(
-                  (sum, v) => sum + v.recurringIncome, 0
-                )}
-              />
-            )}
-
             {/* 口座カルーセル */}
             <AccountsCarousel
               accounts={accounts}
