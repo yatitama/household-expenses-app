@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '../../utils/formatters';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeLightBackground, getThemePalette } from '../../utils/themes';
 import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { ScheduleSection } from './ScheduleSection';
 import { IncomeSection } from './IncomeSection';
@@ -19,6 +21,9 @@ export const AccountBalanceSchedule = ({
   onToggleRecurring,
 }: AccountBalanceScheduleProps) => {
   const navigate = useNavigate();
+  const { currentTheme } = useTheme();
+  const themePalette = getThemePalette(currentTheme);
+  const lightBgColor = getThemeLightBackground(currentTheme);
 
   // Get payment methods linked to this account (via linkedAccountId)
   const linkedPMs = paymentMethods.filter((pm) => pm.linkedAccountId === account.id);
@@ -73,11 +78,13 @@ export const AccountBalanceSchedule = ({
   return (
     <div className="space-y-3">
       {/* 残高セクション */}
-      <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-3 md:p-4">
+      <div className="rounded-lg p-3 md:p-4" style={{
+        background: `linear-gradient(to bottom right, ${lightBgColor}, ${themePalette[200]})`
+      }}>
         <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">
           口座残高
         </p>
-        <p className="text-2xl md:text-3xl font-bold text-blue-700 dark:text-blue-300">
+        <p className="text-2xl md:text-3xl font-bold" style={{ color: themePalette[700] }}>
           {formatCurrency(account.balance)}
         </p>
       </div>

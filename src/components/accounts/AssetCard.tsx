@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { Wallet, Palette, ChevronDown, ChevronUp } from 'lucide-react';
+import { Wallet, ChevronUp, ChevronDown } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeGradient } from '../../utils/themes';
 import { Tooltip } from '../feedback/Tooltip';
 import { ACCOUNT_TYPE_ICONS_SM } from './AccountIcons';
 import type { Account, Member } from '../../types';
@@ -23,19 +24,8 @@ interface AssetCardProps {
   getMember: (memberId: string) => Member | undefined;
   isBreakdownOpen: boolean;
   onToggleBreakdown: () => void;
-  gradientFrom: string;
-  gradientTo: string;
-  onSaveGradient: (from: string, to: string) => void;
 }
 
-const PRESET_GRADIENTS = [
-  { from: '#3b82f6', to: '#1e40af', label: 'Blue' },
-  { from: '#8b5cf6', to: '#6d28d9', label: 'Purple' },
-  { from: '#06b6d4', to: '#0369a1', label: 'Cyan' },
-  { from: '#10b981', to: '#047857', label: 'Green' },
-  { from: '#f59e0b', to: '#d97706', label: 'Amber' },
-  { from: '#ef4444', to: '#991b1b', label: 'Red' },
-];
 
 export const AssetCard = ({
   totalBalance,
@@ -48,53 +38,19 @@ export const AssetCard = ({
   getMember,
   isBreakdownOpen,
   onToggleBreakdown,
-  gradientFrom,
-  gradientTo,
-  onSaveGradient,
 }: AssetCardProps) => {
-  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+  const { currentTheme } = useTheme();
+  const gradient = getThemeGradient(currentTheme);
 
   return (
     <div
       className="rounded-lg md:rounded-xl p-3 md:p-4 text-white relative"
-      style={{ background: `linear-gradient(to right, ${gradientFrom}, ${gradientTo})` }}
+      style={{ background: `linear-gradient(to right, ${gradient.from}, ${gradient.to})` }}
     >
       <div className="flex items-center gap-1.5 md:gap-2 mb-0.5 md:mb-1">
         <Wallet size={16} className="md:w-5 md:h-5" />
         <span className="text-xs md:text-sm opacity-90">総資産</span>
-        <button
-          onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
-          className="ml-auto p-1 rounded-full hover:bg-white/20 transition-colors opacity-60 hover:opacity-100"
-          title="背景色を変更"
-        >
-          <Palette size={16} />
-        </button>
       </div>
-
-      {/* インラインカラーピッカー */}
-      {isColorPickerOpen && (
-        <div className="absolute top-12 right-4 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-3 z-50 min-w-[200px]">
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">グラデーション色</h4>
-          <div className="space-y-2">
-            {PRESET_GRADIENTS.map((preset) => (
-              <button
-                key={preset.label}
-                onClick={() => {
-                  onSaveGradient(preset.from, preset.to);
-                  setIsColorPickerOpen(false);
-                }}
-                className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
-              >
-                <div
-                  className="w-6 h-6 rounded-md flex-shrink-0"
-                  style={{ background: `linear-gradient(to right, ${preset.from}, ${preset.to})` }}
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">{preset.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
       <p className="text-xl md:text-2xl font-bold">{formatCurrency(totalBalance)}</p>
       {(totalExpense > 0 || totalIncome > 0) && (
         <div className="text-xs md:text-sm opacity-90 mt-1.5 md:mt-2 space-y-0.5">

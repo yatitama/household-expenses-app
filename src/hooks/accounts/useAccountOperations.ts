@@ -16,7 +16,7 @@ export const useAccountOperations = () => {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => paymentMethodService.getAll());
   const [recurringPayments, setRecurringPayments] = useState<RecurringPayment[]>(() => recurringPaymentService.getAll());
   const [linkedPaymentMethods, setLinkedPaymentMethods] = useState<LinkedPaymentMethod[]>(() => linkedPaymentMethodService.getAll());
-  const [appSettings, setAppSettings] = useState<AppSettings>(() => appSettingsService.get());
+  const [appSettings] = useState<AppSettings>(() => appSettingsService.get());
 
   // Confirm dialog state
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -134,13 +134,6 @@ export const useAccountOperations = () => {
     refreshData();
   }, [refreshData]);
 
-  // Gradient
-  const handleSaveGradient = useCallback((from: string, to: string) => {
-    const updated = appSettingsService.update({ totalAssetGradientFrom: from, totalAssetGradientTo: to });
-    setAppSettings(updated);
-    toast.success('背景色を変更しました');
-  }, []);
-
   return {
     accounts,
     paymentMethods,
@@ -157,7 +150,6 @@ export const useAccountOperations = () => {
     handleToggleRecurring,
     handleSaveLinkedPM,
     handleToggleLinkedPM,
-    handleSaveGradient,
     confirmDialog,
     closeConfirmDialog,
   };

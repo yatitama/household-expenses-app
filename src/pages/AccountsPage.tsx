@@ -22,10 +22,9 @@ import type { Account, RecurringPayment } from '../types';
 export const AccountsPage = () => {
   const navigate = useNavigate();
   const {
-    accounts, paymentMethods, recurringPayments, appSettings,
+    accounts, paymentMethods, recurringPayments,
     refreshData,
     handleSaveRecurring, handleToggleRecurring,
-    handleSaveGradient,
     confirmDialog, closeConfirmDialog,
   } = useAccountOperations();
 
@@ -89,9 +88,6 @@ export const AccountsPage = () => {
             getMember={getMember}
             isBreakdownOpen={isBreakdownOpen}
             onToggleBreakdown={() => setIsBreakdownOpen(!isBreakdownOpen)}
-            gradientFrom={appSettings.totalAssetGradientFrom}
-            gradientTo={appSettings.totalAssetGradientTo}
-            onSaveGradient={handleSaveGradient}
           />
         )}
       </div>
