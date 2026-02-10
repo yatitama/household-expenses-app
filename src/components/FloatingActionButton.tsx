@@ -51,14 +51,24 @@ export const FloatingActionButton = ({
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 flex flex-col gap-2">
           <button
             onClick={handleAddTransaction}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 shadow-lg hover:shadow-xl transition-all border border-primary-200 dark:border-primary-800 text-sm font-medium text-primary-700 dark:text-primary-400"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:shadow-xl transition-all border text-sm font-medium"
+            style={{
+              backgroundColor: 'rgb(239, 246, 255)',
+              borderColor: 'rgb(191, 219, 254)',
+              color: 'rgb(29, 78, 216)',
+            }}
             title="取引を追加"
           >
             <span>取引追加</span>
           </button>
           <button
             onClick={handleAddRecurring}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 shadow-lg hover:shadow-xl transition-all border border-primary-200 dark:border-primary-800 text-sm font-medium text-primary-700 dark:text-primary-400"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:shadow-xl transition-all border text-sm font-medium"
+            style={{
+              backgroundColor: 'rgb(239, 246, 255)',
+              borderColor: 'rgb(191, 219, 254)',
+              color: 'rgb(29, 78, 216)',
+            }}
             title="定期取引を追加"
           >
             <span>定期取引追加</span>
@@ -69,7 +79,10 @@ export const FloatingActionButton = ({
       {/* FABボタン */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 dark:bg-primary-500 hover:bg-primary-700 dark:hover:bg-primary-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-500"
+        className="flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-200"
+        style={{
+          backgroundColor: 'rgb(37, 99, 235)',
+        }}
         title={isOpen ? "メニューを閉じる" : "メニューを開く"}
         aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
         aria-expanded={isOpen}
