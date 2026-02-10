@@ -146,32 +146,30 @@ export const ScheduleSection = ({
                   return (
                     <div
                       key={rp.id}
-                      className={`flex items-start justify-between text-xs md:text-sm gap-2 ${rp.isActive ? '' : 'opacity-40'}`}
+                      className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 dark:hover:bg-slate-700 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
                     >
-                      <div className="flex items-start gap-2 min-w-0 flex-1">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
                         <button
                           onClick={() => onToggleRecurring(rp)}
-                          className="flex-shrink-0 hover:opacity-70 transition-opacity mt-0.5"
+                          className="flex-shrink-0 hover:opacity-70 transition-opacity"
                         >
                           {rp.isActive
                             ? <ToggleRight size={16} className="text-green-500" />
                             : <ToggleLeft size={16} className="text-gray-300 dark:text-gray-600" />
                           }
                         </button>
+                        <div
+                          className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                        >
+                          {getCategoryIcon(category?.icon || '', 12)}
+                        </div>
                         <button
                           onClick={() => onEditRecurring(rp)}
-                          className="flex-1 flex items-start gap-2 min-w-0 hover:opacity-70 transition-opacity"
+                          className="flex-1 flex flex-col gap-0.5 min-w-0 hover:opacity-70 transition-opacity text-left"
                         >
-                          <div
-                            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                            style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
-                          >
-                            {getCategoryIcon(category?.icon || '', 12)}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
-                          </div>
+                          <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
                         </button>
                       </div>
                       <span className="text-red-600 dark:text-red-400 font-semibold flex-shrink-0">
