@@ -109,9 +109,13 @@ export const SimpleFilterBar = ({
                 onClick={() => handleChipClick(chip)}
                 className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all active:scale-95 touch-action-manipulation ${
                   chip.isActive
-                    ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 ring-1 ring-primary-300 dark:ring-primary-700'
+                    ? 'text-white ring-1 dark:ring-1'
                     : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                 }`}
+                style={chip.isActive ? {
+                  backgroundColor: 'var(--theme-primary)',
+                  borderColor: 'var(--theme-primary-dark)',
+                } : undefined}
                 aria-label={chip.isActive ? `${chip.label}フィルターを削除` : `${chip.label}でフィルター`}
                 aria-pressed={chip.isActive}
               >
