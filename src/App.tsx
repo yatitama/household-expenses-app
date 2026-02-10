@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { Layout } from './components/Layout';
 import { AccountsPage } from './pages/AccountsPage';
 import { TransactionsPage } from './pages/TransactionsPage';
@@ -21,17 +22,18 @@ export const App = () => {
 
   return (
     <ErrorBoundary>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<AccountsPage />} />
-          <Route path="transactions" element={<TransactionsPage />} />
-          <Route path="stats" element={<StatsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="help" element={<HelpPage />} />
-        </Route>
-      </Routes>
+      <ThemeProvider>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<AccountsPage />} />
+            <Route path="transactions" element={<TransactionsPage />} />
+            <Route path="stats" element={<StatsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="help" element={<HelpPage />} />
+          </Route>
+        </Routes>
 
-      <Toaster
+        <Toaster
         position="top-center"
         toastOptions={{
           duration: 3000,
@@ -66,6 +68,7 @@ export const App = () => {
           },
         }}
       />
+      </ThemeProvider>
     </ErrorBoundary>
   );
 };
