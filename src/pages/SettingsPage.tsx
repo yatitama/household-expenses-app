@@ -5,7 +5,7 @@ import { accountService, transactionService, categoryService, budgetService, mem
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useTheme } from '../contexts/ThemeContext';
-import { getAllThemes, getRecommendedColorsFromTheme, getThemePalette } from '../utils/themes';
+import { getAllThemes, getThemePalette } from '../utils/themes';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { AccountModal } from '../components/accounts/modals/AccountModal';
@@ -727,10 +727,8 @@ interface MemberModalProps {
 }
 
 const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) => {
-  const { currentTheme } = useTheme();
   const [name, setName] = useState(member?.name || '');
   const [color, setColor] = useState(member?.color || COLORS[0]);
-  const themeColors = getRecommendedColorsFromTheme(currentTheme);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -755,22 +753,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
               />
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">テーマカラー推奨色</label>
-              <div className="flex gap-2 flex-wrap mb-4">
-                {themeColors.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setColor(c)}
-                    className={`w-10 h-10 rounded-full transition-transform border-2 ${
-                      color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800 border-blue-500' : 'border-transparent'
-                    }`}
-                    style={{ backgroundColor: c }}
-                    title="テーマ推奨色"
-                  />
-                ))}
-              </div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">全色</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
               <div className="flex gap-2 flex-wrap">
                 {COLORS.map((c) => (
                   <button
@@ -778,7 +761,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
                     type="button"
                     onClick={() => setColor(c)}
                     className={`w-8 h-8 rounded-full transition-transform ${
-                      color === c && !themeColors.includes(c) ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
+                      color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
                     }`}
                     style={{ backgroundColor: c }}
                   />
@@ -822,12 +805,10 @@ interface CategoryModalProps {
 }
 
 const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: CategoryModalProps) => {
-  const { currentTheme } = useTheme();
   const [name, setName] = useState(category?.name || '');
   const [memberId, setMemberId] = useState(category?.memberId || COMMON_MEMBER_ID);
   const [color, setColor] = useState(category?.color || COLORS[0]);
   const [icon, setIcon] = useState(category?.icon || ICON_NAMES[0]);
-  const themeColors = getRecommendedColorsFromTheme(currentTheme);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -872,22 +853,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
               </div>
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">テーマカラー推奨色</label>
-              <div className="flex gap-2 flex-wrap mb-4">
-                {themeColors.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setColor(c)}
-                    className={`w-10 h-10 rounded-full transition-transform border-2 ${
-                      color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800 border-blue-500' : 'border-transparent'
-                    }`}
-                    style={{ backgroundColor: c }}
-                    title="テーマ推奨色"
-                  />
-                ))}
-              </div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">全色</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
               <div className="flex gap-2 flex-wrap">
                 {COLORS.map((c) => (
                   <button
@@ -895,7 +861,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                     type="button"
                     onClick={() => setColor(c)}
                     className={`w-8 h-8 rounded-full transition-transform ${
-                      color === c && !themeColors.includes(c) ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
+                      color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
                     }`}
                     style={{ backgroundColor: c }}
                   />
