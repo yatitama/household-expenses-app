@@ -65,26 +65,19 @@ const applyThemeToCSSVariables = (theme: ThemeColor): void => {
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [currentTheme, setCurrentTheme] = useState<ThemeColor>(DEFAULT_THEME);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState<ThemeColor>(() => {
+    return loadThemeFromStorage();
+  });
 
-  // マウント時に localStorage からテーマを読み込み、CSS 変数を適用
+  // マウント時に CSS 変数を適用
   useEffect(() => {
-    const theme = loadThemeFromStorage();
-    setCurrentTheme(theme);
-    applyThemeToCSSVariables(theme);
-    setIsLoaded(true);
-  }, []);
+    applyThemeToCSSVariables(currentTheme);
+  }, [currentTheme]);
 
   const handleSetTheme = (theme: ThemeColor): void => {
     setCurrentTheme(theme);
     saveThemeToStorage(theme);
-    applyThemeToCSSVariables(theme);
   };
-
-  if (!isLoaded) {
-    return <>{children}</>;
-  }
 
   return (
     <ThemeContext.Provider value={{ currentTheme, setTheme: handleSetTheme }}>
