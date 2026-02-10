@@ -61,17 +61,17 @@ export const FloatingActionButton = ({
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 flex flex-col gap-2">
             <button
               onClick={handleAddTransaction}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:shadow-lg transition-all bg-white dark:bg-slate-700 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-sm font-medium hover:bg-blue-50 dark:hover:bg-slate-600"
+              className="px-4 py-2 sm:py-2.5 rounded-lg font-medium text-sm bg-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors shadow-sm whitespace-nowrap"
               title="取引を追加"
             >
-              <span>取引追加</span>
+              取引追加
             </button>
             <button
               onClick={handleAddRecurring}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:shadow-lg transition-all bg-white dark:bg-slate-700 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-sm font-medium hover:bg-blue-50 dark:hover:bg-slate-600"
+              className="px-4 py-2 sm:py-2.5 rounded-lg font-medium text-sm bg-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors shadow-sm whitespace-nowrap"
               title="定期取引を追加"
             >
-              <span>定期取引追加</span>
+              定期取引追加
             </button>
           </div>
         )}
