@@ -90,3 +90,7 @@ body {
 .text-primary-600 {
   color: var(--theme-primary);
 }
+
+.border-primary-500 {
+  border-color: var(--theme-primary) !important;
+}
