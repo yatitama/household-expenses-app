@@ -101,7 +101,7 @@ export const FilterSidePanel = ({
                       : 'bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-slate-500'
                   }`}
                   style={filters.transactionType === value ? {
-                    backgroundColor: value === 'income' ? '#22c55e' : value === 'expense' ? '#ef4444' : 'var(--theme-primary)',
+                    backgroundColor: 'var(--theme-primary)',
                   } : undefined}
                 >
                   {label}
