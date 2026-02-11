@@ -1,7 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '../../utils/formatters';
-import { useTheme } from '../../contexts/ThemeContext';
-import { getThemeLightBackground, getThemePalette } from '../../utils/themes';
 import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { ScheduleSection } from './ScheduleSection';
 import { IncomeSection } from './IncomeSection';
@@ -21,9 +19,6 @@ export const AccountBalanceSchedule = ({
   onToggleRecurring,
 }: AccountBalanceScheduleProps) => {
   const navigate = useNavigate();
-  const { currentTheme } = useTheme();
-  const themePalette = getThemePalette(currentTheme);
-  const lightBgColor = getThemeLightBackground(currentTheme);
 
   // Get payment methods linked to this account (via linkedAccountId)
   const linkedPMs = paymentMethods.filter((pm) => pm.linkedAccountId === account.id);

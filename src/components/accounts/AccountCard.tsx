@@ -2,7 +2,6 @@ import { getCategoryIcon } from '../../utils/categoryIcons';
 import { ACCOUNT_TYPE_ICONS } from './AccountIcons';
 import { ACCOUNT_TYPE_LABELS } from './constants';
 import { AccountBalanceSchedule } from './AccountBalanceSchedule';
-import { useTheme } from '../../contexts/ThemeContext';
 import type { Account, Member, RecurringPayment, PaymentMethod } from '../../types';
 
 interface AccountCardProps {
@@ -17,7 +16,6 @@ export const AccountCard = ({
   account, member, allPaymentMethods,
   onEditRecurring, onToggleRecurring,
 }: AccountCardProps) => {
-  const { currentTheme } = useTheme();
 
   return (
     <div
