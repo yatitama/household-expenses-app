@@ -122,7 +122,7 @@ export const AddTransactionPage = () => {
                   type="button"
                   onClick={() => { setType('expense'); setCategoryId(''); }}
                   className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                    type === 'expense' ? 'bg-primary-600 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                    type === 'expense' ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
                   }`}
                 >
                   支出
@@ -131,7 +131,7 @@ export const AddTransactionPage = () => {
                   type="button"
                   onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
                   className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                    type === 'income' ? 'bg-primary-600 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                    type === 'income' ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
                   }`}
                 >
                   収入
@@ -218,10 +218,25 @@ export const AddTransactionPage = () => {
                     </div>
                   )}
 
-                  {type === 'expense' && accountId && paymentMethods.length > 0 && (
+                  {type === 'expense' && accountId && (
                     <div>
                       <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
                       <div className="space-y-1">
+                        <button
+                          type="button"
+                          onClick={() => setPmId(undefined)}
+                          className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
+                            pmId === undefined
+                              ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                              : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-gray-400" />
+                            <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">口座から引き落とし</span>
+                          </div>
+                          {pmId === undefined && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
+                        </button>
                         {paymentMethods.map((pm) => (
                           <button
                             key={pm.id}
