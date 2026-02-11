@@ -85,29 +85,45 @@ export const AccountsCarousel = ({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-          口座 ({currentIndex + 1}/{accounts.length})
-        </h3>
-        {accounts.length > 1 && (
-          <div className="flex gap-1">
-            <button
-              onClick={handlePrev}
-              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-              aria-label="前へ"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              onClick={handleNext}
-              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-              aria-label="次へ"
-            >
-              <ChevronRight size={18} />
-            </button>
+      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+        口座 ({currentIndex + 1}/{accounts.length})
+      </h3>
+
+      {/* インジケーターとナビゲーションボタン */}
+      {accounts.length > 1 && (
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={handlePrev}
+            className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            aria-label="前へ"
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          <div className="flex justify-center gap-1">
+            {accounts.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`w-1.5 h-1.5 rounded-full transition-all ${
+                  index === currentIndex
+                    ? 'bg-gray-800 dark:bg-gray-300 w-5'
+                    : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
+                }`}
+                aria-label={`口座 ${index + 1}`}
+              />
+            ))}
           </div>
-        )}
-      </div>
+
+          <button
+            onClick={handleNext}
+            className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            aria-label="次へ"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      )}
 
       {/* カルーセルコンテナ */}
       <div
@@ -139,24 +155,6 @@ export const AccountsCarousel = ({
           })}
         </div>
       </div>
-
-      {/* ドット インジケーター */}
-      {accounts.length > 1 && (
-        <div className="flex justify-center gap-1 pb-2">
-          {accounts.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-1.5 h-1.5 rounded-full transition-all ${
-                index === currentIndex
-                  ? 'bg-gray-800 dark:bg-gray-300 w-5'
-                  : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
-              }`}
-              aria-label={`口座 ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 };
