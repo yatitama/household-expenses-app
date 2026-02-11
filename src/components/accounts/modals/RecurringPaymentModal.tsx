@@ -16,11 +16,12 @@ interface RecurringPaymentModalProps {
   paymentMethods: PaymentMethod[];
   onSave: (input: RecurringPaymentInput) => void;
   onClose: () => void;
+  onDelete?: (id: string) => void;
 }
 
 export const RecurringPaymentModal = ({
   recurringPayment, defaultAccountId, defaultPaymentMethodId,
-  accounts: allAccounts, paymentMethods: allPaymentMethods, onSave, onClose,
+  accounts: allAccounts, paymentMethods: allPaymentMethods, onSave, onClose, onDelete,
 }: RecurringPaymentModalProps) => {
   const categories = categoryService.getAll();
   const members = memberService.getAll();
@@ -306,17 +307,28 @@ export const RecurringPaymentModal = ({
           </div>
           </div>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 flex gap-3">
-          <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
-            キャンセル
-          </button>
-          <button
-            type="submit"
-            disabled={!name || !amount || !categoryId || (!accountId && !pmId)}
-            className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium text-sm disabled:opacity-50 hover:bg-blue-700"
-          >
-            保存
-          </button>
+        <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 space-y-2">
+          {recurringPayment && onDelete && (
+            <button
+              type="button"
+              onClick={() => { onDelete(recurringPayment.id); onClose(); }}
+              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition-colors"
+            >
+              削除
+            </button>
+          )}
+          <div className="flex gap-3">
+            <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              disabled={!name || !amount || !categoryId || (!accountId && !pmId)}
+              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium text-sm disabled:opacity-50 hover:bg-blue-700"
+            >
+              保存
+            </button>
+          </div>
         </div>
       </form>
     </div>

@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { Home, List, TrendingUp, Settings as SettingsIcon, Menu, X } from 'lucide-react';
+import { Home, List, TrendingUp, Settings as SettingsIcon, Menu, X, Plus } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 interface NavItemProps {
@@ -47,6 +47,7 @@ const SideNavItem = ({ to, icon, label }: NavItemProps) => {
 
 const navItems: NavItemProps[] = [
   { to: '/', icon: <Home size={24} />, label: 'ホーム' },
+  { to: '/add-transaction', icon: <Plus size={24} />, label: '追加' },
   { to: '/transactions', icon: <List size={24} />, label: '履歴' },
   { to: '/stats', icon: <TrendingUp size={24} />, label: '統計' },
   { to: '/settings', icon: <SettingsIcon size={24} />, label: '設定' },
