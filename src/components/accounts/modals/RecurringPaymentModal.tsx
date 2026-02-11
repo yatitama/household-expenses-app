@@ -102,8 +102,9 @@ export const RecurringPaymentModal = ({
               type="button"
               onClick={() => { setType('expense'); setCategoryId(''); }}
               className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                type === 'expense' ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                type === 'expense' ? 'text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
               }`}
+              style={type === 'expense' ? { backgroundColor: 'var(--theme-primary)' } : {}}
             >
               支出
             </button>
@@ -111,8 +112,9 @@ export const RecurringPaymentModal = ({
               type="button"
               onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
               className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                type === 'income' ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                type === 'income' ? 'text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
               }`}
+              style={type === 'income' ? { backgroundColor: 'var(--theme-primary)' } : {}}
             >
               収入
             </button>
