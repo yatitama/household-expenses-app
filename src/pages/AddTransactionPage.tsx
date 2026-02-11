@@ -100,8 +100,7 @@ export const AddTransactionPage = () => {
   const resetForm = () => {
     setType('expense');
     setAmount('');
-    setCategoryId('');
-    // accountId, pmId, dateはリセットしない
+    // categoryId, accountId, pmId, dateはリセットしない
     setMemo('');
   };
 
