@@ -74,7 +74,7 @@ export const EditTransactionModal = ({
               type="button"
               onClick={() => { setType('expense'); setCategoryId(''); }}
               className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                type === 'expense' ? 'bg-red-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                type === 'expense' ? 'btn-primary text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
               }`}
             >
               支出
@@ -83,7 +83,7 @@ export const EditTransactionModal = ({
               type="button"
               onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
               className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                type === 'income' ? 'bg-green-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                type === 'income' ? 'btn-primary text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
               }`}
             >
               収入
@@ -116,7 +116,7 @@ export const EditTransactionModal = ({
                     onClick={() => setCategoryId(category.id)}
                     className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg border transition-colors ${
                       categoryId === category.id
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                     }`}
                   >
@@ -154,7 +154,7 @@ export const EditTransactionModal = ({
                         onClick={() => handleSelectAccount(acct.id)}
                         className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
                           accountId === acct.id && !pmId
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                             : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                         }`}
                       >
@@ -162,7 +162,7 @@ export const EditTransactionModal = ({
                           <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
                           <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{acct.name}</span>
                         </div>
-                        {accountId === acct.id && !pmId && <Check size={14} className="sm:w-4 sm:h-4 text-blue-500" />}
+                        {accountId === acct.id && !pmId && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
                       </button>
                     ))}
                   </div>
@@ -181,7 +181,7 @@ export const EditTransactionModal = ({
                           onClick={() => handleSelectPM(pm.id)}
                           className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
                             pmId === pm.id
-                              ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30'
+                              ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                               : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                           }`}
                         >
@@ -192,7 +192,7 @@ export const EditTransactionModal = ({
                               {linked && <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">→ {linked.name}</p>}
                             </div>
                           </div>
-                          {pmId === pm.id && <Check size={14} className="sm:w-4 sm:h-4 text-purple-500" />}
+                          {pmId === pm.id && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
                         </button>
                       );
                     })}
@@ -243,7 +243,7 @@ export const EditTransactionModal = ({
             <button
               type="submit"
               disabled={!amount || !categoryId || (!accountId && !pmId)}
-              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium text-sm disabled:opacity-50"
+              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary text-white font-medium text-sm disabled:opacity-50 hover:bg-primary-dark transition-colors"
             >
               保存
             </button>

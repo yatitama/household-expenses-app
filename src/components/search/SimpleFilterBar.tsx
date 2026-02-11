@@ -102,10 +102,16 @@ export const SimpleFilterBar = ({
               <button
                 key={chip.id}
                 onClick={() => handleChipClick(chip)}
-                className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all active:scale-95 touch-action-manipulation text-white ring-1 dark:ring-1"
-                style={{
+                className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all active:scale-95 touch-action-manipulation ${
+                  chip.isActive
+                    ? 'text-white ring-1 dark:ring-1'
+                    : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                }`}
+                style={chip.isActive ? {
                   backgroundColor: 'var(--theme-primary)',
                   borderColor: 'var(--theme-primary-dark)',
+                } : {
+                  color: 'var(--theme-primary)',
                 }}
                 aria-label={`${chip.label}でフィルター`}
                 aria-pressed={chip.isActive}
