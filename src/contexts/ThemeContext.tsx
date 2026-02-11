@@ -1,14 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { ThemeColor, ThemeSettings } from '../types';
 import { THEME_COLORS } from '../utils/themes';
-
-interface ThemeContextType {
-  currentTheme: ThemeColor;
-  setTheme: (theme: ThemeColor) => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+import { ThemeContext } from './theme';
 
 const THEME_STORAGE_KEY = 'theme_settings';
 const DEFAULT_THEME: ThemeColor = 'blue';
@@ -84,15 +78,4 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </ThemeContext.Provider>
   );
-};
-
-/**
- * テーマコンテキストを使用するカスタムHook
- */
-export const useTheme = (): ThemeContextType => {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within ThemeProvider');
-  }
-  return context;
 };

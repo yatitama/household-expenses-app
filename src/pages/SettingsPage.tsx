@@ -4,7 +4,7 @@ import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp,
 import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useDarkMode } from '../hooks/useDarkMode';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../hooks/useTheme';
 import { getAllThemes, getThemePalette } from '../utils/themes';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';

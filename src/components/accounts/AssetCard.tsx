@@ -1,6 +1,6 @@
 import { Wallet, ChevronUp, ChevronDown } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../hooks/useTheme';
 import { getThemeGradient } from '../../utils/themes';
 import { Tooltip } from '../feedback/Tooltip';
 import { ACCOUNT_TYPE_ICONS_SM } from './AccountIcons';
