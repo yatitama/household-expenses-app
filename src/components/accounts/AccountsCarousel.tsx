@@ -50,10 +50,22 @@ export const AccountsCarousel = ({
   }, [currentIndex, accounts.length, goToSlide]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    // イベントターゲットがボタンやクリック可能要素の場合はスキップ
+    // イベントターゲットがボタンやクリック可能要素、またはスクロール可能な要素の場合はスキップ
     const target = e.target as HTMLElement;
-    if (target.closest('button')) {
+
+    // ボタン、リンク、入力要素、スクロール可能な要素をチェック
+    if (target.closest('button, a, input, textarea, [role="button"]')) {
       return;
+    }
+
+    // スクロール可能な親要素をチェック
+    let parent = target.parentElement;
+    while (parent && parent !== containerRef.current) {
+      const styles = window.getComputedStyle(parent);
+      if (styles.overflowY === 'auto' || styles.overflowY === 'scroll') {
+        return;
+      }
+      parent = parent.parentElement;
     }
 
     touchStartX.current = e.touches[0].clientX;
@@ -119,7 +131,7 @@ export const AccountsCarousel = ({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         className="relative overflow-hidden rounded-xl"
-        style={{ touchAction: 'pan-y' }}
+        style={{ touchAction: 'auto' }}
       >
         <div
           ref={innerRef}
