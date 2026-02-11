@@ -32,9 +32,6 @@ export const RecurringPaymentModal = ({
   const accounts = isFromAccount
     ? allAccounts.filter((a) => a.id === defaultAccountId)
     : isFromPM ? [] : allAccounts;
-  const paymentMethods = isFromPM
-    ? allPaymentMethods.filter((pm) => pm.id === defaultPaymentMethodId)
-    : isFromAccount ? [] : allPaymentMethods;
 
   const [name, setName] = useState(recurringPayment?.name || '');
   const [amount, setAmount] = useState(recurringPayment?.amount.toString() || '');
@@ -197,7 +194,7 @@ export const RecurringPaymentModal = ({
 
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
-            <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto">
+            <div className="grid grid-cols-4 gap-2">
               {filteredCategories.map((category) => {
                 const member = getMember(category.memberId);
                 return (
@@ -231,7 +228,7 @@ export const RecurringPaymentModal = ({
             <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
               {type === 'expense' ? '支払い元' : '入金先'}
             </label>
-            <div className="space-y-2 max-h-32 overflow-y-auto">
+            <div className="space-y-3">
               {accounts.length > 0 && (
                 <div>
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
@@ -241,42 +238,58 @@ export const RecurringPaymentModal = ({
                         key={acct.id}
                         type="button"
                         onClick={() => { setAccountId(acct.id); setPmId(undefined); }}
-                        className={`w-full flex items-center justify-between p-1.5 sm:p-2 rounded-lg border transition-colors ${
-                          accountId === acct.id && !pmId
+                        className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
+                          accountId === acct.id && pmId === undefined
                             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                             : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full" style={{ backgroundColor: acct.color }} />
-                          <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-100">{acct.name}</span>
+                          <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
+                          <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{acct.name}</span>
                         </div>
-                        {accountId === acct.id && !pmId && <Check size={12} className="sm:w-3.5 sm:h-3.5 text-blue-500" />}
+                        {accountId === acct.id && pmId === undefined && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
-              {type === 'expense' && paymentMethods.length > 0 && (
+
+              {type === 'expense' && accountId && (
                 <div>
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
                   <div className="space-y-1">
-                    {paymentMethods.map((pm) => (
+                    <button
+                      type="button"
+                      onClick={() => setPmId(undefined)}
+                      className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
+                        pmId === undefined
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-gray-400" />
+                        <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">口座から引き落とし</span>
+                      </div>
+                      {pmId === undefined && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
+                    </button>
+                    {allPaymentMethods.filter((pm) => pm.linkedAccountId === accountId).map((pm) => (
                       <button
                         key={pm.id}
                         type="button"
-                        onClick={() => { setPmId(pm.id); setAccountId(pm.linkedAccountId); }}
-                        className={`w-full flex items-center justify-between p-1.5 sm:p-2 rounded-lg border transition-colors ${
+                        onClick={() => setPmId(pm.id)}
+                        className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
                           pmId === pm.id
-                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30'
+                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                             : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full" style={{ backgroundColor: pm.color }} />
-                          <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-100">{pm.name}</span>
+                          <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: pm.color }} />
+                          <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{pm.name}</span>
                         </div>
-                        {pmId === pm.id && <Check size={12} className="sm:w-3.5 sm:h-3.5 text-purple-500" />}
+                        {pmId === pm.id && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
                       </button>
                     ))}
                   </div>
@@ -324,7 +337,8 @@ export const RecurringPaymentModal = ({
             <button
               type="submit"
               disabled={!name || !amount || !categoryId || (!accountId && !pmId)}
-              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium text-sm disabled:opacity-50 hover:bg-blue-700"
+              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors disabled:opacity-50"
+              style={{ backgroundColor: 'var(--theme-primary)' }}
             >
               保存
             </button>
