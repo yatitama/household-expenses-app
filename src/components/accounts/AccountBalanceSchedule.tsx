@@ -85,27 +85,23 @@ export const AccountBalanceSchedule = ({
       </div>
 
       {/* 引き落とし予定セクション */}
-      {(cardUnsettledList.length > 0 || totalRecurringExpense > 0) && (
-        <ScheduleSection
-          cardUnsettledList={cardUnsettledList}
-          totalCardPending={totalCardPending}
-          upcomingExpense={upcomingExpense}
-          totalRecurringExpense={totalRecurringExpense}
-          onViewUnsettled={handleViewUnsettled}
-          onEditRecurring={onEditRecurring}
-          onToggleRecurring={onToggleRecurring}
-        />
-      )}
+      <ScheduleSection
+        cardUnsettledList={cardUnsettledList}
+        totalCardPending={totalCardPending}
+        upcomingExpense={upcomingExpense}
+        totalRecurringExpense={totalRecurringExpense}
+        onViewUnsettled={handleViewUnsettled}
+        onEditRecurring={onEditRecurring}
+        onToggleRecurring={onToggleRecurring}
+      />
 
       {/* 振り込み予定セクション */}
-      {totalRecurringIncome > 0 && (
-        <IncomeSection
-          upcomingIncome={upcomingIncome}
-          totalRecurringIncome={totalRecurringIncome}
-          onEditRecurring={onEditRecurring}
-          onToggleRecurring={onToggleRecurring}
-        />
-      )}
+      <IncomeSection
+        upcomingIncome={upcomingIncome}
+        totalRecurringIncome={totalRecurringIncome}
+        onEditRecurring={onEditRecurring}
+        onToggleRecurring={onToggleRecurring}
+      />
     </div>
   );
 };
