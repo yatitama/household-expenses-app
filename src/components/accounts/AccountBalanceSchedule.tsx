@@ -78,13 +78,13 @@ export const AccountBalanceSchedule = ({
   return (
     <div className="space-y-3">
       {/* 残高セクション */}
-      <div className="rounded-lg p-3 md:p-4" style={{
-        background: `linear-gradient(to bottom right, ${lightBgColor}, ${themePalette[200]})`
+      <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border" style={{
+        borderColor: 'var(--theme-primary)',
       }}>
         <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">
           口座残高
         </p>
-        <p className="text-2xl md:text-3xl font-bold" style={{ color: themePalette[700] }}>
+        <p className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>
           {formatCurrency(account.balance)}
         </p>
       </div>
