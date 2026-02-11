@@ -144,7 +144,7 @@ export const RecurringPaymentModal = ({
                 onClick={() => setFrequency('monthly')}
                 className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                   frequency === 'monthly'
-                    ? 'bg-blue-600 text-white border-blue-600'
+                    ? 'bg-primary-600 text-white border-primary-600'
                     : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                 }`}
               >
@@ -155,7 +155,7 @@ export const RecurringPaymentModal = ({
                 onClick={() => setFrequency('yearly')}
                 className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                   frequency === 'yearly'
-                    ? 'bg-blue-600 text-white border-blue-600'
+                    ? 'bg-primary-600 text-white border-primary-600'
                     : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                 }`}
               >
@@ -207,7 +207,7 @@ export const RecurringPaymentModal = ({
                     onClick={() => setCategoryId(category.id)}
                     className={`flex flex-col items-center gap-1 p-1 sm:p-1.5 rounded-lg border transition-colors ${
                       categoryId === category.id
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                     }`}
                   >
@@ -243,7 +243,7 @@ export const RecurringPaymentModal = ({
                         onClick={() => { setAccountId(acct.id); setPmId(undefined); }}
                         className={`w-full flex items-center justify-between p-1.5 sm:p-2 rounded-lg border transition-colors ${
                           accountId === acct.id && !pmId
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                             : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                         }`}
                       >

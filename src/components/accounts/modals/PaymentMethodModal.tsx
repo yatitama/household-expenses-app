@@ -119,7 +119,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     onClick={() => setLinkedAccountId(acct.id)}
                     className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
                       linkedAccountId === acct.id
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                     }`}
                   >
@@ -127,7 +127,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                       <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
                       <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{acct.name}</span>
                     </div>
-                    {linkedAccountId === acct.id && <Check size={14} className="sm:w-4 sm:h-4 text-blue-500" />}
+                    {linkedAccountId === acct.id && <Check size={14} className="sm:w-4 sm:h-4 text-primary-500" />}
                   </button>
                 ))}
               </div>
@@ -144,7 +144,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   onClick={() => setBillingType(value)}
                   className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     billingType === value
-                      ? 'bg-blue-600 text-white border-blue-600'
+                      ? 'bg-primary-600 text-white border-primary-600'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
@@ -227,7 +227,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-8 h-8 rounded-full transition-transform ${
-                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''
+                    color === c ? 'ring-2 ring-offset-2 ring-primary-500 scale-110' : ''
                   }`}
                   style={{ backgroundColor: c }}
                 />
