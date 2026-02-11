@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Check } from 'lucide-react';
@@ -11,6 +11,7 @@ import { getCategoryIcon } from '../utils/categoryIcons';
 import type { TransactionType, TransactionInput } from '../types';
 
 export const AddTransactionPage = () => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const allAccounts = accountService.getAll();
   const allPaymentMethods = paymentMethodService.getAll();
   const categories = categoryService.getAll();
@@ -89,15 +90,18 @@ export const AddTransactionPage = () => {
 
     toast.success('取引を追加しました');
     resetForm();
+
+    // スクロール位置を上部に戻す
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
   };
 
   const resetForm = () => {
     setType('expense');
     setAmount('');
     setCategoryId('');
-    setAccountId(defaultAccountId);
-    setPmId(undefined);
-    setDate(format(new Date(), 'yyyy-MM-dd'));
+    // accountId, pmId, dateはリセットしない
     setMemo('');
   };
 
@@ -108,7 +112,7 @@ export const AddTransactionPage = () => {
           onSubmit={handleSubmit}
           className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         >
-          <div className="overflow-y-auto flex-1 p-3 sm:p-4">
+          <div ref={scrollContainerRef} className="overflow-y-auto flex-1 p-3 sm:p-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
               <Link to="/" className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
