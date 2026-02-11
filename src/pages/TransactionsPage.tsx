@@ -180,7 +180,7 @@ export const TransactionsPage = () => {
       {/* Fixed Filter Bar */}
       <div
         ref={filterBarRef}
-        className="fixed top-0 left-0 right-0 z-30 bg-gray-50 dark:bg-slate-900 border-b border-primary-500 p-3 md:p-6 lg:p-8"
+        className="fixed top-0 left-0 right-0 z-30 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-3 md:p-6 lg:p-8"
       >
         <SimpleFilterBar
           filters={filters}
