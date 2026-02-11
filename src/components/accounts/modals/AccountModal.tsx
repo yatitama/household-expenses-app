@@ -114,7 +114,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-8 h-8 rounded-full transition-transform ${
-                    color === c ? 'ring-2 ring-offset-2 ring-blue-600 scale-110' : ''
+                    color === c ? 'ring-2 ring-offset-2 ring-primary-600 scale-110' : ''
                   }`}
                   style={{ backgroundColor: c }}
                 />

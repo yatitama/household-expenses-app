@@ -1,9 +1,8 @@
 import { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, Moon, Sun, Wallet, CreditCard, Palette, Repeat } from 'lucide-react';
+import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, Wallet, CreditCard, Palette, Repeat } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
-import { useDarkMode } from '../hooks/useDarkMode';
 import { useTheme } from '../hooks/useTheme';
 import { getAllThemes, getThemePalette } from '../utils/themes';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
@@ -47,15 +46,16 @@ const COLORS = [
 ];
 
 export const SettingsPage = () => {
-  const { isDark, toggle: toggleDarkMode } = useDarkMode();
   const { currentTheme, setTheme } = useTheme();
   const themes = getAllThemes();
   // デフォルトで全セクション折りたたみ（モバイルファースト）
+  const [themeOpen, setThemeOpen] = useState(false);
   const [membersOpen, setMembersOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [accountsOpen, setAccountsOpen] = useState(false);
   const [paymentMethodsOpen, setPaymentMethodsOpen] = useState(false);
   const [recurringOpen, setRecurringOpen] = useState(false);
+  const [dataManagementOpen, setDataManagementOpen] = useState(false);
   const [members, setMembers] = useState<Member[]>(() => memberService.getAll());
   const [categories, setCategories] = useState<Category[]>(() => categoryService.getAll());
   const [accounts, setAccounts] = useState<Account[]>(() => accountService.getAll());
@@ -311,70 +311,55 @@ export const SettingsPage = () => {
     <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-2.5 sm:space-y-3 md:space-y-4">
       <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">設定</h2>
 
-      {/* ダークモード切り替え */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-3.5 md:p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
-            {isDark ? <Moon size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-indigo-400" /> : <Sun size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-yellow-500" />}
-            <div>
-              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">ダークモード</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{isDark ? 'ダークモード有効' : 'ライトモード有効'}</p>
-            </div>
-          </div>
-          <button
-            onClick={toggleDarkMode}
-            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
-              isDark ? 'bg-indigo-600' : 'bg-gray-300'
-            }`}
-            role="switch"
-            aria-checked={isDark}
-            aria-label="ダークモード切り替え"
-          >
-            <span
-              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-                isDark ? 'translate-x-6' : 'translate-x-1'
-              }`}
-            />
-          </button>
-        </div>
-      </div>
-
       {/* テーマカラー選択 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-3.5 md:p-4">
-        <div className="space-y-3 sm:space-y-3.5">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
+        <button
+          onClick={() => setThemeOpen(!themeOpen)}
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          aria-expanded={themeOpen}
+          aria-label={themeOpen ? "テーマカラー選択を折りたたむ" : "テーマカラー選択を展開"}
+        >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
             <Palette size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-purple-600 dark:text-purple-400" />
-            <div>
+            <div className="text-left">
               <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">テーマカラー</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">サイトの色合いを選択</p>
             </div>
           </div>
-          <div className="flex gap-2 flex-wrap">
-            {themes.map((theme) => {
-              const themePalette = getThemePalette(theme.value);
-              const themeColor = themePalette[600];
-              return (
-                <button
-                  key={theme.value}
-                  onClick={() => setTheme(theme.value)}
-                  className={`px-3 sm:px-3.5 md:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-white ring-2 ring-offset-2 dark:ring-offset-slate-800 ${
-                    currentTheme === theme.value
-                      ? 'ring-offset-2 scale-105 shadow-md'
-                      : 'opacity-75 hover:opacity-90'
-                  }`}
-                  style={{
-                    backgroundColor: themeColor,
-                    borderColor: themeColor,
-                    borderWidth: '2px',
-                    ...(currentTheme === theme.value ? { boxShadow: `0 0 0 3px rgba(${themeColor}, 0.2)` } : {})
-                  }}
-                >
-                  {theme.name}
-                </button>
-              );
-            })}
+          {themeOpen ? <ChevronUp size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" />}
+        </button>
+
+        {themeOpen && (
+          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4">
+            <div className="flex gap-2 flex-wrap">
+              {themes.map((theme) => {
+                const themePalette = getThemePalette(theme.value);
+                const themeColor = themePalette[600];
+                const isSelected = currentTheme === theme.value;
+                return (
+                  <button
+                    key={theme.value}
+                    onClick={() => setTheme(theme.value)}
+                    className={`px-3 sm:px-3.5 md:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all text-white ${
+                      isSelected
+                        ? 'ring-2 ring-offset-2 dark:ring-offset-slate-800 shadow-lg'
+                        : 'opacity-75 hover:opacity-90'
+                    }`}
+                    style={{
+                      backgroundColor: themeColor,
+                      ...(isSelected ? {
+                        outline: `3px solid ${themeColor}`,
+                        outlineOffset: '2px'
+                      } : {})
+                    }}
+                  >
+                    {theme.name}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* メンバー管理 */}
@@ -712,8 +697,10 @@ export const SettingsPage = () => {
       {/* データ管理 */}
       <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
         <button
-          onClick={() => {}}
+          onClick={() => setDataManagementOpen(!dataManagementOpen)}
           className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          aria-expanded={dataManagementOpen}
+          aria-label={dataManagementOpen ? "データ管理を折りたたむ" : "データ管理を展開"}
         >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
             <Database size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-600 dark:text-gray-400" />
@@ -722,9 +709,11 @@ export const SettingsPage = () => {
               <p className="text-xs text-gray-500 dark:text-gray-400">データのエクスポート・インポート</p>
             </div>
           </div>
+          {dataManagementOpen ? <ChevronUp size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" />}
         </button>
 
-        <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
+        {dataManagementOpen && (
+          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
           <button
             onClick={handleExport}
             className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
@@ -757,7 +746,8 @@ export const SettingsPage = () => {
               <p className="text-xs text-gray-500 dark:text-gray-400">すべてのデータを削除</p>
             </div>
           </button>
-        </div>
+          </div>
+        )}
       </div>
 
       {/* バージョン情報 */}
@@ -865,7 +855,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 太郎"
-                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
                 required
               />
             </div>
@@ -878,7 +868,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
                     type="button"
                     onClick={() => setColor(c)}
                     className={`w-8 h-8 rounded-full transition-transform ${
-                      color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
+                      color === c ? 'ring-2 ring-offset-2 ring-primary-500 scale-110 dark:ring-offset-slate-800' : ''
                     }`}
                     style={{ backgroundColor: c }}
                   />
@@ -945,7 +935,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 食費"
-                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
                 required
               />
             </div>
@@ -959,7 +949,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                     onClick={() => setMemberId(m.id)}
                     className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                       memberId === m.id
-                        ? 'bg-blue-600 text-white border-blue-600'
+                        ? 'bg-primary-600 text-white border-primary-600'
                         : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                     }`}
                   >
@@ -978,7 +968,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                     type="button"
                     onClick={() => setColor(c)}
                     className={`w-8 h-8 rounded-full transition-transform ${
-                      color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110 dark:ring-offset-slate-800' : ''
+                      color === c ? 'ring-2 ring-offset-2 ring-primary-500 scale-110 dark:ring-offset-slate-800' : ''
                     }`}
                     style={{ backgroundColor: c }}
                   />
@@ -997,7 +987,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                       onClick={() => setIcon(i)}
                       className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg border flex items-center justify-center transition-colors ${
                         icon === i
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
                           : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
                       }`}
                     >
