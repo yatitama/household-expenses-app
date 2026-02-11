@@ -169,7 +169,7 @@ export const AddTransactionPage = () => {
                         onClick={() => setCategoryId(category.id)}
                         className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg border transition-colors ${
                           categoryId === category.id
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                             : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                         }`}
                       >

@@ -94,3 +94,11 @@ body {
 .border-primary-500 {
   border-color: var(--theme-primary) !important;
 }
+
+.bg-primary-50 {
+  background-color: var(--theme-50) !important;
+}
+
+.dark .bg-primary-900\/30 {
+  background-color: color-mix(in srgb, var(--theme-900) 30%, transparent) !important;
+}
