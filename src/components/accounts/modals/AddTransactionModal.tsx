@@ -30,11 +30,6 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
     : isFromPM
       ? []
       : allAccounts;
-  const paymentMethods = isFromPM
-    ? allPaymentMethods.filter((pm) => pm.id === defaultPaymentMethodId)
-    : isFromAccount
-      ? allPaymentMethods.filter((pm) => pm.linkedAccountId === defaultAccountId)
-      : allPaymentMethods;
 
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
