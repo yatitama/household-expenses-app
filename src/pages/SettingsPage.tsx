@@ -444,16 +444,18 @@ export const SettingsPage = () => {
               <button
                 onClick={() => setCategoryFilterType('expense')}
                 className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-                  categoryFilterType === 'expense' ? 'bg-red-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                  categoryFilterType === 'expense' ? 'text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
                 }`}
+                style={categoryFilterType === 'expense' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
                 支出
               </button>
               <button
                 onClick={() => setCategoryFilterType('income')}
                 className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-                  categoryFilterType === 'income' ? 'bg-green-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                  categoryFilterType === 'income' ? 'text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
                 }`}
+                style={categoryFilterType === 'income' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
                 収入
               </button>
