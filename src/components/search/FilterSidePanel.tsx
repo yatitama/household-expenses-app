@@ -88,18 +88,21 @@ export const FilterSidePanel = ({
           content: (
             <div className="space-y-2">
               {([
-                ['all', 'すべて', 'bg-gray-500'],
-                ['income', '収入', 'bg-green-500'],
-                ['expense', '支出', 'bg-red-500'],
-              ] as const).map(([value, label, colorClass]) => (
+                ['all', 'すべて'],
+                ['income', '収入'],
+                ['expense', '支出'],
+              ] as const).map(([value, label]) => (
                 <button
                   key={value}
                   onClick={() => updateFilter('transactionType', value)}
                   className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 ${
                     filters.transactionType === value
-                      ? `${colorClass} text-white shadow-lg`
+                      ? 'text-white shadow-lg'
                       : 'bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-slate-500'
                   }`}
+                  style={filters.transactionType === value ? {
+                    backgroundColor: value === 'income' ? '#22c55e' : value === 'expense' ? '#ef4444' : 'var(--theme-primary)',
+                  } : undefined}
                 >
                   {label}
                 </button>

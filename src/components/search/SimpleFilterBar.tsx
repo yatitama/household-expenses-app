@@ -80,13 +80,8 @@ export const SimpleFilterBar = ({
   ];
 
   const handleChipClick = (chip: typeof filterChips[number]) => {
-    if (chip.isActive) {
-      // アクティブな場合は解除
-      chip.onClear();
-    } else {
-      // 非アクティブな場合はパネルを開く
-      setActivePanel(chip.id);
-    }
+    // フィルターの状態に関わらずパネルを開く
+    setActivePanel(chip.id === activePanel ? null : chip.id);
   };
 
   return (
@@ -107,16 +102,12 @@ export const SimpleFilterBar = ({
               <button
                 key={chip.id}
                 onClick={() => handleChipClick(chip)}
-                className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all active:scale-95 touch-action-manipulation ${
-                  chip.isActive
-                    ? 'text-white ring-1 dark:ring-1'
-                    : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
-                }`}
-                style={chip.isActive ? {
+                className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all active:scale-95 touch-action-manipulation text-white ring-1 dark:ring-1"
+                style={{
                   backgroundColor: 'var(--theme-primary)',
                   borderColor: 'var(--theme-primary-dark)',
-                } : undefined}
-                aria-label={chip.isActive ? `${chip.label}フィルターを削除` : `${chip.label}でフィルター`}
+                }}
+                aria-label={`${chip.label}でフィルター`}
                 aria-pressed={chip.isActive}
               >
                 {chip.label}
