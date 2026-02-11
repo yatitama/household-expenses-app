@@ -102,7 +102,7 @@ export const RecurringPaymentModal = ({
               type="button"
               onClick={() => { setType('expense'); setCategoryId(''); }}
               className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                type === 'expense' ? 'bg-red-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                type === 'expense' ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
               }`}
             >
               支出
@@ -111,7 +111,7 @@ export const RecurringPaymentModal = ({
               type="button"
               onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
               className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                type === 'income' ? 'bg-green-500 text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                type === 'income' ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
               }`}
             >
               収入
@@ -141,9 +141,10 @@ export const RecurringPaymentModal = ({
                 onClick={() => setFrequency('monthly')}
                 className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                   frequency === 'monthly'
-                    ? 'bg-primary-600 text-white border-primary-600'
+                    ? 'text-white border-transparent'
                     : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                 }`}
+                style={frequency === 'monthly' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
                 毎月
               </button>
@@ -152,9 +153,10 @@ export const RecurringPaymentModal = ({
                 onClick={() => setFrequency('yearly')}
                 className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                   frequency === 'yearly'
-                    ? 'bg-primary-600 text-white border-primary-600'
+                    ? 'text-white border-transparent'
                     : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                 }`}
+                style={frequency === 'yearly' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
                 毎年
               </button>
