@@ -122,7 +122,7 @@ export const AddTransactionPage = () => {
                   type="button"
                   onClick={() => { setType('expense'); setCategoryId(''); }}
                   className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                    type === 'expense' ? 'bg-primary-600 text-white hover:bg-primary-700' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                    type === 'expense' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
                   }`}
                 >
                   支出
@@ -131,7 +131,7 @@ export const AddTransactionPage = () => {
                   type="button"
                   onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
                   className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                    type === 'income' ? 'bg-primary-600 text-white hover:bg-primary-700' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                    type === 'income' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
                   }`}
                 >
                   収入
@@ -291,7 +291,7 @@ export const AddTransactionPage = () => {
             <button
               type="submit"
               disabled={!amount || !categoryId || (!accountId && !pmId)}
-              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-primary-600 text-white font-medium text-sm hover:bg-primary-700 disabled:opacity-50 transition-colors"
+              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
               登録
             </button>
