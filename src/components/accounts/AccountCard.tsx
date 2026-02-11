@@ -2,6 +2,7 @@ import { getCategoryIcon } from '../../utils/categoryIcons';
 import { ACCOUNT_TYPE_ICONS } from './AccountIcons';
 import { ACCOUNT_TYPE_LABELS } from './constants';
 import { AccountBalanceSchedule } from './AccountBalanceSchedule';
+import { useTheme } from '../../contexts/ThemeContext';
 import type { Account, Member, RecurringPayment, PaymentMethod } from '../../types';
 
 interface AccountCardProps {
@@ -16,11 +17,15 @@ export const AccountCard = ({
   account, member, allPaymentMethods,
   onEditRecurring, onToggleRecurring,
 }: AccountCardProps) => {
+  const { currentTheme } = useTheme();
 
   return (
     <div
       data-account-id={account.id}
-      className={`bg-white dark:bg-slate-800 rounded-lg md:rounded-xl p-3 md:p-4 shadow-sm border-2 border-transparent transition-all duration-200`}
+      className={`bg-white dark:bg-slate-800 rounded-lg md:rounded-xl p-3 md:p-4 shadow-sm border-2 transition-all duration-200`}
+      style={{
+        borderColor: 'var(--theme-primary)',
+      }}
     >
       {/* 口座情報 */}
       <div className="flex gap-2 md:gap-2.5">
