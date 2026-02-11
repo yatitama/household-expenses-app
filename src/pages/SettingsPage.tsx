@@ -384,8 +384,7 @@ export const SettingsPage = () => {
           <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             <button
               onClick={handleAddMember}
-              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors hover:opacity-90"
-              style={{ backgroundColor: 'var(--theme-primary)' }}
+              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors bg-primary-600 hover:bg-primary-700"
             >
               <Plus size={16} />
               メンバーを追加
@@ -461,8 +460,7 @@ export const SettingsPage = () => {
 
             <button
               onClick={handleAddCategory}
-              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors hover:opacity-90"
-              style={{ backgroundColor: 'var(--theme-primary)' }}
+              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors bg-primary-600 hover:bg-primary-700"
             >
               <Plus size={16} />
               カテゴリを追加
@@ -521,8 +519,7 @@ export const SettingsPage = () => {
           <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             <button
               onClick={handleAddAccount}
-              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors hover:opacity-90"
-              style={{ backgroundColor: 'var(--theme-primary)' }}
+              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors bg-primary-600 hover:bg-primary-700"
             >
               <Plus size={16} />
               口座を追加
@@ -583,8 +580,7 @@ export const SettingsPage = () => {
           <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             <button
               onClick={handleAddPM}
-              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors hover:opacity-90"
-              style={{ backgroundColor: 'var(--theme-primary)' }}
+              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors bg-primary-600 hover:bg-primary-700"
             >
               <Plus size={16} />
               支払い手段を追加
@@ -645,8 +641,7 @@ export const SettingsPage = () => {
           <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             <button
               onClick={handleAddRecurring}
-              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors hover:opacity-90"
-              style={{ backgroundColor: 'var(--theme-primary)' }}
+              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors bg-primary-600 hover:bg-primary-700"
             >
               <Plus size={16} />
               定期取引を追加
@@ -891,7 +886,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
             <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100 dark:hover:bg-slate-700">
               キャンセル
             </button>
-            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>
+            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors bg-primary-600 hover:bg-primary-700">
               保存
             </button>
           </div>
@@ -1013,7 +1008,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
             <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100 dark:hover:bg-slate-700">
               キャンセル
             </button>
-            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>
+            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors bg-primary-600 hover:bg-primary-700">
               保存
             </button>
           </div>
