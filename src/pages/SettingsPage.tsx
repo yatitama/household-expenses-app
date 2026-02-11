@@ -949,9 +949,10 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                     onClick={() => setMemberId(m.id)}
                     className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                       memberId === m.id
-                        ? 'bg-primary-600 text-white border-primary-600'
+                        ? 'text-white border-transparent'
                         : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                     }`}
+                    style={memberId === m.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                   >
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: m.color }} />
                     {m.name}
