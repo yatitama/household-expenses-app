@@ -144,9 +144,10 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   onClick={() => setBillingType(value)}
                   className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     billingType === value
-                      ? 'bg-primary-600 text-white border-primary-600'
+                      ? 'text-white border-transparent'
                       : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
+                  style={billingType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
                   {label}
                 </button>
