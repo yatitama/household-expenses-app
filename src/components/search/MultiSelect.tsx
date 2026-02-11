@@ -33,9 +33,13 @@ export const MultiSelect = ({ label, options, selectedIds, onChange }: MultiSele
               onClick={() => handleToggle(option.id)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                 isSelected
-                  ? 'bg-blue-600 text-white border-blue-600'
+                  ? 'text-white border-primary-600'
                   : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
               }`}
+              style={isSelected ? {
+                backgroundColor: 'var(--theme-primary)',
+                borderColor: 'var(--theme-primary-dark)',
+              } : undefined}
               aria-pressed={isSelected}
             >
               {option.color && (
