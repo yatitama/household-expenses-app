@@ -221,6 +221,7 @@ const MemberAssetCard = ({
   paymentMethods,
   getCategory,
 }: MemberAssetCardProps) => {
+  const [isBreakdownExpanded, setIsBreakdownExpanded] = useState(false);
   const [isScheduleExpanded, setIsScheduleExpanded] = useState(false);
   const [isIncomeExpanded, setIsIncomeExpanded] = useState(false);
 
@@ -296,14 +297,28 @@ const MemberAssetCard = ({
 
           {/* 口座ごとの内訳 */}
           {slide.memberAccounts.length > 0 && (
-            <div className="pt-3 border-t border-gray-200 dark:border-gray-700 space-y-2">
-              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium">内訳</p>
-              {slide.memberAccounts.map((account) => (
-                <div key={account.id} className="flex justify-between items-center text-xs md:text-sm">
-                  <span className="text-gray-700 dark:text-gray-300">{account.name}</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{formatCurrency(account.balance)}</span>
+            <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setIsBreakdownExpanded(!isBreakdownExpanded)}
+                className="flex items-center gap-1 text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 hover:opacity-80 transition-opacity"
+              >
+                {isBreakdownExpanded ? (
+                  <ChevronDown size={14} />
+                ) : (
+                  <ChevronRight size={14} />
+                )}
+                内訳
+              </button>
+              {isBreakdownExpanded && (
+                <div className="space-y-2 mt-2">
+                  {slide.memberAccounts.map((account) => (
+                    <div key={account.id} className="flex justify-between items-center text-xs md:text-sm">
+                      <span className="text-gray-700 dark:text-gray-300">{account.name}</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">{formatCurrency(account.balance)}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>
