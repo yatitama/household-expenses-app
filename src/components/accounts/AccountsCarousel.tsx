@@ -85,13 +85,14 @@ export const AccountsCarousel = ({
 
   return (
     <div className="space-y-6">
-      <h3 className="text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
-        口座 ({currentIndex + 1}/{accounts.length})
-      </h3>
-
       {/* インジケーターとナビゲーションボタン */}
       {accounts.length > 1 && (
-        <div className="flex items-center justify-center gap-3 mb-1">
+        <div className="flex flex-col items-center gap-1 mb-1">
+          <h3 className="text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
+            口座 ({currentIndex + 1}/{accounts.length})
+          </h3>
+
+          <div className="flex items-center justify-center gap-3">
           <button
             onClick={handlePrev}
             className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
@@ -123,6 +124,12 @@ export const AccountsCarousel = ({
             <ChevronRight size={18} />
           </button>
         </div>
+        </div>
+      )}
+      {accounts.length === 1 && (
+        <h3 className="text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
+          口座 ({currentIndex + 1}/{accounts.length})
+        </h3>
       )}
 
       {/* カルーセルコンテナ */}
