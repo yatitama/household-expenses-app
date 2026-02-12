@@ -85,7 +85,7 @@ export const AccountsCarousel = ({
 
   return (
     <div className="space-y-1">
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+      <h3 className="text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
         口座 ({currentIndex + 1}/{accounts.length})
       </h3>
 
