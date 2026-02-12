@@ -86,6 +86,7 @@ export const AccountsPage = () => {
             getMember={getMember}
             isBreakdownOpen={isBreakdownOpen}
             onToggleBreakdown={() => setIsBreakdownOpen(!isBreakdownOpen)}
+            paymentMethods={paymentMethods}
           />
         )}
       </div>
