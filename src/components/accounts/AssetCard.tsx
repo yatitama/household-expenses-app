@@ -124,7 +124,7 @@ export const AssetCard = ({
     <>
       {/* ナビゲーション */}
       {memberSlides.length > 1 && (
-        <div className="flex flex-col items-center gap-3 mb-3">
+        <div className="flex flex-col items-center gap-1 mb-6">
           <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
             資産 ({currentAssetIndex + 1}/{memberSlides.length})
           </span>

@@ -84,14 +84,14 @@ export const AccountsCarousel = ({
   if (accounts.length === 0) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-1">
       <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
         口座 ({currentIndex + 1}/{accounts.length})
       </h3>
 
       {/* インジケーターとナビゲーションボタン */}
       {accounts.length > 1 && (
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex items-center justify-center gap-3 mb-6">
           <button
             onClick={handlePrev}
             className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
