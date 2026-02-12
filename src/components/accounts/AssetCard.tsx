@@ -37,8 +37,6 @@ const SWIPE_THRESHOLD = 50;
 const TOUCH_TIMEOUT = 500;
 
 export const AssetCard = ({
-  totalBalance,
-  accounts,
   groupedAccounts,
   getMember,
   paymentMethods = [],
@@ -60,32 +58,19 @@ export const AssetCard = ({
   };
 
   // メンバーカルーセル用データ構築
-  const memberSlides = [
-    // 全メンバー合計
-    {
-      type: 'total',
-      id: 'total',
-      name: '全メンバー合計',
-      balance: totalBalance,
-      member: null,
-      memberAccounts: accounts,
-      memberId: 'total',
-    },
-    // メンバーごと
-    ...Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
-      const member = getMember(memberId) || null;
-      const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
-      return {
-        type: 'member',
-        id: memberId,
-        name: member?.name || '不明',
-        balance: memberTotal,
-        member,
-        memberAccounts,
-        memberId,
-      };
-    }),
-  ];
+  const memberSlides = Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
+    const member = getMember(memberId) || null;
+    const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
+    return {
+      type: 'member',
+      id: memberId,
+      name: member?.name || '不明',
+      balance: memberTotal,
+      member,
+      memberAccounts,
+      memberId,
+    };
+  });
 
   const goToAssetSlide = useCallback((index: number) => {
     if (index !== currentAssetIndex) {
@@ -139,41 +124,43 @@ export const AssetCard = ({
     <>
       {/* ナビゲーション */}
       {memberSlides.length > 1 && (
-        <div className="flex items-center justify-center gap-3 mb-3">
-          <button
-            onClick={handleAssetPrev}
-            className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            aria-label="前へ"
-          >
-            <ChevronLeft size={18} />
-          </button>
-
+        <div className="flex flex-col items-center gap-3 mb-3">
           <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
             資産 ({currentAssetIndex + 1}/{memberSlides.length})
           </span>
 
-          <div className="flex justify-center gap-1">
-            {memberSlides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToAssetSlide(index)}
-                className={`w-1.5 h-1.5 rounded-full transition-all ${
-                  index === currentAssetIndex
-                    ? 'bg-gray-800 dark:bg-gray-300 w-5'
-                    : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
-                }`}
-                aria-label={`スライド ${index + 1}`}
-              />
-            ))}
-          </div>
+          <div className="flex items-center justify-center gap-3">
+            <button
+              onClick={handleAssetPrev}
+              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              aria-label="前へ"
+            >
+              <ChevronLeft size={18} />
+            </button>
 
-          <button
-            onClick={handleAssetNext}
-            className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            aria-label="次へ"
-          >
-            <ChevronRight size={18} />
-          </button>
+            <div className="flex justify-center gap-1">
+              {memberSlides.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToAssetSlide(index)}
+                  className={`w-1.5 h-1.5 rounded-full transition-all ${
+                    index === currentAssetIndex
+                      ? 'bg-gray-800 dark:bg-gray-300 w-5'
+                      : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
+                  }`}
+                  aria-label={`スライド ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={handleAssetNext}
+              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              aria-label="次へ"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
       )}
 
@@ -297,22 +284,32 @@ const MemberAssetCard = ({
 
       {/* 残高セクション */}
       <div className="space-y-3">
-        <div className="rounded-lg p-3 md:p-4 border dark:bg-slate-700/50" style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.02)',
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border" style={{
           borderColor: 'var(--theme-primary)',
         }}>
-          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">
+          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
             残高
           </p>
-          <p className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>
+          <p className="text-2xl md:text-3xl font-bold mb-3" style={{ color: 'var(--theme-primary)' }}>
             {formatCurrency(slide.balance)}
           </p>
+
+          {/* 口座ごとの内訳 */}
+          {slide.memberAccounts.length > 0 && (
+            <div className="pt-3 border-t border-gray-200 dark:border-gray-700 space-y-2">
+              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium">内訳</p>
+              {slide.memberAccounts.map((account) => (
+                <div key={account.id} className="flex justify-between items-center text-xs md:text-sm">
+                  <span className="text-gray-700 dark:text-gray-300">{account.name}</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{formatCurrency(account.balance)}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* 引き落とし予定セクション */}
-        <div className="rounded-lg p-3 md:p-4 border border-red-100 dark:border-red-900/30" style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.02)',
-        }}>
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-red-100 dark:border-red-900/30">
           <button
             onClick={() => setIsScheduleExpanded(!isScheduleExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
@@ -438,9 +435,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 振り込み予定セクション */}
-        <div className="rounded-lg p-3 md:p-4 border border-green-100 dark:border-green-900/30" style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.02)',
-        }}>
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-green-100 dark:border-green-900/30">
           <button
             onClick={() => setIsIncomeExpanded(!isIncomeExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
