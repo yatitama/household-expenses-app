@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Wallet, Calendar, TrendingUp, ChevronDown, ChevronRight, CreditCard } from 'lucide-react';
+import { useState, useRef, useCallback } from 'react';
+import { Wallet, Calendar, TrendingUp, ChevronDown, ChevronRight, CreditCard, ChevronLeft } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import { getUnsettledTransactions, getUpcomingRecurringPayments, calculateRecurringNextDate } from '../../utils/billingUtils';
 import { getCategoryIcon } from '../../utils/categoryIcons';
@@ -28,12 +28,25 @@ interface AssetCardProps {
 }
 
 
+const SWIPE_THRESHOLD = 50; // 最小スワイプ距離（px）
+const TOUCH_TIMEOUT = 500; // タップ判定時間（ms）
+
 export const AssetCard = ({
   totalBalance,
+  groupedAccounts,
+  getMember,
   paymentMethods = [],
 }: AssetCardProps) => {
+  const [currentAssetIndex, setCurrentAssetIndex] = useState(0);
+  const [isAssetTransitioning, setIsAssetTransitioning] = useState(false);
   const [isScheduleExpanded, setIsScheduleExpanded] = useState(false);
   const [isIncomeExpanded, setIsIncomeExpanded] = useState(false);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const touchStartTime = useRef(0);
+  const assetContainerRef = useRef<HTMLDivElement>(null);
+  const assetInnerRef = useRef<HTMLDivElement>(null);
+
   const categories = categoryService.getAll();
 
   // Get all payment methods and their unsettled amounts
@@ -65,6 +78,79 @@ export const AssetCard = ({
     return categories.find((c) => c.id === categoryId);
   };
 
+  // カルーセル用データ準備
+  const assetSlides = [
+    // 全メンバー合計
+    {
+      type: 'total',
+      id: 'total',
+      name: '全メンバー合計',
+      balance: totalBalance,
+      member: null,
+    },
+    // メンバーごと
+    ...Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
+      const member = getMember(memberId);
+      const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
+      return {
+        type: 'member',
+        id: memberId,
+        name: member?.name || '不明',
+        balance: memberTotal,
+        member,
+      };
+    }),
+  ];
+
+  const goToAssetSlide = useCallback((index: number) => {
+    if (index !== currentAssetIndex) {
+      setIsAssetTransitioning(true);
+      setCurrentAssetIndex(index);
+      setTimeout(() => setIsAssetTransitioning(false), 300);
+    }
+  }, [currentAssetIndex]);
+
+  const handleAssetPrev = useCallback(() => {
+    const newIndex = currentAssetIndex === 0 ? assetSlides.length - 1 : currentAssetIndex - 1;
+    goToAssetSlide(newIndex);
+  }, [currentAssetIndex, assetSlides.length, goToAssetSlide]);
+
+  const handleAssetNext = useCallback(() => {
+    const newIndex = currentAssetIndex === assetSlides.length - 1 ? 0 : currentAssetIndex + 1;
+    goToAssetSlide(newIndex);
+  }, [currentAssetIndex, assetSlides.length, goToAssetSlide]);
+
+  const handleAssetTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    touchStartTime.current = Date.now();
+  }, []);
+
+  const handleAssetTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const touchEndTime = Date.now();
+
+      const diffX = touchStartX.current - touchEndX;
+      const diffY = Math.abs(touchStartY.current - touchEndY);
+      const duration = touchEndTime - touchStartTime.current;
+
+      // タップかスワイプか判定
+      const isSwipe = Math.abs(diffX) > SWIPE_THRESHOLD && diffY < SWIPE_THRESHOLD && duration < TOUCH_TIMEOUT;
+
+      if (isSwipe) {
+        e.preventDefault();
+        if (diffX > 0) {
+          handleAssetNext();
+        } else {
+          handleAssetPrev();
+        }
+      }
+    },
+    [handleAssetNext, handleAssetPrev]
+  );
+
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl p-3 md:p-4 shadow-sm transition-all duration-200">
       {/* ヘッダー: アイコン + 名前 */}
@@ -91,18 +177,78 @@ export const AssetCard = ({
 
       {/* 残高・引き落とし・振り込みセクション */}
       <div className="mt-3 md:mt-4 space-y-3">
-        {/* 残高セクション */}
-        <div className="rounded-lg p-3 md:p-4 border dark:bg-slate-700/50" style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.02)',
-          borderColor: 'var(--theme-primary)',
-        }}>
-          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">
-            総資産
-          </p>
-          <p className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>
-            {formatCurrency(totalBalance)}
-          </p>
-        </div>
+        {/* 残高カルーセルセクション */}
+        {assetSlides.length > 0 && (
+          <div className="space-y-3">
+            {assetSlides.length > 1 && (
+              <div className="flex items-center justify-center gap-3">
+                <button
+                  onClick={handleAssetPrev}
+                  className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  aria-label="前へ"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+
+                <div className="flex justify-center gap-1">
+                  {assetSlides.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToAssetSlide(index)}
+                      className={`w-1.5 h-1.5 rounded-full transition-all ${
+                        index === currentAssetIndex
+                          ? 'bg-gray-800 dark:bg-gray-300 w-5'
+                          : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
+                      }`}
+                      aria-label={`スライド ${index + 1}`}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  onClick={handleAssetNext}
+                  className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  aria-label="次へ"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            )}
+
+            {/* カルーセルコンテナ */}
+            <div
+              ref={assetContainerRef}
+              onTouchStart={handleAssetTouchStart}
+              onTouchEnd={handleAssetTouchEnd}
+              className="relative overflow-hidden rounded-lg"
+              style={{ touchAction: 'auto' }}
+            >
+              <div
+                ref={assetInnerRef}
+                className={`flex flex-nowrap transition-transform ${isAssetTransitioning ? 'duration-300 ease-out' : ''}`}
+                style={{
+                  transform: `translateX(-${currentAssetIndex * 100}%)`,
+                }}
+              >
+                {assetSlides.map((slide) => (
+                  <div key={slide.id} className="w-full flex-shrink-0 min-w-0">
+                    <div className="rounded-lg p-3 md:p-4 border dark:bg-slate-700/50" style={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                      borderColor: 'var(--theme-primary)',
+                    }}>
+                      <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">
+                        {slide.name}
+                      </p>
+                      <p className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>
+                        {formatCurrency(slide.balance)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 引き落とし予定セクション */}
         <div className="rounded-lg p-3 md:p-4 border border-red-100 dark:border-red-900/30" style={{
