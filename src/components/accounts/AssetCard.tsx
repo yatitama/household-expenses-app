@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { Calendar, TrendingUp, ChevronDown, ChevronRight, CreditCard } from 'lucide-react';
+import { Wallet, Calendar, TrendingUp, ChevronDown, ChevronRight, CreditCard } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
-import { useTheme } from '../../hooks/useTheme';
-import { getThemeGradient } from '../../utils/themes';
 import { getUnsettledTransactions, getUpcomingRecurringPayments, calculateRecurringNextDate } from '../../utils/billingUtils';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { categoryService } from '../../services/storage';
@@ -34,8 +32,6 @@ export const AssetCard = ({
   totalBalance,
   paymentMethods = [],
 }: AssetCardProps) => {
-  const { currentTheme } = useTheme();
-  const gradient = getThemeGradient(currentTheme);
   const [isScheduleExpanded, setIsScheduleExpanded] = useState(false);
   const [isIncomeExpanded, setIsIncomeExpanded] = useState(false);
   const categories = categoryService.getAll();
@@ -70,24 +66,48 @@ export const AssetCard = ({
   };
 
   return (
-    <div
-      className="rounded-lg md:rounded-xl p-3 md:p-4 space-y-3 relative"
-      style={{ background: `linear-gradient(to right, ${gradient.from}, ${gradient.to})` }}
-    >
-      {/* 残高セクション */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border" style={{
-        borderColor: 'var(--theme-primary)',
-      }}>
-        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">
-          総資産
-        </p>
-        <p className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>
-          {formatCurrency(totalBalance)}
-        </p>
+    <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl p-3 md:p-4 shadow-sm transition-all duration-200">
+      {/* ヘッダー: アイコン + 名前 */}
+      <div className="flex gap-2 md:gap-2.5 mb-3 md:mb-4">
+        {/* アイコン */}
+        <div className="flex-shrink-0 self-start">
+          <div
+            className="w-8 md:w-10 h-8 md:h-10 rounded-full flex items-center justify-center text-white"
+            style={{ backgroundColor: 'var(--theme-primary)' }}
+          >
+            <Wallet size={18} className="md:w-5 md:h-5" />
+          </div>
+        </div>
+
+        {/* 名前 */}
+        <div className="flex-1 min-w-0 space-y-0.5 md:space-y-1">
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <div className="text-left flex-1 min-w-0">
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">総資産</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* 引き落とし予定セクション */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-red-100 dark:border-red-900/30">
+      {/* 残高・引き落とし・振り込みセクション */}
+      <div className="mt-3 md:mt-4 space-y-3">
+        {/* 残高セクション */}
+        <div className="rounded-lg p-3 md:p-4 border dark:bg-slate-700/50" style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.02)',
+          borderColor: 'var(--theme-primary)',
+        }}>
+          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">
+            総資産
+          </p>
+          <p className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>
+            {formatCurrency(totalBalance)}
+          </p>
+        </div>
+
+        {/* 引き落とし予定セクション */}
+        <div className="rounded-lg p-3 md:p-4 border border-red-100 dark:border-red-900/30" style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.02)',
+        }}>
         {/* ヘッダー */}
         <button
           onClick={() => setIsScheduleExpanded(!isScheduleExpanded)}
@@ -216,8 +236,10 @@ export const AssetCard = ({
         )}
       </div>
 
-      {/* 振り込み予定セクション */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-green-100 dark:border-green-900/30">
+        {/* 振り込み予定セクション */}
+        <div className="rounded-lg p-3 md:p-4 border border-green-100 dark:border-green-900/30" style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.02)',
+        }}>
         {/* ヘッダー */}
         <button
           onClick={() => setIsIncomeExpanded(!isIncomeExpanded)}
@@ -281,6 +303,7 @@ export const AssetCard = ({
             )}
           </div>
         )}
+        </div>
       </div>
     </div>
   );
