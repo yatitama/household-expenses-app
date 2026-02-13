@@ -39,7 +39,7 @@ export const ScheduleSection = ({
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-red-100 dark:border-red-900/30">
+    <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
       {/* ヘッダー */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -51,12 +51,12 @@ export const ScheduleSection = ({
           ) : (
             <ChevronRight size={18} className="text-gray-500 dark:text-gray-400" />
           )}
-          <Calendar size={16} className="text-red-600 dark:text-red-400" />
+          <Calendar size={16} className="text-gray-900 dark:text-gray-700" />
           <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100">
             引き落とし予定
           </span>
         </div>
-        <span className="text-base md:text-lg font-bold text-red-600 dark:text-red-400">
+        <span className="text-base md:text-lg font-bold text-gray-900 dark:text-gray-700">
           {formatCurrency(totalCardPending + totalRecurringExpense)}
         </span>
       </button>
@@ -68,7 +68,7 @@ export const ScheduleSection = ({
           {cardUnsettledList.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <CreditCard size={14} className="text-red-600 dark:text-red-400" />
+                <CreditCard size={14} className="text-gray-900 dark:text-gray-700" />
                 <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
                   カード未精算
                 </span>
@@ -96,7 +96,7 @@ export const ScheduleSection = ({
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-red-600 dark:text-red-400 font-semibold">
+                      <span className="text-gray-900 dark:text-gray-700 font-semibold">
                         {formatCurrency(cardInfo.unsettledAmount)}
                       </span>
                       {cardInfo.unsettledTransactions.length > 0 && (
@@ -113,11 +113,11 @@ export const ScheduleSection = ({
           {upcomingExpense.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Calendar size={14} className="text-orange-600 dark:text-orange-400" />
+                <Calendar size={14} className="text-gray-600 dark:text-gray-500" />
                 <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
                   定期支出
                 </span>
-                <span className="text-xs md:text-sm font-semibold text-orange-600 dark:text-orange-400 ml-auto">
+                <span className="text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-500 ml-auto">
                   {formatCurrency(totalRecurringExpense)}
                 </span>
               </div>
@@ -154,7 +154,7 @@ export const ScheduleSection = ({
                           className="flex-shrink-0 hover:opacity-70 transition-opacity"
                         >
                           {rp.isActive
-                            ? <ToggleRight size={16} className="text-green-500" />
+                            ? <ToggleRight size={16} className="text-gray-600" />
                             : <ToggleLeft size={16} className="text-gray-300 dark:text-gray-600" />
                           }
                         </button>
@@ -172,7 +172,7 @@ export const ScheduleSection = ({
                           <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
                         </button>
                       </div>
-                      <span className="text-red-600 dark:text-red-400 font-semibold flex-shrink-0">
+                      <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
                         {formatCurrency(rp.amount)}
                       </span>
                     </div>

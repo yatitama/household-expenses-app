@@ -82,7 +82,7 @@ export const CategoriesPage = () => {
         <button
           onClick={() => setFilterType('expense')}
           className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-            filterType === 'expense' ? 'bg-red-500 text-white' : 'bg-white text-gray-900'
+            filterType === 'expense' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
           }`}
         >
           支出
@@ -90,7 +90,7 @@ export const CategoriesPage = () => {
         <button
           onClick={() => setFilterType('income')}
           className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-            filterType === 'income' ? 'bg-green-500 text-white' : 'bg-white text-gray-900'
+            filterType === 'income' ? 'bg-gray-600 text-white' : 'bg-white text-gray-900'
           }`}
         >
           収入
@@ -100,7 +100,7 @@ export const CategoriesPage = () => {
       {/* 追加ボタン */}
       <button
         onClick={handleAdd}
-        className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base"
+        className="w-full flex items-center justify-center gap-2 bg-gray-800 text-white py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base"
       >
         <Plus size={16} className="sm:w-5 sm:h-5" />
         カテゴリを追加
@@ -134,7 +134,7 @@ export const CategoriesPage = () => {
                   <button onClick={() => handleEdit(category)} className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600">
                     <Edit2 size={14} className="sm:w-4 sm:h-4" />
                   </button>
-                  <button onClick={() => handleDelete(category.id)} className="p-1.5 sm:p-2 text-gray-400 hover:text-red-600">
+                  <button onClick={() => handleDelete(category.id)} className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-900">
                     <Trash2 size={14} className="sm:w-4 sm:h-4" />
                   </button>
                 </div>
@@ -222,7 +222,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
                   onClick={() => setMemberId(member.id)}
                   className={`flex items-center gap-2 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     memberId === member.id
-                      ? 'bg-blue-600 text-white border-blue-600'
+                      ? 'bg-gray-800 text-white border-gray-700'
                       : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
@@ -264,7 +264,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
                     onClick={() => setIcon(i)}
                     className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg border flex items-center justify-center transition-colors ${
                       icon === i
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                        ? 'border-gray-700 bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-600'
                         : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
                     }`}
                   >
@@ -286,7 +286,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
             </button>
             <button
               type="submit"
-              className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700"
+              className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-gray-800 text-white font-medium text-sm hover:bg-gray-800"
             >
               保存
             </button>

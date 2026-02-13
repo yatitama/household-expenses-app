@@ -329,7 +329,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 引き落とし予定セクション */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-red-100 dark:border-red-900/30">
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
           <button
             onClick={() => setIsScheduleExpanded(!isScheduleExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
@@ -340,12 +340,12 @@ const MemberAssetCard = ({
               ) : (
                 <ChevronRight size={18} className="text-gray-500 dark:text-gray-400" />
               )}
-              <Calendar size={16} className="text-red-600 dark:text-red-400" />
+              <Calendar size={16} className="text-gray-900 dark:text-gray-700" />
               <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100">
                 引き落とし予定
               </span>
             </div>
-            <span className="text-base md:text-lg font-bold text-red-600 dark:text-red-400">
+            <span className="text-base md:text-lg font-bold text-gray-900 dark:text-gray-700">
               {formatCurrency(memberCardPending + memberRecurringExpense)}
             </span>
           </button>
@@ -355,7 +355,7 @@ const MemberAssetCard = ({
               {memberCardUnsettledList.length > 0 && memberCardUnsettledList.some(c => c.unsettledAmount > 0) && (
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <CreditCard size={14} className="text-red-600 dark:text-red-400" />
+                    <CreditCard size={14} className="text-gray-900 dark:text-gray-700" />
                     <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
                       カード未精算
                     </span>
@@ -391,7 +391,7 @@ const MemberAssetCard = ({
                               </div>
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
-                              <span className="text-red-600 dark:text-red-400 font-semibold">
+                              <span className="text-gray-900 dark:text-gray-700 font-semibold">
                                 {formatCurrency(cardInfo.unsettledAmount)}
                               </span>
                             </div>
@@ -405,11 +405,11 @@ const MemberAssetCard = ({
               {memberUpcomingExpense.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <Calendar size={14} className="text-orange-600 dark:text-orange-400" />
+                    <Calendar size={14} className="text-gray-600 dark:text-gray-500" />
                     <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
                       定期支出
                     </span>
-                    <span className="text-xs md:text-sm font-semibold text-orange-600 dark:text-orange-400 ml-auto">
+                    <span className="text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-500 ml-auto">
                       {formatCurrency(memberRecurringExpense)}
                     </span>
                   </div>
@@ -450,7 +450,7 @@ const MemberAssetCard = ({
                               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
                             </div>
                           </div>
-                          <span className="text-red-600 dark:text-red-400 font-semibold flex-shrink-0">
+                          <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
                             {formatCurrency(rp.amount)}
                           </span>
                         </div>
@@ -464,7 +464,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 振り込み予定セクション */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-green-100 dark:border-green-900/30">
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
           <button
             onClick={() => setIsIncomeExpanded(!isIncomeExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
@@ -475,12 +475,12 @@ const MemberAssetCard = ({
               ) : (
                 <ChevronRight size={18} className="text-gray-500 dark:text-gray-400" />
               )}
-              <TrendingUp size={16} className="text-green-600 dark:text-green-400" />
+              <TrendingUp size={16} className="text-gray-700 dark:text-gray-600" />
               <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100">
                 振り込み予定
               </span>
             </div>
-            <span className="text-base md:text-lg font-bold text-green-600 dark:text-green-400">
+            <span className="text-base md:text-lg font-bold text-gray-700 dark:text-gray-600">
               {formatCurrency(memberRecurringIncome)}
             </span>
           </button>
@@ -516,7 +516,7 @@ const MemberAssetCard = ({
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{freqLabel}</p>
                           </div>
                         </div>
-                        <span className="text-green-600 dark:text-green-400 font-semibold flex-shrink-0">
+                        <span className="text-gray-700 dark:text-gray-600 font-semibold flex-shrink-0">
                           {formatCurrency(rp.amount)}
                         </span>
                       </div>

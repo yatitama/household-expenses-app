@@ -117,7 +117,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
             onClick={handleToggleUnsettledFilter}
             className={`px-3 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors ${
               showOnlyUnsettled
-                ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                ? 'bg-gray-200 dark:bg-gray-900/30 text-gray-800 dark:text-gray-700'
                 : 'bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-500'
             }`}
           >
@@ -134,7 +134,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
                 });
                 onClose();
               }}
-              className="px-3 py-1.5 text-xs md:text-sm font-medium rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors flex items-center gap-1"
+              className="px-3 py-1.5 text-xs md:text-sm font-medium rounded-md bg-gray-200 dark:bg-gray-900/30 text-gray-800 dark:text-gray-600 hover:bg-gray-300 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-1"
             >
               履歴を見る <ArrowRight size={14} />
             </button>
@@ -176,8 +176,8 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
                                 <p className="font-medium text-gray-900 dark:text-gray-100">{category?.name || '不明'}</p>
                                 {settlementDate && (
                                   <div className="flex items-center gap-1 mt-0.5">
-                                    <Calendar size={10} className={isSettled ? 'text-green-400' : 'text-orange-400'} />
-                                    <p className={`text-sm ${isSettled ? 'text-green-500 dark:text-green-400' : 'text-orange-500 dark:text-orange-400'}`}>
+                                    <Calendar size={10} className={isSettled ? 'text-gray-600' : 'text-gray-500'} />
+                                    <p className={`text-sm ${isSettled ? 'text-gray-600 dark:text-gray-600' : 'text-gray-600 dark:text-gray-500'}`}>
                                       {settlementLabel}{isSettled ? '（精算済）' : ''}
                                     </p>
                                   </div>
@@ -185,7 +185,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
                                 {transaction.memo && <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 truncate">{transaction.memo}</p>}
                               </div>
                             </div>
-                            <p className={`font-bold text-sm flex-shrink-0 ml-2 ${isExpense ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                            <p className={`font-bold text-sm flex-shrink-0 ml-2 ${isExpense ? 'text-gray-900 dark:text-gray-700' : 'text-gray-700 dark:text-gray-600'}`}>
                               {isExpense ? '-' : '+'}{formatCurrency(transaction.amount)}
                             </p>
                           </div>

@@ -116,7 +116,7 @@ export const LinkedPaymentMethodModal = ({
                 className="flex items-center gap-2"
               >
                 {isActive ? (
-                  <ToggleRight size={32} className="text-blue-600" />
+                  <ToggleRight size={32} className="text-gray-800" />
                 ) : (
                   <ToggleLeft size={32} className="text-gray-400 dark:text-gray-600" />
                 )}
@@ -134,7 +134,7 @@ export const LinkedPaymentMethodModal = ({
           </button>
           <button
             type="submit"
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+            className="flex-1 px-4 py-2 bg-gray-800 text-white rounded-lg font-medium hover:bg-gray-800"
           >
             保存
           </button>

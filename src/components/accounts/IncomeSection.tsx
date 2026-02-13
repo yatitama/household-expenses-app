@@ -26,7 +26,7 @@ export const IncomeSection = ({
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-green-100 dark:border-green-900/30">
+    <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
       {/* ヘッダー */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -38,12 +38,12 @@ export const IncomeSection = ({
           ) : (
             <ChevronRight size={18} className="text-gray-500 dark:text-gray-400" />
           )}
-          <TrendingUp size={16} className="text-green-600 dark:text-green-400" />
+          <TrendingUp size={16} className="text-gray-700 dark:text-gray-600" />
           <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100">
             振り込み予定
           </span>
         </div>
-        <span className="text-base md:text-lg font-bold text-green-600 dark:text-green-400">
+        <span className="text-base md:text-lg font-bold text-gray-700 dark:text-gray-600">
           {formatCurrency(totalRecurringIncome)}
         </span>
       </button>
@@ -74,7 +74,7 @@ export const IncomeSection = ({
                         className="flex-shrink-0 hover:opacity-70 transition-opacity"
                       >
                         {rp.isActive
-                          ? <ToggleRight size={16} className="text-green-500" />
+                          ? <ToggleRight size={16} className="text-gray-600" />
                           : <ToggleLeft size={16} className="text-gray-300 dark:text-gray-600" />
                         }
                       </button>
@@ -92,7 +92,7 @@ export const IncomeSection = ({
                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{freqLabel}</p>
                       </button>
                     </div>
-                    <span className="text-green-600 dark:text-green-400 font-semibold flex-shrink-0">
+                    <span className="text-gray-700 dark:text-gray-600 font-semibold flex-shrink-0">
                       {formatCurrency(rp.amount)}
                     </span>
                   </div>

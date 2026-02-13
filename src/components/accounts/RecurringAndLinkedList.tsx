@@ -41,7 +41,7 @@ export const RecurringAndLinkedList = ({
             <RefreshCw size={12} />
             定期取引
           </button>
-          <button onClick={onAddRecurring} className="text-blue-500 hover:text-blue-700 dark:text-blue-400" aria-label="定期取引を追加">
+          <button onClick={onAddRecurring} className="text-gray-700 hover:text-gray-800 dark:text-gray-600" aria-label="定期取引を追加">
             <Plus size={16} />
           </button>
         </div>
@@ -61,7 +61,7 @@ export const RecurringAndLinkedList = ({
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <button onClick={() => onToggleRecurring(rp)} className="flex-shrink-0">
                           {rp.isActive
-                            ? <ToggleRight size={18} className="text-green-500" />
+                            ? <ToggleRight size={18} className="text-gray-600" />
                             : <ToggleLeft size={18} className="text-gray-300 dark:text-gray-600" />
                           }
                         </button>
@@ -76,7 +76,7 @@ export const RecurringAndLinkedList = ({
                           <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-sm">{freqLabel}</span>
                         </button>
                       </div>
-                      <span className={`font-medium flex-shrink-0 ml-2 ${rp.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                      <span className={`font-medium flex-shrink-0 ml-2 ${rp.type === 'expense' ? 'text-gray-900 dark:text-gray-700' : 'text-gray-700 dark:text-gray-600'}`}>
                         {formatCurrency(rp.amount)}
                       </span>
                     </div>
@@ -99,7 +99,7 @@ export const RecurringAndLinkedList = ({
             <CreditCard size={12} />
             支払い手段
           </button>
-          <button onClick={onAddLinked} className="text-blue-500 hover:text-blue-700 dark:text-blue-400" aria-label="支払い手段を追加">
+          <button onClick={onAddLinked} className="text-gray-700 hover:text-gray-800 dark:text-gray-600" aria-label="支払い手段を追加">
             <Plus size={16} />
           </button>
         </div>
@@ -119,7 +119,7 @@ export const RecurringAndLinkedList = ({
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <button onClick={() => onToggleLinked(lpm)} className="flex-shrink-0">
                           {lpm.isActive
-                            ? <ToggleRight size={18} className="text-green-500" />
+                            ? <ToggleRight size={18} className="text-gray-600" />
                             : <ToggleLeft size={18} className="text-gray-300 dark:text-gray-600" />
                           }
                         </button>
@@ -134,7 +134,7 @@ export const RecurringAndLinkedList = ({
                         </button>
                         <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-sm">{paymentLabel}</span>
                       </div>
-                      <span className="font-medium text-red-600 dark:text-red-400 flex-shrink-0 ml-2">
+                      <span className="font-medium text-gray-900 dark:text-gray-700 flex-shrink-0 ml-2">
                         {formatCurrency(unsettledAmount)}
                       </span>
                     </div>

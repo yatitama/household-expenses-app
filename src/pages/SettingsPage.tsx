@@ -320,7 +320,7 @@ export const SettingsPage = () => {
           aria-label={themeOpen ? "テーマカラー選択を折りたたむ" : "テーマカラー選択を展開"}
         >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
-            <Palette size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-purple-600 dark:text-purple-400" />
+            <Palette size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-700 dark:text-gray-500" />
             <div className="text-left">
               <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">テーマカラー</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">サイトの色合いを選択</p>
@@ -371,7 +371,7 @@ export const SettingsPage = () => {
           aria-label={membersOpen ? 'メンバー管理を折りたたむ' : 'メンバー管理を展開'}
         >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
-            <Users size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-blue-600 dark:text-blue-400" />
+            <Users size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-800 dark:text-gray-600" />
             <div className="text-left">
               <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">メンバー管理</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">家族のメンバーを追加・編集</p>
@@ -428,7 +428,7 @@ export const SettingsPage = () => {
           aria-expanded={categoriesOpen}
         >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
-            <Tag size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-green-600 dark:text-green-400" />
+            <Tag size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-700 dark:text-gray-600" />
             <div className="text-left">
               <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">カテゴリ管理</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">収支カテゴリを追加・編集</p>
@@ -510,7 +510,7 @@ export const SettingsPage = () => {
           aria-expanded={accountsOpen}
         >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
-            <Wallet size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-blue-600 dark:text-blue-400" />
+            <Wallet size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-800 dark:text-gray-600" />
             <div className="text-left">
               <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">口座管理</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">現金・銀行口座・電子マネーを追加・編集</p>
@@ -572,7 +572,7 @@ export const SettingsPage = () => {
           aria-expanded={paymentMethodsOpen}
         >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
-            <CreditCard size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-purple-600 dark:text-purple-400" />
+            <CreditCard size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-700 dark:text-gray-500" />
             <div className="text-left">
               <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">支払い手段管理</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">クレジットカード・デビットカードを追加・編集</p>
@@ -634,7 +634,7 @@ export const SettingsPage = () => {
           aria-expanded={recurringOpen}
         >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
-            <Repeat size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-orange-600 dark:text-orange-400" />
+            <Repeat size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-600 dark:text-gray-500" />
             <div className="text-left">
               <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">定期取引管理</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">定期的な収支を設定・管理</p>
@@ -682,7 +682,7 @@ export const SettingsPage = () => {
                       </div>
                       <div className={`px-2 py-1 rounded text-xs font-medium ${
                         rp.isActive
-                          ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                          ? 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-600'
                           : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400'
                       }`}>
                         {rp.isActive ? '有効' : '無効'}
@@ -720,7 +720,7 @@ export const SettingsPage = () => {
             onClick={handleExport}
             className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
           >
-            <Download size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+            <Download size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-800 dark:text-gray-600 flex-shrink-0" />
             <div className="text-left min-w-0">
               <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">データをエクスポート</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">JSONファイルとしてダウンロード</p>
@@ -731,7 +731,7 @@ export const SettingsPage = () => {
             onClick={handleImport}
             className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
           >
-            <Upload size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+            <Upload size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-700 dark:text-gray-600 flex-shrink-0" />
             <div className="text-left min-w-0">
               <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">データをインポート</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">JSONファイルから復元</p>
@@ -740,11 +740,11 @@ export const SettingsPage = () => {
 
           <button
             onClick={handleReset}
-            className="w-full flex items-center gap-3 p-3 rounded-lg border border-red-200 dark:border-red-800 hover:border-red-300 dark:hover:border-red-700 transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-300 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-800 transition-colors"
           >
-            <Trash2 size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-red-600 flex-shrink-0" />
+            <Trash2 size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-900 flex-shrink-0" />
             <div className="text-left min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-red-600">データを初期化</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-900">データを初期化</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">すべてのデータを削除</p>
             </div>
           </button>
@@ -884,7 +884,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
             <button
               type="button"
               onClick={() => { onDelete(member); onClose(); }}
-              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition-colors"
+              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
             >
               削除
             </button>
@@ -1007,7 +1007,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
             <button
               type="button"
               onClick={() => { onDelete(category.id); onClose(); }}
-              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition-colors"
+              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
             >
               削除
             </button>
