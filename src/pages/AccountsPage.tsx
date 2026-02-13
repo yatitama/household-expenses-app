@@ -128,7 +128,7 @@ export const AccountsPage = () => {
                         linkedAccountName={undefined}
                         pendingAmount={pendingByPM[pm.id] || 0}
                         recurringPayments={pmRecurrings}
-                        onView={() => navigate('/transactions', { state: { paymentMethodIds: [pm.id] } })}
+                        onView={() => navigate('/transactions', { state: { filterType: 'payment', paymentMethodIds: [pm.id] } })}
                         onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
                         onEditRecurring={handleEditRecurring}
                         onToggleRecurring={handleToggleRecurring}
