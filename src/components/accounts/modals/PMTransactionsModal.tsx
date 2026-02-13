@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
-import { X, Calendar } from 'lucide-react';
+import { X, Calendar, ArrowRight } from 'lucide-react';
 import {
   accountService, transactionService, categoryService,
   memberService, paymentMethodService,
@@ -21,6 +22,7 @@ interface PMTransactionsModalProps {
 }
 
 export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled: initialShowOnlyUnsettled }: PMTransactionsModalProps) => {
+  const navigate = useNavigate();
   const [showOnlyUnsettled, setShowOnlyUnsettled] = useState(!!initialShowOnlyUnsettled);
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     let txns = transactionService.getAll()
@@ -110,7 +112,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
         </div>
 
         {/* フィルタボタン */}
-        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-700/50">
+        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-700/50 flex gap-2 items-center">
           <button
             onClick={handleToggleUnsettledFilter}
             className={`px-3 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors ${
@@ -121,9 +123,25 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
           >
             {showOnlyUnsettled ? '未精算のみ ✓' : '未精算のみ'}
           </button>
+          {showOnlyUnsettled && (
+            <button
+              onClick={() => {
+                navigate('/transactions', {
+                  state: {
+                    filterType: 'unsettled',
+                    paymentMethodIds: [paymentMethod.id],
+                  },
+                });
+                onClose();
+              }}
+              className="px-3 py-1.5 text-xs md:text-sm font-medium rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors flex items-center gap-1"
+            >
+              履歴を見る <ArrowRight size={14} />
+            </button>
+          )}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 pb-24">
           {transactions.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500 dark:text-gray-400">取引がありません</p>
