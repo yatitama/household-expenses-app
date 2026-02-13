@@ -8,7 +8,6 @@ import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { getPendingAmountByPaymentMethod, getTotalPendingByAccount } from '../utils/billingUtils';
 import { AssetCard } from '../components/accounts/AssetCard';
-import { AccountsCarousel } from '../components/accounts/AccountsCarousel';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
 import { PMTransactionsModal } from '../components/accounts/modals/PMTransactionsModal';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
@@ -41,6 +40,10 @@ export const AccountsPage = () => {
   };
   const handleEditRecurring = (rp: RecurringPayment) => {
     openModal({ type: 'recurring', data: { editing: rp, target: null } });
+  };
+
+  const handleCardUnsettledClick = (paymentMethod: any) => {
+    openModal({ type: 'viewing-pm', data: { paymentMethod, showOnlyUnsettled: true } });
   };
 
   const keyboardOptions = useMemo(() => ({
@@ -87,6 +90,7 @@ export const AccountsPage = () => {
             isBreakdownOpen={isBreakdownOpen}
             onToggleBreakdown={() => setIsBreakdownOpen(!isBreakdownOpen)}
             paymentMethods={paymentMethods}
+            onCardUnsettledClick={handleCardUnsettledClick}
           />
         )}
       </div>
@@ -107,15 +111,6 @@ export const AccountsPage = () => {
           </div>
         ) : (
           <>
-            {/* 口座カルーセル */}
-            <AccountsCarousel
-              accounts={accounts}
-              members={members}
-              paymentMethods={paymentMethods}
-              onEditRecurring={handleEditRecurring}
-              onToggleRecurring={handleToggleRecurring}
-            />
-
             {/* 紐づきなし支払い手段 */}
             {unlinkedPMs.length > 0 && (
               <div>
@@ -151,7 +146,8 @@ export const AccountsPage = () => {
       {/* モーダル群 */}
       {activeModal?.type === 'viewing-pm' && activeModal.data && (
         <PMTransactionsModal
-          paymentMethod={activeModal.data}
+          paymentMethod={activeModal.data.paymentMethod || activeModal.data}
+          showOnlyUnsettled={activeModal.data.showOnlyUnsettled}
           onClose={() => { closeModal(); refreshData(); }}
         />
       )}

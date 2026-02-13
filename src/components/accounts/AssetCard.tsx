@@ -31,6 +31,7 @@ interface AssetCardProps {
   isBreakdownOpen: boolean;
   onToggleBreakdown: () => void;
   paymentMethods?: PaymentMethod[];
+  onCardUnsettledClick?: (paymentMethod: PaymentMethod) => void;
 }
 
 const SWIPE_THRESHOLD = 50;
@@ -40,6 +41,7 @@ export const AssetCard = ({
   groupedAccounts,
   getMember,
   paymentMethods = [],
+  onCardUnsettledClick,
 }: AssetCardProps) => {
   const [currentAssetIndex, setCurrentAssetIndex] = useState(0);
   const [isAssetTransitioning, setIsAssetTransitioning] = useState(false);
@@ -187,6 +189,7 @@ export const AssetCard = ({
                 allUpcomingRecurring={allUpcomingRecurring}
                 paymentMethods={paymentMethods}
                 getCategory={getCategory}
+                onCardUnsettledClick={onCardUnsettledClick}
               />
             </div>
           ))}
@@ -212,6 +215,7 @@ interface MemberAssetCardProps {
   allUpcomingRecurring: RecurringPayment[];
   paymentMethods: PaymentMethod[];
   getCategory: (categoryId: string) => Category | undefined;
+  onCardUnsettledClick?: (paymentMethod: PaymentMethod) => void;
 }
 
 const MemberAssetCard = ({
@@ -220,6 +224,7 @@ const MemberAssetCard = ({
   allUpcomingRecurring,
   paymentMethods,
   getCategory,
+  onCardUnsettledClick,
 }: MemberAssetCardProps) => {
   const [isBreakdownExpanded, setIsBreakdownExpanded] = useState(false);
   const [isScheduleExpanded, setIsScheduleExpanded] = useState(false);
@@ -359,31 +364,40 @@ const MemberAssetCard = ({
                   <div className="space-y-1.5 ml-6">
                     {memberCardUnsettledList
                       .filter(c => c.unsettledAmount > 0)
-                      .map((cardInfo) => (
-                      <div
-                        key={cardInfo.paymentMethod.id}
-                        className="w-full flex items-start justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 dark:hover:bg-slate-700 rounded transition-colors"
-                      >
-                        <div className="flex items-start gap-2 min-w-0 flex-1">
-                          <div
-                            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                            style={{ backgroundColor: `${cardInfo.paymentMethod.color}20`, color: cardInfo.paymentMethod.color }}
+                      .map((cardInfo) => {
+                        const linkedAccount = slide.memberAccounts.find(a => a.id === cardInfo.paymentMethod.linkedAccountId);
+                        return (
+                          <button
+                            key={cardInfo.paymentMethod.id}
+                            onClick={() => onCardUnsettledClick?.(cardInfo.paymentMethod)}
+                            className="w-full flex items-start justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 dark:hover:bg-slate-700 rounded transition-colors text-left"
                           >
-                            <CreditCard size={12} />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-gray-900 dark:text-gray-100">
-                              {cardInfo.paymentMethod.name}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          <span className="text-red-600 dark:text-red-400 font-semibold">
-                            {formatCurrency(cardInfo.unsettledAmount)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                            <div className="flex items-start gap-2 min-w-0 flex-1">
+                              <div
+                                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                                style={{ backgroundColor: `${cardInfo.paymentMethod.color}20`, color: cardInfo.paymentMethod.color }}
+                              >
+                                <CreditCard size={12} />
+                              </div>
+                              <div className="min-w-0 flex-1 flex flex-col gap-0.5">
+                                <p className="truncate text-gray-900 dark:text-gray-100">
+                                  {cardInfo.paymentMethod.name}
+                                </p>
+                                {linkedAccount && (
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                    {linkedAccount.name}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <span className="text-red-600 dark:text-red-400 font-semibold">
+                                {formatCurrency(cardInfo.unsettledAmount)}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
                   </div>
                 </div>
               )}

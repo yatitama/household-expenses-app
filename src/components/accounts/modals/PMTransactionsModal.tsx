@@ -17,13 +17,20 @@ import type { PaymentMethod, Transaction, TransactionInput } from '../../../type
 interface PMTransactionsModalProps {
   paymentMethod: PaymentMethod;
   onClose: () => void;
+  showOnlyUnsettled?: boolean;
 }
 
-export const PMTransactionsModal = ({ paymentMethod, onClose }: PMTransactionsModalProps) => {
+export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled: initialShowOnlyUnsettled }: PMTransactionsModalProps) => {
+  const [showOnlyUnsettled, setShowOnlyUnsettled] = useState(!!initialShowOnlyUnsettled);
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    return transactionService.getAll()
-      .filter((t) => t.paymentMethodId === paymentMethod.id)
-      .sort((a, b) => b.date.localeCompare(a.date));
+    let txns = transactionService.getAll()
+      .filter((t) => t.paymentMethodId === paymentMethod.id);
+
+    if (showOnlyUnsettled) {
+      txns = txns.filter((t) => !t.settledAt);
+    }
+
+    return txns.sort((a, b) => b.date.localeCompare(a.date));
   });
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
@@ -34,11 +41,14 @@ export const PMTransactionsModal = ({ paymentMethod, onClose }: PMTransactionsMo
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
 
   const refreshTransactions = () => {
-    setTransactions(
-      transactionService.getAll()
-        .filter((t) => t.paymentMethodId === paymentMethod.id)
-        .sort((a, b) => b.date.localeCompare(a.date))
-    );
+    let txns = transactionService.getAll()
+      .filter((t) => t.paymentMethodId === paymentMethod.id);
+
+    if (showOnlyUnsettled) {
+      txns = txns.filter((t) => !t.settledAt);
+    }
+
+    setTransactions(txns.sort((a, b) => b.date.localeCompare(a.date)));
   };
 
   const handleSaveEdit = (input: TransactionInput) => {
@@ -52,6 +62,18 @@ export const PMTransactionsModal = ({ paymentMethod, onClose }: PMTransactionsMo
     refreshTransactions();
     setEditingTransaction(null);
     toast.success('取引を更新しました');
+  };
+
+  const handleToggleUnsettledFilter = () => {
+    setShowOnlyUnsettled(!showOnlyUnsettled);
+    let txns = transactionService.getAll()
+      .filter((t) => t.paymentMethodId === paymentMethod.id);
+
+    if (!showOnlyUnsettled) {
+      txns = txns.filter((t) => !t.settledAt);
+    }
+
+    setTransactions(txns.sort((a, b) => b.date.localeCompare(a.date)));
   };
 
   const groupedByDate: Record<string, Transaction[]> = {};
@@ -85,6 +107,20 @@ export const PMTransactionsModal = ({ paymentMethod, onClose }: PMTransactionsMo
               <X size={24} />
             </button>
           </div>
+        </div>
+
+        {/* フィルタボタン */}
+        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-700/50">
+          <button
+            onClick={handleToggleUnsettledFilter}
+            className={`px-3 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors ${
+              showOnlyUnsettled
+                ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                : 'bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-500'
+            }`}
+          >
+            {showOnlyUnsettled ? '未精算のみ ✓' : '未精算のみ'}
+          </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4">
