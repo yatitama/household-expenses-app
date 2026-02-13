@@ -1,55 +1,19 @@
 import { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, Wallet, CreditCard, Palette, Repeat } from 'lucide-react';
+import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, Wallet, CreditCard, Repeat } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
-import { useTheme } from '../hooks/useTheme';
-import { getAllThemes, getThemePalette } from '../utils/themes';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { AccountModal } from '../components/accounts/modals/AccountModal';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
-import { ACCOUNT_TYPE_LABELS, PM_TYPE_LABELS } from '../components/accounts/constants';
+import { ACCOUNT_TYPE_LABELS, PM_TYPE_LABELS, COLORS } from '../components/accounts/constants';
 import { COMMON_MEMBER_ID } from '../types';
 import type { Member, MemberInput, Category, CategoryInput, TransactionType, Account, AccountInput, PaymentMethod, PaymentMethodInput, RecurringPayment, RecurringPaymentInput } from '../types';
 
-const COLORS = [
-  // Red系
-  '#fee2e2', '#fca5a5', '#f87171', '#ef4444', '#dc2626',
-  // Orange系
-  '#fed7aa', '#fdba74', '#fb923c', '#f97316', '#ea580c',
-  // Yellow系
-  '#fef3c7', '#fde047', '#facc15', '#eab308', '#ca8a04',
-  // Lime系
-  '#d9f99d', '#bef264', '#a3e635', '#84cc16', '#65a30d',
-  // Green系
-  '#bbf7d0', '#86efac', '#4ade80', '#22c55e', '#16a34a',
-  // Emerald系
-  '#a7f3d0', '#6ee7b7', '#34d399', '#10b981', '#059669',
-  // Teal系
-  '#99f6e4', '#5eead4', '#2dd4bf', '#14b8a6', '#0d9488',
-  // Cyan系
-  '#a5f3fc', '#67e8f9', '#22d3ee', '#06b6d4', '#0891b2',
-  // Blue系
-  '#bfdbfe', '#93c5fd', '#60a5fa', '#3b82f6', '#2563eb',
-  // Indigo系
-  '#c7d2fe', '#a5b4fc', '#818cf8', '#6366f1', '#4f46e5',
-  // Purple系
-  '#e9d5ff', '#d8b4fe', '#c084fc', '#a855f7', '#9333ea',
-  // Pink系
-  '#fbcfe8', '#f9a8d4', '#f472b6', '#ec4899', '#db2777',
-  // Rose系
-  '#fecdd3', '#fda4af', '#fb7185', '#f43f5e', '#e11d48',
-  // Gray系
-  '#e5e7eb', '#d1d5db', '#9ca3af', '#6b7280', '#4b5563',
-];
-
 export const SettingsPage = () => {
-  const { currentTheme, setTheme } = useTheme();
-  const themes = getAllThemes();
   // デフォルトで全セクション折りたたみ（モバイルファースト）
-  const [themeOpen, setThemeOpen] = useState(false);
   const [membersOpen, setMembersOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [accountsOpen, setAccountsOpen] = useState(false);
@@ -310,57 +274,6 @@ export const SettingsPage = () => {
   return (
     <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-2.5 sm:space-y-3 md:space-y-4">
       <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">設定</h2>
-
-      {/* テーマカラー選択 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
-        <button
-          onClick={() => setThemeOpen(!themeOpen)}
-          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
-          aria-expanded={themeOpen}
-          aria-label={themeOpen ? "テーマカラー選択を折りたたむ" : "テーマカラー選択を展開"}
-        >
-          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
-            <Palette size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-700 dark:text-gray-500" />
-            <div className="text-left">
-              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">テーマカラー</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">サイトの色合いを選択</p>
-            </div>
-          </div>
-          {themeOpen ? <ChevronUp size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" />}
-        </button>
-
-        {themeOpen && (
-          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4">
-            <div className="flex gap-2 flex-wrap">
-              {themes.map((theme) => {
-                const themePalette = getThemePalette(theme.value);
-                const themeColor = themePalette[600];
-                const isSelected = currentTheme === theme.value;
-                return (
-                  <button
-                    key={theme.value}
-                    onClick={() => setTheme(theme.value)}
-                    className={`px-3 sm:px-3.5 md:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all text-white ${
-                      isSelected
-                        ? 'ring-2 ring-offset-2 dark:ring-offset-slate-800 shadow-lg'
-                        : 'opacity-75 hover:opacity-90'
-                    }`}
-                    style={{
-                      backgroundColor: themeColor,
-                      ...(isSelected ? {
-                        outline: `3px solid ${themeColor}`,
-                        outlineOffset: '2px'
-                      } : {})
-                    }}
-                  >
-                    {theme.name}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* メンバー管理 */}
       <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">

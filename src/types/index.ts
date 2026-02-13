@@ -139,23 +139,8 @@ export type LinkedPaymentMethodInput = Omit<LinkedPaymentMethod, 'id' | 'created
 // 共通メンバーID（削除不可）
 export const COMMON_MEMBER_ID = 'common';
 
-// テーマカラータイプ
-export type ThemeColor = 'blue' | 'red' | 'green' | 'yellow' | 'purple' | 'pink' | 'cyan' | 'indigo' | 'rose' | 'teal' | 'orange' | 'lime' | 'sky';
-
-// テーマ色パレット
-export interface ThemeColorPalette {
-  // メインカラーの段階
-  50: string;    // 最も薄い
-  100: string;
-  200: string;
-  300: string;
-  400: string;
-  500: string;   // 標準
-  600: string;
-  700: string;
-  800: string;
-  900: string;   // 最も濃い
-}
+// テーマカラータイプ（グレースケール固定）
+export type ThemeColor = 'grayscale';
 
 // テーマ設定
 export interface ThemeSettings {
