@@ -146,8 +146,8 @@ export const AccountsPage = () => {
       {/* モーダル群 */}
       {activeModal?.type === 'viewing-pm' && activeModal.data && (
         <PMTransactionsModal
-          paymentMethod={activeModal.data.paymentMethod || activeModal.data}
-          showOnlyUnsettled={activeModal.data.showOnlyUnsettled}
+          paymentMethod={'paymentMethod' in activeModal.data ? activeModal.data.paymentMethod : activeModal.data}
+          showOnlyUnsettled={'showOnlyUnsettled' in activeModal.data ? activeModal.data.showOnlyUnsettled : undefined}
           onClose={() => { closeModal(); refreshData(); }}
         />
       )}
