@@ -75,7 +75,7 @@ export const Layout = () => {
       </main>
 
       {/* モバイル: ボトムナビゲーション */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700 h-16" aria-label="メインナビゲーション">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700 h-16 z-50" aria-label="メインナビゲーション">
         <div className="flex justify-around items-center h-full">
           {navItems.map((item) => (
             <BottomNavItem key={item.to} {...item} />
