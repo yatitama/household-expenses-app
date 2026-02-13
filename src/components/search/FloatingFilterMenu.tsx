@@ -53,11 +53,11 @@ export const FloatingFilterMenu = ({
   // Grouping helpers
   const getGroupingInfo = (type: GroupByType) => {
     switch (type) {
-      case 'date': return { icon: Calendar, label: '日付', color: 'bg-green-500' };
-      case 'category': return { icon: Tag, label: 'カテゴリ', color: 'bg-pink-500' };
-      case 'member': return { icon: User, label: 'メンバー', color: 'bg-orange-500' };
-      case 'account': return { icon: Wallet, label: '口座', color: 'bg-teal-500' };
-      case 'payment': return { icon: CreditCard, label: '支払い方法', color: 'bg-indigo-500' };
+      case 'date': return { icon: Calendar, label: '日付', color: 'bg-gray-600' };
+      case 'category': return { icon: Tag, label: 'カテゴリ', color: 'bg-gray-700' };
+      case 'member': return { icon: User, label: 'メンバー', color: 'bg-gray-600' };
+      case 'account': return { icon: Wallet, label: '口座', color: 'bg-gray-700' };
+      case 'payment': return { icon: CreditCard, label: '支払い方法', color: 'bg-gray-700' };
     }
   };
 
@@ -92,13 +92,13 @@ export const FloatingFilterMenu = ({
   const sortActiveCount = isSortActive ? 1 : 0;
 
   const filterMenuItems: FilterMenuItem[] = [
-    { type: 'search', icon: Search, label: '検索', color: 'bg-purple-500', isActive: isSearchActive, activeCount: searchActiveCount },
-    { type: 'type', icon: DollarSign, label: '種別', color: 'bg-blue-600', isActive: isTypeActive, activeCount: typeActiveCount },
-    { type: 'date', icon: Calendar, label: '期間', color: 'bg-green-500', isActive: isDateActive, activeCount: dateActiveCount },
-    { type: 'member', icon: User, label: 'メンバー', color: 'bg-orange-500', isActive: isMemberActive, activeCount: memberActiveCount },
-    { type: 'category', icon: Tag, label: 'カテゴリ', color: 'bg-pink-500', isActive: isCategoryActive, activeCount: categoryActiveCount },
-    { type: 'account', icon: Wallet, label: '口座', color: 'bg-teal-500', isActive: isAccountActive, activeCount: accountActiveCount },
-    { type: 'payment', icon: CreditCard, label: '支払方法', color: 'bg-indigo-500', isActive: isPaymentActive, activeCount: paymentActiveCount },
+    { type: 'search', icon: Search, label: '検索', color: 'bg-gray-700', isActive: isSearchActive, activeCount: searchActiveCount },
+    { type: 'type', icon: DollarSign, label: '種別', color: 'bg-gray-800', isActive: isTypeActive, activeCount: typeActiveCount },
+    { type: 'date', icon: Calendar, label: '期間', color: 'bg-gray-600', isActive: isDateActive, activeCount: dateActiveCount },
+    { type: 'member', icon: User, label: 'メンバー', color: 'bg-gray-600', isActive: isMemberActive, activeCount: memberActiveCount },
+    { type: 'category', icon: Tag, label: 'カテゴリ', color: 'bg-gray-700', isActive: isCategoryActive, activeCount: categoryActiveCount },
+    { type: 'account', icon: Wallet, label: '口座', color: 'bg-gray-700', isActive: isAccountActive, activeCount: accountActiveCount },
+    { type: 'payment', icon: CreditCard, label: '支払方法', color: 'bg-gray-700', isActive: isPaymentActive, activeCount: paymentActiveCount },
   ];
 
   // パネルが開いているときはメニューを閉じない
@@ -223,7 +223,7 @@ export const FloatingFilterMenu = ({
 
                       {/* 各フィルターのアクティブ数バッジ */}
                       {item.activeCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-sm rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white dark:border-slate-800">
+                        <span className="absolute -top-1.5 -right-1.5 bg-gray-800 text-white text-sm rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white dark:border-slate-800">
                           {item.activeCount}
                         </span>
                       )}
@@ -234,7 +234,7 @@ export const FloatingFilterMenu = ({
                 {/* 並び替えボタン */}
                 <button
                   onClick={() => handleFilterClick('sort')}
-                  className={`min-w-[44px] h-11 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
+                  className={`min-w-[44px] h-11 bg-gray-1000 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
                     isSortActive ? 'ring-2 ring-white opacity-100' : 'opacity-75 hover:opacity-100'
                   }`}
                   title="並び替え"
@@ -242,7 +242,7 @@ export const FloatingFilterMenu = ({
                 >
                   <ArrowUpDown size={18} />
                   {sortActiveCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-sm rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white dark:border-slate-800">
+                    <span className="absolute -top-1.5 -right-1.5 bg-gray-800 text-white text-sm rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white dark:border-slate-800">
                       {sortActiveCount}
                     </span>
                   )}
@@ -278,7 +278,7 @@ export const FloatingFilterMenu = ({
               }
             }}
             className={`min-w-[56px] min-h-[56px] rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
-              isExpanded ? 'bg-red-600' : activeFilterCount > 0 ? 'bg-primary-700' : 'bg-gray-900 dark:bg-gray-800'
+              isExpanded ? 'bg-gray-900' : activeFilterCount > 0 ? 'bg-primary-700' : 'bg-gray-900 dark:bg-gray-800'
             } text-white active:scale-95 relative`}
             aria-label={isExpanded ? 'フィルターを閉じる' : 'フィルターを開く'}
           >
@@ -286,7 +286,7 @@ export const FloatingFilterMenu = ({
 
             {/* アクティブフィルター数のバッジ */}
             {!isExpanded && activeFilterCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center font-bold border border-white dark:border-gray-800">
+              <span className="absolute -top-1.5 -right-1.5 bg-gray-800 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center font-bold border border-white dark:border-gray-800">
                 {activeFilterCount}
               </span>
             )}

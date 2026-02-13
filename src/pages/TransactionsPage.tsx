@@ -226,7 +226,7 @@ export const TransactionsPage = () => {
                     <div className="px-4 py-2 bg-primary-50 dark:bg-primary-900/30 border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
                       <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{label}</p>
                     <p className={`text-xs md:text-sm font-bold ${
-                      groupTotal >= 0 ? 'text-green-600' : 'text-red-600'
+                      groupTotal >= 0 ? 'text-gray-700' : 'text-gray-900'
                     }`}>
                       {groupTotal >= 0 ? '+' : ''}{formatCurrency(groupTotal)}
                     </p>
@@ -259,7 +259,7 @@ export const TransactionsPage = () => {
                           </p>
                         </div>
                         <p className={`text-xs md:text-sm font-bold shrink-0 ${
-                          t.type === 'income' ? 'text-green-600' : 'text-red-600'
+                          t.type === 'income' ? 'text-gray-700' : 'text-gray-900'
                         }`}>
                           {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
                         </p>

@@ -205,10 +205,10 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">日</span>
                   </div>
                 </div>
-                <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-2 sm:p-2.5 mt-2">
+                <div className="bg-gray-100 dark:bg-gray-900/30 rounded-lg p-2 sm:p-2.5 mt-2">
                   <div className="flex items-start gap-1.5">
-                    <Info size={12} className="sm:w-3.5 sm:h-3.5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <div className="text-xs sm:text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                    <Info size={12} className="sm:w-3.5 sm:h-3.5 text-gray-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-xs sm:text-sm text-gray-800 dark:text-gray-400 space-y-1">
                       <p className="font-medium">引き落としの例（{cd}日締め・{offsetLabel}{pd}日払い）</p>
                       <p>1月{cd}日の取引 → <span className="font-medium">{payMonth1}月{pd}日</span>に引き落とし</p>
                       <p>{nextDayMonth}月{nextDayDate}日の取引 → <span className="font-medium">{payMonth2}月{pd}日</span>に引き落とし</p>
@@ -243,7 +243,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
             <button
               type="button"
               onClick={() => { onDelete(paymentMethod.id); onClose(); }}
-              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
+              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
             >
               削除
             </button>

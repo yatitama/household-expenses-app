@@ -26,7 +26,7 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onToggle, getCateg
           <RefreshCw size={12} />
           定期取引
         </button>
-        <button onClick={onAdd} className="text-blue-500 hover:text-blue-700 dark:text-blue-400">
+        <button onClick={onAdd} className="text-gray-700 hover:text-gray-800 dark:text-gray-600">
           <Plus size={16} />
         </button>
       </div>
@@ -46,7 +46,7 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onToggle, getCateg
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <button onClick={() => onToggle(rp)} className="flex-shrink-0">
                         {rp.isActive
-                          ? <ToggleRight size={18} className="text-green-500" />
+                          ? <ToggleRight size={18} className="text-gray-600" />
                           : <ToggleLeft size={18} className="text-gray-300 dark:text-gray-600" />
                         }
                       </button>
@@ -61,7 +61,7 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onToggle, getCateg
                         <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-sm">{freqLabel}</span>
                       </button>
                     </div>
-                    <span className={`font-medium flex-shrink-0 ml-2 ${rp.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                    <span className={`font-medium flex-shrink-0 ml-2 ${rp.type === 'expense' ? 'text-gray-900 dark:text-gray-700' : 'text-gray-700 dark:text-gray-600'}`}>
                       {formatCurrency(rp.amount)}
                     </span>
                   </div>

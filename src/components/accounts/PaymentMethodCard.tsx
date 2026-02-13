@@ -40,7 +40,7 @@ export const PaymentMethodCard = ({
             <p className="text-xs text-gray-500 dark:text-gray-400">{PM_TYPE_LABELS[paymentMethod.type]} ・ {BILLING_TYPE_LABELS[paymentMethod.billingType]}</p>
             <div className="flex items-center gap-0.5 md:gap-1 mt-0.5">
               <Link2 size={10} className="md:w-3 md:h-3" style={{color: linkedAccountName ? '#9ca3af' : '#d97706'}} />
-              <span className={`text-xs ${linkedAccountName ? 'text-gray-500 dark:text-gray-400' : 'text-amber-500 font-medium'}`}>
+              <span className={`text-xs ${linkedAccountName ? 'text-gray-500 dark:text-gray-400' : 'text-gray-600 font-medium'}`}>
                 {linkedAccountName || '引き落とし先未設定'}
               </span>
             </div>
@@ -49,7 +49,7 @@ export const PaymentMethodCard = ({
       </div>
       {pendingAmount > 0 && (
         <div className="mt-1.5 md:mt-2 text-right">
-          <p className="text-xs md:text-sm text-orange-600 dark:text-orange-400 font-medium">未精算: {formatCurrency(pendingAmount)}</p>
+          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-500 font-medium">未精算: {formatCurrency(pendingAmount)}</p>
         </div>
       )}
       <RecurringPaymentsList

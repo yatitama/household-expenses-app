@@ -82,7 +82,7 @@ export const MembersPage = () => {
       {/* 追加ボタン */}
       <button
         onClick={handleAdd}
-        className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base"
+        className="w-full flex items-center justify-center gap-2 bg-gray-800 text-white py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base"
       >
         <Plus size={16} className="sm:w-5 sm:h-5" />
         メンバーを追加
@@ -117,7 +117,7 @@ export const MembersPage = () => {
                   <Edit2 size={14} className="sm:w-4 sm:h-4" />
                 </button>
                 {!member.isDefault && (
-                  <button onClick={() => handleDelete(member)} className="p-1.5 sm:p-2 text-gray-400 hover:text-red-600">
+                  <button onClick={() => handleDelete(member)} className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-900">
                     <Trash2 size={14} className="sm:w-4 sm:h-4" />
                   </button>
                 )}
@@ -199,7 +199,7 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
                   onClick={() => setIcon(iconName)}
                   className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-all ${
                     icon === iconName
-                      ? 'bg-blue-100 text-blue-600 ring-2 ring-blue-500 dark:bg-blue-900/30'
+                      ? 'bg-gray-200 text-gray-800 ring-2 ring-blue-500 dark:bg-gray-900/30'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-400'
                   }`}
                 >
@@ -238,7 +238,7 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
             </button>
             <button
               type="submit"
-              className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700"
+              className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-gray-800 text-white font-medium text-sm hover:bg-gray-800"
             >
               保存
             </button>

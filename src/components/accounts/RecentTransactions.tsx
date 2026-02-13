@@ -95,7 +95,7 @@ export const RecentTransactions = ({ accountId }: RecentTransactionsProps) => {
         </button>
         <button
           onClick={handleViewAll}
-          className="text-xs md:text-sm text-blue-500 hover:text-blue-700 dark:text-blue-400 flex items-center gap-1"
+          className="text-xs md:text-sm text-gray-700 hover:text-gray-800 dark:text-gray-600 flex items-center gap-1"
           aria-label="すべて見る"
         >
           すべて見る
@@ -141,7 +141,7 @@ export const RecentTransactions = ({ accountId }: RecentTransactionsProps) => {
                             </p>
                           </div>
                           <p className={`text-xs md:text-sm font-bold shrink-0 ${
-                            t.type === 'income' ? 'text-green-600' : 'text-red-600'
+                            t.type === 'income' ? 'text-gray-700' : 'text-gray-900'
                           }`}>
                             {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
                           </p>

@@ -127,14 +127,14 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
                                 <p className="font-medium text-gray-900 dark:text-gray-100">{category?.name || '不明'}</p>
                                 {pm && (
                                   <div className="flex items-center gap-1">
-                                    <CreditCard size={10} className="text-purple-400 flex-shrink-0" />
-                                    <p className="text-sm text-purple-500 dark:text-purple-400 truncate">{pm.name}</p>
+                                    <CreditCard size={10} className="text-gray-500 flex-shrink-0" />
+                                    <p className="text-sm text-gray-600 dark:text-gray-500 truncate">{pm.name}</p>
                                   </div>
                                 )}
                                 {settlementDate && (
                                   <div className="flex items-center gap-1 mt-0.5">
-                                    <Calendar size={10} className={isSettled ? 'text-green-400' : 'text-orange-400'} />
-                                    <p className={`text-sm ${isSettled ? 'text-green-500 dark:text-green-400' : 'text-orange-500 dark:text-orange-400'}`}>
+                                    <Calendar size={10} className={isSettled ? 'text-gray-600' : 'text-gray-500'} />
+                                    <p className={`text-sm ${isSettled ? 'text-gray-600 dark:text-gray-600' : 'text-gray-600 dark:text-gray-500'}`}>
                                       {settlementLabel}{isSettled ? '（精算済）' : ''}
                                     </p>
                                   </div>
@@ -142,7 +142,7 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
                                 {transaction.memo && <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 truncate">{transaction.memo}</p>}
                               </div>
                             </div>
-                            <p className={`font-bold text-sm flex-shrink-0 ml-2 ${isExpense ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                            <p className={`font-bold text-sm flex-shrink-0 ml-2 ${isExpense ? 'text-gray-900 dark:text-gray-700' : 'text-gray-700 dark:text-gray-600'}`}>
                               {isExpense ? '-' : '+'}{formatCurrency(transaction.amount)}
                             </p>
                           </div>

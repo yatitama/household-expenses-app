@@ -13,7 +13,7 @@ import { AddTransactionModal } from '../components/accounts/modals/AddTransactio
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import type { Account, RecurringPayment } from '../types';
+import type { Account, RecurringPayment, PaymentMethod } from '../types';
 
 export const AccountsPage = () => {
   const navigate = useNavigate();
@@ -41,7 +41,7 @@ export const AccountsPage = () => {
     openModal({ type: 'recurring', data: { editing: rp, target: null } });
   };
 
-  const handleCardUnsettledClick = (paymentMethod: any) => {
+  const handleCardUnsettledClick = (paymentMethod: PaymentMethod) => {
     openModal({ type: 'viewing-pm', data: { paymentMethod, showOnlyUnsettled: true } });
   };
 

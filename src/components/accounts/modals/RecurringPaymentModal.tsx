@@ -317,7 +317,7 @@ export const RecurringPaymentModal = ({
             <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200">有効</span>
             <button type="button" onClick={() => setIsActive(!isActive)}>
               {isActive
-                ? <ToggleRight size={24} className="sm:w-7 sm:h-7 text-green-500" />
+                ? <ToggleRight size={24} className="sm:w-7 sm:h-7 text-gray-600" />
                 : <ToggleLeft size={24} className="sm:w-7 sm:h-7 text-gray-300 dark:text-gray-600" />
               }
             </button>
@@ -329,7 +329,7 @@ export const RecurringPaymentModal = ({
             <button
               type="button"
               onClick={() => { onDelete(recurringPayment.id); onClose(); }}
-              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition-colors"
+              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
             >
               削除
             </button>
