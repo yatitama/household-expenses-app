@@ -9,7 +9,6 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { getPendingAmountByPaymentMethod, getTotalPendingByAccount } from '../utils/billingUtils';
 import { AssetCard } from '../components/accounts/AssetCard';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
-import { PMTransactionsModal } from '../components/accounts/modals/PMTransactionsModal';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
@@ -129,7 +128,7 @@ export const AccountsPage = () => {
                         linkedAccountName={undefined}
                         pendingAmount={pendingByPM[pm.id] || 0}
                         recurringPayments={pmRecurrings}
-                        onView={() => openModal({ type: 'viewing-pm', data: pm })}
+                        onView={() => navigate('/transactions', { state: { paymentMethodIds: [pm.id] } })}
                         onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
                         onEditRecurring={handleEditRecurring}
                         onToggleRecurring={handleToggleRecurring}
@@ -144,14 +143,6 @@ export const AccountsPage = () => {
       </div>
 
       {/* モーダル群 */}
-      {activeModal?.type === 'viewing-pm' && activeModal.data && (
-        <PMTransactionsModal
-          paymentMethod={'paymentMethod' in activeModal.data ? activeModal.data.paymentMethod : activeModal.data}
-          showOnlyUnsettled={'showOnlyUnsettled' in activeModal.data ? activeModal.data.showOnlyUnsettled : undefined}
-          onClose={() => { closeModal(); refreshData(); }}
-        />
-      )}
-
       {activeModal?.type === 'add-transaction' && activeModal.data && (
         <AddTransactionModal
           defaultAccountId={activeModal.data.accountId}
