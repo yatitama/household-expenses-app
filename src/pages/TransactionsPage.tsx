@@ -44,7 +44,7 @@ export const TransactionsPage = () => {
       updateFilter('accountIds', [accountId]);
     }
 
-    // state からの遷移時に未精算フィルターを設定
+    // state からの遷移時にフィルターを設定
     const state = location.state as { accountId?: string; paymentMethodIds?: string[]; filterType?: string } | undefined;
     if (state?.filterType === 'unsettled') {
       if (state.accountId) {
@@ -54,6 +54,8 @@ export const TransactionsPage = () => {
         updateFilter('paymentMethodIds', state.paymentMethodIds);
       }
       updateFilter('unsettled', true);
+    } else if (state?.filterType === 'payment' && state.paymentMethodIds) {
+      updateFilter('paymentMethodIds', state.paymentMethodIds);
     }
   }, [searchParams, location, updateFilter]);
 
