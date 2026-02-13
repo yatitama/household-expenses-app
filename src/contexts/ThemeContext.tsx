@@ -1,80 +1,50 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { ThemeColor, ThemeSettings } from '../types';
-import { THEME_COLORS } from '../utils/themes';
 import { ThemeContext } from './theme';
 
-const THEME_STORAGE_KEY = 'theme_settings';
-const DEFAULT_THEME: ThemeColor = 'blue';
-
 /**
- * テーマの初期設定を localStorage から読み込む
+ * グレースケール固定のテーマプロバイダー
+ * CSS 変数でグレースケールパレットを適用
  */
-const loadThemeFromStorage = (): ThemeColor => {
-  try {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored) {
-      const settings: ThemeSettings = JSON.parse(stored);
-      if (settings.currentTheme && THEME_COLORS[settings.currentTheme]) {
-        return settings.currentTheme;
-      }
-    }
-  } catch (error) {
-    console.warn('Failed to load theme settings:', error);
-  }
-  return DEFAULT_THEME;
-};
-
-/**
- * テーマを localStorage に保存
- */
-const saveThemeToStorage = (theme: ThemeColor): void => {
-  try {
-    const settings: ThemeSettings = { currentTheme: theme };
-    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(settings));
-  } catch (error) {
-    console.warn('Failed to save theme settings:', error);
-  }
-};
-
-/**
- * CSS 変数を使用してテーマカラーをドキュメントに適用
- */
-const applyThemeToCSSVariables = (theme: ThemeColor): void => {
-  const palette = THEME_COLORS[theme].palette;
+const applyGrayscaleTheme = (): void => {
   const root = document.documentElement;
 
-  // テーマカラーの各段階を CSS 変数に設定
-  Object.entries(palette).forEach(([key, value]) => {
+  // グレースケールパレットの定義
+  const grayscalePalette = {
+    50: '#f9fafb',
+    100: '#f3f4f6',
+    200: '#e5e7eb',
+    300: '#d1d5db',
+    400: '#9ca3af',
+    500: '#6b7280',
+    600: '#4b5563',
+    700: '#374151',
+    800: '#1f2937',
+    900: '#111827',
+  };
+
+  // CSS 変数を設定
+  Object.entries(grayscalePalette).forEach(([key, value]) => {
     root.style.setProperty(`--theme-${key}`, value);
   });
 
-  // プライマリカラー（UI 要素で使用）を設定
-  root.style.setProperty('--theme-primary', palette[500]);
-  root.style.setProperty('--theme-primary-dark', palette[600]);
-  root.style.setProperty('--theme-primary-light', palette[400]);
+  // プライマリカラー（グレースケール）
+  root.style.setProperty('--theme-primary', grayscalePalette[700]);
+  root.style.setProperty('--theme-primary-dark', grayscalePalette[800]);
+  root.style.setProperty('--theme-primary-light', grayscalePalette[500]);
 
-  // data 属性を設定（CSS で参照可能）
-  root.setAttribute('data-theme', theme);
+  // data 属性を設定
+  root.setAttribute('data-theme', 'grayscale');
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [currentTheme, setCurrentTheme] = useState<ThemeColor>(() => {
-    return loadThemeFromStorage();
-  });
-
   // マウント時に CSS 変数を適用
   useEffect(() => {
-    applyThemeToCSSVariables(currentTheme);
-  }, [currentTheme]);
-
-  const handleSetTheme = (theme: ThemeColor): void => {
-    setCurrentTheme(theme);
-    saveThemeToStorage(theme);
-  };
+    applyGrayscaleTheme();
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ currentTheme, setTheme: handleSetTheme }}>
+    <ThemeContext.Provider value={{ currentTheme: 'grayscale', setTheme: () => {} }}>
       {children}
     </ThemeContext.Provider>
   );
