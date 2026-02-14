@@ -15,6 +15,7 @@ import { RecurringPaymentDetailModal } from '../components/accounts/modals/Recur
 import { CardUnsettledListModal } from '../components/accounts/modals/CardUnsettledListModal';
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { AccountModal } from '../components/accounts/modals/AccountModal';
+import { AccountDetailModal } from '../components/accounts/modals/AccountDetailModal';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
@@ -40,14 +41,17 @@ export const AccountsPage = () => {
   const [isCardUnsettledDetailOpen, setIsCardUnsettledDetailOpen] = useState(false);
 
   // Add account/payment method modal states
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [isAccountDetailModalOpen, setIsAccountDetailModalOpen] = useState(false);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
   const [isRecurringExpenseModalOpen, setIsRecurringExpenseModalOpen] = useState(false);
   const [isRecurringIncomeModalOpen, setIsRecurringIncomeModalOpen] = useState(false);
 
   const pendingByPM = getPendingAmountByPaymentMethod();
 
-  useBodyScrollLock(!!activeModal || isRecurringDetailModalOpen || isCardUnsettledSheetOpen || isCardUnsettledDetailOpen || isAccountModalOpen || isPaymentMethodModalOpen || isRecurringExpenseModalOpen || isRecurringIncomeModalOpen);
+  useBodyScrollLock(!!activeModal || isRecurringDetailModalOpen || isCardUnsettledSheetOpen || isCardUnsettledDetailOpen || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen || isRecurringExpenseModalOpen || isRecurringIncomeModalOpen);
 
   // Handlers
   const handleAddRecurring = (target: { accountId?: string; paymentMethodId?: string }) => {
@@ -85,6 +89,18 @@ export const AccountsPage = () => {
     }
   };
 
+  // Handle account click
+  const handleAccountClick = (account: Account) => {
+    setSelectedAccount(account);
+    setIsAccountDetailModalOpen(true);
+  };
+
+  // Handle edit account from detail modal
+  const handleEditAccountFromDetail = (account: Account) => {
+    setEditingAccount(account);
+    setIsAccountModalOpen(true);
+  };
+
   // Handle add payment method
   const handleAddPaymentMethod = (input: PaymentMethodInput) => {
     try {
@@ -94,6 +110,21 @@ export const AccountsPage = () => {
       setIsPaymentMethodModalOpen(false);
     } catch (error) {
       toast.error('カードの追加に失敗しました');
+    }
+  };
+
+  // Handle edit account
+  const handleEditAccount = (input: AccountInput) => {
+    try {
+      if (editingAccount) {
+        accountService.update(editingAccount.id, input);
+        toast.success('口座を更新しました');
+      }
+      refreshData();
+      setIsAccountModalOpen(false);
+      setEditingAccount(null);
+    } catch (error) {
+      toast.error('口座の更新に失敗しました');
     }
   };
 
@@ -124,9 +155,10 @@ export const AccountsPage = () => {
             <AssetCard
               groupedAccounts={groupedAccounts}
               paymentMethods={paymentMethods}
+              onAccountClick={handleAccountClick}
               onRecurringDetailClick={handleRecurringDetailClick}
               onCardUnsettledSheetOpen={handleCardUnsettledSheetOpen}
-              onAddAccountClick={() => setIsAccountModalOpen(true)}
+              onAddAccountClick={() => { setEditingAccount(null); setIsAccountModalOpen(true); }}
               onAddCardClick={() => setIsPaymentMethodModalOpen(true)}
               onAddRecurringExpenseClick={() => setIsRecurringExpenseModalOpen(true)}
               onAddRecurringIncomeClick={() => setIsRecurringIncomeModalOpen(true)}
@@ -236,13 +268,34 @@ export const AccountsPage = () => {
         }}
       />
 
+      <AccountDetailModal
+        account={selectedAccount}
+        isOpen={isAccountDetailModalOpen}
+        onClose={() => {
+          setIsAccountDetailModalOpen(false);
+          setSelectedAccount(null);
+        }}
+        onEdit={handleEditAccountFromDetail}
+      />
+
       {isAccountModalOpen && (
         <AccountModal
-          account={null}
+          account={editingAccount}
           members={memberService.getAll()}
-          onSave={handleAddAccount}
-          onClose={() => setIsAccountModalOpen(false)}
-          onDelete={() => {}}
+          onSave={editingAccount ? handleEditAccount : handleAddAccount}
+          onClose={() => {
+            setIsAccountModalOpen(false);
+            setEditingAccount(null);
+          }}
+          onDelete={editingAccount ? () => {
+            if (editingAccount) {
+              accountService.delete(editingAccount.id);
+              toast.success('口座を削除しました');
+              refreshData();
+              setIsAccountModalOpen(false);
+              setEditingAccount(null);
+            }
+          } : undefined}
         />
       )}
 
