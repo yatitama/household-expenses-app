@@ -303,6 +303,9 @@ export const TransactionsPage = () => {
           <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0" style={{
             borderColor: 'var(--theme-primary)',
           }}>
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">
+              合計
+            </p>
             <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
               {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
             </p>
