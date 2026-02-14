@@ -179,22 +179,18 @@ export const TransactionsPage = () => {
   }, [filteredTransactions, groupBy, groupOrder, categories, members, getCategoryName, getAccountName, getPaymentMethodName]);
 
   // 合計を計算
-  const { totalIncome, totalExpense, totalNet } = useMemo(() => {
+  const totalNet = useMemo(() => {
     const income = filteredTransactions
       .filter((t) => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0);
     const expense = filteredTransactions
       .filter((t) => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0);
-    return {
-      totalIncome: income,
-      totalExpense: expense,
-      totalNet: income - expense,
-    };
+    return income - expense;
   }, [filteredTransactions]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-slate-900 overflow-clip">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-slate-900">
       {/* Sticky Header */}
       <div
         className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-3 sm:p-4 flex items-center justify-between"
@@ -218,7 +214,7 @@ export const TransactionsPage = () => {
       </div>
 
       {/* Transaction list */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-24">
         <div className="p-2 md:p-4 lg:p-6">
         {filteredTransactions.length === 0 ? (
           <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center">
@@ -300,27 +296,13 @@ export const TransactionsPage = () => {
         </div>
       </div>
 
-      {/* Sticky Footer with Summary */}
-      <div className="sticky bottom-0 z-30 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4">
-        <div className="grid grid-cols-3 gap-3">
-          <div className="text-center">
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">収入</p>
-            <p className="text-sm sm:text-base font-bold text-green-600">
-              +{formatCurrency(totalIncome)}
-            </p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">支出</p>
-            <p className="text-sm sm:text-base font-bold text-red-600">
-              -{formatCurrency(totalExpense)}
-            </p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">差引</p>
-            <p className={`text-sm sm:text-base font-bold ${totalNet >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
-            </p>
-          </div>
+      {/* Fixed Footer with Summary */}
+      <div className="fixed bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700 p-2 sm:p-3">
+        <div className="text-center">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">合計</p>
+          <p className={`text-lg sm:text-xl font-bold ${totalNet >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
+          </p>
         </div>
       </div>
 
