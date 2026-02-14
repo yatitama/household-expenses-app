@@ -52,49 +52,57 @@ export const AssetCard = ({
   return (
     <div className="flex flex-col px-1 md:px-2 lg:px-3 space-y-2 md:space-y-3">
       {/* 口座セクション */}
-      <div className="space-y-2">
+      <div className="flex flex-col">
         <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
         </div>
-        <AccountGridSection accounts={allAccountsList} />
+        <div className="pt-2">
+          <AccountGridSection accounts={allAccountsList} />
+        </div>
       </div>
 
       {/* カードセクション */}
       {linkedPaymentMethods.length > 0 && (
-        <div className="space-y-2">
+        <div className="flex flex-col">
           <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">カード</h3>
           </div>
-          <CardGridSection
-            paymentMethods={linkedPaymentMethods}
-            cardUnsettledList={allCardUnsettledList}
-            onCardClick={onCardUnsettledSheetOpen || (() => {})}
-          />
+          <div className="pt-2">
+            <CardGridSection
+              paymentMethods={linkedPaymentMethods}
+              cardUnsettledList={allCardUnsettledList}
+              onCardClick={onCardUnsettledSheetOpen || (() => {})}
+            />
+          </div>
         </div>
       )}
 
       {/* 定期支出セクション */}
-      <div className="space-y-2">
+      <div className="flex flex-col">
         <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期支出</h3>
         </div>
-        <RecurringItemGridSection
-          title=""
-          items={allUpcomingExpense}
-          onItemClick={onRecurringDetailClick || (() => {})}
-        />
+        <div className="pt-2">
+          <RecurringItemGridSection
+            title=""
+            items={allUpcomingExpense}
+            onItemClick={onRecurringDetailClick || (() => {})}
+          />
+        </div>
       </div>
 
       {/* 定期収入セクション */}
-      <div className="space-y-2">
+      <div className="flex flex-col">
         <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期収入</h3>
         </div>
-        <RecurringItemGridSection
-          title=""
-          items={allUpcomingIncome}
-          onItemClick={onRecurringDetailClick || (() => {})}
-        />
+        <div className="pt-2">
+          <RecurringItemGridSection
+            title=""
+            items={allUpcomingIncome}
+            onItemClick={onRecurringDetailClick || (() => {})}
+          />
+        </div>
       </div>
     </div>
   );
