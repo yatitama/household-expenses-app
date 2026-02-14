@@ -54,7 +54,7 @@ export const AssetCard = ({
       {/* 口座セクション */}
       <div className="space-y-2">
         <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100"></h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
         </div>
         <AccountGridSection accounts={allAccountsList} />
       </div>
@@ -63,7 +63,7 @@ export const AssetCard = ({
       {linkedPaymentMethods.length > 0 && (
         <div className="space-y-2">
           <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100"></h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">カード</h3>
           </div>
           <CardGridSection
             paymentMethods={linkedPaymentMethods}
@@ -76,7 +76,7 @@ export const AssetCard = ({
       {/* 定期支出セクション */}
       <div className="space-y-2">
         <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100"></h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期支出</h3>
         </div>
         <RecurringItemGridSection
           title=""
@@ -88,7 +88,7 @@ export const AssetCard = ({
       {/* 定期収入セクション */}
       <div className="space-y-2">
         <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100"></h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期収入</h3>
         </div>
         <RecurringItemGridSection
           title=""
