@@ -309,7 +309,7 @@ const MemberAssetCard = ({
               </button>
 
               {isBreakdownExpanded && (
-                <div className="mt-3 pt-3 dark:border-gray-700 space-y-2">
+                <div className="border-t mt-3 pt-3 dark:border-gray-700 space-y-2">
                   {slide.memberAccounts.map((account) => (
                     <div key={account.id} className="flex justify-between items-center text-xs md:text-sm">
                       <span className="text-gray-700 dark:text-gray-300">{account.name}</span>
@@ -349,7 +349,7 @@ const MemberAssetCard = ({
           </button>
 
           {isIncomeExpanded && (
-            <div className="mt-3 pt-3 dark:border-gray-700">
+            <div className="border-t mt-3 pt-3 dark:border-gray-700">
               {memberUpcomingIncome.length === 0 ? (
                 <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                   定期収入予定なし
@@ -414,7 +414,7 @@ const MemberAssetCard = ({
           </button>
 
           {isScheduleExpanded && (
-            <div className="mt-3 pt-3 dark:border-gray-700">
+            <div className="border-t mt-3 pt-3 dark:border-gray-700">
               {memberCardUnsettledList.length === 0 && memberUpcomingExpense.length === 0 ? (
                 <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                   予定なし
