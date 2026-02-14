@@ -126,12 +126,7 @@ export const AssetCard = ({
     <>
       {/* ナビゲーション */}
       {memberSlides.length > 1 && (
-        <div className="flex flex-col items-center gap-1 mb-1">
-          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-            資産 ({currentAssetIndex + 1}/{memberSlides.length})
-          </span>
-
-          <div className="flex items-center justify-center gap-3">
+        <div className="flex items-center justify-center gap-3 mb-1">
             <button
               onClick={handleAssetPrev}
               className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 rounded-lg transition-colors"
@@ -163,7 +158,6 @@ export const AssetCard = ({
               <ChevronRight size={18} />
             </button>
           </div>
-        </div>
       )}
 
       {/* メンバーカルーセル */}
