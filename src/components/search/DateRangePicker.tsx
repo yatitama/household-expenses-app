@@ -8,7 +8,6 @@ interface DateRangePickerProps {
 export const DateRangePicker = ({ start, end, onStartChange, onEndChange }: DateRangePickerProps) => {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-600 mb-1">期間</label>
       <div className="flex items-center gap-2">
         <input
           type="date"

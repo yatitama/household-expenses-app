@@ -1,4 +1,4 @@
-import { X, RotateCcw, ChevronDown, Check } from 'lucide-react';
+import { X, RotateCcw, ChevronDown, Check, User, Wallet, CreditCard } from 'lucide-react';
 import { useState } from 'react';
 import { DateRangePicker } from './DateRangePicker';
 import { getCategoryIcon } from '../../utils/categoryIcons';
@@ -51,15 +51,6 @@ export const TransactionFilterSheet = ({
   };
 
   const isExpanded = (section: string) => expandedSections.has(section);
-
-  const activeFilterCount =
-    (filters.transactionType !== 'all' ? 1 : 0) +
-    (filters.dateRange.start || filters.dateRange.end ? 1 : 0) +
-    (filters.memberIds.length > 0 ? 1 : 0) +
-    (filters.categoryIds.length > 0 ? 1 : 0) +
-    (filters.accountIds.length > 0 ? 1 : 0) +
-    (filters.paymentMethodIds.length > 0 ? 1 : 0) +
-    (filters.unsettled ? 1 : 0);
 
   return (
     <>
@@ -251,15 +242,10 @@ export const TransactionFilterSheet = ({
                         className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                           filters.memberIds.includes(member.id)
                             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                       >
-                        <div
-                          className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                          style={{ backgroundColor: member.color }}
-                        >
-                          {member.name.charAt(0)}
-                        </div>
+                        <User size={20} className="text-gray-700 dark:text-gray-300" />
                         <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                           {member.name}
                         </span>
@@ -312,7 +298,7 @@ export const TransactionFilterSheet = ({
                           className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                             filters.categoryIds.includes(category.id)
                               ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                              : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                              : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                           }`}
                         >
                           <div
@@ -375,15 +361,10 @@ export const TransactionFilterSheet = ({
                         className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                           filters.accountIds.includes(account.id)
                             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                       >
-                        <div
-                          className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: `${account.color || '#9ca3af'}20`, color: account.color || '#9ca3af' }}
-                        >
-                          <span className="text-xs font-bold">{account.name.charAt(0).toUpperCase()}</span>
-                        </div>
+                        <Wallet size={20} className="text-gray-700 dark:text-gray-300" />
                         <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                           {account.name}
                         </span>
@@ -435,11 +416,11 @@ export const TransactionFilterSheet = ({
                         className={`flex items-center justify-between p-2 rounded-lg transition-colors ${
                           filters.paymentMethodIds.includes(pm.id)
                             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                       >
                         <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: pm.color || '#9ca3af' }} />
+                          <CreditCard size={16} className="text-gray-700 dark:text-gray-300 flex-shrink-0" />
                           <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate">{pm.name}</span>
                         </div>
                         {filters.paymentMethodIds.includes(pm.id) && <Check size={14} className="text-primary-600 flex-shrink-0" />}
@@ -453,19 +434,17 @@ export const TransactionFilterSheet = ({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-col gap-1">
-          {activeFilterCount > 0 && (
-            <button
-              onClick={resetFilters}
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium"
-            >
-              <RotateCcw size={16} />
-              フィルターをリセット
-            </button>
-          )}
+        <div className="sticky bottom-0 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-row gap-2">
+          <button
+            onClick={resetFilters}
+            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium"
+          >
+            <RotateCcw size={16} />
+            リセット
+          </button>
           <button
             onClick={onClose}
-            className="w-full py-2 rounded-lg text-white font-medium active:scale-95 transition-all text-sm"
+            className="flex-1 py-2 rounded-lg text-white font-medium active:scale-95 transition-all text-sm"
             style={{ backgroundColor: 'var(--theme-primary)' }}
           >
             完了
