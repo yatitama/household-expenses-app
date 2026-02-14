@@ -52,15 +52,6 @@ export const TransactionFilterSheet = ({
 
   const isExpanded = (section: string) => expandedSections.has(section);
 
-  const activeFilterCount =
-    (filters.transactionType !== 'all' ? 1 : 0) +
-    (filters.dateRange.start || filters.dateRange.end ? 1 : 0) +
-    (filters.memberIds.length > 0 ? 1 : 0) +
-    (filters.categoryIds.length > 0 ? 1 : 0) +
-    (filters.accountIds.length > 0 ? 1 : 0) +
-    (filters.paymentMethodIds.length > 0 ? 1 : 0) +
-    (filters.unsettled ? 1 : 0);
-
   return (
     <>
       {/* Overlay */}
@@ -443,19 +434,17 @@ export const TransactionFilterSheet = ({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-col gap-1">
-          {activeFilterCount > 0 && (
-            <button
-              onClick={resetFilters}
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium"
-            >
-              <RotateCcw size={16} />
-              フィルターをリセット
-            </button>
-          )}
+        <div className="sticky bottom-0 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-row gap-2">
+          <button
+            onClick={resetFilters}
+            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium"
+          >
+            <RotateCcw size={16} />
+            リセット
+          </button>
           <button
             onClick={onClose}
-            className="w-full py-2 rounded-lg text-white font-medium active:scale-95 transition-all text-sm"
+            className="flex-1 py-2 rounded-lg text-white font-medium active:scale-95 transition-all text-sm"
             style={{ backgroundColor: 'var(--theme-primary)' }}
           >
             完了
