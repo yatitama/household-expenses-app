@@ -13,7 +13,7 @@ export const DateRangePicker = ({ start, end, onStartChange, onEndChange }: Date
           type="date"
           value={start}
           onChange={(e) => onStartChange(e.target.value)}
-          className="flex-1 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
+          className="flex-1 rounded-lg px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-600"
           aria-label="開始日"
         />
         <span className="text-gray-400 text-sm">~</span>
@@ -21,7 +21,7 @@ export const DateRangePicker = ({ start, end, onStartChange, onEndChange }: Date
           type="date"
           value={end}
           onChange={(e) => onEndChange(e.target.value)}
-          className="flex-1 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
+          className="flex-1 rounded-lg px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-600"
           aria-label="終了日"
         />
       </div>
