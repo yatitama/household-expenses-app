@@ -61,7 +61,7 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onToggle, getCateg
                         <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-sm">{freqLabel}</span>
                       </button>
                     </div>
-                    <span className={`font-medium flex-shrink-0 ml-2 font-mono ${rp.type === 'expense' ? 'text-gray-900 dark:text-gray-700' : 'text-gray-700 dark:text-gray-600'}`}>
+                    <span className={`font-medium flex-shrink-0 ml-2 font-mono text-right w-28 ${rp.type === 'expense' ? 'text-gray-900 dark:text-gray-700' : 'text-gray-700 dark:text-gray-600'}`}>
                       {formatCurrency(rp.amount)}
                     </span>
                   </div>

@@ -56,7 +56,7 @@ export const ScheduleSection = ({
             引き落とし予定
           </span>
         </div>
-        <span className="text-base md:text-lg font-bold text-gray-900 dark:text-gray-700 font-mono">
+        <span className="text-base md:text-lg font-bold text-gray-900 dark:text-gray-700 font-mono text-right w-28">
           {formatCurrency(totalCardPending + totalRecurringExpense)}
         </span>
       </button>
@@ -96,7 +96,7 @@ export const ScheduleSection = ({
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
+                      <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono text-right w-28">
                         {formatCurrency(cardInfo.unsettledAmount)}
                       </span>
                       {cardInfo.unsettledTransactions.length > 0 && (
@@ -117,7 +117,7 @@ export const ScheduleSection = ({
                 <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
                   定期支出
                 </span>
-                <span className="text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-500 ml-auto font-mono">
+                <span className="text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-500 ml-auto font-mono text-right w-28">
                   {formatCurrency(totalRecurringExpense)}
                 </span>
               </div>
@@ -172,7 +172,7 @@ export const ScheduleSection = ({
                           <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
                         </button>
                       </div>
-                      <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0 font-mono">
+                      <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0 font-mono text-right w-28">
                         {formatCurrency(rp.amount)}
                       </span>
                     </div>
