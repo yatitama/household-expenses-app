@@ -82,8 +82,9 @@ export const CardUnsettledListModal = ({
         className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
-          <div className="mb-4">
+        <div className="overflow-y-auto flex-1 flex flex-col">
+          {/* 固定ヘッダー */}
+          <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 p-3 sm:p-4 border-b dark:border-gray-700">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">{paymentMethod.name}</h3>
             <div className="flex gap-2">
               <button
@@ -115,8 +116,9 @@ export const CardUnsettledListModal = ({
             </div>
           </div>
 
-          <div className="space-y-2">
-            {transactions.length === 0 ? (
+          <div className="flex-1 overflow-y-auto">
+            <div className="space-y-2 p-3 sm:p-4">
+              {transactions.length === 0 ? (
               <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                 明細なし
               </p>
@@ -132,7 +134,7 @@ export const CardUnsettledListModal = ({
                   <div key={groupKey}>
                     <button
                       onClick={() => toggleGroup(groupKey)}
-                      className="w-full flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
+                      className="sticky top-[120px] sm:top-[124px] w-full flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left bg-white dark:bg-gray-800 z-10"
                     >
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <ChevronDown
@@ -188,6 +190,7 @@ export const CardUnsettledListModal = ({
                 );
               })
             )}
+            </div>
           </div>
         </div>
 
