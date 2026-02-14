@@ -297,15 +297,15 @@ export const TransactionsPage = () => {
       </div>
 
       {/* Fixed Footer with Summary */}
-      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-2 md:p-3">
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-2">
         <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3">
-          <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4 text-right" style={{
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-2 md:p-3 text-right" style={{
             borderColor: 'var(--theme-primary)',
           }}>
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">
               合計
             </p>
-            <p className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>
+            <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
               {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
             </p>
           </div>
