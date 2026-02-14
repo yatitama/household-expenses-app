@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Receipt, Sliders, ChevronDown } from 'lucide-react';
+import { Receipt, Sliders, ChevronDown, Calendar, LayoutGrid, Users, Wallet, CreditCard } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { TransactionFilterSheet } from '../components/search/TransactionFilterSheet';
@@ -23,7 +23,6 @@ export const TransactionsPage = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
-  const [groupOrder, setGroupOrder] = useState<'asc' | 'desc'>('desc');
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   useBodyScrollLock(!!editingTransaction || isDetailOpen || isFilterSheetOpen);
@@ -38,6 +37,32 @@ export const TransactionsPage = () => {
       }
       return next;
     });
+  };
+
+  // グループ化タイプを循環
+  const groupByOptions: GroupByType[] = ['date', 'category', 'member', 'account', 'payment'];
+  const handleCycleGroupBy = () => {
+    const currentIndex = groupByOptions.indexOf(groupBy);
+    const nextIndex = (currentIndex + 1) % groupByOptions.length;
+    setGroupBy(groupByOptions[nextIndex]);
+  };
+
+  // グループ化タイプのラベルとアイコンを取得
+  const getGroupByLabel = (type: GroupByType) => {
+    switch (type) {
+      case 'date':
+        return { label: '日付', icon: <Calendar size={16} /> };
+      case 'category':
+        return { label: 'カテゴリ', icon: <LayoutGrid size={16} /> };
+      case 'member':
+        return { label: 'メンバー', icon: <Users size={16} /> };
+      case 'account':
+        return { label: '口座', icon: <Wallet size={16} /> };
+      case 'payment':
+        return { label: '支払方法', icon: <CreditCard size={16} /> };
+      default:
+        return { label: '', icon: null };
+    }
   };
 
 
@@ -67,18 +92,6 @@ export const TransactionsPage = () => {
   const categories = useMemo(() => categoryService.getAll(), []);
   const accounts = useMemo(() => accountService.getAll(), []);
   const paymentMethods = useMemo(() => paymentMethodService.getAll(), []);
-
-  // Handle grouping change with order toggle
-  const handleGroupByChange = (newGroupBy: GroupByType) => {
-    if (newGroupBy === groupBy) {
-      // Toggle order if same grouping is selected
-      setGroupOrder(groupOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      // Set new grouping with default descending order
-      setGroupBy(newGroupBy);
-      setGroupOrder('desc');
-    }
-  };
 
   const getCategoryName = useCallback((categoryId: string) => {
     return categories.find((c) => c.id === categoryId)?.name || '不明';
@@ -168,18 +181,14 @@ export const TransactionsPage = () => {
         groups.set(key, { label, transactions: [t] });
       }
     }
-    // Sort groups based on groupOrder
+    // Sort groups by descending order
     const entries = Array.from(groups.entries());
     if (groupBy === 'date') {
-      return groupOrder === 'desc'
-        ? entries.sort((a, b) => b[0].localeCompare(a[0]))
-        : entries.sort((a, b) => a[0].localeCompare(b[0]));
+      return entries.sort((a, b) => b[0].localeCompare(a[0]));
     } else {
-      return groupOrder === 'desc'
-        ? entries.sort((a, b) => b[1].label.localeCompare(a[1].label))
-        : entries.sort((a, b) => a[1].label.localeCompare(b[1].label));
+      return entries.sort((a, b) => b[1].label.localeCompare(a[1].label));
     }
-  }, [filteredTransactions, groupBy, groupOrder, categories, members, getCategoryName, getAccountName, getPaymentMethodName]);
+  }, [filteredTransactions, groupBy, categories, members, getCategoryName, getAccountName, getPaymentMethodName]);
 
   // 合計を計算
   const totalNet = useMemo(() => {
@@ -232,9 +241,6 @@ export const TransactionsPage = () => {
                       <div className="px-0 pb-0 border-t border-gray-200 dark:border-gray-700 pt-0 divide-y divide-gray-50 dark:divide-gray-700">
                         {transactions.map((t) => {
                           const color = getCategoryColor(t.categoryId);
-                          const source = t.paymentMethodId
-                            ? getPaymentMethodName(t.paymentMethodId)
-                            : getAccountName(t.accountId);
 
                           return (
                             <button
@@ -252,14 +258,9 @@ export const TransactionsPage = () => {
                                 >
                                   {getCategoryIcon(getCategoryIconName(t.categoryId), 12)}
                                 </div>
-                                <div className="min-w-0 flex-1">
-                                  <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
-                                    {getCategoryName(t.categoryId)}
-                                  </p>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    {formatDate(t.date)} {source}{t.memo ? ` - ${t.memo}` : ''}
-                                  </p>
-                                </div>
+                                <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
+                                  {getCategoryName(t.categoryId)}
+                                </p>
                               </div>
                               <span className={`text-gray-900 dark:text-gray-200 font-semibold flex-shrink-0 ${
                                 t.type === 'income' ? 'text-green-600' : 'text-red-600'
@@ -283,8 +284,18 @@ export const TransactionsPage = () => {
       {/* Fixed Footer with Summary */}
       <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5">
         <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-between gap-2">
-          {/* Left: Filter Button and Count */}
-          <div className="flex items-center gap-2">
+          {/* Left: GroupBy, Filter Button and Count */}
+          <div className="flex items-center gap-1.5">
+            {/* GroupBy Button */}
+            <button
+              onClick={handleCycleGroupBy}
+              className="px-2 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 flex-shrink-0 flex items-center gap-1 text-xs font-medium"
+              aria-label="グループ化を変更"
+            >
+              {getGroupByLabel(groupBy).icon}
+              <span className="hidden sm:inline">{getGroupByLabel(groupBy).label}</span>
+            </button>
+
             {/* Filter Button */}
             <button
               onClick={() => setIsFilterSheetOpen(true)}
@@ -353,9 +364,6 @@ export const TransactionsPage = () => {
         categories={categories}
         accounts={accounts}
         paymentMethods={paymentMethods}
-        groupBy={groupBy}
-        groupOrder={groupOrder}
-        onGroupByChange={handleGroupByChange}
         isOpen={isFilterSheetOpen}
         onClose={() => setIsFilterSheetOpen(false)}
       />
