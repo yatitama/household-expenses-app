@@ -232,9 +232,6 @@ export const TransactionsPage = () => {
                       <div className="px-0 pb-0 border-t border-gray-200 dark:border-gray-700 pt-0 divide-y divide-gray-50 dark:divide-gray-700">
                         {transactions.map((t) => {
                           const color = getCategoryColor(t.categoryId);
-                          const source = t.paymentMethodId
-                            ? getPaymentMethodName(t.paymentMethodId)
-                            : getAccountName(t.accountId);
 
                           return (
                             <button
@@ -252,14 +249,9 @@ export const TransactionsPage = () => {
                                 >
                                   {getCategoryIcon(getCategoryIconName(t.categoryId), 12)}
                                 </div>
-                                <div className="min-w-0 flex-1">
-                                  <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
-                                    {getCategoryName(t.categoryId)}
-                                  </p>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    {formatDate(t.date)} {source}{t.memo ? ` - ${t.memo}` : ''}
-                                  </p>
-                                </div>
+                                <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
+                                  {getCategoryName(t.categoryId)}
+                                </p>
                               </div>
                               <span className={`text-gray-900 dark:text-gray-200 font-semibold flex-shrink-0 ${
                                 t.type === 'income' ? 'text-green-600' : 'text-red-600'
