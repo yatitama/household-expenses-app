@@ -17,7 +17,7 @@ export const DateRangePicker = ({ start, end, onStartChange, onEndChange }: Date
             type="date"
             value={start}
             onChange={(e) => onStartChange(e.target.value)}
-            className="w-full rounded-lg px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-600"
+            className="w-full rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
             aria-label="開始日"
           />
           {start && (
@@ -39,7 +39,7 @@ export const DateRangePicker = ({ start, end, onStartChange, onEndChange }: Date
             type="date"
             value={end}
             onChange={(e) => onEndChange(e.target.value)}
-            className="w-full rounded-lg px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-600"
+            className="w-full rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
             aria-label="終了日"
           />
           {end && (
