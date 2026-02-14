@@ -12,9 +12,11 @@ import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { RecurringPaymentDetailModal } from '../components/accounts/modals/RecurringPaymentDetailModal';
+import { CardUnsettledListModal } from '../components/accounts/modals/CardUnsettledListModal';
+import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import type { Account, RecurringPayment, PaymentMethod } from '../types';
+import type { Account, RecurringPayment, PaymentMethod, Transaction } from '../types';
 
 export const AccountsPage = () => {
   const navigate = useNavigate();
@@ -30,11 +32,16 @@ export const AccountsPage = () => {
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
   const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
   const [isRecurringDetailModalOpen, setIsRecurringDetailModalOpen] = useState(false);
+  const [selectedCardUnsettledPM, setSelectedCardUnsettledPM] = useState<PaymentMethod | null>(null);
+  const [cardUnsettledTransactions, setCardUnsettledTransactions] = useState<Transaction[]>([]);
+  const [isCardUnsettledSheetOpen, setIsCardUnsettledSheetOpen] = useState(false);
+  const [selectedCardUnsettledTransaction, setSelectedCardUnsettledTransaction] = useState<Transaction | null>(null);
+  const [isCardUnsettledDetailOpen, setIsCardUnsettledDetailOpen] = useState(false);
 
   const pendingByPM = getPendingAmountByPaymentMethod();
   const totalPendingByAccount = getTotalPendingByAccount();
 
-  useBodyScrollLock(!!activeModal || isRecurringDetailModalOpen);
+  useBodyScrollLock(!!activeModal || isRecurringDetailModalOpen || isCardUnsettledSheetOpen || isCardUnsettledDetailOpen);
 
   // Handlers
   const handleAddRecurring = (target: { accountId?: string; paymentMethodId?: string }) => {
@@ -44,13 +51,20 @@ export const AccountsPage = () => {
     openModal({ type: 'recurring', data: { editing: rp, target: null } });
   };
 
-  const handleCardUnsettledClick = (paymentMethod: PaymentMethod) => {
-    openModal({ type: 'viewing-pm', data: { paymentMethod, showOnlyUnsettled: true } });
-  };
-
   const handleRecurringDetailClick = (rp: RecurringPayment) => {
     setSelectedRecurring(rp);
     setIsRecurringDetailModalOpen(true);
+  };
+
+  const handleCardUnsettledSheetOpen = (pm: PaymentMethod, transactions: Transaction[]) => {
+    setSelectedCardUnsettledPM(pm);
+    setCardUnsettledTransactions(transactions);
+    setIsCardUnsettledSheetOpen(true);
+  };
+
+  const handleCardUnsettledTransactionClick = (transaction: Transaction) => {
+    setSelectedCardUnsettledTransaction(transaction);
+    setIsCardUnsettledDetailOpen(true);
   };
 
   const keyboardOptions = useMemo(() => ({
@@ -97,8 +111,8 @@ export const AccountsPage = () => {
             isBreakdownOpen={isBreakdownOpen}
             onToggleBreakdown={() => setIsBreakdownOpen(!isBreakdownOpen)}
             paymentMethods={paymentMethods}
-            onCardUnsettledClick={handleCardUnsettledClick}
             onRecurringDetailClick={handleRecurringDetailClick}
+            onCardUnsettledSheetOpen={handleCardUnsettledSheetOpen}
           />
         )}
       </div>
@@ -180,6 +194,27 @@ export const AccountsPage = () => {
         onClose={() => {
           setIsRecurringDetailModalOpen(false);
           setSelectedRecurring(null);
+        }}
+      />
+
+      <CardUnsettledListModal
+        paymentMethod={selectedCardUnsettledPM}
+        transactions={cardUnsettledTransactions}
+        isOpen={isCardUnsettledSheetOpen}
+        onClose={() => {
+          setIsCardUnsettledSheetOpen(false);
+          setSelectedCardUnsettledPM(null);
+          setCardUnsettledTransactions([]);
+        }}
+        onTransactionClick={handleCardUnsettledTransactionClick}
+      />
+
+      <CardUnsettledDetailModal
+        transaction={selectedCardUnsettledTransaction}
+        isOpen={isCardUnsettledDetailOpen}
+        onClose={() => {
+          setIsCardUnsettledDetailOpen(false);
+          setSelectedCardUnsettledTransaction(null);
         }}
       />
 
