@@ -264,8 +264,8 @@ const MemberAssetCard = ({
   return (
     <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-4 transition-all duration-200 flex-1 flex flex-col overflow-hidden">
       {/* ヘッダー */}
-      <div className="flex gap-2 md:gap-2.5 mb-3 md:mb-4">
-        <div className="flex-shrink-0 self-start">
+      <div className="flex gap-2 md:gap-2.5 mb-3 md:mb-4 items-center">
+        <div className="flex-shrink-0">
           <div
             className="w-8 md:w-10 h-8 md:h-10 rounded-full flex items-center justify-center text-white"
             style={{ backgroundColor: slide.member?.color || 'var(--theme-primary)' }}
@@ -280,7 +280,7 @@ const MemberAssetCard = ({
           </div>
         </div>
 
-        <div className="flex-1 min-w-0 space-y-0.5 md:space-y-1">
+        <div className="flex-1 min-w-0">
           <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
             {slide.name}
           </p>

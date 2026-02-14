@@ -34,7 +34,7 @@ export const AccountsPage = () => {
   const pendingByPM = getPendingAmountByPaymentMethod();
   const totalPendingByAccount = getTotalPendingByAccount();
 
-  useBodyScrollLock(!!activeModal);
+  useBodyScrollLock(!!activeModal || isRecurringDetailModalOpen);
 
   // Handlers
   const handleAddRecurring = (target: { accountId?: string; paymentMethodId?: string }) => {

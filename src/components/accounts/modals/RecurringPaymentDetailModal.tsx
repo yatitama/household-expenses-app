@@ -1,4 +1,3 @@
-import { X } from 'lucide-react';
 import { formatCurrency } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { categoryService } from '../../../services/storage';
@@ -37,15 +36,8 @@ export const RecurringPaymentDetailModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
-          <div className="flex justify-between items-center mb-4">
+          <div className="mb-4">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">定期取引詳細</h3>
-            <button
-              onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg"
-              aria-label="閉じる"
-            >
-              <X size={18} className="sm:w-5 sm:h-5" />
-            </button>
           </div>
 
           <div className="space-y-4 sm:space-y-5">
@@ -127,7 +119,7 @@ export const RecurringPaymentDetailModal = ({
         </div>
 
         {/* フッター */}
-        <div className="flex gap-2 p-3 sm:p-4 border-t dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div className="flex gap-2 p-3 sm:p-4 bg-white dark:bg-gray-800">
           <button
             onClick={onClose}
             className="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium py-2 rounded-lg transition-colors text-sm sm:text-base"
