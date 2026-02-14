@@ -73,9 +73,9 @@ export const AccountsPage = () => {
   const unlinkedPMs = paymentMethods.filter((pm) => !pm.linkedAccountId);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-white dark:bg-slate-900">
       {/* 総資産カード（固定ヘッダー） */}
-      <div className="sticky top-0 z-40 bg-gray-50 dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6 px-3 md:px-6 lg:px-8">
+      <div className="sticky top-0 z-40 bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6 px-3 md:px-6 lg:px-8">
         {accounts.length > 0 && (
           <AssetCard
             totalBalance={totalBalance}
