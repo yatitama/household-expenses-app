@@ -74,10 +74,10 @@ export const AssetCard = ({
   };
 
   return (
-    <div className="flex flex-col max-h-screen">
+    <div className="flex flex-col">
       {/* メンバー選択セクション */}
       {memberSlides.length > 0 && (
-        <div className="px-3 md:px-6 lg:px-8 pt-2 md:pt-4 lg:pt-6 pb-3 md:pb-4">
+        <div className="px-2 md:px-4 lg:px-6 pt-2 md:pt-4 lg:pt-6 pb-3 md:pb-4">
           <div className="flex flex-wrap gap-2">
             {memberSlides.map((slide, index) => (
               <button
@@ -97,7 +97,7 @@ export const AssetCard = ({
       )}
 
       {/* メンバーコンテンツ */}
-      <div className="flex-1 min-h-0 px-3 md:px-6 lg:px-8 overflow-hidden">
+      <div className="flex-1 min-h-0 px-2 md:px-4 lg:px-6">
         {memberSlides.map((slide, index) => (
           <div
             key={slide.id}
