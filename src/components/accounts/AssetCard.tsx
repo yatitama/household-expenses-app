@@ -124,7 +124,7 @@ export const AssetCard = ({
   );
 
   return (
-    <div className="-mx-3 md:mx-0">
+    <div className="-mx-3 md:mx-0 flex flex-col max-h-screen">
       {/* ナビゲーション */}
       {memberSlides.length > 1 && (
         <div className="flex items-center justify-center gap-3 mb-1">
@@ -166,18 +166,18 @@ export const AssetCard = ({
         ref={assetContainerRef}
         onTouchStart={handleAssetTouchStart}
         onTouchEnd={handleAssetTouchEnd}
-        className="relative overflow-hidden rounded-lg md:rounded-xl min-h-0"
+        className="relative overflow-hidden rounded-lg md:rounded-xl flex-1 min-h-0"
         style={{ touchAction: 'auto' }}
       >
         <div
           ref={assetInnerRef}
-          className={`flex flex-nowrap transition-transform ${isAssetTransitioning ? 'duration-300 ease-out' : ''}`}
+          className={`flex flex-nowrap transition-transform h-full ${isAssetTransitioning ? 'duration-300 ease-out' : ''}`}
           style={{
             transform: `translateX(-${currentAssetIndex * 100}%)`,
           }}
         >
           {memberSlides.map((slide) => (
-            <div key={slide.id} className="w-full flex-shrink-0 min-w-0 min-h-0">
+            <div key={slide.id} className="w-full flex-shrink-0 min-w-0 min-h-0 h-full flex flex-col">
               <MemberAssetCard
                 slide={slide}
                 allUnsettledTransactions={allUnsettledTransactions}
@@ -260,7 +260,7 @@ const MemberAssetCard = ({
   const memberRecurringIncome = memberUpcomingIncome.reduce((sum: number, rp: RecurringPayment) => sum + rp.amount, 0);
 
   return (
-    <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-4 transition-all duration-200">
+    <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-4 transition-all duration-200 flex-1 flex flex-col overflow-hidden">
       {/* ヘッダー */}
       <div className="flex gap-2 md:gap-2.5 mb-3 md:mb-4">
         <div className="flex-shrink-0 self-start">
@@ -286,8 +286,8 @@ const MemberAssetCard = ({
       </div>
 
       {/* 残高セクション */}
-      <div className="space-y-0 mb-4">
-        <div className="bg-white rounded-lg p-3 md:p-4" style={{
+      <div className="space-y-0 flex-1 flex flex-col overflow-y-auto">
+        <div className="bg-white rounded-lg p-3 md:p-4 mb-4" style={{
           borderColor: 'var(--theme-primary)',
         }}>
           <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
@@ -393,7 +393,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 引き落とし予定セクション */}
-        <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
+        <div className={`bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30 ${isIncomeExpanded ? '' : '-mt-3'}`}>
           <button
             onClick={() => setIsScheduleExpanded(!isScheduleExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
