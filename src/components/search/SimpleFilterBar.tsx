@@ -89,16 +89,21 @@ export const SimpleFilterBar = ({
       {/* オーバーレイ（パネルが開いているときのみ） */}
       {activePanel !== null && (
         <div
- className="fixed inset-0 bg-black/30 z-30"           onClick={() => setActivePanel(null)}
+          className="fixed inset-0 bg-black/30 z-30"
+          onClick={() => setActivePanel(null)}
         />
       )}
 
- <div className="space-y-1">         {/* フィルターチップ */}
- <div className="flex items-center gap-2 overflow-x-auto py-2 px-4 md:px-6 lg:px-8 -mx-4 md:-mx-6 lg:-mx-8">  <div className="flex gap-2 flex-nowrap">             {filterChips.map((chip) => (
+      <div className="space-y-1">
+        {/* フィルターチップ */}
+        <div className="flex items-center gap-2 overflow-x-auto py-2 px-4 md:px-6 lg:px-8 -mx-4 md:-mx-6 lg:-mx-8">
+          <div className="flex gap-2 flex-nowrap">
+            {filterChips.map((chip) => (
               <button
                 key={chip.id}
                 onClick={() => handleChipClick(chip)}
- className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all active:scale-95 touch-action-manipulation ${                   chip.isActive
+                className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all active:scale-95 touch-action-manipulation ${
+                  chip.isActive
                     ? 'text-white ring-1 dark:ring-1'
                     : 'bg-gray-100 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                 }`}
@@ -120,7 +125,8 @@ export const SimpleFilterBar = ({
           {activeFilterCount > 0 && (
             <button
               onClick={resetFilters}
- className="flex-shrink-0 p-2.5 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 transition-colors active:scale-95 touch-action-manipulation"               title="フィルターをリセット"
+              className="flex-shrink-0 p-2.5 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 transition-colors active:scale-95 touch-action-manipulation"
+              title="フィルターをリセット"
               aria-label="フィルターをリセット"
             >
               <RotateCcw size={18} />
@@ -129,10 +135,13 @@ export const SimpleFilterBar = ({
         </div>
 
         {/* グループ化オプション */}
- <div className="flex items-center gap-2 text-xs sm:text-sm">  <span className="text-gray-600 dark:text-gray-400">グループ化:</span>           <select
+        <div className="flex items-center gap-2 text-xs sm:text-sm">
+          <span className="text-gray-600 dark:text-gray-400">グループ化:</span>
+          <select
             value={groupBy}
             onChange={(e) => onGroupByChange(e.target.value as GroupByType)}
- className="px-3 py-1.5 rounded bg-white text-gray-900 dark:text-gray-100 text-xs sm:text-sm transition-colors"             aria-label="取引のグループ化方法を選択"
+            className="px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 text-xs sm:text-sm transition-colors"
+            aria-label="取引のグループ化方法を選択"
           >
             <option value="date">日付</option>
             <option value="category">カテゴリ</option>
@@ -144,7 +153,8 @@ export const SimpleFilterBar = ({
           <select
             value={groupOrder}
             onChange={() => onGroupByChange(groupBy)}
- className="px-3 py-1.5 rounded bg-white text-gray-900 dark:text-gray-100 text-xs sm:text-sm transition-colors"             aria-label="取引の並び順を選択"
+            className="px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 text-xs sm:text-sm transition-colors"
+            aria-label="取引の並び順を選択"
           >
             <option value="desc">▼ 降順</option>
             <option value="asc">▲ 昇順</option>

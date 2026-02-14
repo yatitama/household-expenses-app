@@ -68,14 +68,16 @@ export const FilterSidePanel = ({
           title: '検索',
           content: (
             <div>
- <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">                 キーワード検索
+              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">
+                キーワード検索
               </label>
               <input
                 type="text"
                 value={filters.searchQuery}
                 onChange={(e) => updateFilter('searchQuery', e.target.value)}
                 placeholder="メモやカテゴリ名で検索"
- className="w-full px-3 py-2 text-sm rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent bg-white text-gray-900 dark:text-gray-100"               />
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-500 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent bg-white text-gray-900 dark:text-gray-100"
+              />
             </div>
           ),
         };
@@ -84,7 +86,8 @@ export const FilterSidePanel = ({
         return {
           title: '取引種別',
           content: (
- <div className="space-y-2">               {([
+            <div className="space-y-2">
+              {([
                 ['all', 'すべて'],
                 ['income', '収入'],
                 ['expense', '支出'],
@@ -92,9 +95,10 @@ export const FilterSidePanel = ({
                 <button
                   key={value}
                   onClick={() => updateFilter('transactionType', value)}
- className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 ${                     filters.transactionType === value
+                  className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 ${
+                    filters.transactionType === value
                       ? 'text-white '
-                      : 'bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100border-gray-200 dark:border-slate-500'
+                      : 'bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-slate-500'
                   }`}
                   style={filters.transactionType === value ? {
                     backgroundColor: 'var(--theme-primary)',
@@ -177,7 +181,8 @@ export const FilterSidePanel = ({
           title: '並び替え',
           content: (
             <div>
- <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">                 並び順
+              <label className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">
+                並び順
               </label>
               <SortSelector
                 sortBy={filters.sortBy}
@@ -200,28 +205,36 @@ export const FilterSidePanel = ({
     <>
       {/* フローティングパネル */}
       <div
- className={`fixed bottom-44 left-4 right-4 bg-white rounded-2xl z-50 transition-opacity duration-300 ${           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        className={`fixed bottom-44 left-4 right-4 bg-white rounded-2xl   z-50 transition-opacity duration-300 border border-gray-200 dark:border-slate-600 ${
+          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         style={{
           maxHeight: 'calc(100vh - 10rem)',
         }}
       >
         {/* ヘッダー */}
- <div className="flex items-center justify-between p-3 ">  <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">{title}</h3>           <button
+        <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-slate-600">
+          <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">{title}</h3>
+          <button
             onClick={onClose}
- className="p-1.5 rounded-full bg-danger-600 hover:bg-danger-700 transition-colors active:scale-95"             aria-label="閉じる"
+            className="p-1.5 rounded-full bg-danger-600 hover:bg-danger-700 transition-colors active:scale-95"
+            aria-label="閉じる"
           >
- <X size={18} className="text-white" />           </button>
+            <X size={18} className="text-white" />
+          </button>
         </div>
 
         {/* コンテンツ */}
- <div className="p-3 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 16rem)' }}>           {content}
+        <div className="p-3 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
+          {content}
         </div>
 
         {/* フッター（リセットボタン） */}
- <div className="p-3 bg-white rounded-b-2xl">           <button
+        <div className="p-3 border-t border-gray-200 dark:border-slate-600 bg-white rounded-b-2xl">
+          <button
             onClick={resetCurrentFilter}
- className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium "           >
+            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium border border-gray-200 dark:border-slate-500"
+          >
             <RotateCcw size={14} />
             このフィルターをリセット
           </button>

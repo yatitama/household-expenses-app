@@ -29,15 +29,19 @@ export const FilterPanel = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
- <div className="bg-white rounded-xl overflow-hidden">       <button
+    <div className="bg-white rounded-xl overflow-hidden">
+      <button
         onClick={() => setIsOpen(!isOpen)}
- className="w-full flex items-center justify-between p-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"         aria-expanded={isOpen}
+        className="w-full flex items-center justify-between p-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        aria-expanded={isOpen}
         aria-controls="filter-panel"
       >
- <div className="flex items-center gap-2">           <SlidersHorizontal size={16} />
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal size={16} />
           <span>フィルタ</span>
           {activeFilterCount > 0 && (
- <span className="bg-gray-800 text-white text-sm rounded-full w-5 h-5 flex items-center justify-center">               {activeFilterCount}
+            <span className="bg-gray-800 text-white text-sm rounded-full w-5 h-5 flex items-center justify-center">
+              {activeFilterCount}
             </span>
           )}
         </div>
@@ -45,13 +49,17 @@ export const FilterPanel = ({
       </button>
 
       {isOpen && (
- <div id="filter-panel" className="p-3 pt-0 space-y-4 ">           {/* Transaction type */}
+        <div id="filter-panel" className="p-3 pt-0 space-y-4 border-t border-gray-100">
+          {/* Transaction type */}
           <div>
- <label className="block text-sm font-medium text-gray-600 mb-1">種別</label>  <div className="flex rounded-lg overflow-hidden ">               {([['all', 'すべて'], ['income', '収入'], ['expense', '支出']] as const).map(([value, label]) => (
+            <label className="block text-sm font-medium text-gray-600 mb-1">種別</label>
+            <div className="flex rounded-lg overflow-hidden border border-gray-200">
+              {([['all', 'すべて'], ['income', '収入'], ['expense', '支出']] as const).map(([value, label]) => (
                 <button
                   key={value}
                   onClick={() => updateFilter('transactionType', value)}
- className={`flex-1 py-2 text-sm font-medium transition-colors ${                     filters.transactionType === value
+                  className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                    filters.transactionType === value
                       ? value === 'income' ? 'bg-gray-600 text-white'
                         : value === 'expense' ? 'bg-gray-800 text-white'
                         : 'bg-gray-800 text-white'
@@ -110,7 +118,8 @@ export const FilterPanel = ({
 
           {/* Sort */}
           <div>
- <label className="block text-sm font-medium text-gray-600 mb-1">並び替え</label>             <SortSelector
+            <label className="block text-sm font-medium text-gray-600 mb-1">並び替え</label>
+            <SortSelector
               sortBy={filters.sortBy}
               sortOrder={filters.sortOrder}
               onSortByChange={(v) => updateFilter('sortBy', v)}
@@ -122,7 +131,8 @@ export const FilterPanel = ({
           {activeFilterCount > 0 && (
             <button
               onClick={resetFilters}
- className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"             >
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            >
               <RotateCcw size={14} />
               フィルタをリセット
             </button>

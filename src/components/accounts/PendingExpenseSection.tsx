@@ -21,22 +21,39 @@ export const PendingExpenseSection = ({
   }
 
   return (
- <div className="bg-gray-100 dark:bg-gray-900/20 rounded-lg md:rounded-xl p-3 md:p-4 ">  <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">  <AlertCircle size={16} className="md:w-4.5 md:h-4.5 text-gray-700 dark:text-gray-500 flex-shrink-0" />  <h3 className="text-xs md:text-sm font-semibold text-gray-900 dark:text-gray-200">今月の支出予測</h3>       </div>
+    <div className="bg-gray-100 dark:bg-gray-900/20 rounded-lg md:rounded-xl p-3 md:p-4 border border-gray-300 dark:border-gray-800">
+      <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
+        <AlertCircle size={16} className="md:w-4.5 md:h-4.5 text-gray-700 dark:text-gray-500 flex-shrink-0" />
+        <h3 className="text-xs md:text-sm font-semibold text-gray-900 dark:text-gray-200">今月の支出予測</h3>
+      </div>
 
- <div className="space-y-1.5 md:space-y-2">         {totalCardPending > 0 && (
- <div className="flex justify-between items-center text-xs md:text-sm">  <span className="text-gray-800 dark:text-gray-300">カード請求</span>  <span className="font-semibold text-gray-900 dark:text-gray-200">-{formatCurrency(totalCardPending)}</span>           </div>
+      <div className="space-y-1.5 md:space-y-2">
+        {totalCardPending > 0 && (
+          <div className="flex justify-between items-center text-xs md:text-sm">
+            <span className="text-gray-800 dark:text-gray-300">カード請求</span>
+            <span className="font-semibold text-gray-900 dark:text-gray-200">-{formatCurrency(totalCardPending)}</span>
+          </div>
         )}
 
         {totalRecurringExpense > 0 && (
- <div className="flex justify-between items-center text-xs md:text-sm">  <span className="text-gray-800 dark:text-gray-300">定期支出</span>  <span className="font-semibold text-gray-900 dark:text-gray-200">-{formatCurrency(totalRecurringExpense)}</span>           </div>
+          <div className="flex justify-between items-center text-xs md:text-sm">
+            <span className="text-gray-800 dark:text-gray-300">定期支出</span>
+            <span className="font-semibold text-gray-900 dark:text-gray-200">-{formatCurrency(totalRecurringExpense)}</span>
+          </div>
         )}
 
         {totalRecurringIncome > 0 && (
- <div className="flex justify-between items-center text-xs md:text-sm">  <span className="text-gray-800 dark:text-gray-300">定期収入</span>  <span className="font-semibold text-gray-700 dark:text-gray-600">+{formatCurrency(totalRecurringIncome)}</span>           </div>
+          <div className="flex justify-between items-center text-xs md:text-sm">
+            <span className="text-gray-800 dark:text-gray-300">定期収入</span>
+            <span className="font-semibold text-gray-700 dark:text-gray-600">+{formatCurrency(totalRecurringIncome)}</span>
+          </div>
         )}
 
         {(totalCardPending > 0 || totalRecurringExpense > 0 || totalRecurringIncome > 0) && (
- <div className="pt-1.5 md:pt-2 mt-1.5 md:mt-2 flex justify-between items-center text-xs md:text-sm">  <span className="font-semibold text-gray-900 dark:text-gray-200">実質合計</span>  <span className={`font-bold ${netPending > 0 ? 'text-gray-900' : 'text-gray-700'}`}>               {netPending > 0 ? '-' : '+'}{formatCurrency(Math.abs(netPending))}
+          <div className="border-t border-gray-300 dark:border-gray-800 pt-1.5 md:pt-2 mt-1.5 md:mt-2 flex justify-between items-center text-xs md:text-sm">
+            <span className="font-semibold text-gray-900 dark:text-gray-200">実質合計</span>
+            <span className={`font-bold ${netPending > 0 ? 'text-gray-900' : 'text-gray-700'}`}>
+              {netPending > 0 ? '-' : '+'}{formatCurrency(Math.abs(netPending))}
             </span>
           </div>
         )}
