@@ -29,7 +29,6 @@ export const AccountsPage = () => {
 
   const members = memberService.getAll();
   const { activeModal, openModal, closeModal } = useModalManager();
-  const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
   const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
   const [isRecurringDetailModalOpen, setIsRecurringDetailModalOpen] = useState(false);
   const [selectedCardUnsettledPM, setSelectedCardUnsettledPM] = useState<PaymentMethod | null>(null);
@@ -104,12 +103,8 @@ export const AccountsPage = () => {
             totalExpense={totalExpense}
             totalIncome={totalIncome}
             netPending={netPending}
-            accounts={accounts}
             groupedAccounts={groupedAccounts}
-            totalPendingByAccount={totalPendingByAccount}
             getMember={getMember}
-            isBreakdownOpen={isBreakdownOpen}
-            onToggleBreakdown={() => setIsBreakdownOpen(!isBreakdownOpen)}
             paymentMethods={paymentMethods}
             onRecurringDetailClick={handleRecurringDetailClick}
             onCardUnsettledSheetOpen={handleCardUnsettledSheetOpen}

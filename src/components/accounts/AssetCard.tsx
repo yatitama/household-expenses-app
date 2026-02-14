@@ -1,16 +1,8 @@
-import { useState } from 'react';
 import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { AccountGridSection } from './AccountGridSection';
 import { CardGridSection } from './CardGridSection';
 import { RecurringItemGridSection } from './RecurringItemGridSection';
 import type { PaymentMethod, Account, Member, Transaction, RecurringPayment } from '../../types';
-
-interface TotalPendingData {
-  cardPending: number;
-  recurringExpense: number;
-  recurringIncome: number;
-  totalPending: number;
-}
 
 interface CardUnsettledInfo {
   paymentMethod: PaymentMethod;
@@ -23,89 +15,87 @@ interface AssetCardProps {
   totalExpense: number;
   totalIncome: number;
   netPending: number;
-  accounts: Account[];
   groupedAccounts: Record<string, Account[]>;
-  totalPendingByAccount: Record<string, TotalPendingData>;
   getMember: (memberId: string) => Member | undefined;
-  isBreakdownOpen: boolean;
-  onToggleBreakdown: () => void;
+  isBreakdownOpen?: boolean;
+  onToggleBreakdown?: () => void;
   paymentMethods?: PaymentMethod[];
   onRecurringDetailClick?: (recurringPayment: RecurringPayment) => void;
   onCardUnsettledSheetOpen?: (paymentMethod: PaymentMethod, transactions: Transaction[]) => void;
 }
 
 export const AssetCard = ({
+  totalBalance,
+  totalExpense,
+  totalIncome,
+  netPending,
   groupedAccounts,
   getMember,
   paymentMethods = [],
   onRecurringDetailClick,
   onCardUnsettledSheetOpen,
 }: AssetCardProps) => {
-  const [currentAssetIndex, setCurrentAssetIndex] = useState(0);
-
   const allUnsettledTransactions = getUnsettledTransactions();
   const allUpcomingRecurring = getUpcomingRecurringPayments(31);
 
-  // メンバーカルーセル用データ構築
-  const memberSlides = Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
+  // メンバー別データ構築
+  const memberSlidesData = Object.entries(groupedAccounts).map(([memberId, memberAccounts]) => {
     const member = getMember(memberId) || null;
-    const memberTotal = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
+    const memberBalance = memberAccounts.reduce((sum, a) => sum + a.balance, 0);
     return {
       type: 'member',
       id: memberId,
       name: member?.name || '不明',
-      balance: memberTotal,
+      balance: memberBalance,
       member,
       memberAccounts,
       memberId,
     };
   });
 
-  const goToAssetSlide = (index: number) => {
-    setCurrentAssetIndex(index);
-  };
-
   return (
-    <div className="flex flex-col">
-      {/* メンバー選択セクション */}
-      {memberSlides.length > 0 && (
-        <div className="px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6 pb-3 md:pb-4">
-          <div className="flex flex-wrap gap-2">
-            {memberSlides.map((slide, index) => (
-              <button
-                key={slide.id}
-                onClick={() => goToAssetSlide(index)}
-                className={`px-4 py-2 font-medium rounded-lg transition-colors ${
-                  index === currentAssetIndex
-                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600'
-                }`}
-              >
-                {slide.name}
-              </button>
-            ))}
+    <div className="flex flex-col px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6 pb-3 md:pb-4 space-y-4 md:space-y-6">
+      {/* 総資産サマリー */}
+      <div className="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-xl p-4 md:p-6 text-white shadow-lg">
+        <div className="grid grid-cols-2 gap-4 md:gap-6">
+          <div>
+            <p className="text-xs md:text-sm font-medium opacity-90">総資産</p>
+            <p className="text-lg md:text-2xl font-bold mt-1">¥{totalBalance.toLocaleString()}</p>
+          </div>
+          <div>
+            <p className="text-xs md:text-sm font-medium opacity-90">差引</p>
+            <p className={`text-lg md:text-2xl font-bold mt-1 ${netPending > 0 ? 'text-red-200' : 'text-green-200'}`}>
+              ¥{netPending.toLocaleString()}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs md:text-sm font-medium opacity-90">未払・定期支出</p>
+            <p className="text-lg md:text-2xl font-bold mt-1">¥{totalExpense.toLocaleString()}</p>
+          </div>
+          <div>
+            <p className="text-xs md:text-sm font-medium opacity-90">定期収入</p>
+            <p className="text-lg md:text-2xl font-bold mt-1">¥{totalIncome.toLocaleString()}</p>
           </div>
         </div>
-      )}
-
-      {/* メンバーコンテンツ */}
-      <div className="flex-1 min-h-0 px-1 md:px-2 lg:px-3">
-        {memberSlides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`h-full overflow-hidden ${index === currentAssetIndex ? '' : 'hidden'}`}
-          >
-            <MemberAssetCard
-              slide={slide}
-              allUnsettledTransactions={allUnsettledTransactions}
-              allUpcomingRecurring={allUpcomingRecurring}
-              paymentMethods={paymentMethods}
-              onRecurringDetailClick={onRecurringDetailClick}
-              onCardUnsettledSheetOpen={onCardUnsettledSheetOpen}
-            />
-          </div>
-        ))}
       </div>
+
+      {/* メンバー別コンテンツ */}
+      {memberSlidesData.map((slide) => (
+        <div key={slide.id} className="space-y-3 md:space-y-4">
+          <h2 className="text-base md:text-lg font-bold text-gray-900 dark:text-white px-1">
+            {slide.name}
+          </h2>
+
+          <MemberAssetCard
+            slide={slide}
+            allUnsettledTransactions={allUnsettledTransactions}
+            allUpcomingRecurring={allUpcomingRecurring}
+            paymentMethods={paymentMethods}
+            onRecurringDetailClick={onRecurringDetailClick}
+            onCardUnsettledSheetOpen={onCardUnsettledSheetOpen}
+          />
+        </div>
+      ))}
     </div>
   );
 };
