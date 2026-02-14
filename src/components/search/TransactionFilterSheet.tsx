@@ -35,7 +35,7 @@ export const TransactionFilterSheet = ({
   onClose,
 }: TransactionFilterSheetProps) => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(['grouping', 'type', 'date'])
+    new Set()
   );
 
   if (!isOpen) return null;
@@ -88,16 +88,16 @@ export const TransactionFilterSheet = ({
         <div className="flex-1 overflow-y-auto">
           <div className="space-y-2 p-3 sm:p-4">
             {/* グループ化セクション */}
-            <div className="space-y-0 bg-gray-50 dark:bg-slate-800/50 rounded-lg overflow-hidden">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
               <button
                 onClick={() => toggleSection('grouping')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
                     size={16}
                     className={`flex-shrink-0 transition-transform text-gray-600 dark:text-gray-400 ${
-                      isExpanded('grouping') ? '' : '-rotate-90'
+                      isExpanded('grouping') ? 'rotate-0' : '-rotate-90'
                     }`}
                   />
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -143,16 +143,16 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 取引種別セクション */}
-            <div className="space-y-0 bg-gray-50 dark:bg-slate-800/50 rounded-lg overflow-hidden">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
               <button
                 onClick={() => toggleSection('type')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
                     size={16}
                     className={`flex-shrink-0 transition-transform text-gray-600 dark:text-gray-400 ${
-                      isExpanded('type') ? '' : '-rotate-90'
+                      isExpanded('type') ? 'rotate-0' : '-rotate-90'
                     }`}
                   />
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -191,16 +191,16 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 期間セクション */}
-            <div className="space-y-0 bg-gray-50 dark:bg-slate-800/50 rounded-lg overflow-hidden">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
               <button
                 onClick={() => toggleSection('date')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
                     size={16}
                     className={`flex-shrink-0 transition-transform text-gray-600 dark:text-gray-400 ${
-                      isExpanded('date') ? '' : '-rotate-90'
+                      isExpanded('date') ? 'rotate-0' : '-rotate-90'
                     }`}
                   />
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -231,16 +231,16 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* メンバーセクション */}
-            <div className="space-y-0 bg-gray-50 dark:bg-slate-800/50 rounded-lg overflow-hidden">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
               <button
                 onClick={() => toggleSection('member')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
                     size={16}
                     className={`flex-shrink-0 transition-transform text-gray-600 dark:text-gray-400 ${
-                      isExpanded('member') ? '' : '-rotate-90'
+                      isExpanded('member') ? 'rotate-0' : '-rotate-90'
                     }`}
                   />
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -267,16 +267,16 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* カテゴリセクション */}
-            <div className="space-y-0 bg-gray-50 dark:bg-slate-800/50 rounded-lg overflow-hidden">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
               <button
                 onClick={() => toggleSection('category')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
                     size={16}
                     className={`flex-shrink-0 transition-transform text-gray-600 dark:text-gray-400 ${
-                      isExpanded('category') ? '' : '-rotate-90'
+                      isExpanded('category') ? 'rotate-0' : '-rotate-90'
                     }`}
                   />
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -303,16 +303,16 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 口座セクション */}
-            <div className="space-y-0 bg-gray-50 dark:bg-slate-800/50 rounded-lg overflow-hidden">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
               <button
                 onClick={() => toggleSection('account')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
                     size={16}
                     className={`flex-shrink-0 transition-transform text-gray-600 dark:text-gray-400 ${
-                      isExpanded('account') ? '' : '-rotate-90'
+                      isExpanded('account') ? 'rotate-0' : '-rotate-90'
                     }`}
                   />
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -339,16 +339,16 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 支払方法セクション */}
-            <div className="space-y-0 bg-gray-50 dark:bg-slate-800/50 rounded-lg overflow-hidden">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
               <button
                 onClick={() => toggleSection('payment')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
                     size={16}
                     className={`flex-shrink-0 transition-transform text-gray-600 dark:text-gray-400 ${
-                      isExpanded('payment') ? '' : '-rotate-90'
+                      isExpanded('payment') ? 'rotate-0' : '-rotate-90'
                     }`}
                   />
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
