@@ -123,7 +123,7 @@ export const AssetCard = ({
   );
 
   return (
-    <>
+    <div className="-mx-3 md:mx-0">
       {/* ナビゲーション */}
       {memberSlides.length > 1 && (
         <div className="flex items-center justify-center gap-3 mb-1">
@@ -189,7 +189,7 @@ export const AssetCard = ({
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
