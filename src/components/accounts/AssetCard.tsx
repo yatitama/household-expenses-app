@@ -52,7 +52,10 @@ export const AssetCard = ({
   return (
     <div className="px-1 md:px-2 lg:px-3">
       {/* 口座セクション */}
-      <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700 mt-2 md:mt-3">
+      <div
+        className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700 mt-2 md:mt-3"
+        style={{ top: 'max(0px, env(safe-area-inset-top))' }}
+      >
         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
       </div>
       <div className="pt-2 pb-3 md:pb-4">
@@ -62,7 +65,10 @@ export const AssetCard = ({
       {/* カードセクション */}
       {linkedPaymentMethods.length > 0 && (
         <>
-          <div className="sticky top-10 md:top-12 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700">
+          <div
+            className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+            style={{ top: 'calc(max(0px, env(safe-area-inset-top)) + 40px)' }}
+          >
             <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">カード</h3>
           </div>
           <div className="pt-2 pb-3 md:pb-4">
@@ -76,7 +82,10 @@ export const AssetCard = ({
       )}
 
       {/* 定期支出セクション */}
-      <div className="sticky top-10 md:top-12 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700">
+      <div
+        className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+        style={{ top: 'calc(max(0px, env(safe-area-inset-top)) + 40px)' }}
+      >
         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期支出</h3>
       </div>
       <div className="pt-2 pb-3 md:pb-4">
@@ -88,7 +97,10 @@ export const AssetCard = ({
       </div>
 
       {/* 定期収入セクション */}
-      <div className="sticky top-10 md:top-12 bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700">
+      <div
+        className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+        style={{ top: 'calc(max(0px, env(safe-area-inset-top)) + 40px)' }}
+      >
         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期収入</h3>
       </div>
       <div className="pt-2 pb-3 md:pb-4">
