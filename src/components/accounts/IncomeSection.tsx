@@ -43,7 +43,7 @@ export const IncomeSection = ({
             振り込み予定
           </span>
         </div>
-        <span className="text-base md:text-lg font-bold text-gray-700 dark:text-gray-600">
+        <span className="text-base md:text-lg font-bold text-gray-700 dark:text-gray-600 font-mono">
           {formatCurrency(totalRecurringIncome)}
         </span>
       </button>
@@ -92,7 +92,7 @@ export const IncomeSection = ({
                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{freqLabel}</p>
                       </button>
                     </div>
-                    <span className="text-gray-700 dark:text-gray-600 font-semibold flex-shrink-0">
+                    <span className="text-gray-700 dark:text-gray-600 font-semibold flex-shrink-0 font-mono">
                       {formatCurrency(rp.amount)}
                     </span>
                   </div>
