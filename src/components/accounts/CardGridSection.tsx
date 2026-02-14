@@ -10,6 +10,7 @@ interface CardGridSectionProps {
     unsettledTransactions: Transaction[];
   }>;
   onCardClick: (paymentMethod: PaymentMethod, transactions: Transaction[]) => void;
+  onCardDetailClick?: (paymentMethod: PaymentMethod) => void;
   onAddClick?: () => void;
 }
 
@@ -17,6 +18,7 @@ export const CardGridSection = ({
   paymentMethods,
   cardUnsettledList,
   onCardClick,
+  onCardDetailClick,
   onAddClick,
 }: CardGridSectionProps) => {
   const shouldShowGrid = paymentMethods.length > 0 || onAddClick;
@@ -36,7 +38,11 @@ export const CardGridSection = ({
             <button
               key={pm.id}
               onClick={() => {
-                onCardClick(pm, cardInfo?.unsettledTransactions || []);
+                if (onCardDetailClick) {
+                  onCardDetailClick(pm);
+                } else {
+                  onCardClick(pm, cardInfo?.unsettledTransactions || []);
+                }
               }}
               className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 hover:opacity-80 transition-opacity text-left h-24 md:h-28 flex flex-col justify-between"
             >

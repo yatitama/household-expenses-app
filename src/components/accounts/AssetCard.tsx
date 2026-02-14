@@ -14,6 +14,7 @@ interface AssetCardProps {
   groupedAccounts: Record<string, Account[]>;
   paymentMethods?: PaymentMethod[];
   onRecurringDetailClick?: (recurringPayment: RecurringPayment) => void;
+  onCardDetailClick?: (paymentMethod: PaymentMethod) => void;
   onCardUnsettledSheetOpen?: (paymentMethod: PaymentMethod, transactions: Transaction[]) => void;
   onAccountClick?: (account: Account) => void;
   onAddAccountClick?: () => void;
@@ -26,6 +27,7 @@ export const AssetCard = ({
   groupedAccounts,
   paymentMethods = [],
   onRecurringDetailClick,
+  onCardDetailClick,
   onCardUnsettledSheetOpen,
   onAccountClick,
   onAddAccountClick,
@@ -85,6 +87,7 @@ export const AssetCard = ({
             <CardGridSection
               paymentMethods={linkedPaymentMethods}
               cardUnsettledList={allCardUnsettledList}
+              onCardDetailClick={onCardDetailClick}
               onCardClick={onCardUnsettledSheetOpen || (() => {})}
               onAddClick={onAddCardClick}
             />
