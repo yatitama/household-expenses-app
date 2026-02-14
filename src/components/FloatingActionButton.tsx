@@ -42,15 +42,13 @@ export const FloatingActionButton = ({
       {isOpen && (
         <button
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 bg-black/40 z-40 animate-in fade-in duration-200"
-          aria-label="メニューを閉じる"
+ className="fixed inset-0 bg-black/40 z-40 animate-in fade-in duration-200"           aria-label="メニューを閉じる"
         />
       )}
 
       <div
         ref={menuRef}
-        className="fixed z-50 flex flex-col items-end gap-3"
-        style={{
+ className="fixed z-50 flex flex-col items-end gap-3"         style={{
           bottom: 'calc(1.5rem + 64px)',
           right: '1.5rem',
         }}
@@ -58,18 +56,15 @@ export const FloatingActionButton = ({
       >
         {/* メニュー項目 */}
         {isOpen && (
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 flex flex-col gap-2">
-            <button
+ <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 flex flex-col gap-2">             <button
               onClick={handleAddTransaction}
-              className="px-4 py-2 sm:py-2.5 rounded-lg font-medium text-sm bg-white border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors whitespace-nowrap"
-              title="取引を追加"
+ className="px-4 py-2 sm:py-2.5 rounded-lg font-medium text-sm bg-white text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors whitespace-nowrap"               title="取引を追加"
             >
               取引追加
             </button>
             <button
               onClick={handleAddRecurring}
-              className="px-4 py-2 sm:py-2.5 rounded-lg font-medium text-sm bg-white border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors whitespace-nowrap"
-              title="定期取引を追加"
+ className="px-4 py-2 sm:py-2.5 rounded-lg font-medium text-sm bg-white text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors whitespace-nowrap"               title="定期取引を追加"
             >
               定期取引追加
             </button>
@@ -79,8 +74,7 @@ export const FloatingActionButton = ({
         {/* FABボタン */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-center w-14 h-14 rounded-full text-white hover: transition-all duration-200 hover:opacity-90"
-          style={{
+ className="flex items-center justify-center w-14 h-14 rounded-full text-white hover: transition-all duration-200 hover:opacity-90"           style={{
             backgroundColor: 'var(--theme-primary)',
           }}
           title={isOpen ? "メニューを閉じる" : "メニューを開く"}
