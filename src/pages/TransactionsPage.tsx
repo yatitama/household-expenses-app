@@ -223,7 +223,7 @@ export const TransactionsPage = () => {
                     <p className="text-sm text-gray-500 dark:text-gray-400 px-4 mb-3">{filteredTransactions.length}件の取引</p>
                   )}
                   <div className="bg-white rounded-xl overflow-hidden">
-                    <div className="px-4 py-2 bg-primary-50 dark:bg-primary-900/30 border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
+                    <div className="px-4 py-2 bg-white border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
                       <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{label}</p>
                     <p className={`text-xs md:text-sm font-bold ${
                       groupTotal >= 0 ? 'text-gray-700' : 'text-gray-900'
