@@ -36,8 +36,7 @@ export const CardGridSection = ({
               onClick={() => {
                 onCardClick(pm, cardInfo?.unsettledTransactions || []);
               }}
-              className="relative border-2 rounded-lg p-3 md:p-4 hover:opacity-80 transition-opacity text-left h-24 md:h-28 flex flex-col justify-between"
-              style={{ borderColor: pm.color }}
+              className="border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 md:p-4 hover:opacity-80 transition-opacity text-left h-24 md:h-28 flex flex-col justify-between"
             >
               <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                 {pm.name}

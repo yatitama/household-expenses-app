@@ -5,6 +5,7 @@ import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../ut
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { categoryService } from '../../services/storage';
 import { CardGridSection } from './CardGridSection';
+import { RecurringItemGridSection } from './RecurringItemGridSection';
 import type { PaymentMethod, Account, Member, Transaction, RecurringPayment, Category } from '../../types';
 
 interface TotalPendingData {
@@ -493,6 +494,22 @@ const MemberAssetCard = ({
             onCardClick={onCardUnsettledSheetOpen || (() => {})}
           />
         )}
+
+        {/* 定期支出グリッド */}
+        <RecurringItemGridSection
+          title="定期支出"
+          items={memberUpcomingExpense}
+          getCategory={getCategory}
+          onItemClick={onRecurringDetailClick || (() => {})}
+        />
+
+        {/* 定期収入グリッド */}
+        <RecurringItemGridSection
+          title="定期収入"
+          items={memberUpcomingIncome}
+          getCategory={getCategory}
+          onItemClick={onRecurringDetailClick || (() => {})}
+        />
       </div>
 
     </div>
