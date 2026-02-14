@@ -4,7 +4,6 @@ import { formatCurrency } from '../../utils/formatters';
 import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { categoryService } from '../../services/storage';
-import { RecurringPaymentDetailModal } from './modals/RecurringPaymentDetailModal';
 import type { PaymentMethod, Account, Member, Transaction, RecurringPayment, Category } from '../../types';
 
 interface TotalPendingData {
@@ -33,6 +32,7 @@ interface AssetCardProps {
   onToggleBreakdown: () => void;
   paymentMethods?: PaymentMethod[];
   onCardUnsettledClick?: (paymentMethod: PaymentMethod) => void;
+  onRecurringDetailClick?: (recurringPayment: RecurringPayment) => void;
 }
 
 const SWIPE_THRESHOLD = 50;
@@ -43,6 +43,7 @@ export const AssetCard = ({
   getMember,
   paymentMethods = [],
   onCardUnsettledClick,
+  onRecurringDetailClick,
 }: AssetCardProps) => {
   const [currentAssetIndex, setCurrentAssetIndex] = useState(0);
   const [isAssetTransitioning, setIsAssetTransitioning] = useState(false);
@@ -185,6 +186,7 @@ export const AssetCard = ({
                 paymentMethods={paymentMethods}
                 getCategory={getCategory}
                 onCardUnsettledClick={onCardUnsettledClick}
+                onRecurringDetailClick={onRecurringDetailClick}
               />
             </div>
           ))}
@@ -211,6 +213,7 @@ interface MemberAssetCardProps {
   paymentMethods: PaymentMethod[];
   getCategory: (categoryId: string) => Category | undefined;
   onCardUnsettledClick?: (paymentMethod: PaymentMethod) => void;
+  onRecurringDetailClick?: (recurringPayment: RecurringPayment) => void;
 }
 
 const MemberAssetCard = ({
@@ -220,12 +223,11 @@ const MemberAssetCard = ({
   paymentMethods,
   getCategory,
   onCardUnsettledClick,
+  onRecurringDetailClick,
 }: MemberAssetCardProps) => {
   const [isBreakdownExpanded, setIsBreakdownExpanded] = useState(false);
   const [isScheduleExpanded, setIsScheduleExpanded] = useState(false);
   const [isIncomeExpanded, setIsIncomeExpanded] = useState(false);
-  const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
-  const [isRecurringDetailModalOpen, setIsRecurringDetailModalOpen] = useState(false);
 
   // このメンバーのアカウントIDリスト
   const memberAccountIds = slide.memberAccounts.map((a) => a.id);
@@ -287,7 +289,7 @@ const MemberAssetCard = ({
 
       {/* 残高セクション */}
       <div className="space-y-0 flex-1 flex flex-col overflow-y-auto">
-        <div className="bg-white rounded-lg p-3 md:p-4 mb-3" style={{
+        <div className="bg-white rounded-lg p-3 md:p-4 mb-1" style={{
           borderColor: 'var(--theme-primary)',
         }}>
           <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
@@ -366,8 +368,7 @@ const MemberAssetCard = ({
                       <button
                         key={rp.id}
                         onClick={() => {
-                          setSelectedRecurring(rp);
-                          setIsRecurringDetailModalOpen(true);
+                          onRecurringDetailClick?.(rp);
                         }}
                         className={`w-full flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left ${rp.isActive ? '' : 'opacity-40'}`}
                       >
@@ -456,8 +457,7 @@ const MemberAssetCard = ({
                       <button
                         key={rp.id}
                         onClick={() => {
-                          setSelectedRecurring(rp);
-                          setIsRecurringDetailModalOpen(true);
+                          onRecurringDetailClick?.(rp);
                         }}
                         className={`w-full flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left ${rp.isActive ? '' : 'opacity-40'}`}
                       >
@@ -483,15 +483,6 @@ const MemberAssetCard = ({
         </div>
       </div>
 
-      {/* 定期支払い詳細モーダル */}
-      <RecurringPaymentDetailModal
-        recurringPayment={selectedRecurring}
-        isOpen={isRecurringDetailModalOpen}
-        onClose={() => {
-          setIsRecurringDetailModalOpen(false);
-          setSelectedRecurring(null);
-        }}
-      />
     </div>
   );
 };
