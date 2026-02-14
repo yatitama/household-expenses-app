@@ -196,7 +196,7 @@ export const TransactionsPage = () => {
         className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b dark:border-gray-700 p-2 md:p-3 flex items-center justify-between"
         style={{ top: 'max(0px, env(safe-area-inset-top))' }}
       >
-        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium">
           {filteredTransactions.length}件の取引
         </p>
         <button
@@ -299,7 +299,7 @@ export const TransactionsPage = () => {
       {/* Fixed Footer with Summary */}
       <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-2 md:p-3">
         <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3">
-          <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4" style={{
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4 text-right" style={{
             borderColor: 'var(--theme-primary)',
           }}>
             <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">
