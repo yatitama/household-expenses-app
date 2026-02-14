@@ -83,8 +83,8 @@ export const AccountsPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
-      {/* 総資産カード（固定ヘッダー） */}
-      <div className="sticky top-0 z-40 bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6 px-1 md:px-2 lg:px-3">
+      {/* アセットカード */}
+      <div className="bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6">
         {accounts.length > 0 && (
           <AssetCard
             groupedAccounts={groupedAccounts}
