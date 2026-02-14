@@ -283,14 +283,14 @@ const MemberAssetCard = ({
       </div>
 
       {/* 残高セクション */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div className="bg-white rounded-lg p-3 md:p-4" style={{
           borderColor: 'var(--theme-primary)',
         }}>
           <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
             残高
           </p>
-          <p className="text-2xl md:text-3xl font-bold mb-3" style={{ color: 'var(--theme-primary)' }}>
+          <p className="text-2xl md:text-3xl font-bold mb-3 text-right" style={{ color: 'var(--theme-primary)' }}>
             {formatCurrency(slide.balance)}
           </p>
 
@@ -316,6 +316,71 @@ const MemberAssetCard = ({
                       <span className="font-medium text-gray-900 dark:text-gray-100">{formatCurrency(account.balance)}</span>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 振り込み予定セクション */}
+        <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
+          <button
+            onClick={() => setIsIncomeExpanded(!isIncomeExpanded)}
+            className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
+          >
+            <div className="flex items-center gap-2">
+              {isIncomeExpanded ? (
+                <ChevronDown size={18} className="text-gray-500 dark:text-gray-400" />
+              ) : (
+                <ChevronRight size={18} className="text-gray-500 dark:text-gray-400" />
+              )}
+              <TrendingUp size={16} className="text-gray-700 dark:text-gray-600" />
+              <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100">
+                振り込み予定
+              </span>
+            </div>
+            <span className="text-base md:text-lg font-bold text-gray-700 dark:text-gray-600">
+              {formatCurrency(memberRecurringIncome)}
+            </span>
+          </button>
+
+          {isIncomeExpanded && (
+            <div className="mt-3 pt-3 dark:border-gray-700">
+              {memberUpcomingIncome.length === 0 ? (
+                <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
+                  定期収入予定なし
+                </p>
+              ) : (
+                <div className="space-y-1.5">
+                  {memberUpcomingIncome.map((rp: RecurringPayment) => {
+                    const category = getCategory(rp.categoryId);
+                    const freqLabel = rp.frequency === 'monthly'
+                      ? `毎月${rp.dayOfMonth}日`
+                      : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
+
+                    return (
+                      <div
+                        key={rp.id}
+                        className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <div
+                            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                          >
+                            {getCategoryIcon(category?.icon || '', 12)}
+                          </div>
+                          <div className="flex-1 flex flex-col gap-0.5 min-w-0">
+                            <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{freqLabel}</p>
+                          </div>
+                        </div>
+                        <span className="text-gray-700 dark:text-gray-600 font-semibold flex-shrink-0">
+                          {formatCurrency(rp.amount)}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -451,71 +516,6 @@ const MemberAssetCard = ({
                       );
                     })}
                   </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* 振り込み予定セクション */}
-        <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
-          <button
-            onClick={() => setIsIncomeExpanded(!isIncomeExpanded)}
-            className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
-          >
-            <div className="flex items-center gap-2">
-              {isIncomeExpanded ? (
-                <ChevronDown size={18} className="text-gray-500 dark:text-gray-400" />
-              ) : (
-                <ChevronRight size={18} className="text-gray-500 dark:text-gray-400" />
-              )}
-              <TrendingUp size={16} className="text-gray-700 dark:text-gray-600" />
-              <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100">
-                振り込み予定
-              </span>
-            </div>
-            <span className="text-base md:text-lg font-bold text-gray-700 dark:text-gray-600">
-              {formatCurrency(memberRecurringIncome)}
-            </span>
-          </button>
-
-          {isIncomeExpanded && (
-            <div className="mt-3 pt-3 dark:border-gray-700">
-              {memberUpcomingIncome.length === 0 ? (
-                <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-                  定期収入予定なし
-                </p>
-              ) : (
-                <div className="space-y-1.5">
-                  {memberUpcomingIncome.map((rp: RecurringPayment) => {
-                    const category = getCategory(rp.categoryId);
-                    const freqLabel = rp.frequency === 'monthly'
-                      ? `毎月${rp.dayOfMonth}日`
-                      : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
-
-                    return (
-                      <div
-                        key={rp.id}
-                        className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
-                      >
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <div
-                            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
-                          >
-                            {getCategoryIcon(category?.icon || '', 12)}
-                          </div>
-                          <div className="flex-1 flex flex-col gap-0.5 min-w-0">
-                            <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{freqLabel}</p>
-                          </div>
-                        </div>
-                        <span className="text-gray-700 dark:text-gray-600 font-semibold flex-shrink-0">
-                          {formatCurrency(rp.amount)}
-                        </span>
-                      </div>
-                    );
-                  })}
                 </div>
               )}
             </div>
