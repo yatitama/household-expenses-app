@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { DateRangePicker } from './DateRangePicker';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { FilterOptions } from '../../hooks/useTransactionFilter';
-import type { GroupByType } from '../../pages/TransactionsPage';
 
 interface TransactionFilterSheetProps {
   filters: FilterOptions;
@@ -13,9 +12,6 @@ interface TransactionFilterSheetProps {
   categories: { id: string; name: string; color: string; icon: string; memberId: string }[];
   accounts: { id: string; name: string; color?: string }[];
   paymentMethods: { id: string; name: string; color?: string }[];
-  groupBy: GroupByType;
-  groupOrder: 'asc' | 'desc';
-  onGroupByChange: (groupBy: GroupByType) => void;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -28,9 +24,6 @@ export const TransactionFilterSheet = ({
   categories,
   accounts,
   paymentMethods,
-  groupBy,
-  groupOrder,
-  onGroupByChange,
   isOpen,
   onClose,
 }: TransactionFilterSheetProps) => {
@@ -65,7 +58,7 @@ export const TransactionFilterSheet = ({
         {/* Header */}
         <div className="sticky top-0 bg-white dark:bg-slate-900 dark:border-gray-700 z-10 p-3 sm:p-4 border-b flex items-center justify-between">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
-            フィルター & グループ化
+            フィルター
           </h3>
           <button
             onClick={onClose}
@@ -78,51 +71,6 @@ export const TransactionFilterSheet = ({
         {/* Content */}
         <div className="flex-1 overflow-y-auto min-h-0">
           <div className="p-3 sm:p-4">
-            {/* グループ化セクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
-              <button
-                onClick={() => toggleSection('grouping')}
-                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
-              >
-                <div className="flex items-center gap-2">
-                  <ChevronDown
-                    size={16}
-                    className={`flex-shrink-0 transition-transform text-gray-600 dark:text-gray-400 ${
-                      isExpanded('grouping') ? 'rotate-0' : '-rotate-90'
-                    }`}
-                  />
-                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    グループ化
-                  </span>
-                </div>
-              </button>
-
-              {isExpanded('grouping') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3 flex gap-2">
-                  <select
-                    value={groupBy}
-                    onChange={(e) => onGroupByChange(e.target.value as GroupByType)}
-                    className="flex-1 px-3 py-2 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 text-sm border border-gray-200 dark:border-gray-600 transition-colors"
-                  >
-                    <option value="date">日付</option>
-                    <option value="category">カテゴリ</option>
-                    <option value="member">メンバー</option>
-                    <option value="account">口座</option>
-                    <option value="payment">支払方法</option>
-                  </select>
-
-                  <select
-                    value={groupOrder}
-                    onChange={() => onGroupByChange(groupBy)}
-                    className="flex-1 px-3 py-2 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 text-sm border border-gray-200 dark:border-gray-600 transition-colors"
-                  >
-                    <option value="desc">▼ 降順</option>
-                    <option value="asc">▲ 昇順</option>
-                  </select>
-                </div>
-              )}
-            </div>
-
             {/* 取引種別セクション */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
               <button
