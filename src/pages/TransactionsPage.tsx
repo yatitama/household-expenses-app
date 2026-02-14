@@ -182,7 +182,7 @@ export const TransactionsPage = () => {
       {/* Fixed Filter Bar */}
       <div
         ref={filterBarRef}
-        className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-slate-900 dark:border-gray-700 p-3 md:p-6 lg:p-8"
+        className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-slate-900 dark:border-gray-700 p-2 md:p-4 lg:p-6"
       >
         <SimpleFilterBar
           filters={filters}
@@ -202,7 +202,7 @@ export const TransactionsPage = () => {
       {/* Transaction list */}
       <div
         style={{ paddingTop: `${filterBarHeight + 12}px` }}
-        className="p-3 md:p-6 lg:p-8"
+        className="p-2 md:p-4 lg:p-6"
       >
         {filteredTransactions.length === 0 ? (
           <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center">
