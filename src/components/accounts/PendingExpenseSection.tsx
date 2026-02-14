@@ -31,28 +31,28 @@ export const PendingExpenseSection = ({
         {totalCardPending > 0 && (
           <div className="flex justify-between items-center text-xs md:text-sm">
             <span className="text-gray-800 dark:text-gray-300">カード請求</span>
-            <span className="font-semibold text-gray-900 dark:text-gray-200">-{formatCurrency(totalCardPending)}</span>
+            <span className="font-semibold text-gray-900 dark:text-gray-200 font-mono">-{formatCurrency(totalCardPending)}</span>
           </div>
         )}
 
         {totalRecurringExpense > 0 && (
           <div className="flex justify-between items-center text-xs md:text-sm">
             <span className="text-gray-800 dark:text-gray-300">定期支出</span>
-            <span className="font-semibold text-gray-900 dark:text-gray-200">-{formatCurrency(totalRecurringExpense)}</span>
+            <span className="font-semibold text-gray-900 dark:text-gray-200 font-mono">-{formatCurrency(totalRecurringExpense)}</span>
           </div>
         )}
 
         {totalRecurringIncome > 0 && (
           <div className="flex justify-between items-center text-xs md:text-sm">
             <span className="text-gray-800 dark:text-gray-300">定期収入</span>
-            <span className="font-semibold text-gray-700 dark:text-gray-600">+{formatCurrency(totalRecurringIncome)}</span>
+            <span className="font-semibold text-gray-700 dark:text-gray-600 font-mono">+{formatCurrency(totalRecurringIncome)}</span>
           </div>
         )}
 
         {(totalCardPending > 0 || totalRecurringExpense > 0 || totalRecurringIncome > 0) && (
           <div className="border-t dark:border-gray-800 pt-1.5 md:pt-2 mt-1.5 md:mt-2 flex justify-between items-center text-xs md:text-sm">
             <span className="font-semibold text-gray-900 dark:text-gray-200">実質合計</span>
-            <span className={`font-bold ${netPending > 0 ? 'text-gray-900' : 'text-gray-700'}`}>
+            <span className={`font-bold font-mono ${netPending > 0 ? 'text-gray-900' : 'text-gray-700'}`}>
               {netPending > 0 ? '-' : '+'}{formatCurrency(Math.abs(netPending))}
             </span>
           </div>
