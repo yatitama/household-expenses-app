@@ -1,5 +1,4 @@
 import { formatCurrency } from '../../utils/formatters';
-import { PM_TYPE_ICONS } from './AccountIcons';
 import type { PaymentMethod, Transaction } from '../../types';
 
 interface CardGridSectionProps {
@@ -37,29 +36,15 @@ export const CardGridSection = ({
               onClick={() => {
                 onCardClick(pm, cardInfo?.unsettledTransactions || []);
               }}
-              className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
+              className="relative border-2 rounded-lg p-3 md:p-4 hover:opacity-80 transition-opacity text-left h-24 md:h-28 flex flex-col justify-between"
+              style={{ borderColor: pm.color }}
             >
-              <div className="flex items-center gap-2 mb-2">
-                <div
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-white flex-shrink-0"
-                  style={{ backgroundColor: pm.color }}
-                >
-                  {PM_TYPE_ICONS[pm.type]}
-                </div>
-                <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                  {pm.name}
-                </p>
-              </div>
-              {pendingAmount > 0 && (
-                <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                  引落予定: <span className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(pendingAmount)}</span>
-                </p>
-              )}
-              {pendingAmount === 0 && (
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  引落予定なし
-                </p>
-              )}
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                {pm.name}
+              </p>
+              <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+                {formatCurrency(pendingAmount)}
+              </p>
             </button>
           );
         })}
