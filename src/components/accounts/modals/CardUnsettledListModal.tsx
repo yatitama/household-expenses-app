@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { categoryService } from '../../../services/storage';
@@ -85,7 +85,29 @@ export const CardUnsettledListModal = ({
         <div className="overflow-y-auto flex-1 flex flex-col">
           {/* 固定ヘッダー */}
           <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 p-3 sm:p-4 border-b dark:border-gray-700">
-            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">{paymentMethod.name}</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{paymentMethod.name}</h3>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    if (expandedGroups.size === sortedKeys.length) {
+                      setExpandedGroups(new Set());
+                    } else {
+                      setExpandedGroups(new Set(sortedKeys));
+                    }
+                  }}
+                  className="text-xs font-medium px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+                >
+                  {expandedGroups.size === sortedKeys.length ? '全て閉じる' : '全て開く'}
+                </button>
+                <button
+                  onClick={onClose}
+                  className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={() => {
@@ -195,19 +217,13 @@ export const CardUnsettledListModal = ({
         </div>
 
         {/* フッター */}
-        <div className="flex gap-2 p-3 sm:p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
-          <div className="flex-1">
+        <div className="p-3 sm:p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700 flex justify-end">
+          <div className="text-right">
             <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">合計</p>
             <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
               {formatCurrency(total)}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium py-2 rounded-lg transition-colors text-sm sm:text-base"
-          >
-            閉じる
-          </button>
         </div>
       </div>
     </div>
