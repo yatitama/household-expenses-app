@@ -142,7 +142,7 @@ export const FloatingFilterMenu = ({
       {/* グループ化パネル */}
       {isGroupingPanelOpen && (
         <div
-          className="fixed bottom-40 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl shadow-black/30 z-50 border border-gray-200 dark:border-slate-600"
+          className="fixed bottom-40 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl z-50 border border-gray-200 dark:border-slate-600"
           style={{ maxHeight: 'calc(100vh - 10rem)' }}
         >
           <div className="p-3 border-b border-gray-200 dark:border-slate-600">
@@ -161,7 +161,7 @@ export const FloatingFilterMenu = ({
                   onClick={() => onGroupByChange(option.value)}
                   className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 flex items-center gap-2 ${
                     isSelected
-                      ? `${info.color} text-white shadow-lg`
+                      ? `${info.color} text-white `
                       : 'bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-slate-500'
                   }`}
                 >
@@ -182,7 +182,7 @@ export const FloatingFilterMenu = ({
           {/* 展開されたフィルターアイコン（横1列スクロール） */}
           {isExpanded && (
             <div
-              className="absolute bottom-0 right-14 flex items-center gap-3 bg-gray-200 dark:bg-gray-700 rounded-full shadow-2xl shadow-black/50 px-6 mr-2 border border-white/10"
+              className="absolute bottom-0 right-14 flex items-center gap-3 bg-gray-200 dark:bg-gray-700 rounded-full px-6 mr-2 border border-white/10"
               style={{
                 maxWidth: 'calc(100vw - 5rem)',
                 width: 'max-content',
@@ -194,7 +194,7 @@ export const FloatingFilterMenu = ({
                 onClick={() => {
                   resetFilters();
                 }}
-                className="w-10 h-10 bg-gray-600 dark:bg-gray-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0"
+                className="w-10 h-10 bg-gray-600 dark:bg-gray-500 text-white rounded-full flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0"
                 title="全てリセット"
                 aria-label="全てリセット"
               >
@@ -213,7 +213,7 @@ export const FloatingFilterMenu = ({
                     <button
                       key={item.type}
                       onClick={() => handleFilterClick(item.type)}
-                      className={`min-w-[44px] h-11 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
+                      className={`min-w-[44px] h-11 ${item.color} text-white rounded-full  flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
                         item.isActive ? 'ring-2 ring-white opacity-100' : 'opacity-75 hover:opacity-100'
                       }`}
                       title={item.label}
@@ -234,7 +234,7 @@ export const FloatingFilterMenu = ({
                 {/* 並び替えボタン */}
                 <button
                   onClick={() => handleFilterClick('sort')}
-                  className={`min-w-[44px] h-11 bg-gray-1000 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
+                  className={`min-w-[44px] h-11 bg-gray-1000 text-white rounded-full  flex items-center justify-center transition-all duration-200 active:scale-95 relative flex-shrink-0 ${
                     isSortActive ? 'ring-2 ring-white opacity-100' : 'opacity-75 hover:opacity-100'
                   }`}
                   title="並び替え"
@@ -256,7 +256,7 @@ export const FloatingFilterMenu = ({
                     }
                     setIsGroupingPanelOpen(!isGroupingPanelOpen);
                   }}
-                  className={`min-w-[44px] h-11 ${currentGrouping.color} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0 ring-2 ring-white opacity-100`}
+                  className={`min-w-[44px] h-11 ${currentGrouping.color} text-white rounded-full  flex items-center justify-center transition-all duration-200 active:scale-95 flex-shrink-0 ring-2 ring-white opacity-100`}
                   aria-label={`グループ化: ${currentGrouping.label}`}
                   title={`グループ化: ${currentGrouping.label}`}
                 >
@@ -277,7 +277,7 @@ export const FloatingFilterMenu = ({
                 setIsExpanded(true);
               }
             }}
-            className={`min-w-[56px] min-h-[56px] rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
+            className={`min-w-[56px] min-h-[56px] rounded-full  flex items-center justify-center transition-all duration-300 ${
               isExpanded ? 'bg-gray-900' : activeFilterCount > 0 ? 'bg-primary-700' : 'bg-gray-900 dark:bg-gray-800'
             } text-white active:scale-95 relative`}
             aria-label={isExpanded ? 'フィルターを閉じる' : 'フィルターを開く'}

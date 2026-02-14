@@ -205,7 +205,7 @@ export const TransactionsPage = () => {
         className="p-3 md:p-6 lg:p-8"
       >
         {filteredTransactions.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-8 text-center border border-primary-500">
+          <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl p-4 md:p-8 text-center border border-primary-500">
             <Receipt size={40} className="md:w-12 md:h-12 mx-auto text-primary-600 mb-2 md:mb-3" />
             <p className="text-xs md:text-sm text-primary-600">取引がありません</p>
           </div>
@@ -222,7 +222,7 @@ export const TransactionsPage = () => {
                   {groupIndex === 0 && (
                     <p className="text-sm text-gray-500 dark:text-gray-400 px-4 mb-3">{filteredTransactions.length}件の取引</p>
                   )}
-                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+                  <div className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden">
                     <div className="px-4 py-2 bg-primary-50 dark:bg-primary-900/30 border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
                       <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{label}</p>
                     <p className={`text-xs md:text-sm font-bold ${

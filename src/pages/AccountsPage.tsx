@@ -97,7 +97,7 @@ export const AccountsPage = () => {
       {/* メインコンテンツエリア */}
       <div className="p-3 md:p-6 lg:p-8 space-y-3 md:space-y-4">
         {accounts.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-xl">
             <EmptyState
               icon={<Wallet size={32} className="text-gray-500 dark:text-gray-400" />}
               title="口座がありません"
