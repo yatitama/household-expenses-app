@@ -277,26 +277,29 @@ export const TransactionsPage = () => {
       {/* Fixed Footer with Summary */}
       <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5">
         <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-between gap-2">
-          {/* Filter Button */}
-          <button
-            onClick={() => setIsFilterSheetOpen(true)}
-            className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 relative flex-shrink-0"
-            aria-label="フィルター設定を開く"
-          >
-            <Sliders size={18} />
-            {activeFilterCount > 0 && (
-              <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
+          {/* Left: Filter Button and Count */}
+          <div className="flex items-center gap-2">
+            {/* Filter Button */}
+            <button
+              onClick={() => setIsFilterSheetOpen(true)}
+              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 relative flex-shrink-0"
+              aria-label="フィルター設定を開く"
+            >
+              <Sliders size={18} />
+              {activeFilterCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
 
-          {/* Transaction Count */}
-          <p className="text-xs text-gray-600 dark:text-gray-400 font-medium flex-1 text-center">
-            {filteredTransactions.length}件
-          </p>
+            {/* Transaction Count */}
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
+              {filteredTransactions.length}件
+            </p>
+          </div>
 
-          {/* Summary Card */}
+          {/* Right: Summary Card */}
           <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0" style={{
             borderColor: 'var(--theme-primary)',
           }}>
