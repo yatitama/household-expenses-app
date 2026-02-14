@@ -4,8 +4,6 @@ import { formatCurrency } from '../../utils/formatters';
 import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { categoryService } from '../../services/storage';
-import { CardUnsettledListModal } from './modals/CardUnsettledListModal';
-import { CardUnsettledDetailModal } from './modals/CardUnsettledDetailModal';
 import type { PaymentMethod, Account, Member, Transaction, RecurringPayment, Category } from '../../types';
 
 interface TotalPendingData {
@@ -33,8 +31,8 @@ interface AssetCardProps {
   isBreakdownOpen: boolean;
   onToggleBreakdown: () => void;
   paymentMethods?: PaymentMethod[];
-  onCardUnsettledClick?: (paymentMethod: PaymentMethod) => void;
   onRecurringDetailClick?: (recurringPayment: RecurringPayment) => void;
+  onCardUnsettledSheetOpen?: (paymentMethod: PaymentMethod, transactions: Transaction[]) => void;
 }
 
 const SWIPE_THRESHOLD = 50;
@@ -44,8 +42,8 @@ export const AssetCard = ({
   groupedAccounts,
   getMember,
   paymentMethods = [],
-  onCardUnsettledClick,
   onRecurringDetailClick,
+  onCardUnsettledSheetOpen,
 }: AssetCardProps) => {
   const [currentAssetIndex, setCurrentAssetIndex] = useState(0);
   const [isAssetTransitioning, setIsAssetTransitioning] = useState(false);
@@ -187,8 +185,8 @@ export const AssetCard = ({
                 allUpcomingRecurring={allUpcomingRecurring}
                 paymentMethods={paymentMethods}
                 getCategory={getCategory}
-                onCardUnsettledClick={onCardUnsettledClick}
                 onRecurringDetailClick={onRecurringDetailClick}
+                onCardUnsettledSheetOpen={onCardUnsettledSheetOpen}
               />
             </div>
           ))}
@@ -214,8 +212,8 @@ interface MemberAssetCardProps {
   allUpcomingRecurring: RecurringPayment[];
   paymentMethods: PaymentMethod[];
   getCategory: (categoryId: string) => Category | undefined;
-  onCardUnsettledClick?: (paymentMethod: PaymentMethod) => void;
   onRecurringDetailClick?: (recurringPayment: RecurringPayment) => void;
+  onCardUnsettledSheetOpen?: (paymentMethod: PaymentMethod, transactions: Transaction[]) => void;
 }
 
 const MemberAssetCard = ({
@@ -225,14 +223,11 @@ const MemberAssetCard = ({
   paymentMethods,
   getCategory,
   onRecurringDetailClick,
+  onCardUnsettledSheetOpen,
 }: MemberAssetCardProps) => {
   const [isBreakdownExpanded, setIsBreakdownExpanded] = useState(true);
   const [isScheduleExpanded, setIsScheduleExpanded] = useState(false);
   const [isIncomeExpanded, setIsIncomeExpanded] = useState(false);
-  const [selectedCardUnsettledPM, setSelectedCardUnsettledPM] = useState<PaymentMethod | null>(null);
-  const [isCardUnsettledSheetOpen, setIsCardUnsettledSheetOpen] = useState(false);
-  const [selectedCardUnsettledTransaction, setSelectedCardUnsettledTransaction] = useState<Transaction | null>(null);
-  const [isCardUnsettledDetailOpen, setIsCardUnsettledDetailOpen] = useState(false);
 
   // このメンバーのアカウントIDリスト
   const memberAccountIds = slide.memberAccounts.map((a) => a.id);
@@ -434,8 +429,7 @@ const MemberAssetCard = ({
                         <button
                           key={cardInfo.paymentMethod.id}
                           onClick={() => {
-                            setSelectedCardUnsettledPM(cardInfo.paymentMethod);
-                            setIsCardUnsettledSheetOpen(true);
+                            onCardUnsettledSheetOpen?.(cardInfo.paymentMethod, cardInfo.unsettledTransactions);
                           }}
                           className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left min-w-0"
                         >
@@ -491,33 +485,6 @@ const MemberAssetCard = ({
         </div>
       </div>
 
-      {/* カード未精算明細シート */}
-      <CardUnsettledListModal
-        paymentMethod={selectedCardUnsettledPM}
-        transactions={selectedCardUnsettledPM
-          ? allUnsettledTransactions.filter((t) => t.paymentMethodId === selectedCardUnsettledPM.id)
-          : []
-        }
-        isOpen={isCardUnsettledSheetOpen}
-        onClose={() => {
-          setIsCardUnsettledSheetOpen(false);
-          setSelectedCardUnsettledPM(null);
-        }}
-        onTransactionClick={(transaction) => {
-          setSelectedCardUnsettledTransaction(transaction);
-          setIsCardUnsettledDetailOpen(true);
-        }}
-      />
-
-      {/* カード未精算詳細シート */}
-      <CardUnsettledDetailModal
-        transaction={selectedCardUnsettledTransaction}
-        isOpen={isCardUnsettledDetailOpen}
-        onClose={() => {
-          setIsCardUnsettledDetailOpen(false);
-          setSelectedCardUnsettledTransaction(null);
-        }}
-      />
     </div>
   );
 };
