@@ -176,7 +176,7 @@ export const CardUnsettledListModal = ({
 
                     {isExpanded && (
                       <div className="space-y-1 pl-6 mb-2">
-                        {groupData.transactions.map((transaction) => {
+                        {[...groupData.transactions].sort((a, b) => b.amount - a.amount).map((transaction) => {
                           const category = getCategory(transaction.categoryId);
                           return (
                             <button
