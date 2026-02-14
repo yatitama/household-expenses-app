@@ -1,4 +1,4 @@
-import { X, RotateCcw, ChevronDown, Check } from 'lucide-react';
+import { X, RotateCcw, ChevronDown, Check, User, Wallet, CreditCard } from 'lucide-react';
 import { useState } from 'react';
 import { DateRangePicker } from './DateRangePicker';
 import { getCategoryIcon } from '../../utils/categoryIcons';
@@ -251,15 +251,10 @@ export const TransactionFilterSheet = ({
                         className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                           filters.memberIds.includes(member.id)
                             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                       >
-                        <div
-                          className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                          style={{ backgroundColor: member.color }}
-                        >
-                          {member.name.charAt(0)}
-                        </div>
+                        <User size={20} className="text-gray-700 dark:text-gray-300" />
                         <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                           {member.name}
                         </span>
@@ -312,7 +307,7 @@ export const TransactionFilterSheet = ({
                           className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                             filters.categoryIds.includes(category.id)
                               ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                              : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                              : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                           }`}
                         >
                           <div
@@ -375,15 +370,10 @@ export const TransactionFilterSheet = ({
                         className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                           filters.accountIds.includes(account.id)
                             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                       >
-                        <div
-                          className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: `${account.color || '#9ca3af'}20`, color: account.color || '#9ca3af' }}
-                        >
-                          <span className="text-xs font-bold">{account.name.charAt(0).toUpperCase()}</span>
-                        </div>
+                        <Wallet size={20} className="text-gray-700 dark:text-gray-300" />
                         <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                           {account.name}
                         </span>
@@ -435,11 +425,11 @@ export const TransactionFilterSheet = ({
                         className={`flex items-center justify-between p-2 rounded-lg transition-colors ${
                           filters.paymentMethodIds.includes(pm.id)
                             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                       >
                         <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: pm.color || '#9ca3af' }} />
+                          <CreditCard size={16} className="text-gray-700 dark:text-gray-300 flex-shrink-0" />
                           <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate">{pm.name}</span>
                         </div>
                         {filters.paymentMethodIds.includes(pm.id) && <Check size={14} className="text-primary-600 flex-shrink-0" />}
