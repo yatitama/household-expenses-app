@@ -286,7 +286,7 @@ const MemberAssetCard = ({
       </div>
 
       {/* 残高セクション */}
-      <div className="space-y-0">
+      <div className="space-y-2">
         <div className="bg-white rounded-lg p-3 md:p-4" style={{
           borderColor: 'var(--theme-primary)',
         }}>
@@ -424,9 +424,7 @@ const MemberAssetCard = ({
                 <div className="space-y-1.5">
                   {memberCardUnsettledList
                     .filter(c => c.unsettledAmount > 0)
-                    .map((cardInfo) => {
-                      const linkedAccount = slide.memberAccounts.find(a => a.id === cardInfo.paymentMethod.linkedAccountId);
-                      return (
+                    .map((cardInfo) => (
                         <button
                           key={cardInfo.paymentMethod.id}
                           onClick={() => onCardUnsettledClick?.(cardInfo.paymentMethod)}
@@ -443,11 +441,6 @@ const MemberAssetCard = ({
                               <p className="truncate text-gray-900 dark:text-gray-100">
                                 {cardInfo.paymentMethod.name}
                               </p>
-                              {linkedAccount && (
-                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                  {linkedAccount.name}
-                                </p>
-                              )}
                             </div>
                           </div>
                           <div className="flex justify-end w-28">
@@ -456,8 +449,7 @@ const MemberAssetCard = ({
                             </span>
                           </div>
                         </button>
-                      );
-                    })}
+                    ))}
 
                   {memberUpcomingExpense.map((rp: RecurringPayment) => {
                     const category = getCategory(rp.categoryId);
