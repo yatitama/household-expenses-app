@@ -290,7 +290,7 @@ const MemberAssetCard = ({
       </div>
 
       {/* 残高セクション */}
-      <div className="space-y-0 flex-1 flex flex-col overflow-y-auto">
+      <div className="space-y-2 md:space-y-3 flex-1 flex flex-col overflow-y-auto">
         <div className="bg-white rounded-lg p-3 md:p-4 mb-1" style={{
           borderColor: 'var(--theme-primary)',
         }}>
