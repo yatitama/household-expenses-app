@@ -286,7 +286,7 @@ const MemberAssetCard = ({
       </div>
 
       {/* 残高セクション */}
-      <div className="space-y-2">
+      <div className="space-y-0">
         <div className="bg-white rounded-lg p-3 md:p-4" style={{
           borderColor: 'var(--theme-primary)',
         }}>
@@ -312,7 +312,7 @@ const MemberAssetCard = ({
               </button>
 
               {isBreakdownExpanded && (
-                <div className="border-t mt-3 pt-3 dark:border-gray-700 space-y-2">
+                <div className="border-t mt-4 pt-4 dark:border-gray-700 space-y-2">
                   {slide.memberAccounts.map((account) => (
                     <div key={account.id} className="flex justify-between items-center text-xs md:text-sm">
                       <span className="text-gray-700 dark:text-gray-300">{account.name}</span>
@@ -352,7 +352,7 @@ const MemberAssetCard = ({
           </button>
 
           {isIncomeExpanded && (
-            <div className="border-t mt-3 pt-3 dark:border-gray-700">
+            <div className="border-t mt-4 pt-4 dark:border-gray-700">
               {memberUpcomingIncome.length === 0 ? (
                 <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                   定期収入予定なし
@@ -415,7 +415,7 @@ const MemberAssetCard = ({
           </button>
 
           {isScheduleExpanded && (
-            <div className="border-t mt-3 pt-3 dark:border-gray-700">
+            <div className="border-t mt-4 pt-4 dark:border-gray-700">
               {memberCardUnsettledList.length === 0 && memberUpcomingExpense.length === 0 ? (
                 <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                   予定なし
@@ -428,20 +428,18 @@ const MemberAssetCard = ({
                         <button
                           key={cardInfo.paymentMethod.id}
                           onClick={() => onCardUnsettledClick?.(cardInfo.paymentMethod)}
-                          className="w-full flex items-start justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left min-w-0"
+                          className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left min-w-0"
                         >
-                          <div className="flex items-start gap-2 min-w-0 flex-1">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
                             <div
-                              className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                              className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
                               style={{ backgroundColor: `${cardInfo.paymentMethod.color}20`, color: cardInfo.paymentMethod.color }}
                             >
                               <CreditCard size={12} />
                             </div>
-                            <div className="min-w-0 flex-1 flex flex-col gap-0.5">
-                              <p className="truncate text-gray-900 dark:text-gray-100">
-                                {cardInfo.paymentMethod.name}
-                              </p>
-                            </div>
+                            <p className="truncate text-gray-900 dark:text-gray-100">
+                              {cardInfo.paymentMethod.name}
+                            </p>
                           </div>
                           <div className="flex justify-end w-28">
                             <span className="text-gray-900 dark:text-gray-700 font-semibold">
