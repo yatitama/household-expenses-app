@@ -1,10 +1,10 @@
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Receipt } from 'lucide-react';
+import { Receipt, Sliders } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
-import { SimpleFilterBar } from '../components/search/SimpleFilterBar';
+import { TransactionFilterSheet } from '../components/search/TransactionFilterSheet';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
 import { categoryService, memberService, accountService, paymentMethodService, transactionService } from '../services/storage';
 import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
@@ -21,21 +21,9 @@ export const TransactionsPage = () => {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
   const [groupOrder, setGroupOrder] = useState<'asc' | 'desc'>('desc');
-  const [filterBarHeight, setFilterBarHeight] = useState(0);
-  const filterBarRef = useRef<HTMLDivElement>(null);
-  useBodyScrollLock(!!editingTransaction);
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+  useBodyScrollLock(!!editingTransaction || isFilterSheetOpen);
 
-  // フィルターバーの高さを動的に計算
-  useEffect(() => {
-    const updateHeight = () => {
-      if (filterBarRef.current) {
-        setFilterBarHeight(filterBarRef.current.offsetHeight);
-      }
-    };
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
-  }, []);
 
   // URLパラメータと状態からフィルターを初期化
   useEffect(() => {
@@ -179,31 +167,8 @@ export const TransactionsPage = () => {
 
   return (
     <div className="pb-20">
-      {/* Fixed Filter Bar */}
-      <div
-        ref={filterBarRef}
-        className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-slate-900 dark:border-gray-700 p-2 md:p-4 lg:p-6"
-      >
-        <SimpleFilterBar
-          filters={filters}
-          updateFilter={updateFilter}
-          resetFilters={resetFilters}
-          activeFilterCount={activeFilterCount}
-          members={members}
-          categories={categories}
-          accounts={accounts}
-          paymentMethods={paymentMethods}
-          groupBy={groupBy}
-          groupOrder={groupOrder}
-          onGroupByChange={handleGroupByChange}
-        />
-      </div>
-
       {/* Transaction list */}
-      <div
-        style={{ paddingTop: `${filterBarHeight + 12}px` }}
-        className="p-2 md:p-4 lg:p-6"
-      >
+      <div className="p-2 md:p-4 lg:p-6">
         {filteredTransactions.length === 0 ? (
           <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center">
             <Receipt size={40} className="md:w-12 md:h-12 mx-auto text-primary-600 mb-2 md:mb-3" />
@@ -242,27 +207,29 @@ export const TransactionsPage = () => {
                       <button
                         key={t.id}
                         onClick={() => setEditingTransaction(t)}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors text-left"
+                        className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
                       >
-                        <div
-                          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-                          style={{ backgroundColor: `${color}20`, color }}
-                        >
-                          {getCategoryIcon(getCategoryIconName(t.categoryId), 18)}
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <div
+                            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: `${color}20`, color }}
+                          >
+                            {getCategoryIcon(getCategoryIconName(t.categoryId), 12)}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
+                              {getCategoryName(t.categoryId)}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {formatDate(t.date)} {source}{t.memo ? ` - ${t.memo}` : ''}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs md:text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
-                            {getCategoryName(t.categoryId)}
-                          </p>
-                          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 truncate">
-                            {groupBy !== 'date' && `${formatDate(t.date)} - `}{source}{t.memo ? ` - ${t.memo}` : ''}
-                          </p>
-                        </div>
-                        <p className={`text-xs md:text-sm font-bold shrink-0 ${
-                          t.type === 'income' ? 'text-gray-700' : 'text-gray-900'
+                        <span className={`text-gray-900 dark:text-gray-200 font-semibold flex-shrink-0 ${
+                          t.type === 'income' ? 'text-green-600' : 'text-red-600'
                         }`}>
                           {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
-                        </p>
+                        </span>
                       </button>
                     );
                   })}
@@ -274,6 +241,21 @@ export const TransactionsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Filter & Grouping Button (FAB) */}
+      <button
+        onClick={() => setIsFilterSheetOpen(true)}
+        className="fixed bottom-24 right-4 md:bottom-6 md:right-6 w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-shadow active:scale-95 flex items-center justify-center text-white font-semibold z-40"
+        style={{ backgroundColor: 'var(--theme-primary)' }}
+        aria-label="フィルター設定を開く"
+      >
+        <Sliders size={24} />
+        {activeFilterCount > 0 && (
+          <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+            {activeFilterCount}
+          </span>
+        )}
+      </button>
 
       {/* Edit Transaction Modal */}
       {editingTransaction && (
@@ -288,6 +270,22 @@ export const TransactionsPage = () => {
           onDelete={handleDelete}
         />
       )}
+
+      {/* Transaction Filter Sheet */}
+      <TransactionFilterSheet
+        filters={filters}
+        updateFilter={updateFilter}
+        resetFilters={resetFilters}
+        members={members}
+        categories={categories}
+        accounts={accounts}
+        paymentMethods={paymentMethods}
+        groupBy={groupBy}
+        groupOrder={groupOrder}
+        onGroupByChange={handleGroupByChange}
+        isOpen={isFilterSheetOpen}
+        onClose={() => setIsFilterSheetOpen(false)}
+      />
     </div>
   );
 };
