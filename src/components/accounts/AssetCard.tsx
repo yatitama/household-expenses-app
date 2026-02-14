@@ -410,112 +410,93 @@ const MemberAssetCard = ({
           </button>
 
           {isScheduleExpanded && (
-            <div className="mt-3 pt-3 dark:border-gray-700 space-y-3">
-              {memberCardUnsettledList.length > 0 && memberCardUnsettledList.some(c => c.unsettledAmount > 0) && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <CreditCard size={14} className="text-gray-900 dark:text-gray-700" />
-                    <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
-                      カード未精算
-                    </span>
-                  </div>
-
-                  <div className="space-y-1.5 ml-6">
-                    {memberCardUnsettledList
-                      .filter(c => c.unsettledAmount > 0)
-                      .map((cardInfo) => {
-                        const linkedAccount = slide.memberAccounts.find(a => a.id === cardInfo.paymentMethod.linkedAccountId);
-                        return (
-                          <button
-                            key={cardInfo.paymentMethod.id}
-                            onClick={() => onCardUnsettledClick?.(cardInfo.paymentMethod)}
-                            className="w-full flex items-start justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left"
-                          >
-                            <div className="flex items-start gap-2 min-w-0 flex-1">
-                              <div
-                                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                                style={{ backgroundColor: `${cardInfo.paymentMethod.color}20`, color: cardInfo.paymentMethod.color }}
-                              >
-                                <CreditCard size={12} />
-                              </div>
-                              <div className="min-w-0 flex-1 flex flex-col gap-0.5">
-                                <p className="truncate text-gray-900 dark:text-gray-100">
-                                  {cardInfo.paymentMethod.name}
+            <div className="mt-3 pt-3 dark:border-gray-700">
+              {memberCardUnsettledList.length === 0 && memberUpcomingExpense.length === 0 ? (
+                <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
+                  予定なし
+                </p>
+              ) : (
+                <div className="space-y-1.5">
+                  {memberCardUnsettledList
+                    .filter(c => c.unsettledAmount > 0)
+                    .map((cardInfo) => {
+                      const linkedAccount = slide.memberAccounts.find(a => a.id === cardInfo.paymentMethod.linkedAccountId);
+                      return (
+                        <button
+                          key={cardInfo.paymentMethod.id}
+                          onClick={() => onCardUnsettledClick?.(cardInfo.paymentMethod)}
+                          className="w-full flex items-start justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left min-w-0"
+                        >
+                          <div className="flex items-start gap-2 min-w-0 flex-1">
+                            <div
+                              className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                              style={{ backgroundColor: `${cardInfo.paymentMethod.color}20`, color: cardInfo.paymentMethod.color }}
+                            >
+                              <CreditCard size={12} />
+                            </div>
+                            <div className="min-w-0 flex-1 flex flex-col gap-0.5">
+                              <p className="truncate text-gray-900 dark:text-gray-100">
+                                {cardInfo.paymentMethod.name}
+                              </p>
+                              {linkedAccount && (
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                  {linkedAccount.name}
                                 </p>
-                                {linkedAccount && (
-                                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    {linkedAccount.name}
-                                  </p>
-                                )}
-                              </div>
+                              )}
                             </div>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              <span className="text-gray-900 dark:text-gray-700 font-semibold">
-                                {formatCurrency(cardInfo.unsettledAmount)}
-                              </span>
-                            </div>
-                          </button>
-                        );
-                      })}
-                  </div>
-                </div>
-              )}
+                          </div>
+                          <div className="flex justify-end w-28">
+                            <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
+                              {formatCurrency(cardInfo.unsettledAmount)}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
 
-              {memberUpcomingExpense.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Calendar size={14} className="text-gray-600 dark:text-gray-500" />
-                    <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
-                      定期支出
-                    </span>
-                    <span className="text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-500 ml-auto">
-                      {formatCurrency(memberRecurringExpense)}
-                    </span>
-                  </div>
-
-                  <div className="space-y-1.5 ml-6">
-                    {memberUpcomingExpense.map((rp: RecurringPayment) => {
-                      const category = getCategory(rp.categoryId);
-                      const nextDate = calculateRecurringNextDate(rp);
-                      let dateLabel = '';
-                      if (nextDate) {
-                        if (rp.paymentMethodId) {
-                          dateLabel = `${nextDate.getMonth() + 1}月${nextDate.getDate()}日引き落とし`;
-                        } else {
-                          dateLabel = rp.frequency === 'monthly'
-                            ? `毎月${rp.dayOfMonth}日`
-                            : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
-                        }
+                  {memberUpcomingExpense.map((rp: RecurringPayment) => {
+                    const category = getCategory(rp.categoryId);
+                    const nextDate = calculateRecurringNextDate(rp);
+                    let dateLabel = '';
+                    if (nextDate) {
+                      if (rp.paymentMethodId) {
+                        dateLabel = `${nextDate.getMonth() + 1}月${nextDate.getDate()}日引き落とし`;
                       } else {
                         dateLabel = rp.frequency === 'monthly'
                           ? `毎月${rp.dayOfMonth}日`
                           : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
                       }
+                    } else {
+                      dateLabel = rp.frequency === 'monthly'
+                        ? `毎月${rp.dayOfMonth}日`
+                        : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
+                    }
 
-                      return (
-                        <div
-                          key={rp.id}
-                          className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
-                        >
-                          <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <div
-                              className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                              style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
-                            >
-                              {getCategoryIcon(category?.icon || '', 12)}
-                            </div>
-                            <div className="flex-1 flex flex-col gap-0.5 min-w-0">
-                              <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
-                            </div>
+                    return (
+                      <div
+                        key={rp.id}
+                        className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <div
+                            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                          >
+                            {getCategoryIcon(category?.icon || '', 12)}
                           </div>
-                          <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
+                          <div className="flex-1 flex flex-col gap-0.5 min-w-0">
+                            <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
+                          </div>
+                        </div>
+                        <div className="flex justify-end w-28">
+                          <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
                             {formatCurrency(rp.amount)}
                           </span>
                         </div>
-                      );
-                    })}
-                  </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
