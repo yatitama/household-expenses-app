@@ -201,10 +201,10 @@ export const TransactionsPage = () => {
                   {groupIndex === 0 && (
                     <p className="text-sm text-gray-500 dark:text-gray-400 px-4 mb-3">{filteredTransactions.length}件の取引</p>
                   )}
-                  <div className="bg-white rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700">
+                  <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden">
                     <button
                       onClick={() => toggleGroupExpanded(key)}
-                      className="w-full px-4 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="w-full px-4 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                     >
                       <div className="flex items-center gap-2 flex-1">
                         <ChevronDown size={16} className={`text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
@@ -217,7 +217,7 @@ export const TransactionsPage = () => {
                       </p>
                     </button>
                     {isExpanded && (
-                      <div className="divide-y divide-gray-50 dark:divide-gray-700">
+                      <div className="px-0 pb-0 border-t border-gray-200 dark:border-gray-700 pt-0 divide-y divide-gray-50 dark:divide-gray-700">
                         {transactions.map((t) => {
                           const color = getCategoryColor(t.categoryId);
                           const source = t.paymentMethodId
