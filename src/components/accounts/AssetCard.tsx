@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { formatCurrency } from '../../utils/formatters';
 import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
+import { AccountGridSection } from './AccountGridSection';
 import { CardGridSection } from './CardGridSection';
 import { RecurringItemGridSection } from './RecurringItemGridSection';
 import type { PaymentMethod, Account, Member, Transaction, RecurringPayment } from '../../types';
@@ -138,7 +137,6 @@ const MemberAssetCard = ({
   onRecurringDetailClick,
   onCardUnsettledSheetOpen,
 }: MemberAssetCardProps) => {
-  const [isBreakdownExpanded, setIsBreakdownExpanded] = useState(true);
 
   // このメンバーのアカウントIDリスト
   const memberAccountIds = slide.memberAccounts.map((a) => a.id);
@@ -170,50 +168,9 @@ const MemberAssetCard = ({
 
   return (
     <div className="flex flex-col overflow-y-auto h-full">
-      {/* 残高セクション */}
       <div className="space-y-2 md:space-y-3">
-        <div className="bg-white rounded-lg p-3 md:p-4 mb-1" style={{
-          borderColor: 'var(--theme-primary)',
-        }}>
-          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
-            残高
-          </p>
-
-          {/* 口座ごとの内訳 */}
-          {slide.memberAccounts.length > 0 ? (
-            <>
-              <button
-                onClick={() => setIsBreakdownExpanded(!isBreakdownExpanded)}
-                className={`w-full flex items-center justify-between hover:opacity-80 transition-opacity ${isBreakdownExpanded ? 'mb-3' : ''}`}
-              >
-                <p className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>
-                  {formatCurrency(slide.balance)}
-                </p>
-                {isBreakdownExpanded ? (
-                  <ChevronDown size={18} className="text-gray-500 dark:text-gray-400" />
-                ) : (
-                  <ChevronRight size={18} className="text-gray-500 dark:text-gray-400" />
-                )}
-              </button>
-
-              {isBreakdownExpanded && (
-                <div className="border-t mt-4 pt-4 dark:border-gray-700 space-y-2">
-                  {slide.memberAccounts.map((account) => (
-                    <div key={account.id} className="flex justify-between items-center text-xs md:text-sm">
-                      <span className="text-gray-700 dark:text-gray-300">{account.name}</span>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">{formatCurrency(account.balance)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            <p className="text-2xl md:text-3xl font-bold mb-3" style={{ color: 'var(--theme-primary)' }}>
-              {formatCurrency(slide.balance)}
-            </p>
-          )}
-        </div>
-
+        {/* 口座グリッド */}
+        <AccountGridSection accounts={slide.memberAccounts} />
 
         {/* カードグリッド */}
         {memberLinkedPMs.length > 0 && (
