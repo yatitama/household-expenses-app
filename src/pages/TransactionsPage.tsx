@@ -5,6 +5,7 @@ import { Receipt, Sliders, ChevronDown } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { TransactionFilterSheet } from '../components/search/TransactionFilterSheet';
+import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
 import { categoryService, memberService, accountService, paymentMethodService, transactionService } from '../services/storage';
 import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
@@ -18,12 +19,14 @@ export const TransactionsPage = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const { filters, filteredTransactions, updateFilter, resetFilters, activeFilterCount } = useTransactionFilter();
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
   const [groupOrder, setGroupOrder] = useState<'asc' | 'desc'>('desc');
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  useBodyScrollLock(!!editingTransaction || isFilterSheetOpen);
+  useBodyScrollLock(!!editingTransaction || isDetailOpen || isFilterSheetOpen);
 
   const toggleGroupExpanded = (groupKey: string) => {
     setExpandedGroups((prev) => {
@@ -236,7 +239,10 @@ export const TransactionsPage = () => {
                           return (
                             <button
                               key={t.id}
-                              onClick={() => setEditingTransaction(t)}
+                              onClick={() => {
+                                setSelectedTransaction(t);
+                                setIsDetailOpen(true);
+                              }}
                               className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                             >
                               <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -312,6 +318,17 @@ export const TransactionsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Transaction Detail Modal */}
+      <CardUnsettledDetailModal
+        transaction={selectedTransaction}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        onEdit={(transaction) => {
+          setSelectedTransaction(transaction);
+          setEditingTransaction(transaction);
+        }}
+      />
 
       {/* Edit Transaction Modal */}
       {editingTransaction && (

@@ -1,3 +1,4 @@
+import { Pencil } from 'lucide-react';
 import { formatCurrency } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { categoryService } from '../../../services/storage';
@@ -7,12 +8,14 @@ interface CardUnsettledDetailModalProps {
   transaction: Transaction | null;
   isOpen: boolean;
   onClose: () => void;
+  onEdit?: (transaction: Transaction) => void;
 }
 
 export const CardUnsettledDetailModal = ({
   transaction,
   isOpen,
   onClose,
+  onEdit,
 }: CardUnsettledDetailModalProps) => {
   if (!isOpen || !transaction) return null;
 
@@ -84,6 +87,18 @@ export const CardUnsettledDetailModal = ({
           >
             閉じる
           </button>
+          {onEdit && transaction && (
+            <button
+              onClick={() => {
+                onEdit(transaction);
+                onClose();
+              }}
+              className="flex-1 bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 text-white font-medium py-2 rounded-lg transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
+            >
+              <Pencil size={16} />
+              編集
+            </button>
+          )}
         </div>
       </div>
     </div>
