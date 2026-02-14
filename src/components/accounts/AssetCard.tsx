@@ -299,7 +299,7 @@ const MemberAssetCard = ({
             <>
               <button
                 onClick={() => setIsBreakdownExpanded(!isBreakdownExpanded)}
-                className="w-full flex items-center justify-between hover:opacity-80 transition-opacity mb-3"
+                className={`w-full flex items-center justify-between hover:opacity-80 transition-opacity ${isBreakdownExpanded ? 'mb-3' : ''}`}
               >
                 <p className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>
                   {formatCurrency(slide.balance)}
@@ -330,7 +330,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 振り込み予定セクション */}
-        <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
+        <div className={`bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30 ${isBreakdownExpanded ? '' : '-mt-3'}`}>
           <button
             onClick={() => setIsIncomeExpanded(!isIncomeExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
@@ -393,7 +393,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 引き落とし予定セクション */}
-        <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
+        <div className={`bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30 ${isIncomeExpanded ? '' : '-mt-3'}`}>
           <button
             onClick={() => setIsScheduleExpanded(!isScheduleExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
