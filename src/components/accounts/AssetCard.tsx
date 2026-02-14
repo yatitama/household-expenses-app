@@ -166,7 +166,7 @@ export const AssetCard = ({
         ref={assetContainerRef}
         onTouchStart={handleAssetTouchStart}
         onTouchEnd={handleAssetTouchEnd}
-        className="relative overflow-hidden rounded-lg md:rounded-xl"
+        className="relative overflow-hidden rounded-lg md:rounded-xl min-h-0"
         style={{ touchAction: 'auto' }}
       >
         <div
@@ -177,7 +177,7 @@ export const AssetCard = ({
           }}
         >
           {memberSlides.map((slide) => (
-            <div key={slide.id} className="w-full flex-shrink-0 min-w-0">
+            <div key={slide.id} className="w-full flex-shrink-0 min-w-0 min-h-0">
               <MemberAssetCard
                 slide={slide}
                 allUnsettledTransactions={allUnsettledTransactions}
@@ -286,7 +286,7 @@ const MemberAssetCard = ({
       </div>
 
       {/* 残高セクション */}
-      <div className="space-y-0">
+      <div className="space-y-0 mb-4">
         <div className="bg-white rounded-lg p-3 md:p-4" style={{
           borderColor: 'var(--theme-primary)',
         }}>
@@ -330,7 +330,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 振り込み予定セクション */}
-        <div className={`bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30 ${isBreakdownExpanded ? '' : '-mt-3'}`}>
+        <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
           <button
             onClick={() => setIsIncomeExpanded(!isIncomeExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
@@ -393,7 +393,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 引き落とし予定セクション */}
-        <div className={`bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30 ${isIncomeExpanded ? '' : '-mt-3'}`}>
+        <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
           <button
             onClick={() => setIsScheduleExpanded(!isScheduleExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"

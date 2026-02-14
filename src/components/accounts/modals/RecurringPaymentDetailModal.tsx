@@ -31,7 +31,7 @@ export const RecurringPaymentDetailModal = ({
   const typeLabel = recurringPayment.type === 'income' ? '収入' : '支出';
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-sm">
         {/* ヘッダー */}
         <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
