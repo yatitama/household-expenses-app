@@ -1,7 +1,11 @@
-import { formatCurrency } from '../../../utils/formatters';
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { formatCurrency, formatDate } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { categoryService } from '../../../services/storage';
 import type { PaymentMethod, Transaction } from '../../../types';
+
+type GroupByType = 'date' | 'category';
 
 interface CardUnsettledListModalProps {
   paymentMethod: PaymentMethod | null;
@@ -18,24 +22,97 @@ export const CardUnsettledListModal = ({
   onClose,
   onTransactionClick,
 }: CardUnsettledListModalProps) => {
+  const [groupBy, setGroupBy] = useState<GroupByType>('category');
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+
   if (!isOpen || !paymentMethod) return null;
 
   const categories = categoryService.getAll();
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
 
+  // グループ化ロジック
+  const getGroupKeyAndLabel = (transaction: Transaction): { key: string; label: string } => {
+    if (groupBy === 'date') {
+      return { key: transaction.date, label: formatDate(transaction.date) };
+    } else {
+      const category = getCategory(transaction.categoryId);
+      return { key: transaction.categoryId, label: category?.name || 'その他' };
+    }
+  };
+
+  // グループ化（日付またはカテゴリごと）
+  const groupedTransactions = transactions.reduce(
+    (acc, transaction) => {
+      const { key, label } = getGroupKeyAndLabel(transaction);
+      if (!acc[key]) {
+        acc[key] = { label, transactions: [] };
+      }
+      acc[key].transactions.push(transaction);
+      return acc;
+    },
+    {} as Record<string, { label: string; transactions: Transaction[] }>
+  );
+
+  // ソート
+  const sortedKeys = Object.keys(groupedTransactions).sort((a, b) => {
+    if (groupBy === 'date') {
+      return b.localeCompare(a); // 日付は新しい順
+    } else {
+      return groupedTransactions[a].label.localeCompare(groupedTransactions[b].label, 'ja');
+    }
+  });
+
   const total = transactions.reduce((sum, t) => {
     return sum + (t.type === 'expense' ? t.amount : -t.amount);
   }, 0);
 
+  const toggleGroup = (groupKey: string) => {
+    const newExpanded = new Set(expandedGroups);
+    if (newExpanded.has(groupKey)) {
+      newExpanded.delete(groupKey);
+    } else {
+      newExpanded.add(groupKey);
+    }
+    setExpandedGroups(newExpanded);
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[9999]" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[1000]" onClick={onClose}>
       <div
         className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <div className="mb-4">
-            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{paymentMethod.name}</h3>
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">{paymentMethod.name}</h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setGroupBy('category');
+                  setExpandedGroups(new Set(sortedKeys));
+                }}
+                className={`flex-1 py-1.5 px-2 text-xs font-medium rounded transition-colors ${
+                  groupBy === 'category'
+                    ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                カテゴリ
+              </button>
+              <button
+                onClick={() => {
+                  setGroupBy('date');
+                  setExpandedGroups(new Set(sortedKeys));
+                }}
+                className={`flex-1 py-1.5 px-2 text-xs font-medium rounded transition-colors ${
+                  groupBy === 'date'
+                    ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                日付
+              </button>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -44,32 +121,70 @@ export const CardUnsettledListModal = ({
                 明細なし
               </p>
             ) : (
-              transactions.map((transaction) => {
-                const category = getCategory(transaction.categoryId);
+              sortedKeys.map((groupKey) => {
+                const groupData = groupedTransactions[groupKey];
+                const groupTotal = groupData.transactions.reduce((sum, t) => {
+                  return sum + (t.type === 'expense' ? t.amount : -t.amount);
+                }, 0);
+                const isExpanded = expandedGroups.has(groupKey);
+
                 return (
-                  <button
-                    key={transaction.id}
-                    onClick={() => onTransactionClick?.(transaction)}
-                    className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
-                  >
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
-                      >
-                        {getCategoryIcon(category?.icon || '', 12)}
+                  <div key={groupKey}>
+                    <button
+                      onClick={() => toggleGroup(groupKey)}
+                      className="w-full flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
+                    >
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <ChevronDown
+                          size={16}
+                          className={`flex-shrink-0 transition-transform text-gray-600 dark:text-gray-400 ${
+                            isExpanded ? '' : '-rotate-90'
+                          }`}
+                        />
+                        <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                          {groupData.label}
+                        </span>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-gray-900 dark:text-gray-100">{category?.name || 'その他'}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {transaction.date}
-                        </p>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-gray-700 flex-shrink-0">
+                        {formatCurrency(groupTotal)}
+                      </span>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="space-y-1 pl-6 mb-2">
+                        {groupData.transactions.map((transaction) => {
+                          const category = getCategory(transaction.categoryId);
+                          return (
+                            <button
+                              key={transaction.id}
+                              onClick={() => onTransactionClick?.(transaction)}
+                              className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
+                            >
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <div
+                                  className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                                  style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                                >
+                                  {getCategoryIcon(category?.icon || '', 12)}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate text-gray-900 dark:text-gray-100">{category?.name || 'その他'}</p>
+                                  {groupBy === 'category' && (
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                      {transaction.date}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
+                                {formatCurrency(transaction.amount)}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
-                    </div>
-                    <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
-                      {formatCurrency(transaction.amount)}
-                    </span>
-                  </button>
+                    )}
+                  </div>
                 );
               })
             )}
