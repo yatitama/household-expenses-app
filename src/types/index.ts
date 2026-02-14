@@ -139,8 +139,8 @@ export type LinkedPaymentMethodInput = Omit<LinkedPaymentMethod, 'id' | 'created
 // 共通メンバーID（削除不可）
 export const COMMON_MEMBER_ID = 'common';
 
-// テーマカラータイプ（グレースケール固定）
-export type ThemeColor = 'grayscale';
+// テーマカラータイプ（セピア固定）
+export type ThemeColor = 'sepia';
 
 // テーマ設定
 export interface ThemeSettings {

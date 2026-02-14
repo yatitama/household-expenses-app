@@ -644,8 +644,8 @@ export interface AppSettings {
 }
 
 const DEFAULT_APP_SETTINGS: AppSettings = {
-  totalAssetGradientFrom: '#3b82f6',
-  totalAssetGradientTo: '#2563eb',
+  totalAssetGradientFrom: '#c9b89a',
+  totalAssetGradientTo: '#8b7355',
 };
 
 export const appSettingsService = {
