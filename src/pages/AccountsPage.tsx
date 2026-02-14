@@ -11,6 +11,7 @@ import { AssetCard } from '../components/accounts/AssetCard';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
+import { RecurringPaymentDetailModal } from '../components/accounts/modals/RecurringPaymentDetailModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
 import type { Account, RecurringPayment, PaymentMethod } from '../types';
@@ -27,6 +28,8 @@ export const AccountsPage = () => {
   const members = memberService.getAll();
   const { activeModal, openModal, closeModal } = useModalManager();
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
+  const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
+  const [isRecurringDetailModalOpen, setIsRecurringDetailModalOpen] = useState(false);
 
   const pendingByPM = getPendingAmountByPaymentMethod();
   const totalPendingByAccount = getTotalPendingByAccount();
@@ -43,6 +46,11 @@ export const AccountsPage = () => {
 
   const handleCardUnsettledClick = (paymentMethod: PaymentMethod) => {
     openModal({ type: 'viewing-pm', data: { paymentMethod, showOnlyUnsettled: true } });
+  };
+
+  const handleRecurringDetailClick = (rp: RecurringPayment) => {
+    setSelectedRecurring(rp);
+    setIsRecurringDetailModalOpen(true);
   };
 
   const keyboardOptions = useMemo(() => ({
@@ -90,6 +98,7 @@ export const AccountsPage = () => {
             onToggleBreakdown={() => setIsBreakdownOpen(!isBreakdownOpen)}
             paymentMethods={paymentMethods}
             onCardUnsettledClick={handleCardUnsettledClick}
+            onRecurringDetailClick={handleRecurringDetailClick}
           />
         )}
       </div>
@@ -164,6 +173,15 @@ export const AccountsPage = () => {
           onDelete={handleDeleteRecurring}
         />
       )}
+
+      <RecurringPaymentDetailModal
+        recurringPayment={selectedRecurring}
+        isOpen={isRecurringDetailModalOpen}
+        onClose={() => {
+          setIsRecurringDetailModalOpen(false);
+          setSelectedRecurring(null);
+        }}
+      />
 
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
