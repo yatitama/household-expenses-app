@@ -82,17 +82,19 @@ export const AccountsPage = () => {
   const unlinkedPMs = paymentMethods.filter((pm) => !pm.linkedAccountId);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
       {/* アセットカード */}
-      <div className="bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6">
-        {accounts.length > 0 && (
-          <AssetCard
-            groupedAccounts={groupedAccounts}
-            paymentMethods={paymentMethods}
-            onRecurringDetailClick={handleRecurringDetailClick}
-            onCardUnsettledSheetOpen={handleCardUnsettledSheetOpen}
-          />
-        )}
+      <div className="overflow-y-auto flex-1">
+        <div className="bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6">
+          {accounts.length > 0 && (
+            <AssetCard
+              groupedAccounts={groupedAccounts}
+              paymentMethods={paymentMethods}
+              onRecurringDetailClick={handleRecurringDetailClick}
+              onCardUnsettledSheetOpen={handleCardUnsettledSheetOpen}
+            />
+          )}
+        </div>
       </div>
 
       {/* メインコンテンツエリア */}
