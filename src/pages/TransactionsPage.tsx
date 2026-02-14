@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Receipt, Sliders } from 'lucide-react';
+import { Receipt, Sliders, ChevronDown } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { TransactionFilterSheet } from '../components/search/TransactionFilterSheet';
@@ -22,7 +22,20 @@ export const TransactionsPage = () => {
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
   const [groupOrder, setGroupOrder] = useState<'asc' | 'desc'>('desc');
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   useBodyScrollLock(!!editingTransaction || isFilterSheetOpen);
+
+  const toggleGroupExpanded = (groupKey: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(groupKey)) {
+        next.delete(groupKey);
+      } else {
+        next.add(groupKey);
+      }
+      return next;
+    });
+  };
 
 
   // URLパラメータと状態からフィルターを初期化
@@ -182,58 +195,67 @@ export const TransactionsPage = () => {
                 return sum + (t.type === 'income' ? t.amount : -t.amount);
               }, 0);
 
+              const isExpanded = expandedGroups.has(key);
               return (
-                <div key={key}>
+                <div key={key} className="mb-3">
                   {groupIndex === 0 && (
                     <p className="text-sm text-gray-500 dark:text-gray-400 px-4 mb-3">{filteredTransactions.length}件の取引</p>
                   )}
-                  <div className="bg-white rounded-xl overflow-hidden">
-                    <div className="px-4 py-2 bg-white dark:border-gray-600 flex items-center justify-between">
-                      <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{label}</p>
-                    <p className={`text-xs md:text-sm font-bold ${
-                      groupTotal >= 0 ? 'text-gray-700' : 'text-gray-900'
-                    }`}>
-                      {groupTotal >= 0 ? '+' : ''}{formatCurrency(groupTotal)}
-                    </p>
-                  </div>
-                <div className="divide-y divide-gray-50 dark:divide-gray-700">
-                  {transactions.map((t) => {
-                    const color = getCategoryColor(t.categoryId);
-                    const source = t.paymentMethodId
-                      ? getPaymentMethodName(t.paymentMethodId)
-                      : getAccountName(t.accountId);
+                  <div className="bg-white rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <button
+                      onClick={() => toggleGroupExpanded(key)}
+                      className="w-full px-4 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <div className="flex items-center gap-2 flex-1">
+                        <ChevronDown size={16} className={`text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
+                        <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 text-left">{label}</p>
+                      </div>
+                      <p className={`text-xs md:text-sm font-bold flex-shrink-0 ${
+                        groupTotal >= 0 ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-gray-100'
+                      }`}>
+                        {groupTotal >= 0 ? '+' : ''}{formatCurrency(groupTotal)}
+                      </p>
+                    </button>
+                    {isExpanded && (
+                      <div className="divide-y divide-gray-50 dark:divide-gray-700">
+                        {transactions.map((t) => {
+                          const color = getCategoryColor(t.categoryId);
+                          const source = t.paymentMethodId
+                            ? getPaymentMethodName(t.paymentMethodId)
+                            : getAccountName(t.accountId);
 
-                    return (
-                      <button
-                        key={t.id}
-                        onClick={() => setEditingTransaction(t)}
-                        className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
-                      >
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <div
-                            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: `${color}20`, color }}
-                          >
-                            {getCategoryIcon(getCategoryIconName(t.categoryId), 12)}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
-                              {getCategoryName(t.categoryId)}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                              {formatDate(t.date)} {source}{t.memo ? ` - ${t.memo}` : ''}
-                            </p>
-                          </div>
-                        </div>
-                        <span className={`text-gray-900 dark:text-gray-200 font-semibold flex-shrink-0 ${
-                          t.type === 'income' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+                          return (
+                            <button
+                              key={t.id}
+                              onClick={() => setEditingTransaction(t)}
+                              className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                            >
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <div
+                                  className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                                  style={{ backgroundColor: `${color}20`, color }}
+                                >
+                                  {getCategoryIcon(getCategoryIconName(t.categoryId), 12)}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
+                                    {getCategoryName(t.categoryId)}
+                                  </p>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                    {formatDate(t.date)} {source}{t.memo ? ` - ${t.memo}` : ''}
+                                  </p>
+                                </div>
+                              </div>
+                              <span className={`text-gray-900 dark:text-gray-200 font-semibold flex-shrink-0 ${
+                                t.type === 'income' ? 'text-green-600' : 'text-red-600'
+                              }`}>
+                                {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
