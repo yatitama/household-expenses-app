@@ -53,7 +53,7 @@ export const LinkedPaymentMethodModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-4">
@@ -70,7 +70,7 @@ export const LinkedPaymentMethodModal = ({
             <select
               value={paymentMethodId}
               onChange={(e) => setPaymentMethodId(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             >
               <option value="">選択してください</option>
@@ -93,7 +93,7 @@ export const LinkedPaymentMethodModal = ({
             <select
               value={accountId}
               onChange={(e) => setAccountId(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             >
               <option value="">選択してください</option>
@@ -108,7 +108,7 @@ export const LinkedPaymentMethodModal = ({
             </select>
           </div>
 
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <span className="text-sm font-medium text-gray-900 dark:text-gray-200">有効</span>
               <button
                 type="button"
@@ -128,7 +128,7 @@ export const LinkedPaymentMethodModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 font-medium"
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 font-medium"
           >
             キャンセル
           </button>

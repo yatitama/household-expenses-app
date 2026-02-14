@@ -95,7 +95,7 @@ export const AccountsCarousel = ({
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={handlePrev}
-              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="前へ"
             >
               <ChevronLeft size={18} />
@@ -118,7 +118,7 @@ export const AccountsCarousel = ({
 
             <button
               onClick={handleNext}
-              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="次へ"
             >
               <ChevronRight size={18} />

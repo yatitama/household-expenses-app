@@ -30,7 +30,7 @@ export class ErrorBoundary extends React.Component<
       return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-slate-900">
           <div
-            className="bg-white dark:bg-slate-800 rounded-xl p-8 max-w-md w-full text-center border border-gray-200 dark:border-gray-700"
+            className="bg-white rounded-xl p-8 max-w-md w-full text-center border border-gray-200 dark:border-gray-700"
             role="alert"
             aria-live="assertive"
           >
@@ -60,7 +60,7 @@ export class ErrorBoundary extends React.Component<
               </button>
               <button
                 onClick={() => window.location.href = '/'}
-                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
               >
                 ホームに戻る
               </button>

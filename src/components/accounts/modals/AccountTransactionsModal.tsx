@@ -73,7 +73,7 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
       <div
-        className="bg-white dark:bg-slate-800 w-full sm:max-w-2xl md:max-w-4xl sm:rounded-xl rounded-t-xl max-h-[85vh] overflow-hidden flex flex-col"
+        className="bg-white w-full sm:max-w-2xl md:max-w-4xl sm:rounded-xl rounded-t-xl max-h-[85vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
@@ -101,7 +101,7 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
               {Object.entries(groupedByDate).map(([date, dayTransactions]) => (
                 <div key={date}>
                   <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{formatDate(date)}</h4>
-                  <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+                  <div className="bg-white rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
                     {dayTransactions.map((transaction) => {
                       const category = getCategory(transaction.categoryId);
                       const pm = getPM(transaction.paymentMethodId);
@@ -113,7 +113,7 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
                         <button
                           key={transaction.id}
                           onClick={() => setEditingTransaction(transaction)}
-                          className="w-full p-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                          className="w-full p-3 hover:bg-gray-50 transition-colors text-left"
                         >
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3 min-w-0 flex-1">

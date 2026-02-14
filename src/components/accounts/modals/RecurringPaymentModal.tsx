@@ -73,7 +73,7 @@ export const RecurringPaymentModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
@@ -92,7 +92,7 @@ export const RecurringPaymentModal = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 家賃、携帯料金、Netflix"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             />
           </div>
@@ -102,7 +102,7 @@ export const RecurringPaymentModal = ({
               type="button"
               onClick={() => { setType('expense'); setCategoryId(''); }}
               className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                type === 'expense' ? 'text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                type === 'expense' ? 'text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
               }`}
               style={type === 'expense' ? { backgroundColor: 'var(--theme-primary)' } : {}}
             >
@@ -112,7 +112,7 @@ export const RecurringPaymentModal = ({
               type="button"
               onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
               className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                type === 'income' ? 'text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                type === 'income' ? 'text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
               }`}
               style={type === 'income' ? { backgroundColor: 'var(--theme-primary)' } : {}}
             >
@@ -129,7 +129,7 @@ export const RecurringPaymentModal = ({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0"
-                className="w-full text-base sm:text-lg font-bold pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full text-base sm:text-lg font-bold pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
@@ -144,7 +144,7 @@ export const RecurringPaymentModal = ({
                 className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                   frequency === 'monthly'
                     ? 'text-white border-transparent'
-                    : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                    : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                 }`}
                 style={frequency === 'monthly' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
@@ -156,7 +156,7 @@ export const RecurringPaymentModal = ({
                 className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                   frequency === 'yearly'
                     ? 'text-white border-transparent'
-                    : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                    : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                 }`}
                 style={frequency === 'yearly' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
@@ -165,7 +165,7 @@ export const RecurringPaymentModal = ({
             </div>
           </div>
 
-          <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-3">
+          <div className="bg-gray-50 rounded-lg p-3">
             {frequency === 'yearly' && (
               <div className="mb-3">
                 <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">月</label>
@@ -309,7 +309,7 @@ export const RecurringPaymentModal = ({
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder="任意"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
             />
           </div>
 
@@ -335,7 +335,7 @@ export const RecurringPaymentModal = ({
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
+            <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
               キャンセル
             </button>
             <button

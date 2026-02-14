@@ -134,7 +134,7 @@ export const AssetCard = ({
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={handleAssetPrev}
-              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="前へ"
             >
               <ChevronLeft size={18} />
@@ -157,7 +157,7 @@ export const AssetCard = ({
 
             <button
               onClick={handleAssetNext}
-              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="次へ"
             >
               <ChevronRight size={18} />
@@ -263,7 +263,7 @@ const MemberAssetCard = ({
   const memberRecurringIncome = memberUpcomingIncome.reduce((sum: number, rp: RecurringPayment) => sum + rp.amount, 0);
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl p-3 md:p-4 transition-all duration-200">
+    <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-4 transition-all duration-200">
       {/* ヘッダー */}
       <div className="flex gap-2 md:gap-2.5 mb-3 md:mb-4">
         <div className="flex-shrink-0 self-start">
@@ -290,7 +290,7 @@ const MemberAssetCard = ({
 
       {/* 残高セクション */}
       <div className="space-y-3">
-        <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border" style={{
+        <div className="bg-white rounded-lg p-3 md:p-4 border" style={{
           borderColor: 'var(--theme-primary)',
         }}>
           <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
@@ -329,7 +329,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 引き落とし予定セクション */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
+        <div className="bg-white rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
           <button
             onClick={() => setIsScheduleExpanded(!isScheduleExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
@@ -370,7 +370,7 @@ const MemberAssetCard = ({
                           <button
                             key={cardInfo.paymentMethod.id}
                             onClick={() => onCardUnsettledClick?.(cardInfo.paymentMethod)}
-                            className="w-full flex items-start justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 dark:hover:bg-slate-700 rounded transition-colors text-left"
+                            className="w-full flex items-start justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left"
                           >
                             <div className="flex items-start gap-2 min-w-0 flex-1">
                               <div
@@ -436,7 +436,7 @@ const MemberAssetCard = ({
                       return (
                         <div
                           key={rp.id}
-                          className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 dark:hover:bg-slate-700 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
+                          className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
                         >
                           <div className="flex items-center gap-2 min-w-0 flex-1">
                             <div
@@ -464,7 +464,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 振り込み予定セクション */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
+        <div className="bg-white rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
           <button
             onClick={() => setIsIncomeExpanded(!isIncomeExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
@@ -502,7 +502,7 @@ const MemberAssetCard = ({
                     return (
                       <div
                         key={rp.id}
-                        className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 dark:hover:bg-slate-700 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
+                        className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
                       >
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                           <div

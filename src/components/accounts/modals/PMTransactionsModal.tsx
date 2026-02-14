@@ -87,7 +87,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
       <div
-        className="bg-white dark:bg-slate-800 w-full sm:max-w-2xl md:max-w-4xl sm:rounded-xl rounded-t-xl max-h-[85vh] overflow-hidden flex flex-col"
+        className="bg-white w-full sm:max-w-2xl md:max-w-4xl sm:rounded-xl rounded-t-xl max-h-[85vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -112,12 +112,12 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
         </div>
 
         {/* フィルタボタン */}
-        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-700/50 flex gap-2 items-center">
+        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 flex gap-2 items-center">
           <button
             onClick={handleToggleUnsettledFilter}
             className={`px-3 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors ${
               showOnlyUnsettled
-                ? 'bg-gray-200 dark:bg-gray-900/30 text-gray-800 dark:text-gray-700'
+                ? 'bg-gray-200 text-gray-800 dark:text-gray-700'
                 : 'bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-500'
             }`}
           >
@@ -134,7 +134,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
                 });
                 onClose();
               }}
-              className="px-3 py-1.5 text-xs md:text-sm font-medium rounded-md bg-gray-200 dark:bg-gray-900/30 text-gray-800 dark:text-gray-600 hover:bg-gray-300 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-1"
+              className="px-3 py-1.5 text-xs md:text-sm font-medium rounded-md bg-gray-200 text-gray-800 dark:text-gray-600 hover:bg-gray-300 dark:hover:bg-gray-900/50 transition-colors flex items-center gap-1"
             >
               履歴を見る <ArrowRight size={14} />
             </button>
@@ -151,7 +151,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
               {Object.entries(groupedByDate).map(([date, dayTransactions]) => (
                 <div key={date}>
                   <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{formatDate(date)}</h4>
-                  <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+                  <div className="bg-white rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
                     {dayTransactions.map((transaction) => {
                       const category = getCategory(transaction.categoryId);
                       const isExpense = transaction.type === 'expense';
@@ -162,7 +162,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
                         <button
                           key={transaction.id}
                           onClick={() => setEditingTransaction(transaction)}
-                          className="w-full p-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                          className="w-full p-3 hover:bg-gray-50 transition-colors text-left"
                         >
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3 min-w-0 flex-1">
