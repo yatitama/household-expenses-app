@@ -13,7 +13,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({ className = '' }) => {
 
 export const SkeletonCard: React.FC = () => {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm space-y-4">
+    <div className="bg-white dark:bg-slate-800 rounded-xl p-4 space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Skeleton className="w-10 h-10 rounded-full flex-shrink-0" />
@@ -41,7 +41,7 @@ export const SkeletonCard: React.FC = () => {
 
 export const SkeletonChart: React.FC = () => {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm">
+    <div className="bg-white dark:bg-slate-800 rounded-xl p-4">
       <Skeleton className="h-6 w-32 mb-4" />
       <Skeleton className="h-64 w-full rounded-lg" />
     </div>

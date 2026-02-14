@@ -90,12 +90,12 @@ export const MembersPage = () => {
 
       {/* メンバー一覧 */}
       {members.length === 0 ? (
-        <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-6 sm:p-8 text-center">
+        <div className="bg-white rounded-lg sm:rounded-xl p-6 sm:p-8 text-center">
           <Users size={40} className="sm:w-12 sm:h-12 mx-auto text-gray-300 mb-2 sm:mb-3" />
           <p className="text-xs sm:text-sm text-gray-500">メンバーがいません</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg sm:rounded-xl shadow-sm divide-y divide-gray-100">
+        <div className="bg-white rounded-lg sm:rounded-xl divide-y divide-gray-100">
           {members.map((member) => (
             <div key={member.id} className="flex items-center justify-between p-3 sm:p-4">
               <div className="flex items-center gap-2 sm:gap-3">

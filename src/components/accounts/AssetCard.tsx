@@ -263,7 +263,7 @@ const MemberAssetCard = ({
   const memberRecurringIncome = memberUpcomingIncome.reduce((sum: number, rp: RecurringPayment) => sum + rp.amount, 0);
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl p-3 md:p-4 shadow-sm transition-all duration-200">
+    <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl p-3 md:p-4 transition-all duration-200">
       {/* ヘッダー */}
       <div className="flex gap-2 md:gap-2.5 mb-3 md:mb-4">
         <div className="flex-shrink-0 self-start">

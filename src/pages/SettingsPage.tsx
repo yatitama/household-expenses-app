@@ -276,7 +276,7 @@ export const SettingsPage = () => {
       <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">設定</h2>
 
       {/* メンバー管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
         <button
           onClick={() => setMembersOpen(!membersOpen)}
           className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
@@ -333,7 +333,7 @@ export const SettingsPage = () => {
       </div>
 
       {/* カテゴリ管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
         <button
           aria-label={categoriesOpen ? "カテゴリ管理を折りたたむ" : "カテゴリ管理を展開"}
           onClick={() => setCategoriesOpen(!categoriesOpen)}
@@ -415,7 +415,7 @@ export const SettingsPage = () => {
       </div>
 
       {/* 口座管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
         <button
           aria-label={accountsOpen ? "口座管理を折りたたむ" : "口座管理を展開"}
           onClick={() => setAccountsOpen(!accountsOpen)}
@@ -477,7 +477,7 @@ export const SettingsPage = () => {
       </div>
 
       {/* 支払い手段管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
         <button
           aria-label={paymentMethodsOpen ? "支払い手段管理を折りたたむ" : "支払い手段管理を展開"}
           onClick={() => setPaymentMethodsOpen(!paymentMethodsOpen)}
@@ -539,7 +539,7 @@ export const SettingsPage = () => {
       </div>
 
       {/* 定期取引管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
         <button
           aria-label={recurringOpen ? "定期取引管理を折りたたむ" : "定期取引管理を展開"}
           onClick={() => setRecurringOpen(!recurringOpen)}
@@ -610,7 +610,7 @@ export const SettingsPage = () => {
       </div>
 
       {/* データ管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
         <button
           onClick={() => setDataManagementOpen(!dataManagementOpen)}
           className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
@@ -666,7 +666,7 @@ export const SettingsPage = () => {
       </div>
 
       {/* バージョン情報 */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-4">
         <p className="text-center text-sm text-gray-500 dark:text-gray-400">家計簿アプリ v1.0.0</p>
       </div>
 
