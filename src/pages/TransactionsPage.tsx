@@ -191,30 +191,8 @@ export const TransactionsPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-900">
-      {/* Sticky Header */}
-      <div
-        className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b dark:border-gray-700 p-2 md:p-3 flex items-center justify-between"
-        style={{ top: 'max(0px, env(safe-area-inset-top))' }}
-      >
-        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium">
-          {filteredTransactions.length}件の取引
-        </p>
-        <button
-          onClick={() => setIsFilterSheetOpen(true)}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 relative"
-          aria-label="フィルター設定を開く"
-        >
-          <Sliders size={20} />
-          {activeFilterCount > 0 && (
-            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-              {activeFilterCount}
-            </span>
-          )}
-        </button>
-      </div>
-
       {/* Transaction list */}
-      <div className="flex-1 overflow-y-auto pb-24">
+      <div className="flex-1 overflow-y-auto pb-20">
         <div className="p-2 md:p-4 lg:p-6">
         {filteredTransactions.length === 0 ? (
           <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center">
@@ -297,14 +275,31 @@ export const TransactionsPage = () => {
       </div>
 
       {/* Fixed Footer with Summary */}
-      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-2">
-        <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3">
-          <div className="bg-white dark:bg-slate-900 rounded-lg p-2 md:p-3 text-right" style={{
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5">
+        <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-between gap-2">
+          {/* Filter Button */}
+          <button
+            onClick={() => setIsFilterSheetOpen(true)}
+            className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 relative flex-shrink-0"
+            aria-label="フィルター設定を開く"
+          >
+            <Sliders size={18} />
+            {activeFilterCount > 0 && (
+              <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+
+          {/* Transaction Count */}
+          <p className="text-xs text-gray-600 dark:text-gray-400 font-medium flex-1 text-center">
+            {filteredTransactions.length}件
+          </p>
+
+          {/* Summary Card */}
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0" style={{
             borderColor: 'var(--theme-primary)',
           }}>
-            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">
-              合計
-            </p>
             <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
               {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
             </p>
