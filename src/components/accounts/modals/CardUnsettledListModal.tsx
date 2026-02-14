@@ -1,4 +1,4 @@
-import { formatCurrency } from '../../../utils/formatters';
+import { formatCurrency, formatDate } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { categoryService } from '../../../services/storage';
 import type { PaymentMethod, Transaction } from '../../../types';
@@ -23,12 +23,28 @@ export const CardUnsettledListModal = ({
   const categories = categoryService.getAll();
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
 
+  // グループ化（日付ごと）
+  const groupedByDate = transactions.reduce(
+    (acc, transaction) => {
+      const date = transaction.date;
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(transaction);
+      return acc;
+    },
+    {} as Record<string, Transaction[]>
+  );
+
+  // 日付でソート（新しい順）
+  const sortedDates = Object.keys(groupedByDate).sort((a, b) => b.localeCompare(a));
+
   const total = transactions.reduce((sum, t) => {
     return sum + (t.type === 'expense' ? t.amount : -t.amount);
   }, 0);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[9999]" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[1000]" onClick={onClose}>
       <div
         className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
@@ -38,40 +54,53 @@ export const CardUnsettledListModal = ({
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{paymentMethod.name}</h3>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-4">
             {transactions.length === 0 ? (
               <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                 明細なし
               </p>
             ) : (
-              transactions.map((transaction) => {
-                const category = getCategory(transaction.categoryId);
-                return (
-                  <button
-                    key={transaction.id}
-                    onClick={() => onTransactionClick?.(transaction)}
-                    className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
-                  >
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
-                      >
-                        {getCategoryIcon(category?.icon || '', 12)}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-gray-900 dark:text-gray-100">{category?.name || 'その他'}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {transaction.date}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
-                      {formatCurrency(transaction.amount)}
+              sortedDates.map((date) => (
+                <div key={date}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                      {formatDate(date)}
+                    </h4>
+                    <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                      {formatCurrency(
+                        groupedByDate[date].reduce((sum, t) => {
+                          return sum + (t.type === 'expense' ? t.amount : -t.amount);
+                        }, 0)
+                      )}
                     </span>
-                  </button>
-                );
-              })
+                  </div>
+                  <div className="space-y-1">
+                    {groupedByDate[date].map((transaction) => {
+                      const category = getCategory(transaction.categoryId);
+                      return (
+                        <button
+                          key={transaction.id}
+                          onClick={() => onTransactionClick?.(transaction)}
+                          className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
+                        >
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <div
+                              className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                            >
+                              {getCategoryIcon(category?.icon || '', 12)}
+                            </div>
+                            <p className="truncate text-gray-900 dark:text-gray-100">{category?.name || 'その他'}</p>
+                          </div>
+                          <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
+                            {formatCurrency(transaction.amount)}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </div>
