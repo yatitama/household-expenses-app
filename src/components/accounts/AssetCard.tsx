@@ -499,7 +499,6 @@ const MemberAssetCard = ({
         <RecurringItemGridSection
           title="定期支出"
           items={memberUpcomingExpense}
-          getCategory={getCategory}
           onItemClick={onRecurringDetailClick || (() => {})}
         />
 
@@ -507,7 +506,6 @@ const MemberAssetCard = ({
         <RecurringItemGridSection
           title="定期収入"
           items={memberUpcomingIncome}
-          getCategory={getCategory}
           onItemClick={onRecurringDetailClick || (() => {})}
         />
       </div>
