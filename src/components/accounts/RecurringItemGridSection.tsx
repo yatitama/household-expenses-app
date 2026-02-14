@@ -27,9 +27,7 @@ export const RecurringItemGridSection = ({
             <button
               key={item.id}
               onClick={() => onItemClick(item)}
-              className={`border border-gray-200 dark:border-gray-700 rounded-lg p-3 md:p-4 hover:opacity-80 transition-opacity text-left h-24 md:h-28 flex flex-col justify-between ${
-                item.isActive ? '' : 'opacity-40'
-              }`}
+              className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 hover:opacity-80 transition-opacity text-left h-24 md:h-28 flex flex-col justify-between"
             >
               <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                 {item.name}

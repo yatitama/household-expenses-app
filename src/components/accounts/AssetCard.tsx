@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
-import { Wallet, Calendar, TrendingUp, ChevronDown, ChevronRight, CreditCard, ChevronLeft } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, TrendingUp, ChevronDown, ChevronRight, CreditCard } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { getCategoryIcon } from '../../utils/categoryIcons';
@@ -37,9 +37,6 @@ interface AssetCardProps {
   onCardUnsettledSheetOpen?: (paymentMethod: PaymentMethod, transactions: Transaction[]) => void;
 }
 
-const SWIPE_THRESHOLD = 50;
-const TOUCH_TIMEOUT = 500;
-
 export const AssetCard = ({
   groupedAccounts,
   getMember,
@@ -48,12 +45,6 @@ export const AssetCard = ({
   onCardUnsettledSheetOpen,
 }: AssetCardProps) => {
   const [currentAssetIndex, setCurrentAssetIndex] = useState(0);
-  const [isAssetTransitioning, setIsAssetTransitioning] = useState(false);
-  const touchStartX = useRef(0);
-  const touchStartY = useRef(0);
-  const touchStartTime = useRef(0);
-  const assetContainerRef = useRef<HTMLDivElement>(null);
-  const assetInnerRef = useRef<HTMLDivElement>(null);
 
   const categories = categoryService.getAll();
   const allUnsettledTransactions = getUnsettledTransactions();
@@ -78,121 +69,49 @@ export const AssetCard = ({
     };
   });
 
-  const goToAssetSlide = useCallback((index: number) => {
-    if (index !== currentAssetIndex) {
-      setIsAssetTransitioning(true);
-      setCurrentAssetIndex(index);
-      setTimeout(() => setIsAssetTransitioning(false), 300);
-    }
-  }, [currentAssetIndex]);
-
-  const handleAssetPrev = useCallback(() => {
-    const newIndex = currentAssetIndex === 0 ? memberSlides.length - 1 : currentAssetIndex - 1;
-    goToAssetSlide(newIndex);
-  }, [currentAssetIndex, memberSlides.length, goToAssetSlide]);
-
-  const handleAssetNext = useCallback(() => {
-    const newIndex = currentAssetIndex === memberSlides.length - 1 ? 0 : currentAssetIndex + 1;
-    goToAssetSlide(newIndex);
-  }, [currentAssetIndex, memberSlides.length, goToAssetSlide]);
-
-  const handleAssetTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-    touchStartTime.current = Date.now();
-  }, []);
-
-  const handleAssetTouchEnd = useCallback(
-    (e: React.TouchEvent) => {
-      const touchEndX = e.changedTouches[0].clientX;
-      const touchEndY = e.changedTouches[0].clientY;
-      const touchEndTime = Date.now();
-
-      const diffX = touchStartX.current - touchEndX;
-      const diffY = Math.abs(touchStartY.current - touchEndY);
-      const duration = touchEndTime - touchStartTime.current;
-
-      const isSwipe = Math.abs(diffX) > SWIPE_THRESHOLD && diffY < SWIPE_THRESHOLD && duration < TOUCH_TIMEOUT;
-
-      if (isSwipe) {
-        e.preventDefault();
-        if (diffX > 0) {
-          handleAssetNext();
-        } else {
-          handleAssetPrev();
-        }
-      }
-    },
-    [handleAssetNext, handleAssetPrev]
-  );
+  const goToAssetSlide = (index: number) => {
+    setCurrentAssetIndex(index);
+  };
 
   return (
-    <div className="-mx-3 md:mx-0 flex flex-col max-h-screen">
-      {/* ナビゲーション */}
-      {memberSlides.length > 1 && (
-        <div className="flex items-center justify-center gap-3 mb-1">
+    <div className="flex flex-col max-h-screen">
+      {/* タブナビゲーション */}
+      {memberSlides.length > 0 && (
+        <div className="flex gap-2 px-3 md:px-6 lg:px-8 pt-2 md:pt-4 lg:pt-6 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+          {memberSlides.map((slide, index) => (
             <button
-              onClick={handleAssetPrev}
-              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="前へ"
+              key={slide.id}
+              onClick={() => goToAssetSlide(index)}
+              className={`px-4 py-2 font-medium whitespace-nowrap transition-colors ${
+                index === currentAssetIndex
+                  ? 'text-gray-900 dark:text-gray-100 border-b-2 border-gray-900 dark:border-gray-100'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+              }`}
             >
-              <ChevronLeft size={18} />
+              {slide.name}
             </button>
-
-            <div className="flex justify-center gap-1">
-              {memberSlides.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToAssetSlide(index)}
-                  className={`w-1.5 h-1.5 rounded-full transition-all ${
-                    index === currentAssetIndex
-                      ? 'bg-gray-800 dark:bg-gray-300 w-5'
-                      : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
-                  }`}
-                  aria-label={`スライド ${index + 1}`}
-                />
-              ))}
-            </div>
-
-            <button
-              onClick={handleAssetNext}
-              className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="次へ"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-      )}
-
-      {/* メンバーカルーセル */}
-      <div
-        ref={assetContainerRef}
-        onTouchStart={handleAssetTouchStart}
-        onTouchEnd={handleAssetTouchEnd}
-        className="relative overflow-hidden rounded-lg md:rounded-xl flex-1 min-h-0"
-        style={{ touchAction: 'auto' }}
-      >
-        <div
-          ref={assetInnerRef}
-          className={`flex flex-nowrap transition-transform h-full ${isAssetTransitioning ? 'duration-300 ease-out' : ''}`}
-          style={{
-            transform: `translateX(-${currentAssetIndex * 100}%)`,
-          }}
-        >
-          {memberSlides.map((slide) => (
-            <div key={slide.id} className="w-full flex-shrink-0 min-w-0 min-h-0 h-full flex flex-col">
-              <MemberAssetCard
-                slide={slide}
-                allUnsettledTransactions={allUnsettledTransactions}
-                allUpcomingRecurring={allUpcomingRecurring}
-                paymentMethods={paymentMethods}
-                getCategory={getCategory}
-                onRecurringDetailClick={onRecurringDetailClick}
-                onCardUnsettledSheetOpen={onCardUnsettledSheetOpen}
-              />
-            </div>
           ))}
         </div>
+      )}
+
+      {/* メンバーコンテンツ */}
+      <div className="flex-1 min-h-0 px-3 md:px-6 lg:px-8 overflow-hidden">
+        {memberSlides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`h-full overflow-hidden ${index === currentAssetIndex ? '' : 'hidden'}`}
+          >
+            <MemberAssetCard
+              slide={slide}
+              allUnsettledTransactions={allUnsettledTransactions}
+              allUpcomingRecurring={allUpcomingRecurring}
+              paymentMethods={paymentMethods}
+              getCategory={getCategory}
+              onRecurringDetailClick={onRecurringDetailClick}
+              onCardUnsettledSheetOpen={onCardUnsettledSheetOpen}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -264,33 +183,9 @@ const MemberAssetCard = ({
   const memberRecurringIncome = memberUpcomingIncome.reduce((sum: number, rp: RecurringPayment) => sum + rp.amount, 0);
 
   return (
-    <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-4 transition-all duration-200 flex-1 flex flex-col overflow-hidden">
-      {/* ヘッダー */}
-      <div className="flex gap-2 md:gap-2.5 mb-3 md:mb-4 items-center">
-        <div className="flex-shrink-0">
-          <div
-            className="w-8 md:w-10 h-8 md:h-10 rounded-full flex items-center justify-center text-white"
-            style={{ backgroundColor: slide.member?.color || 'var(--theme-primary)' }}
-          >
-            {slide.type === 'total' ? (
-              <Wallet size={18} className="md:w-5 md:h-5" />
-            ) : (
-              <span className="text-sm md:text-base font-semibold">
-                {slide.member?.name?.[0].toUpperCase()}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-            {slide.name}
-          </p>
-        </div>
-      </div>
-
+    <div className="flex flex-col overflow-y-auto h-full">
       {/* 残高セクション */}
-      <div className="space-y-2 md:space-y-3 flex-1 flex flex-col overflow-y-auto">
+      <div className="space-y-2 md:space-y-3">
         <div className="bg-white rounded-lg p-3 md:p-4 mb-1" style={{
           borderColor: 'var(--theme-primary)',
         }}>
