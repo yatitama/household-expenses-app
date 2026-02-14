@@ -131,10 +131,10 @@ export const CardUnsettledListModal = ({
                 const isExpanded = expandedGroups.has(groupKey);
 
                 return (
-                  <div key={groupKey}>
+                  <div key={groupKey} className="space-y-0">
                     <button
                       onClick={() => toggleGroup(groupKey)}
-                      className="sticky top-[120px] sm:top-[124px] w-full flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left bg-white dark:bg-gray-800 z-10"
+                      className="sticky top-0 w-full flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left bg-white dark:bg-gray-800 z-10"
                     >
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <ChevronDown
