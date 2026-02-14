@@ -65,123 +65,104 @@ export const ScheduleSection = ({
 
       {/* 展開時のコンテンツ */}
       {isExpanded && (
-        <div className="mt-3 pt-3 dark:border-gray-700 space-y-3">
-          {/* カード未精算 */}
-          {cardUnsettledList.length > 0 && (
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <CreditCard size={14} className="text-gray-900 dark:text-gray-700" />
-                <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
-                  カード未精算
-                </span>
-              </div>
-
-              {/* Card-by-card unsettled list */}
-              <div className="space-y-1.5 ml-6">
-                {cardUnsettledList.map((cardInfo) => (
-                  <button
-                    key={cardInfo.paymentMethod.id}
-                    onClick={() => onViewUnsettled(cardInfo.paymentMethod.id)}
-                    className="w-full flex items-start justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left min-w-0"
-                  >
-                    <div className="flex items-start gap-2 min-w-0 flex-1">
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                        style={{ backgroundColor: `${cardInfo.paymentMethod.color}20`, color: cardInfo.paymentMethod.color }}
-                      >
-                        <CreditCard size={12} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-gray-900 dark:text-gray-100">
-                          {cardInfo.paymentMethod.name}
-                        </p>
-                      </div>
+        <div className="mt-3 pt-3 dark:border-gray-700">
+          {cardUnsettledList.length === 0 && upcomingExpense.length === 0 ? (
+            <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
+              予定なし
+            </p>
+          ) : (
+            <div className="space-y-1.5">
+              {/* カード未精算の明細 */}
+              {cardUnsettledList.map((cardInfo) => (
+                <button
+                  key={cardInfo.paymentMethod.id}
+                  onClick={() => onViewUnsettled(cardInfo.paymentMethod.id)}
+                  className="w-full flex items-start justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left min-w-0"
+                >
+                  <div className="flex items-start gap-2 min-w-0 flex-1">
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                      style={{ backgroundColor: `${cardInfo.paymentMethod.color}20`, color: cardInfo.paymentMethod.color }}
+                    >
+                      <CreditCard size={12} />
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <div className="flex justify-end w-28">
-                        <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
-                          {formatCurrency(cardInfo.unsettledAmount)}
-                        </span>
-                      </div>
-                      {cardInfo.unsettledTransactions.length > 0 && (
-                        <ArrowRight size={14} className="text-gray-400" />
-                      )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-gray-900 dark:text-gray-100">
+                        {cardInfo.paymentMethod.name}
+                      </p>
                     </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex justify-end w-28">
+                      <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
+                        {formatCurrency(cardInfo.unsettledAmount)}
+                      </span>
+                    </div>
+                    {cardInfo.unsettledTransactions.length > 0 && (
+                      <ArrowRight size={14} className="text-gray-400" />
+                    )}
+                  </div>
+                </button>
+              ))}
 
-          {/* 定期支出 */}
-          {upcomingExpense.length > 0 && (
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Calendar size={14} className="text-gray-600 dark:text-gray-500" />
-                <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
-                  定期支出
-                </span>
-              </div>
+              {/* 定期支出の明細 */}
+              {upcomingExpense.map((rp) => {
+                const category = getCategory(rp.categoryId);
 
-              <div className="space-y-1.5 ml-6">
-                {upcomingExpense.map((rp) => {
-                  const category = getCategory(rp.categoryId);
-
-                  // カード紐付けの場合は次回引き落とし日、そうでなければ次回実行日を表示
-                  let dateLabel = '';
-                  const nextDate = calculateRecurringNextDate(rp);
-                  if (nextDate) {
-                    if (rp.paymentMethodId) {
-                      dateLabel = `${nextDate.getMonth() + 1}月${nextDate.getDate()}日引き落とし`;
-                    } else {
-                      dateLabel = rp.frequency === 'monthly'
-                        ? `毎月${rp.dayOfMonth}日`
-                        : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
-                    }
+                // カード紐付けの場合は次回引き落とし日、そうでなければ次回実行日を表示
+                let dateLabel = '';
+                const nextDate = calculateRecurringNextDate(rp);
+                if (nextDate) {
+                  if (rp.paymentMethodId) {
+                    dateLabel = `${nextDate.getMonth() + 1}月${nextDate.getDate()}日引き落とし`;
                   } else {
                     dateLabel = rp.frequency === 'monthly'
                       ? `毎月${rp.dayOfMonth}日`
                       : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
                   }
+                } else {
+                  dateLabel = rp.frequency === 'monthly'
+                    ? `毎月${rp.dayOfMonth}日`
+                    : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
+                }
 
-                  return (
-                    <div
-                      key={rp.id}
-                      className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
-                    >
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <button
-                          onClick={() => onToggleRecurring(rp)}
-                          className="flex-shrink-0 hover:opacity-70 transition-opacity"
-                        >
-                          {rp.isActive
-                            ? <ToggleRight size={16} className="text-gray-600" />
-                            : <ToggleLeft size={16} className="text-gray-300 dark:text-gray-600" />
-                          }
-                        </button>
-                        <div
-                          className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
-                        >
-                          {getCategoryIcon(category?.icon || '', 12)}
-                        </div>
-                        <button
-                          onClick={() => onEditRecurring(rp)}
-                          className="flex-1 flex flex-col gap-0.5 min-w-0 hover:opacity-70 transition-opacity text-left"
-                        >
-                          <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
-                        </button>
+                return (
+                  <div
+                    key={rp.id}
+                    className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <button
+                        onClick={() => onToggleRecurring(rp)}
+                        className="flex-shrink-0 hover:opacity-70 transition-opacity"
+                      >
+                        {rp.isActive
+                          ? <ToggleRight size={16} className="text-gray-600" />
+                          : <ToggleLeft size={16} className="text-gray-300 dark:text-gray-600" />
+                        }
+                      </button>
+                      <div
+                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
+                      >
+                        {getCategoryIcon(category?.icon || '', 12)}
                       </div>
-                      <div className="flex justify-end w-28">
-                        <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
-                          {formatCurrency(rp.amount)}
-                        </span>
-                      </div>
+                      <button
+                        onClick={() => onEditRecurring(rp)}
+                        className="flex-1 flex flex-col gap-0.5 min-w-0 hover:opacity-70 transition-opacity text-left"
+                      >
+                        <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
+                      </button>
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="flex justify-end w-28">
+                      <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
+                        {formatCurrency(rp.amount)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
