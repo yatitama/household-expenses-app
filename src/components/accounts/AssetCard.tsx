@@ -4,6 +4,7 @@ import { formatCurrency } from '../../utils/formatters';
 import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { categoryService } from '../../services/storage';
+import { CardGridSection } from './CardGridSection';
 import type { PaymentMethod, Account, Member, Transaction, RecurringPayment, Category } from '../../types';
 
 interface TotalPendingData {
@@ -483,6 +484,15 @@ const MemberAssetCard = ({
             </div>
           )}
         </div>
+
+        {/* カードグリッド */}
+        {memberLinkedPMs.length > 0 && (
+          <CardGridSection
+            paymentMethods={memberLinkedPMs}
+            cardUnsettledList={memberCardUnsettledList}
+            onCardClick={onCardUnsettledSheetOpen || (() => {})}
+          />
+        )}
       </div>
 
     </div>
