@@ -245,7 +245,12 @@ export const TransactionFilterSheet = ({
                             : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                       >
-                        <User size={20} className="text-gray-700 dark:text-gray-300" />
+                        <div
+                          className="w-6 h-6 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: `${member.color}20`, color: member.color }}
+                        >
+                          <User size={16} />
+                        </div>
                         <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                           {member.name}
                         </span>
@@ -364,7 +369,12 @@ export const TransactionFilterSheet = ({
                             : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                       >
-                        <Wallet size={20} className="text-gray-700 dark:text-gray-300" />
+                        <div
+                          className="w-6 h-6 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: `${account.color || '#9ca3af'}20`, color: account.color || '#9ca3af' }}
+                        >
+                          <Wallet size={16} />
+                        </div>
                         <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                           {account.name}
                         </span>
@@ -413,17 +423,20 @@ export const TransactionFilterSheet = ({
                             : [...filters.paymentMethodIds, pm.id];
                           updateFilter('paymentMethodIds', newIds);
                         }}
-                        className={`flex items-center justify-between p-2 rounded-lg transition-colors ${
+                        className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                           filters.paymentMethodIds.includes(pm.id)
                             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                             : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                       >
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <CreditCard size={16} className="text-gray-700 dark:text-gray-300 flex-shrink-0" />
-                          <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate">{pm.name}</span>
+                        <div
+                          className="w-6 h-6 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: `${pm.color || '#9ca3af'}20`, color: pm.color || '#9ca3af' }}
+                        >
+                          <CreditCard size={16} />
                         </div>
-                        {filters.paymentMethodIds.includes(pm.id) && <Check size={14} className="text-primary-600 flex-shrink-0" />}
+                        <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">{pm.name}</span>
+                        {filters.paymentMethodIds.includes(pm.id) && <Check size={12} className="text-primary-600" />}
                       </button>
                     ))}
                   </div>
