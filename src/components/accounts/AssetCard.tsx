@@ -375,7 +375,7 @@ const MemberAssetCard = ({
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{freqLabel}</p>
                           </div>
                         </div>
-                        <span className="text-gray-700 dark:text-gray-600 font-semibold flex-shrink-0">
+                        <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
                           {formatCurrency(rp.amount)}
                         </span>
                       </div>
