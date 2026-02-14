@@ -178,10 +178,48 @@ export const TransactionsPage = () => {
     }
   }, [filteredTransactions, groupBy, groupOrder, categories, members, getCategoryName, getAccountName, getPaymentMethodName]);
 
+  // 合計を計算
+  const { totalIncome, totalExpense, totalNet } = useMemo(() => {
+    const income = filteredTransactions
+      .filter((t) => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+    const expense = filteredTransactions
+      .filter((t) => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0);
+    return {
+      totalIncome: income,
+      totalExpense: expense,
+      totalNet: income - expense,
+    };
+  }, [filteredTransactions]);
+
   return (
-    <div className="pb-20">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-slate-900 overflow-clip">
+      {/* Sticky Header */}
+      <div
+        className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-3 sm:p-4 flex items-center justify-between"
+        style={{ top: 'max(0px, env(safe-area-inset-top))' }}
+      >
+        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+          {filteredTransactions.length}件の取引
+        </p>
+        <button
+          onClick={() => setIsFilterSheetOpen(true)}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 relative"
+          aria-label="フィルター設定を開く"
+        >
+          <Sliders size={20} />
+          {activeFilterCount > 0 && (
+            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+      </div>
+
       {/* Transaction list */}
-      <div className="p-2 md:p-4 lg:p-6">
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-2 md:p-4 lg:p-6">
         {filteredTransactions.length === 0 ? (
           <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center">
             <Receipt size={40} className="md:w-12 md:h-12 mx-auto text-primary-600 mb-2 md:mb-3" />
@@ -189,7 +227,7 @@ export const TransactionsPage = () => {
           </div>
         ) : (
           <div className="space-y-2 md:space-y-3">
-            {groupedTransactions.map(([key, { label, transactions }], groupIndex) => {
+            {groupedTransactions.map(([key, { label, transactions }]) => {
               // グループ内の合計を計算
               const groupTotal = transactions.reduce((sum, t) => {
                 return sum + (t.type === 'income' ? t.amount : -t.amount);
@@ -198,9 +236,6 @@ export const TransactionsPage = () => {
               const isExpanded = expandedGroups.has(key);
               return (
                 <div key={key} className="mb-3">
-                  {groupIndex === 0 && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 px-4 mb-3">{filteredTransactions.length}件の取引</p>
-                  )}
                   <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden">
                     <button
                       onClick={() => toggleGroupExpanded(key)}
@@ -262,22 +297,32 @@ export const TransactionsPage = () => {
             })}
           </div>
         )}
+        </div>
       </div>
 
-      {/* Filter & Grouping Button (FAB) */}
-      <button
-        onClick={() => setIsFilterSheetOpen(true)}
-        className="fixed bottom-24 right-4 md:bottom-6 md:right-6 w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-shadow active:scale-95 flex items-center justify-center text-white font-semibold z-40"
-        style={{ backgroundColor: 'var(--theme-primary)' }}
-        aria-label="フィルター設定を開く"
-      >
-        <Sliders size={24} />
-        {activeFilterCount > 0 && (
-          <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-            {activeFilterCount}
-          </span>
-        )}
-      </button>
+      {/* Sticky Footer with Summary */}
+      <div className="sticky bottom-0 z-30 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+        <div className="grid grid-cols-3 gap-3">
+          <div className="text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">収入</p>
+            <p className="text-sm sm:text-base font-bold text-green-600">
+              +{formatCurrency(totalIncome)}
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">支出</p>
+            <p className="text-sm sm:text-base font-bold text-red-600">
+              -{formatCurrency(totalExpense)}
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">差引</p>
+            <p className={`text-sm sm:text-base font-bold ${totalNet >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Edit Transaction Modal */}
       {editingTransaction && (
