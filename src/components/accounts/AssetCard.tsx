@@ -290,26 +290,26 @@ const MemberAssetCard = ({
           <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
             残高
           </p>
-          <p className="text-2xl md:text-3xl font-bold mb-3" style={{ color: 'var(--theme-primary)' }}>
-            {formatCurrency(slide.balance)}
-          </p>
 
           {/* 口座ごとの内訳 */}
-          {slide.memberAccounts.length > 0 && (
-            <div className="pt-3 dark:border-gray-700">
+          {slide.memberAccounts.length > 0 ? (
+            <>
               <button
                 onClick={() => setIsBreakdownExpanded(!isBreakdownExpanded)}
-                className="flex items-center gap-1 text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 hover:opacity-80 transition-opacity"
+                className="w-full flex items-center justify-between hover:opacity-80 transition-opacity mb-3"
               >
+                <p className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>
+                  {formatCurrency(slide.balance)}
+                </p>
                 {isBreakdownExpanded ? (
-                  <ChevronDown size={14} />
+                  <ChevronDown size={18} className="text-gray-500 dark:text-gray-400" />
                 ) : (
-                  <ChevronRight size={14} />
+                  <ChevronRight size={18} className="text-gray-500 dark:text-gray-400" />
                 )}
-                内訳
               </button>
+
               {isBreakdownExpanded && (
-                <div className="space-y-2 mt-2">
+                <div className="mt-3 pt-3 dark:border-gray-700 space-y-2">
                   {slide.memberAccounts.map((account) => (
                     <div key={account.id} className="flex justify-between items-center text-xs md:text-sm">
                       <span className="text-gray-700 dark:text-gray-300">{account.name}</span>
@@ -318,7 +318,11 @@ const MemberAssetCard = ({
                   ))}
                 </div>
               )}
-            </div>
+            </>
+          ) : (
+            <p className="text-2xl md:text-3xl font-bold mb-3" style={{ color: 'var(--theme-primary)' }}>
+              {formatCurrency(slide.balance)}
+            </p>
           )}
         </div>
 
@@ -339,7 +343,7 @@ const MemberAssetCard = ({
                 振り込み予定
               </span>
             </div>
-            <span className="text-base md:text-lg font-bold text-gray-700 dark:text-gray-600">
+            <span className="text-base md:text-lg font-bold text-gray-900 dark:text-gray-700">
               {formatCurrency(memberRecurringIncome)}
             </span>
           </button>
@@ -375,7 +379,7 @@ const MemberAssetCard = ({
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{freqLabel}</p>
                           </div>
                         </div>
-                        <span className="text-gray-700 dark:text-gray-600 font-semibold flex-shrink-0">
+                        <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
                           {formatCurrency(rp.amount)}
                         </span>
                       </div>
@@ -446,7 +450,7 @@ const MemberAssetCard = ({
                             </div>
                           </div>
                           <div className="flex justify-end w-28">
-                            <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
+                            <span className="text-gray-900 dark:text-gray-700 font-semibold">
                               {formatCurrency(cardInfo.unsettledAmount)}
                             </span>
                           </div>
@@ -490,7 +494,7 @@ const MemberAssetCard = ({
                           </div>
                         </div>
                         <div className="flex justify-end w-28">
-                          <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
+                          <span className="text-gray-900 dark:text-gray-700 font-semibold">
                             {formatCurrency(rp.amount)}
                           </span>
                         </div>
