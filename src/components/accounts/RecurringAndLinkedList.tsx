@@ -29,7 +29,7 @@ export const RecurringAndLinkedList = ({
   const [isLinkedOpen, setIsLinkedOpen] = useState(false);
 
   return (
-    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 space-y-3">
+    <div className="mt-3 pt-3 dark:border-gray-700 space-y-3">
       {/* 定期取引セクション */}
       <div>
         <div className="flex justify-between items-center mb-1.5">

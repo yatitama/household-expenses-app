@@ -78,7 +78,7 @@ export const CategoriesPage = () => {
       </div>
 
       {/* タイプ切り替え */}
-      <div className="flex rounded-lg overflow-hidden border border-gray-300">
+      <div className="flex rounded-lg overflow-hidden">
         <button
           onClick={() => setFilterType('expense')}
           className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
@@ -206,7 +206,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 食費"
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -220,10 +220,10 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
                   key={member.id}
                   type="button"
                   onClick={() => setMemberId(member.id)}
-                  className={`flex items-center gap-2 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
+                  className={`flex items-center gap-2 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                     memberId === member.id
-                      ? 'bg-gray-800 text-white border-gray-700'
-                      : 'bg-white text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      ? 'bg-gray-800 text-white'
+                      : 'bg-white text-gray-700 dark:text-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
@@ -262,7 +262,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
                     key={i}
                     type="button"
                     onClick={() => setIcon(i)}
-                    className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg border flex items-center justify-center transition-colors ${
+                    className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-colors ${
                       icon === i
                         ? 'border-gray-700 bg-gray-100 text-gray-800 dark:text-gray-600'
                         : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
@@ -280,7 +280,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50"
+              className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50"
             >
               キャンセル
             </button>

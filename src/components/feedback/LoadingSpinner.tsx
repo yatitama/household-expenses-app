@@ -15,7 +15,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
   return (
     <div
-      className={`${sizeClasses[size]} border-gray-200 dark:border-gray-700 border-t-primary-600 dark:border-t-primary-500 rounded-full animate-spin ${className}`}
+      className={`${sizeClasses[size]} dark:border-gray-700 border-t-primary-600 dark:border-t-primary-500 rounded-full animate-spin ${className}`}
       role="status"
       aria-label="読み込み中"
     >
@@ -36,7 +36,7 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ message }) => {
       aria-live="polite"
       aria-label={message || '読み込み中'}
     >
-      <div className="bg-white rounded-xl p-8 flex flex-col items-center border border-gray-200 dark:border-gray-700">
+      <div className="bg-white rounded-xl p-8 flex flex-col items-center dark:border-gray-700">
         <LoadingSpinner size="lg" />
         {message && (
           <p className="mt-4 text-gray-900 dark:text-gray-200 font-semibold text-center">

@@ -182,7 +182,7 @@ export const TransactionsPage = () => {
       {/* Fixed Filter Bar */}
       <div
         ref={filterBarRef}
-        className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-3 md:p-6 lg:p-8"
+        className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-slate-900 dark:border-gray-700 p-3 md:p-6 lg:p-8"
       >
         <SimpleFilterBar
           filters={filters}
@@ -205,7 +205,7 @@ export const TransactionsPage = () => {
         className="p-3 md:p-6 lg:p-8"
       >
         {filteredTransactions.length === 0 ? (
-          <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center border border-primary-500">
+          <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center">
             <Receipt size={40} className="md:w-12 md:h-12 mx-auto text-primary-600 mb-2 md:mb-3" />
             <p className="text-xs md:text-sm text-primary-600">取引がありません</p>
           </div>
@@ -223,7 +223,7 @@ export const TransactionsPage = () => {
                     <p className="text-sm text-gray-500 dark:text-gray-400 px-4 mb-3">{filteredTransactions.length}件の取引</p>
                   )}
                   <div className="bg-white rounded-xl overflow-hidden">
-                    <div className="px-4 py-2 bg-white border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
+                    <div className="px-4 py-2 bg-white dark:border-gray-600 flex items-center justify-between">
                       <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{label}</p>
                     <p className={`text-xs md:text-sm font-bold ${
                       groupTotal >= 0 ? 'text-gray-700' : 'text-gray-900'

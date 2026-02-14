@@ -65,7 +65,7 @@ export const EditTransactionModal = ({
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">取引を編集</h3>
           <div className="space-y-4 sm:space-y-5">
-          <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+          <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
             <button
               type="button"
               onClick={() => { setType('expense'); setCategoryId(''); }}
@@ -94,7 +94,7 @@ export const EditTransactionModal = ({
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
@@ -110,7 +110,7 @@ export const EditTransactionModal = ({
                     key={category.id}
                     type="button"
                     onClick={() => setCategoryId(category.id)}
-                    className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg border transition-colors ${
+                    className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                       categoryId === category.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -148,7 +148,7 @@ export const EditTransactionModal = ({
                         key={acct.id}
                         type="button"
                         onClick={() => handleSelectAccount(acct.id)}
-                        className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
+                        className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
                           accountId === acct.id && !pmId
                             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                             : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -172,7 +172,7 @@ export const EditTransactionModal = ({
                     <button
                       type="button"
                       onClick={() => setPmId(undefined)}
-                      className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
+                      className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
                         pmId === undefined
                           ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                           : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -189,7 +189,7 @@ export const EditTransactionModal = ({
                         key={pm.id}
                         type="button"
                         onClick={() => handleSelectPM(pm.id)}
-                        className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
+                        className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
                           pmId === pm.id
                             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                             : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -214,7 +214,7 @@ export const EditTransactionModal = ({
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+              className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
               style={{ minWidth: 0, maxWidth: '100%' }}
             />
           </div>
@@ -226,13 +226,13 @@ export const EditTransactionModal = ({
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder="任意"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+              className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
             />
           </div>
 
           </div>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 space-y-2">
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
           {onDelete && (
             <button
               type="button"
@@ -243,7 +243,7 @@ export const EditTransactionModal = ({
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
+            <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
               キャンセル
             </button>
             <button

@@ -46,7 +46,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 夫メイン銀行"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             />
           </div>
@@ -59,10 +59,10 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   key={member.id}
                   type="button"
                   onClick={() => setMemberId(member.id)}
-                  className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
+                  className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                     memberId === member.id
                       ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
                   }`}
                   style={memberId === member.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
@@ -81,10 +81,10 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   key={value}
                   type="button"
                   onClick={() => setAccountType(value)}
-                  className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
+                  className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                     accountType === value
                       ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
                   }`}
                   style={accountType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
@@ -101,7 +101,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
               type="number"
               value={balance}
               onChange={(e) => setBalance(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
             />
           </div>
 
@@ -124,7 +124,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
 
           </div>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 space-y-2">
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
           {account && onDelete && (
             <button
               type="button"
@@ -135,7 +135,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-slate-600 text-sm">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-slate-600 text-sm">
               キャンセル
             </button>
             <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>

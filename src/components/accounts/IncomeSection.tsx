@@ -26,7 +26,7 @@ export const IncomeSection = ({
   };
 
   return (
-    <div className="bg-white rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
+    <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
       {/* ヘッダー */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -50,7 +50,7 @@ export const IncomeSection = ({
 
       {/* 展開時のコンテンツ */}
       {isExpanded && (
-        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-3 pt-3 dark:border-gray-700">
           {upcomingIncome.length === 0 ? (
             <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
               定期収入予定なし

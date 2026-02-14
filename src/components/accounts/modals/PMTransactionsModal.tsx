@@ -90,7 +90,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
         className="bg-white w-full sm:max-w-2xl md:max-w-4xl sm:rounded-xl rounded-t-xl max-h-[85vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 dark:border-gray-700">
           <div className="flex justify-between items-center mb-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: paymentMethod.color }}>
@@ -112,7 +112,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
         </div>
 
         {/* フィルタボタン */}
-        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 flex gap-2 items-center">
+        <div className="px-4 py-2 dark:border-gray-700 bg-gray-50/50 flex gap-2 items-center">
           <button
             onClick={handleToggleUnsettledFilter}
             className={`px-3 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors ${
@@ -151,7 +151,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
               {Object.entries(groupedByDate).map(([date, dayTransactions]) => (
                 <div key={date}>
                   <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{formatDate(date)}</h4>
-                  <div className="bg-white rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+                  <div className="bg-white rounded-xl dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
                     {dayTransactions.map((transaction) => {
                       const category = getCategory(transaction.categoryId);
                       const isExpense = transaction.type === 'expense';
