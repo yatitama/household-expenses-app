@@ -297,7 +297,7 @@ export const TransactionsPage = () => {
       </div>
 
       {/* Fixed Footer with Summary */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700 p-2 sm:p-3">
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700 p-2 sm:p-3">
         <div className="text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">合計</p>
           <p className={`text-lg sm:text-xl font-bold ${totalNet >= 0 ? 'text-green-600' : 'text-red-600'}`}>
