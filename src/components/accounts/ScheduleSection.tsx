@@ -121,11 +121,6 @@ export const ScheduleSection = ({
                 <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
                   定期支出
                 </span>
-                <div className="flex justify-end w-28 ml-auto">
-                  <span className="text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-500 font-mono">
-                    {formatCurrency(totalRecurringExpense)}
-                  </span>
-                </div>
               </div>
 
               <div className="space-y-1.5 ml-6">
