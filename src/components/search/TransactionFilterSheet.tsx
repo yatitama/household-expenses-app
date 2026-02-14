@@ -443,25 +443,25 @@ export const TransactionFilterSheet = ({
                 </div>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* Footer */}
-        <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-row gap-2">
-          <button
-            onClick={resetFilters}
-            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium"
-          >
-            <RotateCcw size={16} />
-            リセット
-          </button>
-          <button
-            onClick={onClose}
-            className="flex-1 py-2 rounded-lg text-white font-medium active:scale-95 transition-all text-sm"
-            style={{ backgroundColor: 'var(--theme-primary)' }}
-          >
-            完了
-          </button>
+            {/* Footer */}
+            <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-row gap-2 -mx-3 -mb-3 sm:-mx-4 sm:-mb-4">
+              <button
+                onClick={resetFilters}
+                className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium"
+              >
+                <RotateCcw size={16} />
+                リセット
+              </button>
+              <button
+                onClick={onClose}
+                className="flex-1 py-2 rounded-lg text-white font-medium active:scale-95 transition-all text-sm"
+                style={{ backgroundColor: 'var(--theme-primary)' }}
+              >
+                完了
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </>
