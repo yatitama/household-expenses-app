@@ -1,12 +1,11 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet } from 'lucide-react';
-import { memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
-import { getPendingAmountByPaymentMethod, getTotalPendingByAccount } from '../utils/billingUtils';
+import { getPendingAmountByPaymentMethod } from '../utils/billingUtils';
 import { AssetCard } from '../components/accounts/AssetCard';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
@@ -27,7 +26,6 @@ export const AccountsPage = () => {
     confirmDialog, closeConfirmDialog,
   } = useAccountOperations();
 
-  const members = memberService.getAll();
   const { activeModal, openModal, closeModal } = useModalManager();
   const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
   const [isRecurringDetailModalOpen, setIsRecurringDetailModalOpen] = useState(false);
@@ -38,7 +36,6 @@ export const AccountsPage = () => {
   const [isCardUnsettledDetailOpen, setIsCardUnsettledDetailOpen] = useState(false);
 
   const pendingByPM = getPendingAmountByPaymentMethod();
-  const totalPendingByAccount = getTotalPendingByAccount();
 
   useBodyScrollLock(!!activeModal || isRecurringDetailModalOpen || isCardUnsettledSheetOpen || isCardUnsettledDetailOpen);
 
@@ -76,21 +73,12 @@ export const AccountsPage = () => {
   useKeyboardShortcuts(keyboardOptions);
 
   // Computed values
-  const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
-  const totalExpense = Object.values(totalPendingByAccount).reduce(
-    (sum, v) => sum + v.cardPending + v.recurringExpense, 0
-  );
-  const totalIncome = Object.values(totalPendingByAccount).reduce((sum, v) => sum + v.recurringIncome, 0);
-  const netPending = totalExpense - totalIncome;
-
   const groupedAccounts = accounts.reduce<Record<string, Account[]>>((acc, account) => {
     const memberId = account.memberId;
     if (!acc[memberId]) acc[memberId] = [];
     acc[memberId].push(account);
     return acc;
   }, {});
-
-  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
   const unlinkedPMs = paymentMethods.filter((pm) => !pm.linkedAccountId);
 
   return (
@@ -99,12 +87,7 @@ export const AccountsPage = () => {
       <div className="sticky top-0 z-40 bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6 px-1 md:px-2 lg:px-3">
         {accounts.length > 0 && (
           <AssetCard
-            totalBalance={totalBalance}
-            totalExpense={totalExpense}
-            totalIncome={totalIncome}
-            netPending={netPending}
             groupedAccounts={groupedAccounts}
-            getMember={getMember}
             paymentMethods={paymentMethods}
             onRecurringDetailClick={handleRecurringDetailClick}
             onCardUnsettledSheetOpen={handleCardUnsettledSheetOpen}
