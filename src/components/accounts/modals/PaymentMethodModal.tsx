@@ -42,7 +42,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md md:max-w-lg sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+      <form onSubmit={handleSubmit} className="bg-white w-full sm:max-w-md md:max-w-lg sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{paymentMethod ? '支払い手段を編集' : '支払い手段を追加'}</h3>
           <div className="space-y-4 sm:space-y-5">
@@ -53,7 +53,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 夫クレジットカード"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             />
           </div>
@@ -69,7 +69,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     memberId === member.id
                       ? 'text-white border-transparent'
-                      : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                   style={memberId === member.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
@@ -95,7 +95,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     pmType === value
                       ? 'text-white border-transparent'
-                      : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                   style={pmType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
@@ -145,7 +145,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                     billingType === value
                       ? 'text-white border-transparent'
-                      : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                   style={billingType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
@@ -166,7 +166,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
             const nextDayMonth = nextDay.getMonth() + 1;
             const nextDayDate = nextDay.getDate();
             return (
-              <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-3 space-y-3">
+              <div className="bg-gray-50 rounded-lg p-3 space-y-3">
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">締め日</label>
                   <div className="flex items-center gap-2">
@@ -205,7 +205,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">日</span>
                   </div>
                 </div>
-                <div className="bg-gray-100 dark:bg-gray-900/30 rounded-lg p-2 sm:p-2.5 mt-2">
+                <div className="bg-gray-100 rounded-lg p-2 sm:p-2.5 mt-2">
                   <div className="flex items-start gap-1.5">
                     <Info size={12} className="sm:w-3.5 sm:h-3.5 text-gray-600 flex-shrink-0 mt-0.5" />
                     <div className="text-xs sm:text-sm text-gray-800 dark:text-gray-400 space-y-1">
@@ -249,7 +249,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
               キャンセル
             </button>
             <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>

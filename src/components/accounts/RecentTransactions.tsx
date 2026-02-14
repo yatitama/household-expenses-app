@@ -110,8 +110,8 @@ export const RecentTransactions = ({ accountId }: RecentTransactionsProps) => {
           ) : (
             <div className="space-y-3">
               {groupedTransactions.map(([date, transactionsForDate]) => (
-                <div key={date} className="bg-gray-50 dark:bg-slate-700/50 rounded-lg overflow-hidden">
-                  <div className="px-3 py-1.5 bg-gray-100 dark:bg-slate-700 border-b border-gray-200 dark:border-gray-600">
+                <div key={date} className="bg-gray-50/50 rounded-lg overflow-hidden">
+                  <div className="px-3 py-1.5 bg-gray-100 border-b border-gray-200 dark:border-gray-600">
                     <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400">{formatDate(date)}</p>
                   </div>
                   <div className="divide-y divide-gray-100 dark:divide-gray-600">

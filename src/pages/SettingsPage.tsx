@@ -276,10 +276,10 @@ export const SettingsPage = () => {
       <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">設定</h2>
 
       {/* メンバー管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
         <button
           onClick={() => setMembersOpen(!membersOpen)}
-          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={membersOpen}
           aria-label={membersOpen ? 'メンバー管理を折りたたむ' : 'メンバー管理を展開'}
         >
@@ -312,7 +312,7 @@ export const SettingsPage = () => {
                   <button
                     key={member.id}
                     onClick={() => handleEditMember(member)}
-                    className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                    className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
                   >
                     <div
                       className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0"
@@ -333,11 +333,11 @@ export const SettingsPage = () => {
       </div>
 
       {/* カテゴリ管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
         <button
           aria-label={categoriesOpen ? "カテゴリ管理を折りたたむ" : "カテゴリ管理を展開"}
           onClick={() => setCategoriesOpen(!categoriesOpen)}
-          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={categoriesOpen}
         >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
@@ -357,7 +357,7 @@ export const SettingsPage = () => {
               <button
                 onClick={() => setCategoryFilterType('expense')}
                 className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-                  categoryFilterType === 'expense' ? 'text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                  categoryFilterType === 'expense' ? 'text-white' : 'bg-white text-gray-900 dark:text-gray-200'
                 }`}
                 style={categoryFilterType === 'expense' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
@@ -366,7 +366,7 @@ export const SettingsPage = () => {
               <button
                 onClick={() => setCategoryFilterType('income')}
                 className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-                  categoryFilterType === 'income' ? 'text-white' : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                  categoryFilterType === 'income' ? 'text-white' : 'bg-white text-gray-900 dark:text-gray-200'
                 }`}
                 style={categoryFilterType === 'income' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
@@ -393,7 +393,7 @@ export const SettingsPage = () => {
                     <button
                       key={category.id}
                       onClick={() => handleEditCategory(category)}
-                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
                     >
                       <div
                         className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
@@ -415,11 +415,11 @@ export const SettingsPage = () => {
       </div>
 
       {/* 口座管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
         <button
           aria-label={accountsOpen ? "口座管理を折りたたむ" : "口座管理を展開"}
           onClick={() => setAccountsOpen(!accountsOpen)}
-          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={accountsOpen}
         >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
@@ -453,7 +453,7 @@ export const SettingsPage = () => {
                     <button
                       key={account.id}
                       onClick={() => handleEditAccount(account)}
-                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
                     >
                       <div
                         className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
@@ -477,11 +477,11 @@ export const SettingsPage = () => {
       </div>
 
       {/* 支払い手段管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
         <button
           aria-label={paymentMethodsOpen ? "支払い手段管理を折りたたむ" : "支払い手段管理を展開"}
           onClick={() => setPaymentMethodsOpen(!paymentMethodsOpen)}
-          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={paymentMethodsOpen}
         >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
@@ -515,7 +515,7 @@ export const SettingsPage = () => {
                     <button
                       key={pm.id}
                       onClick={() => handleEditPM(pm)}
-                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
                     >
                       <div
                         className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
@@ -539,11 +539,11 @@ export const SettingsPage = () => {
       </div>
 
       {/* 定期取引管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
         <button
           aria-label={recurringOpen ? "定期取引管理を折りたたむ" : "定期取引管理を展開"}
           onClick={() => setRecurringOpen(!recurringOpen)}
-          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={recurringOpen}
         >
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
@@ -579,7 +579,7 @@ export const SettingsPage = () => {
                     <button
                       key={rp.id}
                       onClick={() => handleEditRecurring(rp)}
-                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
                     >
                       <div
                         className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
@@ -595,8 +595,8 @@ export const SettingsPage = () => {
                       </div>
                       <div className={`px-2 py-1 rounded text-xs font-medium ${
                         rp.isActive
-                          ? 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-600'
-                          : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400'
+                          ? 'bg-gray-100 text-gray-800 dark:text-gray-600'
+                          : 'bg-gray-100 text-gray-600 dark:text-gray-400'
                       }`}>
                         {rp.isActive ? '有効' : '無効'}
                       </div>
@@ -610,10 +610,10 @@ export const SettingsPage = () => {
       </div>
 
       {/* データ管理 */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl overflow-hidden">
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
         <button
           onClick={() => setDataManagementOpen(!dataManagementOpen)}
-          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
           aria-expanded={dataManagementOpen}
           aria-label={dataManagementOpen ? "データ管理を折りたたむ" : "データ管理を展開"}
         >
@@ -666,7 +666,7 @@ export const SettingsPage = () => {
       </div>
 
       {/* バージョン情報 */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl p-4">
+      <div className="bg-white rounded-xl p-4">
         <p className="text-center text-sm text-gray-500 dark:text-gray-400">家計簿アプリ v1.0.0</p>
       </div>
 
@@ -759,7 +759,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+      <form onSubmit={handleSubmit} className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
           <div className="space-y-3 sm:space-y-4">
@@ -770,7 +770,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 太郎"
-                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full border border-gray-300 dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
                 required
               />
             </div>
@@ -803,7 +803,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100 dark:hover:bg-slate-700">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100">
               キャンセル
             </button>
             <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors" style={{ backgroundColor: 'var(--theme-primary)' }}>
@@ -839,7 +839,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+      <form onSubmit={handleSubmit} className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
           <div className="space-y-3 sm:space-y-4">
@@ -850,7 +850,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 食費"
-                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full border border-gray-300 dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
                 required
               />
             </div>
@@ -865,7 +865,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                     className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
                       memberId === m.id
                         ? 'text-white border-transparent'
-                        : 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
                     }`}
                     style={memberId === m.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                   >
@@ -926,7 +926,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100 dark:hover:bg-slate-700">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100">
               キャンセル
             </button>
             <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors" style={{ backgroundColor: 'var(--theme-primary)' }}>

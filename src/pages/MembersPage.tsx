@@ -172,7 +172,7 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-3 sm:p-4 max-h-[90vh] overflow-y-auto dark:bg-slate-800">
+      <div className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-3 sm:p-4 max-h-[90vh] overflow-y-auto">
         <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
         <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           {/* 名前 */}
@@ -183,7 +183,7 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 太郎"
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -199,8 +199,8 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
                   onClick={() => setIcon(iconName)}
                   className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-all ${
                     icon === iconName
-                      ? 'bg-gray-200 text-gray-800 ring-2 ring-blue-500 dark:bg-gray-900/30'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-400'
+                      ? 'bg-gray-200 text-gray-800 ring-2 ring-blue-500'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:text-gray-400'
                   }`}
                 >
                   {getCategoryIcon(iconName, 16)}
@@ -232,7 +232,7 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-slate-700"
+              className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50"
             >
               キャンセル
             </button>

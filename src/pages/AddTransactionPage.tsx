@@ -109,7 +109,7 @@ export const AddTransactionPage = () => {
       <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
         <form
           onSubmit={handleSubmit}
-          className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+          className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         >
           <div ref={scrollContainerRef} className="overflow-y-auto flex-1 p-3 sm:p-4">
             <div className="flex justify-between items-center mb-4">
@@ -125,7 +125,7 @@ export const AddTransactionPage = () => {
                   type="button"
                   onClick={() => { setType('expense'); setCategoryId(''); }}
                   className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                    type === 'expense' ? 'btn-primary text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                    type === 'expense' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                   }`}
                 >
                   支出
@@ -134,7 +134,7 @@ export const AddTransactionPage = () => {
                   type="button"
                   onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
                   className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                    type === 'income' ? 'btn-primary text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-200'
+                    type === 'income' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                   }`}
                 >
                   収入
@@ -150,7 +150,7 @@ export const AddTransactionPage = () => {
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="0"
-                    className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                    className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                     required
                   />
                 </div>
@@ -270,7 +270,7 @@ export const AddTransactionPage = () => {
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
                   style={{ minWidth: 0, maxWidth: '100%' }}
                 />
               </div>
@@ -282,13 +282,13 @@ export const AddTransactionPage = () => {
                   value={memo}
                   onChange={(e) => setMemo(e.target.value)}
                   placeholder="任意"
-                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
                 />
               </div>
             </div>
           </div>
           <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 flex gap-3">
-            <Link to="/" className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600 text-center">
+            <Link to="/" className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600 text-center">
               キャンセル
             </Link>
             <button

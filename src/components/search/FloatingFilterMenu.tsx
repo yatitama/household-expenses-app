@@ -142,7 +142,7 @@ export const FloatingFilterMenu = ({
       {/* グループ化パネル */}
       {isGroupingPanelOpen && (
         <div
-          className="fixed bottom-40 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl z-50 border border-gray-200 dark:border-slate-600"
+          className="fixed bottom-40 left-4 right-4 bg-white rounded-2xl z-50 border border-gray-200 dark:border-slate-600"
           style={{ maxHeight: 'calc(100vh - 10rem)' }}
         >
           <div className="p-3 border-b border-gray-200 dark:border-slate-600">

@@ -26,7 +26,7 @@ export const IncomeSection = ({
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
+    <div className="bg-white rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
       {/* ヘッダー */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -66,7 +66,7 @@ export const IncomeSection = ({
                 return (
                   <div
                     key={rp.id}
-                    className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 dark:hover:bg-slate-700 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
+                    className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
                   >
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <button

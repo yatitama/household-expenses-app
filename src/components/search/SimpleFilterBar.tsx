@@ -105,7 +105,7 @@ export const SimpleFilterBar = ({
                 className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all active:scale-95 touch-action-manipulation ${
                   chip.isActive
                     ? 'text-white ring-1 dark:ring-1'
-                    : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                    : 'bg-gray-100 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                 }`}
                 style={chip.isActive ? {
                   backgroundColor: 'var(--theme-primary)',
@@ -125,7 +125,7 @@ export const SimpleFilterBar = ({
           {activeFilterCount > 0 && (
             <button
               onClick={resetFilters}
-              className="flex-shrink-0 p-2.5 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors active:scale-95 touch-action-manipulation"
+              className="flex-shrink-0 p-2.5 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 transition-colors active:scale-95 touch-action-manipulation"
               title="フィルターをリセット"
               aria-label="フィルターをリセット"
             >
@@ -140,7 +140,7 @@ export const SimpleFilterBar = ({
           <select
             value={groupBy}
             onChange={(e) => onGroupByChange(e.target.value as GroupByType)}
-            className="px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-xs sm:text-sm transition-colors"
+            className="px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 text-xs sm:text-sm transition-colors"
             aria-label="取引のグループ化方法を選択"
           >
             <option value="date">日付</option>
@@ -153,7 +153,7 @@ export const SimpleFilterBar = ({
           <select
             value={groupOrder}
             onChange={() => onGroupByChange(groupBy)}
-            className="px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-xs sm:text-sm transition-colors"
+            className="px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 text-xs sm:text-sm transition-colors"
             aria-label="取引の並び順を選択"
           >
             <option value="desc">▼ 降順</option>
