@@ -88,7 +88,7 @@ export const TransactionFilterSheet = ({
         <div className="flex-1 overflow-y-auto">
           <div className="space-y-2 p-3 sm:p-4">
             {/* グループ化セクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleSection('grouping')}
                 className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
@@ -107,7 +107,7 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('grouping') && (
-                <div className="px-3 pb-3 space-y-2 border-t border-gray-200 dark:border-gray-700">
+                <div className="px-3 pb-3 space-y-2 border-t border-gray-200 dark:border-gray-700 pt-3">
                   <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                       グループ化方法
@@ -143,7 +143,7 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 取引種別セクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleSection('type')}
                 className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
@@ -167,7 +167,7 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('type') && (
-                <div className="px-3 pb-3 space-y-2 border-t border-gray-200 dark:border-gray-700">
+                <div className="px-3 pb-3 space-y-2 border-t border-gray-200 dark:border-gray-700 pt-3">
                   {(['all', 'income', 'expense'] as const).map((value) => (
                     <button
                       key={value}
@@ -191,7 +191,7 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 期間セクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleSection('date')}
                 className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
@@ -215,7 +215,7 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('date') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
                   <DateRangePicker
                     start={filters.dateRange.start}
                     end={filters.dateRange.end}
@@ -231,7 +231,7 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* メンバーセクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleSection('member')}
                 className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
@@ -255,7 +255,7 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('member') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
                   <MultiSelect
                     label=""
                     options={members.map((m) => ({ id: m.id, name: m.name, color: m.color }))}
@@ -267,7 +267,7 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* カテゴリセクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleSection('category')}
                 className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
@@ -291,7 +291,7 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('category') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
                   <MultiSelect
                     label=""
                     options={categories.map((c) => ({ id: c.id, name: c.name, color: c.color }))}
@@ -303,7 +303,7 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 口座セクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleSection('account')}
                 className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
@@ -327,7 +327,7 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('account') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
                   <MultiSelect
                     label=""
                     options={accounts.map((a) => ({ id: a.id, name: a.name }))}
@@ -339,7 +339,7 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 支払方法セクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-3">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleSection('payment')}
                 className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
@@ -363,7 +363,7 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('payment') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
                   <MultiSelect
                     label=""
                     options={paymentMethods.map((pm) => ({ id: pm.id, name: pm.name }))}
