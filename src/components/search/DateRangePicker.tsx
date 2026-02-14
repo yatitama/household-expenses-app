@@ -9,8 +9,9 @@ interface DateRangePickerProps {
 
 export const DateRangePicker = ({ start, end, onStartChange, onEndChange }: DateRangePickerProps) => {
   return (
-    <div>
+    <div className="space-y-2">
       <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">開始日</span>
         <div className="flex-1 relative">
           <input
             type="date"
@@ -30,7 +31,9 @@ export const DateRangePicker = ({ start, end, onStartChange, onEndChange }: Date
             </button>
           )}
         </div>
-        <span className="text-gray-400 text-sm">~</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">終了日</span>
         <div className="flex-1 relative">
           <input
             type="date"
