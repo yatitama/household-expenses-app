@@ -1,9 +1,10 @@
 import { useState, useRef, useCallback } from 'react';
 import { Wallet, Calendar, TrendingUp, ChevronDown, ChevronRight, CreditCard, ChevronLeft } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
-import { getUnsettledTransactions, getUpcomingRecurringPayments, calculateRecurringNextDate } from '../../utils/billingUtils';
+import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { categoryService } from '../../services/storage';
+import { RecurringPaymentDetailModal } from './modals/RecurringPaymentDetailModal';
 import type { PaymentMethod, Account, Member, Transaction, RecurringPayment, Category } from '../../types';
 
 interface TotalPendingData {
@@ -223,6 +224,8 @@ const MemberAssetCard = ({
   const [isBreakdownExpanded, setIsBreakdownExpanded] = useState(false);
   const [isScheduleExpanded, setIsScheduleExpanded] = useState(false);
   const [isIncomeExpanded, setIsIncomeExpanded] = useState(false);
+  const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
+  const [isRecurringDetailModalOpen, setIsRecurringDetailModalOpen] = useState(false);
 
   // このメンバーのアカウントIDリスト
   const memberAccountIds = slide.memberAccounts.map((a) => a.id);
@@ -358,14 +361,15 @@ const MemberAssetCard = ({
                 <div className="space-y-1.5">
                   {memberUpcomingIncome.map((rp: RecurringPayment) => {
                     const category = getCategory(rp.categoryId);
-                    const freqLabel = rp.frequency === 'monthly'
-                      ? `毎月${rp.dayOfMonth}日`
-                      : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
 
                     return (
-                      <div
+                      <button
                         key={rp.id}
-                        className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
+                        onClick={() => {
+                          setSelectedRecurring(rp);
+                          setIsRecurringDetailModalOpen(true);
+                        }}
+                        className={`w-full flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left ${rp.isActive ? '' : 'opacity-40'}`}
                       >
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                           <div
@@ -374,15 +378,12 @@ const MemberAssetCard = ({
                           >
                             {getCategoryIcon(category?.icon || '', 12)}
                           </div>
-                          <div className="flex-1 flex flex-col gap-0.5 min-w-0">
-                            <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{freqLabel}</p>
-                          </div>
+                          <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
                         </div>
                         <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
                           {formatCurrency(rp.amount)}
                         </span>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
@@ -460,26 +461,15 @@ const MemberAssetCard = ({
 
                   {memberUpcomingExpense.map((rp: RecurringPayment) => {
                     const category = getCategory(rp.categoryId);
-                    const nextDate = calculateRecurringNextDate(rp);
-                    let dateLabel = '';
-                    if (nextDate) {
-                      if (rp.paymentMethodId) {
-                        dateLabel = `${nextDate.getMonth() + 1}月${nextDate.getDate()}日引き落とし`;
-                      } else {
-                        dateLabel = rp.frequency === 'monthly'
-                          ? `毎月${rp.dayOfMonth}日`
-                          : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
-                      }
-                    } else {
-                      dateLabel = rp.frequency === 'monthly'
-                        ? `毎月${rp.dayOfMonth}日`
-                        : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
-                    }
 
                     return (
-                      <div
+                      <button
                         key={rp.id}
-                        className={`flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors ${rp.isActive ? '' : 'opacity-40'}`}
+                        onClick={() => {
+                          setSelectedRecurring(rp);
+                          setIsRecurringDetailModalOpen(true);
+                        }}
+                        className={`w-full flex items-center justify-between text-xs md:text-sm gap-2 p-1.5 hover:bg-gray-50 rounded transition-colors text-left ${rp.isActive ? '' : 'opacity-40'}`}
                       >
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                           <div
@@ -488,17 +478,12 @@ const MemberAssetCard = ({
                           >
                             {getCategoryIcon(category?.icon || '', 12)}
                           </div>
-                          <div className="flex-1 flex flex-col gap-0.5 min-w-0">
-                            <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
-                          </div>
+                          <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
                         </div>
-                        <div className="flex justify-end w-28">
-                          <span className="text-gray-900 dark:text-gray-700 font-semibold">
-                            {formatCurrency(rp.amount)}
-                          </span>
-                        </div>
-                      </div>
+                        <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
+                          {formatCurrency(rp.amount)}
+                        </span>
+                      </button>
                     );
                   })}
                 </div>
@@ -507,6 +492,16 @@ const MemberAssetCard = ({
           )}
         </div>
       </div>
+
+      {/* 定期支払い詳細モーダル */}
+      <RecurringPaymentDetailModal
+        recurringPayment={selectedRecurring}
+        isOpen={isRecurringDetailModalOpen}
+        onClose={() => {
+          setIsRecurringDetailModalOpen(false);
+          setSelectedRecurring(null);
+        }}
+      />
     </div>
   );
 };
