@@ -15,6 +15,10 @@ interface AssetCardProps {
   paymentMethods?: PaymentMethod[];
   onRecurringDetailClick?: (recurringPayment: RecurringPayment) => void;
   onCardUnsettledSheetOpen?: (paymentMethod: PaymentMethod, transactions: Transaction[]) => void;
+  onAddAccountClick?: () => void;
+  onAddCardClick?: () => void;
+  onAddRecurringExpenseClick?: () => void;
+  onAddRecurringIncomeClick?: () => void;
 }
 
 export const AssetCard = ({
@@ -22,6 +26,10 @@ export const AssetCard = ({
   paymentMethods = [],
   onRecurringDetailClick,
   onCardUnsettledSheetOpen,
+  onAddAccountClick,
+  onAddCardClick,
+  onAddRecurringExpenseClick,
+  onAddRecurringIncomeClick,
 }: AssetCardProps) => {
   const allUnsettledTransactions = getUnsettledTransactions();
   const allUpcomingRecurring = getUpcomingRecurringPayments(31);
@@ -59,7 +67,7 @@ export const AssetCard = ({
         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
       </div>
       <div className="pt-2 pb-3 md:pb-4">
-        <AccountGridSection accounts={allAccountsList} />
+        <AccountGridSection accounts={allAccountsList} onAddClick={onAddAccountClick} />
       </div>
 
       {/* カードセクション */}
@@ -76,6 +84,7 @@ export const AssetCard = ({
               paymentMethods={linkedPaymentMethods}
               cardUnsettledList={allCardUnsettledList}
               onCardClick={onCardUnsettledSheetOpen || (() => {})}
+              onAddClick={onAddCardClick}
             />
           </div>
         </>
@@ -93,6 +102,7 @@ export const AssetCard = ({
           title=""
           items={allUpcomingExpense}
           onItemClick={onRecurringDetailClick || (() => {})}
+          onAddClick={onAddRecurringExpenseClick}
         />
       </div>
 
@@ -108,6 +118,7 @@ export const AssetCard = ({
           title=""
           items={allUpcomingIncome}
           onItemClick={onRecurringDetailClick || (() => {})}
+          onAddClick={onAddRecurringIncomeClick}
         />
       </div>
     </div>
