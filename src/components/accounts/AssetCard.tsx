@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Wallet, Calendar, TrendingUp, ChevronDown, ChevronRight, CreditCard, ChevronLeft } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
-import { getUnsettledTransactions, getUpcomingRecurringPayments, calculateRecurringNextDate } from '../../utils/billingUtils';
+import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { categoryService } from '../../services/storage';
 import { RecurringPaymentDetailModal } from './modals/RecurringPaymentDetailModal';
