@@ -5,8 +5,6 @@ import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { categoryService } from '../../../services/storage';
 import type { PaymentMethod, Transaction } from '../../../types';
 
-type GroupByType = 'date' | 'category';
-
 interface CardUnsettledListModalProps {
   paymentMethod: PaymentMethod | null;
   transactions: Transaction[];
@@ -22,7 +20,6 @@ export const CardUnsettledListModal = ({
   onClose,
   onTransactionClick,
 }: CardUnsettledListModalProps) => {
-  const [groupBy, setGroupBy] = useState<GroupByType>('category');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   if (!isOpen || !paymentMethod) return null;
@@ -30,20 +27,12 @@ export const CardUnsettledListModal = ({
   const categories = categoryService.getAll();
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
 
-  // グループ化ロジック
-  const getGroupKeyAndLabel = (transaction: Transaction): { key: string; label: string } => {
-    if (groupBy === 'date') {
-      return { key: transaction.date, label: formatDate(transaction.date) };
-    } else {
-      const category = getCategory(transaction.categoryId);
-      return { key: transaction.categoryId, label: category?.name || 'その他' };
-    }
-  };
-
-  // グループ化（日付またはカテゴリごと）
+  // カテゴリグルーピング
   const groupedTransactions = transactions.reduce(
     (acc, transaction) => {
-      const { key, label } = getGroupKeyAndLabel(transaction);
+      const key = transaction.categoryId;
+      const category = getCategory(key);
+      const label = category?.name || 'その他';
       if (!acc[key]) {
         acc[key] = { label, transactions: [] };
       }
@@ -53,13 +42,9 @@ export const CardUnsettledListModal = ({
     {} as Record<string, { label: string; transactions: Transaction[] }>
   );
 
-  // ソート
+  // ソート（カテゴリ名でアルファベット順）
   const sortedKeys = Object.keys(groupedTransactions).sort((a, b) => {
-    if (groupBy === 'date') {
-      return b.localeCompare(a); // 日付は新しい順
-    } else {
-      return groupedTransactions[a].label.localeCompare(groupedTransactions[b].label, 'ja');
-    }
+    return groupedTransactions[a].label.localeCompare(groupedTransactions[b].label, 'ja');
   });
 
   const total = transactions.reduce((sum, t) => {
@@ -85,55 +70,13 @@ export const CardUnsettledListModal = ({
         <div className="overflow-y-auto flex-1 flex flex-col">
           {/* 固定ヘッダー */}
           <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 p-3 sm:p-4 border-b dark:border-gray-700">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between">
               <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{paymentMethod.name}</h3>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    if (expandedGroups.size === sortedKeys.length) {
-                      setExpandedGroups(new Set());
-                    } else {
-                      setExpandedGroups(new Set(sortedKeys));
-                    }
-                  }}
-                  className="text-xs font-medium px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
-                >
-                  {expandedGroups.size === sortedKeys.length ? '全て閉じる' : '全て開く'}
-                </button>
-                <button
-                  onClick={onClose}
-                  className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-            </div>
-            <div className="flex gap-2">
               <button
-                onClick={() => {
-                  setGroupBy('category');
-                  setExpandedGroups(new Set(sortedKeys));
-                }}
-                className={`flex-1 py-1.5 px-2 text-xs font-medium rounded transition-colors ${
-                  groupBy === 'category'
-                    ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
+                onClick={onClose}
+                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
               >
-                カテゴリ
-              </button>
-              <button
-                onClick={() => {
-                  setGroupBy('date');
-                  setExpandedGroups(new Set(sortedKeys));
-                }}
-                className={`flex-1 py-1.5 px-2 text-xs font-medium rounded transition-colors ${
-                  groupBy === 'date'
-                    ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                日付
+                <X size={18} />
               </button>
             </div>
           </div>
@@ -193,11 +136,9 @@ export const CardUnsettledListModal = ({
                                 </div>
                                 <div className="min-w-0 flex-1">
                                   <p className="truncate text-gray-900 dark:text-gray-100">{category?.name || 'その他'}</p>
-                                  {groupBy === 'category' && (
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                      {transaction.date}
-                                    </p>
-                                  )}
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {formatDate(transaction.date)}
+                                  </p>
                                 </div>
                               </div>
                               <span className="text-gray-900 dark:text-gray-700 font-semibold flex-shrink-0">
