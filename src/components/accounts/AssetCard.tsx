@@ -290,7 +290,7 @@ const MemberAssetCard = ({
           <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
             残高
           </p>
-          <p className="text-2xl md:text-3xl font-bold mb-3 text-right" style={{ color: 'var(--theme-primary)' }}>
+          <p className="text-2xl md:text-3xl font-bold mb-3" style={{ color: 'var(--theme-primary)' }}>
             {formatCurrency(slide.balance)}
           </p>
 
