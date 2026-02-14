@@ -1,7 +1,6 @@
 import { X, RotateCcw, ChevronDown, Check } from 'lucide-react';
 import { useState } from 'react';
 import { DateRangePicker } from './DateRangePicker';
-import { MultiSelect } from './MultiSelect';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { FilterOptions } from '../../hooks/useTransactionFilter';
 import type { GroupByType } from '../../pages/TransactionsPage';
@@ -238,12 +237,35 @@ export const TransactionFilterSheet = ({
 
               {isExpanded('member') && (
                 <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <MultiSelect
-                    label=""
-                    options={members.map((m) => ({ id: m.id, name: m.name, color: m.color }))}
-                    selectedIds={filters.memberIds}
-                    onChange={(ids) => updateFilter('memberIds', ids)}
-                  />
+                  <div className="grid grid-cols-3 gap-2">
+                    {members.map((member) => (
+                      <button
+                        key={member.id}
+                        type="button"
+                        onClick={() => {
+                          const newIds = filters.memberIds.includes(member.id)
+                            ? filters.memberIds.filter((id) => id !== member.id)
+                            : [...filters.memberIds, member.id];
+                          updateFilter('memberIds', newIds);
+                        }}
+                        className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                          filters.memberIds.includes(member.id)
+                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                            : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                        }`}
+                      >
+                        <div
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                          style={{ backgroundColor: member.color }}
+                        >
+                          {member.name.charAt(0)}
+                        </div>
+                        <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                          {member.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -274,7 +296,7 @@ export const TransactionFilterSheet = ({
 
               {isExpanded('category') && (
                 <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     {categories.map((category) => {
                       const member = members.find((m) => m.id === category.memberId);
                       return (
@@ -339,7 +361,7 @@ export const TransactionFilterSheet = ({
 
               {isExpanded('account') && (
                 <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     {accounts.map((account) => (
                       <button
                         key={account.id}
@@ -350,17 +372,22 @@ export const TransactionFilterSheet = ({
                             : [...filters.accountIds, account.id];
                           updateFilter('accountIds', newIds);
                         }}
-                        className={`flex items-center justify-between p-2 rounded-lg transition-colors ${
+                        className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                           filters.accountIds.includes(account.id)
                             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                             : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
                         }`}
                       >
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: account.color || '#9ca3af' }} />
-                          <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate">{account.name}</span>
+                        <div
+                          className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: `${account.color || '#9ca3af'}20`, color: account.color || '#9ca3af' }}
+                        >
+                          <span className="text-xs font-bold">{account.name.charAt(0).toUpperCase()}</span>
                         </div>
-                        {filters.accountIds.includes(account.id) && <Check size={14} className="text-primary-600 flex-shrink-0" />}
+                        <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                          {account.name}
+                        </span>
+                        {filters.accountIds.includes(account.id) && <Check size={12} className="text-primary-600" />}
                       </button>
                     ))}
                   </div>
@@ -426,7 +453,7 @@ export const TransactionFilterSheet = ({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
+        <div className="sticky bottom-0 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-col gap-1">
           {activeFilterCount > 0 && (
             <button
               onClick={resetFilters}
