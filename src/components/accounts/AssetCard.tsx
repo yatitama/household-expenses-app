@@ -446,7 +446,7 @@ const MemberAssetCard = ({
                             </div>
                           </div>
                           <div className="flex justify-end w-28">
-                            <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
+                            <span className="text-gray-900 dark:text-gray-700 font-semibold">
                               {formatCurrency(cardInfo.unsettledAmount)}
                             </span>
                           </div>
@@ -490,7 +490,7 @@ const MemberAssetCard = ({
                           </div>
                         </div>
                         <div className="flex justify-end w-28">
-                          <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
+                          <span className="text-gray-900 dark:text-gray-700 font-semibold">
                             {formatCurrency(rp.amount)}
                           </span>
                         </div>
