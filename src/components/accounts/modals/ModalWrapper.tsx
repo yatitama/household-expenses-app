@@ -32,7 +32,7 @@ export const ModalWrapper = ({ onClose, title, children, size = 'md', zIndex = 5
         className={`bg-white w-full ${sizeClass} sm:rounded-xl rounded-t-xl max-h-[90vh] overflow-hidden flex flex-col animate-slide-up sm:animate-none`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-3 sm:p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white">
+        <div className="p-3 sm:p-4 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white">
           <h2 id="modal-title" className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{title}</h2>
           <button
             onClick={onClose}

@@ -142,10 +142,10 @@ export const FloatingFilterMenu = ({
       {/* グループ化パネル */}
       {isGroupingPanelOpen && (
         <div
-          className="fixed bottom-40 left-4 right-4 bg-white rounded-2xl z-50 border border-gray-200 dark:border-slate-600"
+          className="fixed bottom-40 left-4 right-4 bg-white rounded-2xl z-50 dark:border-slate-600"
           style={{ maxHeight: 'calc(100vh - 10rem)' }}
         >
-          <div className="p-3 border-b border-gray-200 dark:border-slate-600">
+          <div className="p-3 dark:border-slate-600">
             <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">グループ化</h3>
           </div>
           <div className="p-3 space-y-2">
@@ -162,7 +162,7 @@ export const FloatingFilterMenu = ({
                   className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-all active:scale-95 flex items-center gap-2 ${
                     isSelected
                       ? `${info.color} text-white `
-                      : 'bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-slate-500'
+                      : 'bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 dark:border-slate-500'
                   }`}
                 >
                   <OptionIcon size={16} />
@@ -182,7 +182,7 @@ export const FloatingFilterMenu = ({
           {/* 展開されたフィルターアイコン（横1列スクロール） */}
           {isExpanded && (
             <div
-              className="absolute bottom-0 right-14 flex items-center gap-3 bg-gray-200 dark:bg-gray-700 rounded-full px-6 mr-2 border border-white/10"
+              className="absolute bottom-0 right-14 flex items-center gap-3 bg-gray-200 dark:bg-gray-700 rounded-full px-6 mr-2 border-white/10"
               style={{
                 maxWidth: 'calc(100vw - 5rem)',
                 width: 'max-content',
@@ -286,7 +286,7 @@ export const FloatingFilterMenu = ({
 
             {/* アクティブフィルター数のバッジ */}
             {!isExpanded && activeFilterCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-gray-800 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center font-bold border border-white dark:border-gray-800">
+              <span className="absolute -top-1.5 -right-1.5 bg-gray-800 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center font-bold border-white dark:border-gray-800">
                 {activeFilterCount}
               </span>
             )}

@@ -294,7 +294,7 @@ export const SettingsPage = () => {
         </button>
 
         {membersOpen && (
-          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
+          <div className="border-t dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             <button
               onClick={handleAddMember}
               className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors"
@@ -351,9 +351,9 @@ export const SettingsPage = () => {
         </button>
 
         {categoriesOpen && (
-          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
+          <div className="border-t dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             {/* Type toggle */}
-            <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+            <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
               <button
                 onClick={() => setCategoryFilterType('expense')}
                 className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
@@ -433,7 +433,7 @@ export const SettingsPage = () => {
         </button>
 
         {accountsOpen && (
-          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
+          <div className="border-t dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             <button
               onClick={handleAddAccount}
               className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors"
@@ -495,7 +495,7 @@ export const SettingsPage = () => {
         </button>
 
         {paymentMethodsOpen && (
-          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
+          <div className="border-t dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             <button
               onClick={handleAddPM}
               className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors"
@@ -557,7 +557,7 @@ export const SettingsPage = () => {
         </button>
 
         {recurringOpen && (
-          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
+          <div className="border-t dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
             <button
               onClick={handleAddRecurring}
               className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors"
@@ -628,10 +628,10 @@ export const SettingsPage = () => {
         </button>
 
         {dataManagementOpen && (
-          <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
+          <div className="border-t dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
           <button
             onClick={handleExport}
-            className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-lg dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
           >
             <Download size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-800 dark:text-gray-600 flex-shrink-0" />
             <div className="text-left min-w-0">
@@ -642,7 +642,7 @@ export const SettingsPage = () => {
 
           <button
             onClick={handleImport}
-            className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-lg dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
           >
             <Upload size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-700 dark:text-gray-600 flex-shrink-0" />
             <div className="text-left min-w-0">
@@ -653,7 +653,7 @@ export const SettingsPage = () => {
 
           <button
             onClick={handleReset}
-            className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-300 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-800 transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-lg dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-800 transition-colors"
           >
             <Trash2 size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-900 flex-shrink-0" />
             <div className="text-left min-w-0">
@@ -770,7 +770,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 太郎"
-                className="w-full border border-gray-300 dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
                 required
               />
             </div>
@@ -792,7 +792,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 space-y-2">
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
           {member && !member.isDefault && onDelete && (
             <button
               type="button"
@@ -803,7 +803,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100">
               キャンセル
             </button>
             <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors" style={{ backgroundColor: 'var(--theme-primary)' }}>
@@ -850,7 +850,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 食費"
-                className="w-full border border-gray-300 dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
                 required
               />
             </div>
@@ -862,10 +862,10 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                     key={m.id}
                     type="button"
                     onClick={() => setMemberId(m.id)}
-                    className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
+                    className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                       memberId === m.id
                         ? 'text-white border-transparent'
-                        : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
                     }`}
                     style={memberId === m.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                   >
@@ -901,7 +901,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                       key={i}
                       type="button"
                       onClick={() => setIcon(i)}
-                      className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg border flex items-center justify-center transition-colors ${
+                      className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-colors ${
                         icon === i
                           ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
                           : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
@@ -915,7 +915,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 space-y-2">
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
           {category && onDelete && (
             <button
               type="button"
@@ -926,7 +926,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100">
               キャンセル
             </button>
             <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors" style={{ backgroundColor: 'var(--theme-primary)' }}>

@@ -31,10 +31,10 @@ export const MultiSelect = ({ label, options, selectedIds, onChange }: MultiSele
               key={option.id}
               type="button"
               onClick={() => handleToggle(option.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 isSelected
-                  ? 'text-white border-primary-600'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
+                  ? 'text-white'
+                  : 'bg-white text-gray-700 hover:border-gray-300'
               }`}
               style={isSelected ? {
                 backgroundColor: 'var(--theme-primary)',

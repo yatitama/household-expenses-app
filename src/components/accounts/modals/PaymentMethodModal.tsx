@@ -53,7 +53,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 夫クレジットカード"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             />
           </div>
@@ -66,10 +66,10 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   key={member.id}
                   type="button"
                   onClick={() => setMemberId(member.id)}
-                  className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
+                  className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                     memberId === member.id
                       ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
                   }`}
                   style={memberId === member.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
@@ -92,10 +92,10 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     if (value === 'credit_card') setBillingType('monthly');
                     if (value === 'debit_card') setBillingType('immediate');
                   }}
-                  className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
+                  className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                     pmType === value
                       ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
                   }`}
                   style={pmType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
@@ -117,7 +117,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     key={acct.id}
                     type="button"
                     onClick={() => setLinkedAccountId(acct.id)}
-                    className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg border transition-colors ${
+                    className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
                       linkedAccountId === acct.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -142,10 +142,10 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   key={value}
                   type="button"
                   onClick={() => setBillingType(value)}
-                  className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium border transition-colors ${
+                  className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                     billingType === value
                       ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
                   }`}
                   style={billingType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
@@ -177,7 +177,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                       max="31"
                       value={closingDay}
                       onChange={(e) => setClosingDay(e.target.value)}
-                      className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
+                      className="w-16 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
                     />
                     <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">日</span>
                   </div>
@@ -188,7 +188,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     <select
                       value={paymentMonthOffset}
                       onChange={(e) => setPaymentMonthOffset(e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
+                      className="border dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                     >
                       <option value="0">当月</option>
                       <option value="1">翌月</option>
@@ -200,7 +200,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                       max="31"
                       value={paymentDay}
                       onChange={(e) => setPaymentDay(e.target.value)}
-                      className="w-16 border border-gray-300 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
+                      className="w-16 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
                     />
                     <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">日</span>
                   </div>
@@ -238,7 +238,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
 
           </div>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 space-y-2">
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
           {paymentMethod && onDelete && (
             <button
               type="button"
@@ -249,7 +249,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
             </button>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
               キャンセル
             </button>
             <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>

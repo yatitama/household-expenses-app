@@ -76,7 +76,7 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
         className="bg-white w-full sm:max-w-2xl md:max-w-4xl sm:rounded-xl rounded-t-xl max-h-[85vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+        <div className="p-4 dark:border-gray-700 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: account.color }}>
               {ACCOUNT_TYPE_ICONS[account.type]}
@@ -101,7 +101,7 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
               {Object.entries(groupedByDate).map(([date, dayTransactions]) => (
                 <div key={date}>
                   <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{formatDate(date)}</h4>
-                  <div className="bg-white rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+                  <div className="bg-white rounded-xl dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
                     {dayTransactions.map((transaction) => {
                       const category = getCategory(transaction.categoryId);
                       const pm = getPM(transaction.paymentMethodId);

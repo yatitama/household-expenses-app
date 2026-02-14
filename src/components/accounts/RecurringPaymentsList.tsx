@@ -16,7 +16,7 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onToggle, getCateg
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+    <div className="mt-3 pt-3 dark:border-gray-700">
       <div className="flex justify-between items-center mb-1.5">
         <button
           onClick={() => setIsOpen(!isOpen)}

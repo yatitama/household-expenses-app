@@ -73,7 +73,7 @@ export const AccountBalanceSchedule = ({
   return (
     <div className="space-y-3">
       {/* 残高セクション */}
-      <div className="bg-white rounded-lg p-3 md:p-4 border" style={{
+      <div className="bg-white rounded-lg p-3 md:p-4" style={{
         borderColor: 'var(--theme-primary)',
       }}>
         <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-1">

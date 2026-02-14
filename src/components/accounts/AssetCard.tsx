@@ -290,7 +290,7 @@ const MemberAssetCard = ({
 
       {/* 残高セクション */}
       <div className="space-y-3">
-        <div className="bg-white rounded-lg p-3 md:p-4 border" style={{
+        <div className="bg-white rounded-lg p-3 md:p-4" style={{
           borderColor: 'var(--theme-primary)',
         }}>
           <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
@@ -302,7 +302,7 @@ const MemberAssetCard = ({
 
           {/* 口座ごとの内訳 */}
           {slide.memberAccounts.length > 0 && (
-            <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="pt-3 dark:border-gray-700">
               <button
                 onClick={() => setIsBreakdownExpanded(!isBreakdownExpanded)}
                 className="flex items-center gap-1 text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 hover:opacity-80 transition-opacity"
@@ -329,7 +329,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 引き落とし予定セクション */}
-        <div className="bg-white rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
+        <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
           <button
             onClick={() => setIsScheduleExpanded(!isScheduleExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
@@ -351,7 +351,7 @@ const MemberAssetCard = ({
           </button>
 
           {isScheduleExpanded && (
-            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 space-y-3">
+            <div className="mt-3 pt-3 dark:border-gray-700 space-y-3">
               {memberCardUnsettledList.length > 0 && memberCardUnsettledList.some(c => c.unsettledAmount > 0) && (
                 <div>
                   <div className="flex items-center gap-2 mb-2">
@@ -464,7 +464,7 @@ const MemberAssetCard = ({
         </div>
 
         {/* 振り込み予定セクション */}
-        <div className="bg-white rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
+        <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
           <button
             onClick={() => setIsIncomeExpanded(!isIncomeExpanded)}
             className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
@@ -486,7 +486,7 @@ const MemberAssetCard = ({
           </button>
 
           {isIncomeExpanded && (
-            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="mt-3 pt-3 dark:border-gray-700">
               {memberUpcomingIncome.length === 0 ? (
                 <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                   定期収入予定なし

@@ -39,7 +39,7 @@ export const ScheduleSection = ({
   };
 
   return (
-    <div className="bg-white rounded-lg p-3 md:p-4 border border-gray-200 dark:border-gray-800/30">
+    <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
       {/* ヘッダー */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -63,7 +63,7 @@ export const ScheduleSection = ({
 
       {/* 展開時のコンテンツ */}
       {isExpanded && (
-        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 space-y-3">
+        <div className="mt-3 pt-3 dark:border-gray-700 space-y-3">
           {/* カード未精算 */}
           {cardUnsettledList.length > 0 && (
             <div>

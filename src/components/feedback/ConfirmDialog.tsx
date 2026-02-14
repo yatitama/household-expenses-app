@@ -38,7 +38,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 bg-gray-100 rounded-lg font-medium text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+            className="flex-1 px-3 sm:px-4 py-2 dark:border-gray-600 bg-gray-100 rounded-lg font-medium text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
           >
             キャンセル
           </button>

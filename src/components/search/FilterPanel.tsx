@@ -49,11 +49,11 @@ export const FilterPanel = ({
       </button>
 
       {isOpen && (
-        <div id="filter-panel" className="p-3 pt-0 space-y-4 border-t border-gray-100">
+        <div id="filter-panel" className="p-3 pt-0 space-y-4">
           {/* Transaction type */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">種別</label>
-            <div className="flex rounded-lg overflow-hidden border border-gray-200">
+            <div className="flex rounded-lg overflow-hidden">
               {([['all', 'すべて'], ['income', '収入'], ['expense', '支出']] as const).map(([value, label]) => (
                 <button
                   key={value}
@@ -131,7 +131,7 @@ export const FilterPanel = ({
           {activeFilterCount > 0 && (
             <button
               onClick={resetFilters}
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
               <RotateCcw size={14} />
               フィルタをリセット

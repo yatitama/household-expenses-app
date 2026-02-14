@@ -16,7 +16,7 @@ export const SearchBar = ({ value, onChange, placeholder = '取引を検索...' 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full pl-10 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent"
+        className="w-full pl-10 pr-10 py-2.5 bg-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent"
         aria-label="取引を検索"
       />
       {value && (
