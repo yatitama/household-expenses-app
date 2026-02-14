@@ -83,7 +83,7 @@ export const AccountsPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
-      {/* アセットカード */}
+      {/* アセットカード + メインコンテンツ */}
       <div className="overflow-y-auto flex-1">
         <div className="bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6">
           {accounts.length > 0 && (
@@ -95,54 +95,54 @@ export const AccountsPage = () => {
             />
           )}
         </div>
-      </div>
 
-      {/* メインコンテンツエリア */}
-      <div className="p-1 md:p-2 lg:p-3 space-y-3 md:space-y-4">
-        {accounts.length === 0 ? (
-          <div className="bg-white rounded-xl">
-            <EmptyState
-              icon={<Wallet size={32} className="text-gray-500 dark:text-gray-400" />}
-              title="口座がありません"
-              description="設定から口座を追加してください"
-              action={{
-                label: "設定を開く",
-                onClick: () => navigate('/settings')
-              }}
-            />
-          </div>
-        ) : (
-          <>
-            {/* 紐づきなし支払い手段 */}
-            {unlinkedPMs.length > 0 && (
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    紐付未設定のカード ({unlinkedPMs.length}件)
-                  </h3>
+        {/* メインコンテンツエリア */}
+        <div className="p-1 md:p-2 lg:p-3 space-y-3 md:space-y-4">
+          {accounts.length === 0 ? (
+            <div className="bg-white rounded-xl">
+              <EmptyState
+                icon={<Wallet size={32} className="text-gray-500 dark:text-gray-400" />}
+                title="口座がありません"
+                description="設定から口座を追加してください"
+                action={{
+                  label: "設定を開く",
+                  onClick: () => navigate('/settings')
+                }}
+              />
+            </div>
+          ) : (
+            <>
+              {/* 紐づきなし支払い手段 */}
+              {unlinkedPMs.length > 0 && (
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      紐付未設定のカード ({unlinkedPMs.length}件)
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {unlinkedPMs.map((pm) => {
+                      const pmRecurrings = recurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
+                      return (
+                        <PaymentMethodCard
+                          key={pm.id}
+                          paymentMethod={pm}
+                          linkedAccountName={undefined}
+                          pendingAmount={pendingByPM[pm.id] || 0}
+                          recurringPayments={pmRecurrings}
+                          onView={() => navigate('/transactions', { state: { filterType: 'payment', paymentMethodIds: [pm.id] } })}
+                          onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
+                          onEditRecurring={handleEditRecurring}
+                          onToggleRecurring={handleToggleRecurring}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {unlinkedPMs.map((pm) => {
-                    const pmRecurrings = recurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
-                    return (
-                      <PaymentMethodCard
-                        key={pm.id}
-                        paymentMethod={pm}
-                        linkedAccountName={undefined}
-                        pendingAmount={pendingByPM[pm.id] || 0}
-                        recurringPayments={pmRecurrings}
-                        onView={() => navigate('/transactions', { state: { filterType: 'payment', paymentMethodIds: [pm.id] } })}
-                        onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
-                        onEditRecurring={handleEditRecurring}
-                        onToggleRecurring={handleToggleRecurring}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </>
-        )}
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       {/* モーダル群 */}
