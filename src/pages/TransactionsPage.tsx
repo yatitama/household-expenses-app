@@ -178,10 +178,12 @@ export const TransactionsPage = () => {
   }, [filteredTransactions, groupBy, groupOrder, categories, members, getCategoryName, getAccountName, getPaymentMethodName]);
 
   return (
- <div className="pb-20">       {/* Fixed Filter Bar */}
+    <div className="pb-20">
+      {/* Fixed Filter Bar */}
       <div
         ref={filterBarRef}
- className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-slate-900 p-3 md:p-6 lg:p-8"       >
+        className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-3 md:p-6 lg:p-8"
+      >
         <SimpleFilterBar
           filters={filters}
           updateFilter={updateFilter}
@@ -200,11 +202,16 @@ export const TransactionsPage = () => {
       {/* Transaction list */}
       <div
         style={{ paddingTop: `${filterBarHeight + 12}px` }}
- className="p-3 md:p-6 lg:p-8"       >
+        className="p-3 md:p-6 lg:p-8"
+      >
         {filteredTransactions.length === 0 ? (
- <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center ">  <Receipt size={40} className="md:w-12 md:h-12 mx-auto text-primary-600 mb-2 md:mb-3" />  <p className="text-xs md:text-sm text-primary-600">取引がありません</p>           </div>
+          <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center border border-primary-500">
+            <Receipt size={40} className="md:w-12 md:h-12 mx-auto text-primary-600 mb-2 md:mb-3" />
+            <p className="text-xs md:text-sm text-primary-600">取引がありません</p>
+          </div>
         ) : (
- <div className="space-y-2 md:space-y-3">             {groupedTransactions.map(([key, { label, transactions }], groupIndex) => {
+          <div className="space-y-2 md:space-y-3">
+            {groupedTransactions.map(([key, { label, transactions }], groupIndex) => {
               // グループ内の合計を計算
               const groupTotal = transactions.reduce((sum, t) => {
                 return sum + (t.type === 'income' ? t.amount : -t.amount);
@@ -213,13 +220,19 @@ export const TransactionsPage = () => {
               return (
                 <div key={key}>
                   {groupIndex === 0 && (
- <p className="text-sm text-gray-500 dark:text-gray-400 px-4 mb-3">{filteredTransactions.length}件の取引</p>                   )}
- <div className="bg-white rounded-xl overflow-hidden">  <div className="px-4 py-2 bg-white flex items-center justify-between">  <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{label}</p>  <p className={`text-xs md:text-sm font-bold ${                       groupTotal >= 0 ? 'text-gray-700' : 'text-gray-900'
+                    <p className="text-sm text-gray-500 dark:text-gray-400 px-4 mb-3">{filteredTransactions.length}件の取引</p>
+                  )}
+                  <div className="bg-white rounded-xl overflow-hidden">
+                    <div className="px-4 py-2 bg-white border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
+                      <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{label}</p>
+                    <p className={`text-xs md:text-sm font-bold ${
+                      groupTotal >= 0 ? 'text-gray-700' : 'text-gray-900'
                     }`}>
                       {groupTotal >= 0 ? '+' : ''}{formatCurrency(groupTotal)}
                     </p>
                   </div>
- <div className="divide-y divide-gray-50 dark:divide-gray-700">                   {transactions.map((t) => {
+                <div className="divide-y divide-gray-50 dark:divide-gray-700">
+                  {transactions.map((t) => {
                     const color = getCategoryColor(t.categoryId);
                     const source = t.paymentMethodId
                       ? getPaymentMethodName(t.paymentMethodId)
@@ -229,18 +242,24 @@ export const TransactionsPage = () => {
                       <button
                         key={t.id}
                         onClick={() => setEditingTransaction(t)}
- className="w-full flex items-center gap-3 px-4 py-3 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors text-left"                       >
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors text-left"
+                      >
                         <div
- className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"                           style={{ backgroundColor: `${color}20`, color }}
+                          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                          style={{ backgroundColor: `${color}20`, color }}
                         >
                           {getCategoryIcon(getCategoryIconName(t.categoryId), 18)}
                         </div>
- <div className="flex-1 min-w-0">  <p className="text-xs md:text-sm font-medium text-gray-800 dark:text-gray-100 truncate">                             {getCategoryName(t.categoryId)}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs md:text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                            {getCategoryName(t.categoryId)}
                           </p>
- <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 truncate">                             {groupBy !== 'date' && `${formatDate(t.date)} - `}{source}{t.memo ? ` - ${t.memo}` : ''}
+                          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 truncate">
+                            {groupBy !== 'date' && `${formatDate(t.date)} - `}{source}{t.memo ? ` - ${t.memo}` : ''}
                           </p>
                         </div>
- <p className={`text-xs md:text-sm font-bold shrink-0 ${                           t.type === 'income' ? 'text-gray-700' : 'text-gray-900'
+                        <p className={`text-xs md:text-sm font-bold shrink-0 ${
+                          t.type === 'income' ? 'text-gray-700' : 'text-gray-900'
                         }`}>
                           {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
                         </p>

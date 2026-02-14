@@ -50,19 +50,28 @@ export const LinkedPaymentMethodModal = ({
   };
 
   return (
- <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>       <form
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
+      <form
         onSubmit={handleSubmit}
- className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"         onClick={(e) => e.stopPropagation()}
+        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
       >
- <div className="overflow-y-auto flex-1 p-4">  <div className="flex justify-between items-center mb-4">  <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{linkedPaymentMethod ? '支払い手段を編集' : '支払い手段を追加'}</h3>  <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">               <X size={20} />
+        <div className="overflow-y-auto flex-1 p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{linkedPaymentMethod ? '支払い手段を編集' : '支払い手段を追加'}</h3>
+            <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
+              <X size={20} />
             </button>
           </div>
 
- <div className="space-y-5">           <div>
- <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">支払い手段</label>             <select
+          <div className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">支払い手段</label>
+            <select
               value={paymentMethodId}
               onChange={(e) => setPaymentMethodId(e.target.value)}
- className="w-full dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"               required
+              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              required
             >
               <option value="">選択してください</option>
               {availablePaymentMethods.map((pm) => {
@@ -75,14 +84,17 @@ export const LinkedPaymentMethodModal = ({
               })}
             </select>
             {availablePaymentMethods.length === 0 && (
- <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">利用可能な支払い手段がありません</p>             )}
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">利用可能な支払い手段がありません</p>
+            )}
           </div>
 
           <div>
- <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">支払い口座</label>             <select
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">支払い口座</label>
+            <select
               value={accountId}
               onChange={(e) => setAccountId(e.target.value)}
- className="w-full dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"               required
+              className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              required
             >
               <option value="">選択してください</option>
               {accounts.map((acc) => {
@@ -96,26 +108,34 @@ export const LinkedPaymentMethodModal = ({
             </select>
           </div>
 
- <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">  <span className="text-sm font-medium text-gray-900 dark:text-gray-200">有効</span>               <button
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-200">有効</span>
+              <button
                 type="button"
                 onClick={() => setIsActive(!isActive)}
- className="flex items-center gap-2"               >
+                className="flex items-center gap-2"
+              >
                 {isActive ? (
- <ToggleRight size={32} className="text-gray-800" />                 ) : (
- <ToggleLeft size={32} className="text-gray-400 dark:text-gray-600" />                 )}
+                  <ToggleRight size={32} className="text-gray-800" />
+                ) : (
+                  <ToggleLeft size={32} className="text-gray-400 dark:text-gray-600" />
+                )}
               </button>
             </div>
           </div>
         </div>
- <div className="p-4 flex gap-3">           <button
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex gap-3">
+          <button
             type="button"
             onClick={onClose}
- className="flex-1 px-4 py-2 bg-gray-100 text-gray-900 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 font-medium"           >
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 font-medium"
+          >
             キャンセル
           </button>
           <button
             type="submit"
- className="flex-1 px-4 py-2 bg-gray-800 text-white rounded-lg font-medium hover:bg-gray-800"           >
+            className="flex-1 px-4 py-2 bg-gray-800 text-white rounded-lg font-medium hover:bg-gray-800"
+          >
             保存
           </button>
         </div>
