@@ -16,6 +16,7 @@ import { CardUnsettledListModal } from '../components/accounts/modals/CardUnsett
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { AccountModal } from '../components/accounts/modals/AccountModal';
 import { AccountDetailModal } from '../components/accounts/modals/AccountDetailModal';
+import { CardDetailModal } from '../components/accounts/modals/CardDetailModal';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
@@ -45,13 +46,16 @@ export const AccountsPage = () => {
   const [isAccountDetailModalOpen, setIsAccountDetailModalOpen] = useState(false);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
+  const [isCardDetailModalOpen, setIsCardDetailModalOpen] = useState(false);
+  const [editingPaymentMethod, setEditingPaymentMethod] = useState<PaymentMethod | null>(null);
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
   const [isRecurringExpenseModalOpen, setIsRecurringExpenseModalOpen] = useState(false);
   const [isRecurringIncomeModalOpen, setIsRecurringIncomeModalOpen] = useState(false);
 
   const pendingByPM = getPendingAmountByPaymentMethod();
 
-  useBodyScrollLock(!!activeModal || isRecurringDetailModalOpen || isCardUnsettledSheetOpen || isCardUnsettledDetailOpen || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen || isRecurringExpenseModalOpen || isRecurringIncomeModalOpen);
+  useBodyScrollLock(!!activeModal || isRecurringDetailModalOpen || isCardUnsettledSheetOpen || isCardUnsettledDetailOpen || isAccountDetailModalOpen || isCardDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen || isRecurringExpenseModalOpen || isRecurringIncomeModalOpen);
 
   // Handlers
   const handleAddRecurring = (target: { accountId?: string; paymentMethodId?: string }) => {
@@ -64,6 +68,20 @@ export const AccountsPage = () => {
   const handleRecurringDetailClick = (rp: RecurringPayment) => {
     setSelectedRecurring(rp);
     setIsRecurringDetailModalOpen(true);
+  };
+
+  const handleEditRecurringFromDetail = (rp: RecurringPayment) => {
+    handleEditRecurring(rp);
+  };
+
+  const handleCardClick = (pm: PaymentMethod) => {
+    setSelectedPaymentMethod(pm);
+    setIsCardDetailModalOpen(true);
+  };
+
+  const handleEditCardFromDetail = (pm: PaymentMethod) => {
+    setEditingPaymentMethod(pm);
+    setIsPaymentMethodModalOpen(true);
   };
 
   const handleCardUnsettledSheetOpen = (pm: PaymentMethod, transactions: Transaction[]) => {
@@ -128,6 +146,21 @@ export const AccountsPage = () => {
     }
   };
 
+  // Handle edit payment method
+  const handleEditPaymentMethod = (input: PaymentMethodInput) => {
+    try {
+      if (editingPaymentMethod) {
+        paymentMethodService.update(editingPaymentMethod.id, input);
+        toast.success('カードを更新しました');
+      }
+      refreshData();
+      setIsPaymentMethodModalOpen(false);
+      setEditingPaymentMethod(null);
+    } catch (error) {
+      toast.error('カードの更新に失敗しました');
+    }
+  };
+
   const keyboardOptions = useMemo(() => ({
     onNewTransaction: () => {
       if (accounts.length > 0) openModal({ type: 'add-transaction', data: { accountId: accounts[0].id } });
@@ -156,6 +189,7 @@ export const AccountsPage = () => {
               groupedAccounts={groupedAccounts}
               paymentMethods={paymentMethods}
               onAccountClick={handleAccountClick}
+              onCardDetailClick={handleCardClick}
               onRecurringDetailClick={handleRecurringDetailClick}
               onCardUnsettledSheetOpen={handleCardUnsettledSheetOpen}
               onAddAccountClick={() => { setEditingAccount(null); setIsAccountModalOpen(true); }}
@@ -245,6 +279,7 @@ export const AccountsPage = () => {
           setIsRecurringDetailModalOpen(false);
           setSelectedRecurring(null);
         }}
+        onEdit={handleEditRecurringFromDetail}
       />
 
       <CardUnsettledListModal
@@ -299,14 +334,36 @@ export const AccountsPage = () => {
         />
       )}
 
+      <CardDetailModal
+        paymentMethod={selectedPaymentMethod}
+        pendingAmount={selectedPaymentMethod ? pendingByPM[selectedPaymentMethod.id] || 0 : 0}
+        isOpen={isCardDetailModalOpen}
+        onClose={() => {
+          setIsCardDetailModalOpen(false);
+          setSelectedPaymentMethod(null);
+        }}
+        onEdit={handleEditCardFromDetail}
+      />
+
       {isPaymentMethodModalOpen && (
         <PaymentMethodModal
-          paymentMethod={null}
+          paymentMethod={editingPaymentMethod}
           members={memberService.getAll()}
           accounts={accounts}
-          onSave={handleAddPaymentMethod}
-          onClose={() => setIsPaymentMethodModalOpen(false)}
-          onDelete={() => {}}
+          onSave={editingPaymentMethod ? handleEditPaymentMethod : handleAddPaymentMethod}
+          onClose={() => {
+            setIsPaymentMethodModalOpen(false);
+            setEditingPaymentMethod(null);
+          }}
+          onDelete={editingPaymentMethod ? () => {
+            if (editingPaymentMethod) {
+              paymentMethodService.delete(editingPaymentMethod.id);
+              toast.success('カードを削除しました');
+              refreshData();
+              setIsPaymentMethodModalOpen(false);
+              setEditingPaymentMethod(null);
+            }
+          } : undefined}
         />
       )}
 
