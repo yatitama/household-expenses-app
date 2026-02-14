@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Receipt, Sliders } from 'lucide-react';
