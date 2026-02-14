@@ -339,7 +339,7 @@ const MemberAssetCard = ({
                 振り込み予定
               </span>
             </div>
-            <span className="text-base md:text-lg font-bold text-gray-700 dark:text-gray-600">
+            <span className="text-base md:text-lg font-bold text-gray-900 dark:text-gray-700">
               {formatCurrency(memberRecurringIncome)}
             </span>
           </button>
