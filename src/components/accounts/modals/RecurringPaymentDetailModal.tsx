@@ -1,3 +1,4 @@
+import { Pencil } from 'lucide-react';
 import { formatCurrency } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { categoryService } from '../../../services/storage';
@@ -7,12 +8,14 @@ interface RecurringPaymentDetailModalProps {
   recurringPayment: RecurringPayment | null;
   isOpen: boolean;
   onClose: () => void;
+  onEdit?: (recurringPayment: RecurringPayment) => void;
 }
 
 export const RecurringPaymentDetailModal = ({
   recurringPayment,
   isOpen,
   onClose,
+  onEdit,
 }: RecurringPaymentDetailModalProps) => {
   if (!isOpen || !recurringPayment) return null;
 
@@ -119,13 +122,25 @@ export const RecurringPaymentDetailModal = ({
         </div>
 
         {/* フッター */}
-        <div className="flex gap-2 p-3 sm:p-4 bg-white dark:bg-gray-800">
+        <div className="flex gap-2 p-3 sm:p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
           <button
             onClick={onClose}
             className="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium py-2 rounded-lg transition-colors text-sm sm:text-base"
           >
             閉じる
           </button>
+          {onEdit && recurringPayment && (
+            <button
+              onClick={() => {
+                onEdit(recurringPayment);
+                onClose();
+              }}
+              className="flex-1 bg-gray-900 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
+            >
+              <Pencil size={16} />
+              編集
+            </button>
+          )}
         </div>
       </div>
     </div>

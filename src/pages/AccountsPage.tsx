@@ -66,6 +66,10 @@ export const AccountsPage = () => {
     setIsRecurringDetailModalOpen(true);
   };
 
+  const handleEditRecurringFromDetail = (rp: RecurringPayment) => {
+    handleEditRecurring(rp);
+  };
+
   const handleCardUnsettledSheetOpen = (pm: PaymentMethod, transactions: Transaction[]) => {
     setSelectedCardUnsettledPM(pm);
     setCardUnsettledTransactions(transactions);
@@ -245,6 +249,7 @@ export const AccountsPage = () => {
           setIsRecurringDetailModalOpen(false);
           setSelectedRecurring(null);
         }}
+        onEdit={handleEditRecurringFromDetail}
       />
 
       <CardUnsettledListModal
