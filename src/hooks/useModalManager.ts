@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react';
-import type { PaymentMethod, RecurringPayment, LinkedPaymentMethod } from '../types';
+import type { PaymentMethod, RecurringPayment, LinkedPaymentMethod, QuickAddTemplate } from '../types';
 
 export type ModalType =
   | { type: 'viewing-pm'; data: PaymentMethod | { paymentMethod: PaymentMethod; showOnlyUnsettled?: boolean } }
-  | { type: 'add-transaction'; data?: { accountId?: string; paymentMethodId?: string } }
+  | { type: 'add-transaction'; data?: { accountId?: string; paymentMethodId?: string; template?: QuickAddTemplate } }
   | { type: 'recurring'; data: { editing: RecurringPayment | null; target: { accountId?: string; paymentMethodId?: string } | null } }
   | { type: 'linked-pm'; data: { editing: LinkedPaymentMethod | null; accountId: string } }
   | null;

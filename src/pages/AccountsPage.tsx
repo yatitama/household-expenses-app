@@ -79,7 +79,7 @@ export const AccountsPage = () => {
   // QuickAddTemplate handlers
   const handleQuickAddTemplateClick = (template: QuickAddTemplate) => {
     setSelectedQuickAddTemplate(template);
-    setIsQuickAddTemplateDetailModalOpen(true);
+    openModal({ type: 'add-transaction', data: { template } });
   };
 
   const handleSaveQuickAddTemplate = (input: QuickAddTemplateInput) => {
@@ -334,6 +334,7 @@ export const AccountsPage = () => {
       {/* モーダル群 */}
       {activeModal?.type === 'add-transaction' && (
         <AddTransactionModal
+          template={activeModal.data?.template}
           onSaved={refreshData}
           onClose={() => { closeModal(); refreshData(); }}
         />
