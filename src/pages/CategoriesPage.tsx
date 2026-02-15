@@ -82,7 +82,7 @@ export const CategoriesPage = () => {
         <button
           onClick={() => setFilterType('expense')}
           className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-            filterType === 'expense' ? 'text-white' : 'text-gray-900'
+            filterType === 'expense' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
           }`}
         >
           支出
@@ -90,7 +90,7 @@ export const CategoriesPage = () => {
         <button
           onClick={() => setFilterType('income')}
           className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-            filterType === 'income' ? 'bg-gray-600 text-white' : 'text-gray-900'
+            filterType === 'income' ? 'bg-gray-600 text-white' : 'bg-white text-gray-900'
           }`}
         >
           収入
@@ -100,7 +100,7 @@ export const CategoriesPage = () => {
       {/* 追加ボタン */}
       <button
         onClick={handleAdd}
-        className="w-full flex items-center justify-center gap-2 text-white py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base"
+        className="w-full flex items-center justify-center gap-2 bg-gray-800 text-white py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base"
       >
         <Plus size={16} className="sm:w-5 sm:h-5" />
         カテゴリを追加
@@ -108,12 +108,12 @@ export const CategoriesPage = () => {
 
       {/* カテゴリ一覧 */}
       {filteredCategories.length === 0 ? (
-        <div className="rounded-lg sm:rounded-xl p-6 sm:p-8 text-center">
+        <div className="bg-white rounded-lg sm:rounded-xl p-6 sm:p-8 text-center">
           <Tag size={40} className="sm:w-12 sm:h-12 mx-auto text-gray-300 mb-2 sm:mb-3" />
           <p className="text-xs sm:text-sm text-gray-500">カテゴリがありません</p>
         </div>
       ) : (
-        <div className="rounded-lg sm:rounded-xl divide-y divide-gray-100">
+        <div className="bg-white rounded-lg sm:rounded-xl divide-y divide-gray-100">
           {filteredCategories.map((category) => {
             const member = getMember(category.memberId);
             return (
@@ -195,7 +195,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-3 sm:p-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-3 sm:p-4 max-h-[90vh] overflow-y-auto">
         <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
         <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           {/* 名前 */}
@@ -206,7 +206,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 食費"
-              className="w-full dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -222,8 +222,8 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
                   onClick={() => setMemberId(member.id)}
                   className={`flex items-center gap-2 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                     memberId === member.id
-                      ? 'text-white'
-                      : 'text-gray-700 dark:text-gray-300 dark:border-gray-600 hover:border-gray-400'
+                      ? 'bg-gray-800 text-white'
+                      : 'bg-white text-gray-700 dark:text-gray-300 dark:border-gray-600 hover:border-gray-400'
                   }`}
                 >
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
@@ -286,7 +286,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
             </button>
             <button
               type="submit"
-              className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm hover:"
+              className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-gray-800 text-white font-medium text-sm hover:bg-gray-800"
             >
               保存
             </button>

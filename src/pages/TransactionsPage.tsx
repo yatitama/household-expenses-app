@@ -202,12 +202,12 @@ export const TransactionsPage = () => {
   }, [filteredTransactions]);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-slate-900">
       {/* Transaction list */}
       <div className="flex-1 overflow-clip pb-20">
         <div className="p-2 md:p-4 lg:p-6">
         {filteredTransactions.length === 0 ? (
-          <div className="rounded-lg md:rounded-xl p-4 md:p-8 text-center">
+          <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center">
             <Receipt size={40} className="md:w-12 md:h-12 mx-auto text-primary-600 mb-2 md:mb-3" />
             <p className="text-xs md:text-sm text-primary-600">取引がありません</p>
           </div>
@@ -222,10 +222,10 @@ export const TransactionsPage = () => {
               const isExpanded = expandedGroups.has(key);
               return (
                 <div key={key} className="mb-3">
-                  <div className="space-y-0 rounded-lg">
+                  <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg">
                     <button
                       onClick={() => toggleGroupExpanded(key)}
-                      className={`sticky w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left z-10 rounded-t-lg ${isExpanded ? 'border-b dark:border-gray-700' : ''}`}
+                      className={`sticky w-full px-4 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left z-10 rounded-t-lg ${isExpanded ? 'border-b dark:border-gray-700' : ''}`}
                       style={{ top: 'max(0px, env(safe-area-inset-top))' }}
                     >
                       <div className="flex items-center gap-2 flex-1">
@@ -283,14 +283,14 @@ export const TransactionsPage = () => {
       </div>
 
       {/* Fixed Footer with Summary */}
-      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 border-t dark:border-gray-700 p-1.5">
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5">
         <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-between gap-2">
           {/* Left: GroupBy, Filter Button and Count */}
           <div className="flex items-center gap-1.5">
             {/* GroupBy Button */}
             <button
               onClick={handleCycleGroupBy}
-              className="px-2 py-1.5 hover:bg-gray-100 dark:hover:rounded-lg transition-colors text-gray-600 dark:text-gray-400 flex-shrink-0 flex items-center gap-1 text-xs font-medium"
+              className="px-2 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 flex-shrink-0 flex items-center gap-1 text-xs font-medium"
               aria-label="グループ化を変更"
             >
               {getGroupByLabel(groupBy).icon}
@@ -300,7 +300,7 @@ export const TransactionsPage = () => {
             {/* Filter Button */}
             <button
               onClick={() => setIsFilterSheetOpen(true)}
-              className="p-1.5 hover:bg-gray-100 dark:hover:rounded-lg transition-colors text-gray-600 dark:text-gray-400 relative flex-shrink-0"
+              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 relative flex-shrink-0"
               aria-label="フィルター設定を開く"
             >
               <Sliders size={18} />
@@ -318,7 +318,7 @@ export const TransactionsPage = () => {
           </div>
 
           {/* Right: Summary Card */}
-          <div className="rounded-lg p-1.5 text-right flex-shrink-0" style={{
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0" style={{
             borderColor: 'var(--theme-primary)',
           }}>
             <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">

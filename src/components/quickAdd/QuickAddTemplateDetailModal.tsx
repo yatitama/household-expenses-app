@@ -64,9 +64,9 @@ export const QuickAddTemplateDetailModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end z-50">
-      <div className="w-full rounded-t-2xl overflow-y-auto max-h-[90vh]">
+      <div className="bg-white dark:bg-slate-800 w-full rounded-t-2xl overflow-y-auto max-h-[90vh]">
         {/* Header */}
-        <div className="sticky top-0 flex items-center justify-between p-4 border-b dark:border-gray-700">
+        <div className="sticky top-0 flex items-center justify-between p-4 border-b dark:border-gray-700 bg-white dark:bg-slate-800">
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               {template.name}
@@ -94,7 +94,7 @@ export const QuickAddTemplateDetailModal = ({
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               style={{ minWidth: 0, maxWidth: '100%' }}
             />
           </div>
@@ -109,7 +109,7 @@ export const QuickAddTemplateDetailModal = ({
               value={amount || ''}
               onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
               placeholder="0"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -119,7 +119,7 @@ export const QuickAddTemplateDetailModal = ({
               カテゴリ {!template?.categoryId && <span className="text-red-500">*</span>}
             </label>
             {template?.categoryId && !categoryId ? (
-              <div className="bg-gray-50 p-3 rounded-lg">
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                 <p className="text-xs text-gray-500 dark:text-gray-400">カテゴリ</p>
                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{category?.name}</p>
               </div>
@@ -172,13 +172,13 @@ export const QuickAddTemplateDetailModal = ({
             {template?.accountId || template?.paymentMethodId ? (
               <div className="space-y-2">
                 {account && (
-                  <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                     <p className="text-xs text-gray-500 dark:text-gray-400">支払元口座</p>
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{account.name}</p>
                   </div>
                 )}
                 {paymentMethod && (
-                  <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                     <p className="text-xs text-gray-500 dark:text-gray-400">支払い手段</p>
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{paymentMethod.name}</p>
                   </div>
@@ -255,7 +255,7 @@ export const QuickAddTemplateDetailModal = ({
               onChange={(e) => setMemo(e.target.value)}
               placeholder="メモを入力"
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
 
@@ -271,14 +271,14 @@ export const QuickAddTemplateDetailModal = ({
             <button
               type="button"
               onClick={onEdit}
-              className="px-4 py-2 bg-gray-100 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600"
+              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600"
             >
               編集
             </button>
             <button
               type="submit"
               disabled={!amount || !categoryId}
-              className="flex-1 px-4 py-2 btn-primary hover:disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
+              className="flex-1 px-4 py-2 btn-primary hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
             >
               登録
             </button>

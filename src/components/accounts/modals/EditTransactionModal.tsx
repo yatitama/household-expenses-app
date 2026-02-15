@@ -59,7 +59,7 @@ export const EditTransactionModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[60]" onClick={onClose} role="dialog" aria-modal="true" aria-label="取引を編集">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[85vh]"
+        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
@@ -237,7 +237,7 @@ export const EditTransactionModal = ({
             <button
               type="button"
               onClick={() => { onDelete(transaction.id); onClose(); }}
-              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
+              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
             >
               削除
             </button>

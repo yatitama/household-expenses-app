@@ -85,7 +85,7 @@ export const AddTransactionModal = ({ template, onSaved, onClose }: AddTransacti
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose} role="dialog" aria-modal="true" aria-label="取引を追加">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">

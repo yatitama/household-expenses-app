@@ -29,7 +29,7 @@ export const FilterPanel = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="rounded-xl overflow-hidden">
+    <div className="bg-white rounded-xl overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
@@ -40,7 +40,7 @@ export const FilterPanel = ({
           <SlidersHorizontal size={16} />
           <span>フィルタ</span>
           {activeFilterCount > 0 && (
-            <span className="text-white text-sm rounded-full w-5 h-5 flex items-center justify-center">
+            <span className="bg-gray-800 text-white text-sm rounded-full w-5 h-5 flex items-center justify-center">
               {activeFilterCount}
             </span>
           )}
@@ -61,9 +61,9 @@ export const FilterPanel = ({
                   className={`flex-1 py-2 text-sm font-medium transition-colors ${
                     filters.transactionType === value
                       ? value === 'income' ? 'bg-gray-600 text-white'
-                        : value === 'expense' ? 'text-white'
-                        : 'text-white'
-                      : 'text-gray-700 hover:bg-gray-50'
+                        : value === 'expense' ? 'bg-gray-800 text-white'
+                        : 'bg-gray-800 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   {label}

@@ -194,7 +194,7 @@ export const SettingsPage = () => {
       <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">設定</h2>
 
       {/* メンバー管理 */}
-      <div className="rounded-lg sm:rounded-xl overflow-hidden">
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
         <button
           onClick={() => setMembersOpen(!membersOpen)}
           className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
@@ -251,7 +251,7 @@ export const SettingsPage = () => {
       </div>
 
       {/* カテゴリ管理 */}
-      <div className="rounded-lg sm:rounded-xl overflow-hidden">
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
         <button
           aria-label={categoriesOpen ? "カテゴリ管理を折りたたむ" : "カテゴリ管理を展開"}
           onClick={() => setCategoriesOpen(!categoriesOpen)}
@@ -275,7 +275,7 @@ export const SettingsPage = () => {
               <button
                 onClick={() => setCategoryFilterType('expense')}
                 className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-                  categoryFilterType === 'expense' ? 'text-white' : 'text-gray-900 dark:text-gray-200'
+                  categoryFilterType === 'expense' ? 'text-white' : 'bg-white text-gray-900 dark:text-gray-200'
                 }`}
                 style={categoryFilterType === 'expense' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
@@ -284,7 +284,7 @@ export const SettingsPage = () => {
               <button
                 onClick={() => setCategoryFilterType('income')}
                 className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-                  categoryFilterType === 'income' ? 'text-white' : 'text-gray-900 dark:text-gray-200'
+                  categoryFilterType === 'income' ? 'text-white' : 'bg-white text-gray-900 dark:text-gray-200'
                 }`}
                 style={categoryFilterType === 'income' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
@@ -334,7 +334,7 @@ export const SettingsPage = () => {
 
 
       {/* データ管理 */}
-      <div className="rounded-lg sm:rounded-xl overflow-hidden">
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
         <button
           onClick={() => setDataManagementOpen(!dataManagementOpen)}
           className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
@@ -390,7 +390,7 @@ export const SettingsPage = () => {
       </div>
 
       {/* バージョン情報 */}
-      <div className="rounded-xl p-4">
+      <div className="bg-white rounded-xl p-4">
         <p className="text-center text-sm text-gray-500 dark:text-gray-400">家計簿アプリ v1.0.0</p>
       </div>
 
@@ -448,7 +448,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <form onSubmit={handleSubmit} className="w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+      <form onSubmit={handleSubmit} className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
           <div className="space-y-3 sm:space-y-4">
@@ -459,7 +459,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 太郎"
-                className="w-full dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
                 required
               />
             </div>
@@ -486,7 +486,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
             <button
               type="button"
               onClick={() => { onDelete(member); onClose(); }}
-              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:transition-colors"
+              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
             >
               削除
             </button>
@@ -528,7 +528,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <form onSubmit={handleSubmit} className="w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+      <form onSubmit={handleSubmit} className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
           <div className="space-y-3 sm:space-y-4">
@@ -539,7 +539,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 食費"
-                className="w-full dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
                 required
               />
             </div>
@@ -554,7 +554,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                     className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                       memberId === m.id
                         ? 'text-white border-transparent'
-                        : 'text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
+                        : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
                     }`}
                     style={memberId === m.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                   >
@@ -609,7 +609,7 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
             <button
               type="button"
               onClick={() => { onDelete(category.id); onClose(); }}
-              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:transition-colors"
+              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
             >
               削除
             </button>

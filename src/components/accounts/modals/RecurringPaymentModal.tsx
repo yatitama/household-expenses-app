@@ -73,7 +73,7 @@ export const RecurringPaymentModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
@@ -144,7 +144,7 @@ export const RecurringPaymentModal = ({
                 className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                   frequency === 'monthly'
                     ? 'text-white border-transparent'
-                    : 'text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
+                    : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
                 }`}
                 style={frequency === 'monthly' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
@@ -156,7 +156,7 @@ export const RecurringPaymentModal = ({
                 className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                   frequency === 'yearly'
                     ? 'text-white border-transparent'
-                    : 'text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
+                    : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
                 }`}
                 style={frequency === 'yearly' ? { backgroundColor: 'var(--theme-primary)' } : {}}
               >
@@ -329,7 +329,7 @@ export const RecurringPaymentModal = ({
             <button
               type="button"
               onClick={() => { onDelete(recurringPayment.id); onClose(); }}
-              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:transition-colors"
+              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
             >
               削除
             </button>
