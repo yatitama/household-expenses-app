@@ -1,11 +1,8 @@
 import { Plus, Edit2 } from 'lucide-react';
-import type { QuickAddTemplate, Category, Account, PaymentMethod } from '../../types';
+import type { QuickAddTemplate } from '../../types';
 
 interface QuickAddTemplateGridSectionProps {
   templates: QuickAddTemplate[];
-  categories: Category[];
-  accounts: Account[];
-  paymentMethods: PaymentMethod[];
   onTemplateClick: (template: QuickAddTemplate) => void;
   onEditClick: (template: QuickAddTemplate) => void;
   onAddClick: () => void;
@@ -13,22 +10,10 @@ interface QuickAddTemplateGridSectionProps {
 
 export const QuickAddTemplateGridSection = ({
   templates,
-  accounts,
-  paymentMethods,
   onTemplateClick,
   onEditClick,
   onAddClick,
 }: QuickAddTemplateGridSectionProps) => {
-  const getAccountName = (accountId?: string): string => {
-    if (!accountId) return '';
-    return accounts.find((a) => a.id === accountId)?.name || '';
-  };
-
-  const getPaymentMethodName = (paymentMethodId?: string): string => {
-    if (!paymentMethodId) return '';
-    return paymentMethods.find((pm) => pm.id === paymentMethodId)?.name || '';
-  };
-
   if (templates.length === 0) {
     return null;
   }
@@ -50,28 +35,18 @@ export const QuickAddTemplateGridSection = ({
             >
               <button
                 onClick={() => onTemplateClick(template)}
-                className="w-full h-full border border-gray-200 dark:border-gray-700 p-2 hover:opacity-80 transition-opacity flex flex-col justify-between text-left rounded"
+                className="w-full h-full border border-gray-200 dark:border-gray-700 p-2 hover:opacity-80 transition-opacity flex items-center justify-center text-center rounded"
               >
-                <div className="min-w-0">
-                  <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                    {template.name}
-                  </p>
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 space-y-0.5">
-                  {template.accountId && (
-                    <p className="truncate">{getAccountName(template.accountId)}</p>
-                  )}
-                  {template.paymentMethodId && (
-                    <p className="truncate">{getPaymentMethodName(template.paymentMethodId)}</p>
-                  )}
-                </div>
+                <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 break-words leading-tight">
+                  {template.name}
+                </p>
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onEditClick(template);
                 }}
-                className="absolute top-1 right-1 p-1.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                className="absolute bottom-1 right-1 p-1.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
                 aria-label="編集"
               >
                 <Edit2 size={14} className="text-gray-600 dark:text-gray-300" />
