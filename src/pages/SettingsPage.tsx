@@ -240,17 +240,24 @@ export const SettingsPage = () => {
           recurringPayments?: unknown[];
           linkedPaymentMethods?: unknown[];
         };
-        if (data.members) localStorage.setItem('household_members', JSON.stringify(data.members));
-        if (data.categories) localStorage.setItem('household_categories', JSON.stringify(data.categories));
-        if (data.accounts) localStorage.setItem('household_accounts', JSON.stringify(data.accounts));
-        if (data.transactions) localStorage.setItem('household_transactions', JSON.stringify(data.transactions));
-        if (data.budgets) localStorage.setItem('household_budgets', JSON.stringify(data.budgets));
-        if (data.paymentMethods) localStorage.setItem('household_payment_methods', JSON.stringify(data.paymentMethods));
-        if (data.cardBillings) localStorage.setItem('household_card_billings', JSON.stringify(data.cardBillings));
-        if (data.recurringPayments) localStorage.setItem('household_recurring_payments', JSON.stringify(data.recurringPayments));
-        if (data.linkedPaymentMethods) localStorage.setItem('household_linked_payment_methods', JSON.stringify(data.linkedPaymentMethods));
-        toast.success('データをインポートしました。再読み込みします。');
-        setTimeout(() => window.location.reload(), 1000);
+        setConfirmDialogState({
+          isOpen: true,
+          title: 'データをインポート',
+          message: '既存のすべてのデータが置き換わります。よろしいですか？',
+          onConfirm: () => {
+            if (data.members) localStorage.setItem('household_members', JSON.stringify(data.members));
+            if (data.categories) localStorage.setItem('household_categories', JSON.stringify(data.categories));
+            if (data.accounts) localStorage.setItem('household_accounts', JSON.stringify(data.accounts));
+            if (data.transactions) localStorage.setItem('household_transactions', JSON.stringify(data.transactions));
+            if (data.budgets) localStorage.setItem('household_budgets', JSON.stringify(data.budgets));
+            if (data.paymentMethods) localStorage.setItem('household_payment_methods', JSON.stringify(data.paymentMethods));
+            if (data.cardBillings) localStorage.setItem('household_card_billings', JSON.stringify(data.cardBillings));
+            if (data.recurringPayments) localStorage.setItem('household_recurring_payments', JSON.stringify(data.recurringPayments));
+            if (data.linkedPaymentMethods) localStorage.setItem('household_linked_payment_methods', JSON.stringify(data.linkedPaymentMethods));
+            toast.success('データをインポートしました。再読み込みします。');
+            setTimeout(() => window.location.reload(), 1000);
+          },
+        });
       } catch {
         toast.error('インポートに失敗しました。ファイル形式を確認してください。');
       }
