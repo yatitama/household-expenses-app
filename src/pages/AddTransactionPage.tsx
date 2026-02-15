@@ -160,6 +160,7 @@ export const AddTransactionPage = () => {
           {quickAddTemplates.length === 0 && allAccounts.length > 0 && (
             <div className="p-2">
               <button
+                type="button"
                 onClick={() => {
                   setEditingQuickAddTemplate(null);
                   setIsQuickAddTemplateModalOpen(true);

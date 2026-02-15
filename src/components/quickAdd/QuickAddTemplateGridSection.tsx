@@ -34,6 +34,7 @@ export const QuickAddTemplateGridSection = ({
               className="relative aspect-square"
             >
               <button
+                type="button"
                 onClick={() => onTemplateClick(template)}
                 className="w-full h-full border border-gray-200 dark:border-gray-700 p-2 hover:opacity-80 transition-opacity flex items-center justify-center text-center rounded"
               >
@@ -42,6 +43,7 @@ export const QuickAddTemplateGridSection = ({
                 </p>
               </button>
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   onEditClick(template);
@@ -56,6 +58,7 @@ export const QuickAddTemplateGridSection = ({
           {/* Add button */}
           {templates.length < 9 && (
             <button
+              type="button"
               onClick={onAddClick}
               className="aspect-square border border-gray-200 dark:border-gray-700 p-2 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded"
             >
