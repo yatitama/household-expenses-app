@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Calendar, Wallet, CreditCard, Check } from 'lucide-react';
+import { X, Wallet, CreditCard, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { QuickAddTemplate, Category, Account, PaymentMethod, TransactionInput, Member } from '../../types';
@@ -86,9 +86,8 @@ export const QuickAddTemplateDetailModal = ({
         {/* Content */}
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {/* Date */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1 flex items-center gap-1">
-              <Calendar size={16} />
+          <div className="overflow-x-hidden">
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
               日付
             </label>
             <input
@@ -96,6 +95,7 @@ export const QuickAddTemplateDetailModal = ({
               value={date}
               onChange={(e) => setDate(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ minWidth: 0, maxWidth: '100%' }}
             />
           </div>
 
@@ -137,7 +137,7 @@ export const QuickAddTemplateDetailModal = ({
                         className={`relative flex flex-col items-center gap-1 p-1.5 rounded-lg transition-colors ${
                           categoryId === cat.id
                             ? 'border border-blue-500 bg-blue-50 dark:bg-blue-900/30'
-                            : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                            : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                         }`}
                       >
                         <div
@@ -191,10 +191,10 @@ export const QuickAddTemplateDetailModal = ({
                     key={acct.id}
                     type="button"
                     onClick={() => setSelectedSourceId(selectedSourceId === acct.id ? '' : acct.id)}
-                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
+                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                       selectedSourceId === acct.id
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
-                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'border border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <div
@@ -219,10 +219,10 @@ export const QuickAddTemplateDetailModal = ({
                     key={pm.id}
                     type="button"
                     onClick={() => setSelectedSourceId(selectedSourceId === pm.id ? '' : pm.id)}
-                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
+                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                       selectedSourceId === pm.id
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
-                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'border border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <div
