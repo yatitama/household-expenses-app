@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Wallet, CreditCard } from 'lucide-react';
+import { X, Wallet, CreditCard, Check } from 'lucide-react';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { QuickAddTemplate, QuickAddTemplateInput, Category, Account, PaymentMethod, Member } from '../../types';
 
@@ -31,7 +31,9 @@ export const QuickAddTemplateModal = ({
   const [categoryId, setCategoryId] = useState(() =>
     template?.categoryId || categories.find((c) => c.type === 'expense')?.id || ''
   );
+  const [amount, setAmount] = useState(() => template?.amount?.toString() || '');
   const [selectedSourceId, setSelectedSourceId] = useState<string>(() => template?.accountId || template?.paymentMethodId || '');
+  const [date, setDate] = useState(() => template?.date || '');
   const [memo, setMemo] = useState(() => template?.memo || '');
 
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
@@ -50,8 +52,10 @@ export const QuickAddTemplateModal = ({
       name,
       type,
       categoryId,
+      amount: amount ? parseInt(amount, 10) : undefined,
       accountId: account?.id,
       paymentMethodId: paymentMethod?.id,
+      date: date || undefined,
       memo: memo || undefined,
     });
   };
@@ -96,7 +100,7 @@ export const QuickAddTemplateModal = ({
                 type="button"
                 onClick={() => { setType('expense'); setCategoryId(''); }}
                 className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                  type === 'expense' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200 dark:bg-gray-700'
+                  type === 'expense' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                 }`}
               >
                 支出
@@ -105,7 +109,7 @@ export const QuickAddTemplateModal = ({
                 type="button"
                 onClick={() => { setType('income'); setCategoryId(''); }}
                 className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                  type === 'income' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200 dark:bg-gray-700'
+                  type === 'income' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                 }`}
               >
                 収入
@@ -123,12 +127,17 @@ export const QuickAddTemplateModal = ({
                       key={category.id}
                       type="button"
                       onClick={() => setCategoryId(category.id)}
-                      className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                      className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors relative ${
                         categoryId === category.id
                           ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                           : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                       }`}
                     >
+                      {categoryId === category.id && (
+                        <div className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-primary-600 flex items-center justify-center">
+                          <Check size={12} className="text-white" />
+                        </div>
+                      )}
                       <div
                         className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
                         style={{ backgroundColor: `${category.color}20`, color: category.color }}
@@ -149,19 +158,24 @@ export const QuickAddTemplateModal = ({
 
             {/* Account and Payment Methods */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">支払い元 (オプション)</label>
-              <div className="grid grid-cols-2 gap-2">
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">支払い元</label>
+              <div className="grid grid-cols-4 gap-2">
                 {accounts.map((acct) => (
                   <button
                     key={acct.id}
                     type="button"
                     onClick={() => setSelectedSourceId(acct.id)}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                    className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors relative ${
                       selectedSourceId === acct.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                         : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
+                    {selectedSourceId === acct.id && (
+                      <div className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-primary-600 flex items-center justify-center">
+                        <Check size={12} className="text-white" />
+                      </div>
+                    )}
                     <div
                       className="w-6 h-6 rounded-full flex items-center justify-center"
                       style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
@@ -179,12 +193,17 @@ export const QuickAddTemplateModal = ({
                     key={pm.id}
                     type="button"
                     onClick={() => setSelectedSourceId(pm.id)}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                    className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors relative ${
                       selectedSourceId === pm.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                         : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
+                    {selectedSourceId === pm.id && (
+                      <div className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-primary-600 flex items-center justify-center">
+                        <Check size={12} className="text-white" />
+                      </div>
+                    )}
                     <div
                       className="w-6 h-6 rounded-full flex items-center justify-center"
                       style={{ backgroundColor: `${pm.color || '#9ca3af'}20`, color: pm.color || '#9ca3af' }}
@@ -197,6 +216,33 @@ export const QuickAddTemplateModal = ({
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">金額</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0"
+                  className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 dark:border-gray-600 dark:text-gray-100 dark:bg-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                />
+              </div>
+            </div>
+
+            {/* Date */}
+            <div className="overflow-x-hidden">
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">日付</label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full dark:border-gray-600 dark:text-gray-100 dark:bg-slate-700 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+                style={{ minWidth: 0, maxWidth: '100%' }}
+              />
             </div>
 
             {/* Memo */}
