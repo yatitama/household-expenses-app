@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, X, Pencil } from 'lucide-react';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
-import { categoryService, memberService, accountService } from '../../../services/storage';
-import { PM_TYPE_LABELS } from '../constants';
+import { categoryService, accountService } from '../../../services/storage';
 import type { PaymentMethod, Transaction } from '../../../types';
 
 interface CardUnsettledListModalProps {
@@ -28,8 +27,6 @@ export const CardUnsettledListModal = ({
   if (!isOpen || !paymentMethod) return null;
 
   const categories = categoryService.getAll();
-  const members = memberService.getAll();
-  const member = members.find((m) => m.id === paymentMethod.memberId);
   const linkedAccount = accountService.getAll().find((a) => a.id === paymentMethod.linkedAccountId);
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
 
@@ -88,9 +85,9 @@ export const CardUnsettledListModal = ({
 
             {/* カード情報 */}
             <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 space-y-1">
-              <p>{member?.name || 'その他'}の{PM_TYPE_LABELS[paymentMethod.type]}</p>
+              <p>{paymentMethod.name} - [{linkedAccount?.name || 'その他'}]</p>
               {paymentMethod.billingType === 'monthly' && (
-                <p>締日:毎月{paymentMethod.closingDay || 15}日 引き落とし日:{paymentMethod.paymentDay || 10}日 引き落とし先:{linkedAccount?.name || 'その他'}</p>
+                <p>毎月{paymentMethod.closingDay || 15}日締め 翌月{paymentMethod.paymentDay || 10}日引落</p>
               )}
             </div>
           </div>
@@ -172,14 +169,16 @@ export const CardUnsettledListModal = ({
         </div>
 
         {/* フッター */}
-        <div className="p-3 sm:p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700 flex items-center justify-between gap-3">
-          <div className="text-left">
+        <div className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
+          {/* 合計金額 */}
+          <div className="p-3 sm:p-4 border-b dark:border-gray-700">
             <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">合計</p>
             <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
               {formatCurrency(total)}
             </p>
           </div>
-          <div className="flex gap-2">
+          {/* ボタン */}
+          <div className="p-3 sm:p-4 flex gap-2">
             <button
               onClick={onClose}
               className="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium py-2 px-4 rounded-lg transition-colors text-sm sm:text-base"
