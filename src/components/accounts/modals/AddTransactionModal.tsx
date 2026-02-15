@@ -11,77 +11,57 @@ import type { TransactionType, TransactionInput } from '../../../types';
 
 
 interface AddTransactionModalProps {
-  defaultAccountId?: string;
-  defaultPaymentMethodId?: string;
   onSaved: () => void;
   onClose: () => void;
 }
 
-export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, onSaved, onClose }: AddTransactionModalProps) => {
+export const AddTransactionModal = ({ onSaved, onClose }: AddTransactionModalProps) => {
   const allAccounts = accountService.getAll();
   const allPaymentMethods = paymentMethodService.getAll();
   const categories = categoryService.getAll();
   const members = memberService.getAll();
 
-  const isFromPM = !!defaultPaymentMethodId;
-  const isFromAccount = !!defaultAccountId && !defaultPaymentMethodId;
-
-  const accounts = isFromAccount
-    ? allAccounts.filter((a) => a.id === defaultAccountId)
-    : isFromPM
-      ? []
-      : allAccounts;
-
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [accountId, setAccountId] = useState(defaultAccountId || '');
-  const [pmId, setPmId] = useState<string | undefined>(defaultPaymentMethodId);
+  const [selectedSourceId, setSelectedSourceId] = useState('');
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [memo, setMemo] = useState('');
 
   const filteredCategories = categories.filter((c) => c.type === type);
-  const filteredPaymentMethods = type === 'expense' && accountId
-    ? allPaymentMethods.filter((pm) => pm.linkedAccountId === accountId)
-    : [];
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
-
-  const handleSelectAccount = (id: string) => {
-    setAccountId(id);
-    setPmId(undefined);
-  };
-
-  const handleSelectPM = (id: string) => {
-    setPmId(id);
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !categoryId || (!accountId && !pmId)) {
+    if (!amount || !categoryId || !selectedSourceId) {
       toast.error('金額、カテゴリ、支払い元を入力してください');
       return;
     }
 
     const parsedAmount = parseInt(amount, 10);
+
+    // Find if selected source is account or payment method
+    const account = allAccounts.find((a) => a.id === selectedSourceId);
+    const paymentMethod = allPaymentMethods.find((p) => p.id === selectedSourceId);
+
     const input: TransactionInput = {
       type,
       amount: parsedAmount,
       categoryId,
-      accountId,
-      paymentMethodId: pmId,
+      accountId: account?.id || '',
+      paymentMethodId: paymentMethod?.id,
       date,
       memo: memo || undefined,
     };
 
     transactionService.create(input);
 
-    if (pmId) {
-      const pm = allPaymentMethods.find((p) => p.id === pmId);
-      if (pm && pm.billingType === 'immediate' && pm.linkedAccountId) {
-        const acct = accountService.getById(pm.linkedAccountId);
-        if (acct) {
-          const newBalance = type === 'expense' ? acct.balance - parsedAmount : acct.balance + parsedAmount;
-          accountService.update(pm.linkedAccountId, { balance: newBalance });
+    if (paymentMethod) {
+      if (paymentMethod.billingType === 'immediate' && paymentMethod.linkedAccountId) {
+        const linkedAccount = accountService.getById(paymentMethod.linkedAccountId);
+        if (linkedAccount) {
+          const newBalance = type === 'expense' ? linkedAccount.balance - parsedAmount : linkedAccount.balance + parsedAmount;
+          accountService.update(paymentMethod.linkedAccountId, { balance: newBalance });
         }
         const allTx = transactionService.getAll();
         const lastTx = allTx[allTx.length - 1];
@@ -89,12 +69,9 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
           transactionService.update(lastTx.id, { settledAt: new Date().toISOString() });
         }
       }
-    } else if (accountId) {
-      const acct = accountService.getById(accountId);
-      if (acct) {
-        const newBalance = type === 'expense' ? acct.balance - parsedAmount : acct.balance + parsedAmount;
-        accountService.update(accountId, { balance: newBalance });
-      }
+    } else if (account) {
+      const newBalance = type === 'expense' ? account.balance - parsedAmount : account.balance + parsedAmount;
+      accountService.update(account.id, { balance: newBalance });
     }
 
     // toast通知で統一し、自動でモーダルを閉じる
@@ -131,7 +108,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
+                  onClick={() => { setType('income'); setCategoryId(''); }}
                   className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
                     type === 'income' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                   }`}
@@ -194,13 +171,13 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                   {type === 'expense' ? '支払い元' : '入金先'}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
-                  {accounts.map((acct) => (
+                  {allAccounts.map((acct) => (
                     <button
                       key={acct.id}
                       type="button"
-                      onClick={() => handleSelectAccount(acct.id)}
+                      onClick={() => setSelectedSourceId(acct.id)}
                       className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
-                        accountId === acct.id && pmId === undefined
+                        selectedSourceId === acct.id
                           ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                           : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
@@ -217,13 +194,13 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                     </button>
                   ))}
 
-                  {filteredPaymentMethods.map((pm) => (
+                  {type === 'expense' && allPaymentMethods.map((pm) => (
                     <button
                       key={pm.id}
                       type="button"
-                      onClick={() => handleSelectPM(pm.id)}
+                      onClick={() => setSelectedSourceId(pm.id)}
                       className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
-                        pmId === pm.id
+                        selectedSourceId === pm.id
                           ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                           : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
@@ -272,7 +249,7 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
           </button>
           <button
             type="submit"
-            disabled={!amount || !categoryId || (!accountId && !pmId)}
+            disabled={!amount || !categoryId || !selectedSourceId}
             className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm disabled:opacity-50 transition-colors"
           >
             登録

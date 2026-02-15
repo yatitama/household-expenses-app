@@ -156,10 +156,10 @@ export const AccountsPage = () => {
 
   const keyboardOptions = useMemo(() => ({
     onNewTransaction: () => {
-      if (accounts.length > 0) openModal({ type: 'add-transaction', data: { accountId: accounts[0].id } });
+      openModal({ type: 'add-transaction' });
     },
     onCloseModal: closeModal,
-  }), [accounts, openModal, closeModal]);
+  }), [openModal, closeModal]);
 
   useKeyboardShortcuts(keyboardOptions);
 
@@ -244,10 +244,8 @@ export const AccountsPage = () => {
       </div>
 
       {/* モーダル群 */}
-      {activeModal?.type === 'add-transaction' && activeModal.data && (
+      {activeModal?.type === 'add-transaction' && (
         <AddTransactionModal
-          defaultAccountId={activeModal.data.accountId}
-          defaultPaymentMethodId={activeModal.data.paymentMethodId}
           onSaved={refreshData}
           onClose={() => { closeModal(); refreshData(); }}
         />
