@@ -143,8 +143,8 @@ export const QuickAddTemplateModal = ({
                       onClick={() => setCategoryId(categoryId === category.id ? '' : category.id)}
                       className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                         categoryId === category.id
-                          ? 'border border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                          : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                          ? 'bg-primary-50 dark:bg-primary-900/30'
+                          : ''
                       }`}
                     >
                       <div
@@ -181,10 +181,10 @@ export const QuickAddTemplateModal = ({
                     key={acct.id}
                     type="button"
                     onClick={() => setSelectedSourceId(selectedSourceId === acct.id ? '' : acct.id)}
-                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
+                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                       selectedSourceId === acct.id
-                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'bg-primary-50 dark:bg-primary-900/30'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <div
@@ -209,10 +209,10 @@ export const QuickAddTemplateModal = ({
                     key={pm.id}
                     type="button"
                     onClick={() => setSelectedSourceId(selectedSourceId === pm.id ? '' : pm.id)}
-                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
+                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                       selectedSourceId === pm.id
-                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'bg-primary-50 dark:bg-primary-900/30'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <div
