@@ -22,13 +22,7 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
           <button
             key={account.id}
             onClick={() => onAccountClick?.(account)}
-            className="p-3 md:p-4 text-left h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity"
-            style={{
-              borderTop: '2px solid #d1d5db',
-              borderLeft: '2px solid #d1d5db',
-              borderBottom: '3px solid #6b7280',
-              borderRight: '3px solid #6b7280',
-            }}
+            className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 text-left h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity"
           >
             <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
               {account.name}
@@ -41,13 +35,7 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
         {onAddClick && (
           <button
             onClick={onAddClick}
-            className="p-3 md:p-4 h-24 md:h-28 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            style={{
-              borderTop: '2px solid #d1d5db',
-              borderLeft: '2px solid #d1d5db',
-              borderBottom: '3px solid #6b7280',
-              borderRight: '3px solid #6b7280',
-            }}
+            className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           >
             <Plus size={24} className="text-gray-400 dark:text-gray-500" />
           </button>
