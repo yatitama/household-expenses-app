@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, Wallet, CreditCard, Repeat } from 'lucide-react';
-import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService } from '../services/storage';
+import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService, cardBillingService, linkedPaymentMethodService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
@@ -204,6 +204,10 @@ export const SettingsPage = () => {
       transactions: transactionService.getAll(),
       categories: categoryService.getAll(),
       budgets: budgetService.getAll(),
+      paymentMethods: paymentMethodService.getAll(),
+      cardBillings: cardBillingService.getAll(),
+      recurringPayments: recurringPaymentService.getAll(),
+      linkedPaymentMethods: linkedPaymentMethodService.getAll(),
       exportedAt: new Date().toISOString(),
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -231,14 +235,29 @@ export const SettingsPage = () => {
           transactions?: unknown[];
           categories?: unknown[];
           budgets?: unknown[];
+          paymentMethods?: unknown[];
+          cardBillings?: unknown[];
+          recurringPayments?: unknown[];
+          linkedPaymentMethods?: unknown[];
         };
-        if (data.members) localStorage.setItem('household_members', JSON.stringify(data.members));
-        if (data.categories) localStorage.setItem('household_categories', JSON.stringify(data.categories));
-        if (data.accounts) localStorage.setItem('household_accounts', JSON.stringify(data.accounts));
-        if (data.transactions) localStorage.setItem('household_transactions', JSON.stringify(data.transactions));
-        if (data.budgets) localStorage.setItem('household_budgets', JSON.stringify(data.budgets));
-        toast.success('データをインポートしました。再読み込みします。');
-        setTimeout(() => window.location.reload(), 1000);
+        setConfirmDialogState({
+          isOpen: true,
+          title: 'データをインポート',
+          message: '既存のすべてのデータが置き換わります。よろしいですか？',
+          onConfirm: () => {
+            if (data.members) localStorage.setItem('household_members', JSON.stringify(data.members));
+            if (data.categories) localStorage.setItem('household_categories', JSON.stringify(data.categories));
+            if (data.accounts) localStorage.setItem('household_accounts', JSON.stringify(data.accounts));
+            if (data.transactions) localStorage.setItem('household_transactions', JSON.stringify(data.transactions));
+            if (data.budgets) localStorage.setItem('household_budgets', JSON.stringify(data.budgets));
+            if (data.paymentMethods) localStorage.setItem('household_payment_methods', JSON.stringify(data.paymentMethods));
+            if (data.cardBillings) localStorage.setItem('household_card_billings', JSON.stringify(data.cardBillings));
+            if (data.recurringPayments) localStorage.setItem('household_recurring_payments', JSON.stringify(data.recurringPayments));
+            if (data.linkedPaymentMethods) localStorage.setItem('household_linked_payment_methods', JSON.stringify(data.linkedPaymentMethods));
+            toast.success('データをインポートしました。再読み込みします。');
+            setTimeout(() => window.location.reload(), 1000);
+          },
+        });
       } catch {
         toast.error('インポートに失敗しました。ファイル形式を確認してください。');
       }
