@@ -230,6 +230,23 @@ export const AccountsPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
+      {/* クイック追加セクション（一番上） */}
+      {accounts.length > 0 && quickAddTemplates.length > 0 && (
+        <div className="bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6">
+          <QuickAddTemplateGridSection
+            templates={quickAddTemplates}
+            categories={categories}
+            accounts={accounts}
+            paymentMethods={paymentMethods}
+            onTemplateClick={handleQuickAddTemplateClick}
+            onAddClick={() => {
+              setEditingQuickAddTemplate(null);
+              setIsQuickAddTemplateModalOpen(true);
+            }}
+          />
+        </div>
+      )}
+
       {/* アセットカード + メインコンテンツ */}
       <div className="flex-1 overflow-clip">
         <div className="bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6">
@@ -264,20 +281,7 @@ export const AccountsPage = () => {
             </div>
           ) : (
             <>
-              {/* クイック追加セクション */}
-              {quickAddTemplates.length > 0 && (
-                <QuickAddTemplateGridSection
-                  templates={quickAddTemplates}
-                  categories={categories}
-                  accounts={accounts}
-                  paymentMethods={paymentMethods}
-                  onTemplateClick={handleQuickAddTemplateClick}
-                  onAddClick={() => {
-                    setEditingQuickAddTemplate(null);
-                    setIsQuickAddTemplateModalOpen(true);
-                  }}
-                />
-              )}
+              {/* クイック追加テンプレート0件の場合、追加ボタンのみ表示 */}
 
               {/* 紐づきなし支払い手段 */}
               {unlinkedPMs.length > 0 && (
@@ -312,7 +316,7 @@ export const AccountsPage = () => {
               )}
 
               {/* クイック追加セクション（テンプレート0件の場合、追加ボタンのみ表示） */}
-              {quickAddTemplates.length === 0 && (
+              {quickAddTemplates.length === 0 && accounts.length > 0 && (
                 <div className="p-2">
                   <button
                     onClick={() => {

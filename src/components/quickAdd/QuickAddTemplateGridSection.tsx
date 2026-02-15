@@ -40,7 +40,7 @@ export const QuickAddTemplateGridSection = ({
         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">クイック追加 ({templates.length}件)</h3>
       </div>
       <div className="pt-2 pb-3 md:pb-4">
-        <div className="grid grid-cols-4 gap-2 md:gap-3 p-2">
+        <div className="grid grid-cols-3 gap-2 md:gap-3 p-2">
           {templates.map((template) => (
             <button
               key={template.id}
@@ -63,7 +63,7 @@ export const QuickAddTemplateGridSection = ({
             </button>
           ))}
           {/* Add button */}
-          {templates.length < 16 && (
+          {templates.length < 9 && (
             <button
               onClick={onAddClick}
               className="aspect-square border border-gray-200 dark:border-gray-700 p-2 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded"
