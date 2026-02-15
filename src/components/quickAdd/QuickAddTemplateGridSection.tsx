@@ -20,11 +20,8 @@ export const QuickAddTemplateGridSection = ({
 
   return (
     <div data-section-name="クイック追加">
-      <div
-        className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
-        style={{ top: 'max(0px, env(safe-area-inset-top))' }}
-      >
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">クイック追加 ({templates.length}件)</h3>
+      <div className="p-2">
+        <h3 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200">クイック入力</h3>
       </div>
       <div className="pt-2 pb-3 md:pb-4">
         <div className="grid grid-cols-3 gap-2 md:gap-3 p-2">
