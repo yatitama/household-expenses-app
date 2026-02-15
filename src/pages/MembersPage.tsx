@@ -82,7 +82,7 @@ export const MembersPage = () => {
       {/* 追加ボタン */}
       <button
         onClick={handleAdd}
-        className="w-full flex items-center justify-center gap-2 bg-gray-800 text-white py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base"
+        className="w-full flex items-center justify-center gap-2 text-white py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base"
       >
         <Plus size={16} className="sm:w-5 sm:h-5" />
         メンバーを追加
@@ -90,12 +90,12 @@ export const MembersPage = () => {
 
       {/* メンバー一覧 */}
       {members.length === 0 ? (
-        <div className="bg-white rounded-lg sm:rounded-xl p-6 sm:p-8 text-center">
+        <div className="rounded-lg sm:rounded-xl p-6 sm:p-8 text-center">
           <Users size={40} className="sm:w-12 sm:h-12 mx-auto text-gray-300 mb-2 sm:mb-3" />
           <p className="text-xs sm:text-sm text-gray-500">メンバーがいません</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg sm:rounded-xl divide-y divide-gray-100">
+        <div className="rounded-lg sm:rounded-xl divide-y divide-gray-100">
           {members.map((member) => (
             <div key={member.id} className="flex items-center justify-between p-3 sm:p-4">
               <div className="flex items-center gap-2 sm:gap-3">
@@ -172,7 +172,7 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-3 sm:p-4 max-h-[90vh] overflow-y-auto">
+      <div className="w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-3 sm:p-4 max-h-[90vh] overflow-y-auto">
         <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
         <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           {/* 名前 */}
@@ -183,7 +183,7 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 太郎"
-              className="w-full dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -238,7 +238,7 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
             </button>
             <button
               type="submit"
-              className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-gray-800 text-white font-medium text-sm hover:bg-gray-800"
+              className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm hover:"
             >
               保存
             </button>

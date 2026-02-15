@@ -108,7 +108,7 @@ export const AccountsCarousel = ({
                   onClick={() => goToSlide(index)}
                   className={`w-1.5 h-1.5 rounded-full transition-all ${
                     index === currentIndex
-                      ? 'bg-gray-800 dark:bg-gray-300 w-5'
+                      ? 'dark:bg-gray-300 w-5'
                       : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
                   }`}
                   aria-label={`口座 ${index + 1}`}

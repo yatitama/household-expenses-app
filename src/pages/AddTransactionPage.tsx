@@ -90,11 +90,11 @@ export const AddTransactionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen">
       <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
         <form
           onSubmit={handleSubmit}
-          className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+          className="w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         >
           <div ref={scrollContainerRef} className="overflow-y-auto flex-1 p-3 sm:p-4">
             <div className="flex justify-between items-center mb-4">

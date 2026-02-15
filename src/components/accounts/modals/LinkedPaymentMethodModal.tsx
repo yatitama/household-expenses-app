@@ -53,7 +53,7 @@ export const LinkedPaymentMethodModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
       <form
         onSubmit={handleSubmit}
-        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        className="w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-4">
@@ -134,7 +134,7 @@ export const LinkedPaymentMethodModal = ({
           </button>
           <button
             type="submit"
-            className="flex-1 px-4 py-2 bg-gray-800 text-white rounded-lg font-medium hover:bg-gray-800"
+            className="flex-1 px-4 py-2 text-white rounded-lg font-medium hover:"
           >
             保存
           </button>

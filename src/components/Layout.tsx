@@ -54,9 +54,9 @@ const navItems: NavItemProps[] = [
 
 export const Layout = () => {
   return (
-    <div className="min-h-screen flex bg-white dark:bg-slate-900">
+    <div className="min-h-screen flex grid-background">
       {/* デスクトップ: サイドバーナビゲーション */}
-      <nav aria-label="メインナビゲーション" className="hidden md:flex md:flex-col md:w-64 bg-white dark:border-gray-700 fixed inset-y-0 left-0">
+      <nav aria-label="メインナビゲーション" className="hidden md:flex md:flex-col md:w-64 dark:border-gray-700 fixed inset-y-0 left-0">
         <div className="p-4 dark:border-gray-700">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">家計簿</h1>
         </div>
@@ -73,7 +73,7 @@ export const Layout = () => {
       </main>
 
       {/* モバイル: ボトムナビゲーション */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:border-gray-700 h-16 z-50" aria-label="メインナビゲーション">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 dark:border-gray-700 h-16 z-50" aria-label="メインナビゲーション">
         <div className="flex justify-around items-center h-full">
           {navItems.map((item) => (
             <BottomNavItem key={item.to} {...item} />

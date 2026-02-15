@@ -36,7 +36,7 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ message }) => {
       aria-live="polite"
       aria-label={message || '読み込み中'}
     >
-      <div className="bg-white rounded-xl p-8 flex flex-col items-center dark:border-gray-700">
+      <div className="rounded-xl p-8 flex flex-col items-center dark:border-gray-700">
         <LoadingSpinner size="lg" />
         {message && (
           <p className="mt-4 text-gray-900 dark:text-gray-200 font-semibold text-center">

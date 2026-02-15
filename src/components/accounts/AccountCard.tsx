@@ -20,7 +20,7 @@ export const AccountCard = ({
   return (
     <div
       data-account-id={account.id}
-      className={`bg-white rounded-lg md:rounded-xl p-3 md:p-4  transition-all duration-200`}
+      className={`rounded-lg md:rounded-xl p-3 md:p-4  transition-all duration-200`}
     >
       {/* 口座情報 */}
       <div className="flex gap-2 md:gap-2.5">

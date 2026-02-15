@@ -26,7 +26,7 @@ export const PaymentMethodCard = ({
   const getCategory = (id: string) => categories.find((c) => c.id === id);
 
   return (
-    <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-4">
+    <div className="rounded-lg md:rounded-xl p-3 md:p-4">
       <div className="flex items-start">
         <button onClick={onView} className="flex items-center gap-2 md:gap-3 flex-1 text-left" aria-label={`${paymentMethod.name}の詳細を表示`}>
           <div
