@@ -78,8 +78,7 @@ export const AccountsPage = () => {
 
   // QuickAddTemplate handlers
   const handleQuickAddTemplateClick = (template: QuickAddTemplate) => {
-    setSelectedQuickAddTemplate(template);
-    openModal({ type: 'add-transaction', data: { template } });
+    navigate('/add-transaction', { state: { template } });
   };
 
   const handleSaveQuickAddTemplate = (input: QuickAddTemplateInput) => {
