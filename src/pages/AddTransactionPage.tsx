@@ -5,10 +5,12 @@ import { ArrowLeft, Wallet, CreditCard, Check } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   accountService, transactionService, categoryService,
-  paymentMethodService, memberService,
+  paymentMethodService, memberService, quickAddTemplateService,
 } from '../services/storage';
 import { getCategoryIcon } from '../utils/categoryIcons';
-import type { TransactionType, TransactionInput, QuickAddTemplate } from '../types';
+import { QuickAddTemplateGridSection } from '../components/quickAdd/QuickAddTemplateGridSection';
+import { QuickAddTemplateModal } from '../components/quickAdd/QuickAddTemplateModal';
+import type { TransactionType, TransactionInput, QuickAddTemplate, QuickAddTemplateInput } from '../types';
 
 export const AddTransactionPage = () => {
   const location = useLocation();
@@ -26,6 +28,12 @@ export const AddTransactionPage = () => {
   const [selectedSourceId, setSelectedSourceId] = useState(() => template?.accountId || template?.paymentMethodId || '');
   const [date, setDate] = useState(() => template?.date || format(new Date(), 'yyyy-MM-dd'));
   const [memo, setMemo] = useState(() => template?.memo || '');
+
+  const [quickAddTemplates, setQuickAddTemplates] = useState<QuickAddTemplate[]>(() =>
+    quickAddTemplateService.getAll()
+  );
+  const [editingQuickAddTemplate, setEditingQuickAddTemplate] = useState<QuickAddTemplate | null>(null);
+  const [isQuickAddTemplateModalOpen, setIsQuickAddTemplateModalOpen] = useState(false);
 
   const filteredCategories = categories.filter((c) => c.type === type);
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
@@ -82,6 +90,45 @@ export const AddTransactionPage = () => {
     }
   };
 
+  const handleQuickAddTemplateClick = (tpl: QuickAddTemplate) => {
+    setType(tpl.type);
+    setAmount(tpl.amount ? String(tpl.amount) : '');
+    setCategoryId(tpl.categoryId || '');
+    setSelectedSourceId(tpl.accountId || tpl.paymentMethodId || '');
+    setDate(tpl.date || format(new Date(), 'yyyy-MM-dd'));
+    setMemo(tpl.memo || '');
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  };
+
+  const handleSaveQuickAddTemplate = (input: QuickAddTemplateInput) => {
+    try {
+      if (editingQuickAddTemplate) {
+        quickAddTemplateService.update(editingQuickAddTemplate.id, input);
+        toast.success('テンプレートを更新しました');
+      } else {
+        quickAddTemplateService.create(input);
+        toast.success('テンプレートを作成しました');
+      }
+      setQuickAddTemplates(quickAddTemplateService.getAll());
+      setIsQuickAddTemplateModalOpen(false);
+      setEditingQuickAddTemplate(null);
+    } catch {
+      toast.error('テンプレートの保存に失敗しました');
+    }
+  };
+
+  const handleDeleteQuickAddTemplate = () => {
+    if (editingQuickAddTemplate) {
+      quickAddTemplateService.delete(editingQuickAddTemplate.id);
+      toast.success('テンプレートを削除しました');
+      setQuickAddTemplates(quickAddTemplateService.getAll());
+      setIsQuickAddTemplateModalOpen(false);
+      setEditingQuickAddTemplate(null);
+    }
+  };
+
   const resetForm = () => {
     setType('expense');
     setAmount('');
@@ -95,7 +142,35 @@ export const AddTransactionPage = () => {
         onSubmit={handleSubmit}
         className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto flex flex-col flex-1"
       >
-        <div ref={scrollContainerRef} className="overflow-y-auto flex-1 p-3 sm:p-4">
+        <div ref={scrollContainerRef} className="overflow-y-auto flex-1">
+          {allAccounts.length > 0 && quickAddTemplates.length > 0 && (
+            <QuickAddTemplateGridSection
+              templates={quickAddTemplates}
+              onTemplateClick={handleQuickAddTemplateClick}
+              onEditClick={(tpl) => {
+                setEditingQuickAddTemplate(tpl);
+                setIsQuickAddTemplateModalOpen(true);
+              }}
+              onAddClick={() => {
+                setEditingQuickAddTemplate(null);
+                setIsQuickAddTemplateModalOpen(true);
+              }}
+            />
+          )}
+          {quickAddTemplates.length === 0 && allAccounts.length > 0 && (
+            <div className="p-2">
+              <button
+                onClick={() => {
+                  setEditingQuickAddTemplate(null);
+                  setIsQuickAddTemplateModalOpen(true);
+                }}
+                className="w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
+              >
+                + クイック追加テンプレートを作成
+              </button>
+            </div>
+          )}
+          <div className="p-3 sm:p-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
               <Link to="/" className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
@@ -265,7 +340,8 @@ export const AddTransactionPage = () => {
               </div>
             </div>
           </div>
-          <div className="border-t dark:border-gray-700 p-3 sm:p-4 flex gap-3">
+        </div>
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4 flex gap-3">
             <Link to="/" className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600 text-center">
               キャンセル
             </Link>
@@ -278,6 +354,22 @@ export const AddTransactionPage = () => {
             </button>
           </div>
         </form>
+      {isQuickAddTemplateModalOpen && (
+        <QuickAddTemplateModal
+          template={editingQuickAddTemplate}
+          categories={categories}
+          accounts={allAccounts}
+          paymentMethods={allPaymentMethods}
+          members={members}
+          isOpen={isQuickAddTemplateModalOpen}
+          onSave={handleSaveQuickAddTemplate}
+          onClose={() => {
+            setIsQuickAddTemplateModalOpen(false);
+            setEditingQuickAddTemplate(null);
+          }}
+          onDelete={editingQuickAddTemplate ? handleDeleteQuickAddTemplate : undefined}
+        />
+      )}
     </div>
   );
 };
