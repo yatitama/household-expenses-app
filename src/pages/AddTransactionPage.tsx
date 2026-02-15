@@ -168,7 +168,7 @@ export const AddTransactionPage = () => {
                         )}
                         {categoryId === category.id && (
                           <div className="absolute -top-1 -right-1">
-                            <Check size={20} className="text-primary-600" strokeWidth={3} />
+                            <Check size={16} className="text-primary-500" strokeWidth={2} />
                           </div>
                         )}
                       </button>
