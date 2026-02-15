@@ -125,7 +125,6 @@ export const QuickAddTemplateModal = ({
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0"
                   className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
-                  required
                 />
               </div>
             </div>
