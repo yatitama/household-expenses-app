@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
-import { ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Wallet, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
   accountService, transactionService, categoryService,
@@ -17,62 +17,47 @@ export const AddTransactionPage = () => {
   const categories = categoryService.getAll();
   const members = memberService.getAll();
 
-  const defaultAccountId = allAccounts.length > 0 ? allAccounts[0].id : '';
-
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [accountId, setAccountId] = useState(defaultAccountId);
-  const [pmId, setPmId] = useState<string | undefined>();
+  const [selectedSourceId, setSelectedSourceId] = useState('');
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [memo, setMemo] = useState('');
 
   const filteredCategories = categories.filter((c) => c.type === type);
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
-  const accounts = allAccounts;
-  const paymentMethods = pmId
-    ? allPaymentMethods.filter((pm) => pm.id === pmId)
-    : accountId
-      ? allPaymentMethods.filter((pm) => pm.linkedAccountId === accountId)
-      : allPaymentMethods;
-
-  const handleSelectAccount = (id: string) => {
-    setAccountId(id);
-    setPmId(undefined);
-  };
-
-  const handleSelectPM = (id: string) => {
-    setPmId(id);
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !categoryId || (!accountId && !pmId)) {
+    if (!amount || !categoryId || !selectedSourceId) {
       toast.error('金額、カテゴリ、支払い元を入力してください');
       return;
     }
 
     const parsedAmount = parseInt(amount, 10);
+
+    // Find if selected source is account or payment method
+    const account = allAccounts.find((a) => a.id === selectedSourceId);
+    const paymentMethod = allPaymentMethods.find((p) => p.id === selectedSourceId);
+
     const input: TransactionInput = {
       type,
       amount: parsedAmount,
       categoryId,
-      accountId,
-      paymentMethodId: pmId,
+      accountId: account?.id || '',
+      paymentMethodId: paymentMethod?.id,
       date,
       memo: memo || undefined,
     };
 
     transactionService.create(input);
 
-    if (pmId) {
-      const pm = allPaymentMethods.find((p) => p.id === pmId);
-      if (pm && pm.billingType === 'immediate' && pm.linkedAccountId) {
-        const acct = accountService.getById(pm.linkedAccountId);
-        if (acct) {
-          const newBalance = type === 'expense' ? acct.balance - parsedAmount : acct.balance + parsedAmount;
-          accountService.update(pm.linkedAccountId, { balance: newBalance });
+    if (paymentMethod) {
+      if (paymentMethod.billingType === 'immediate' && paymentMethod.linkedAccountId) {
+        const linkedAccount = accountService.getById(paymentMethod.linkedAccountId);
+        if (linkedAccount) {
+          const newBalance = type === 'expense' ? linkedAccount.balance - parsedAmount : linkedAccount.balance + parsedAmount;
+          accountService.update(paymentMethod.linkedAccountId, { balance: newBalance });
         }
         const allTx = transactionService.getAll();
         const lastTx = allTx[allTx.length - 1];
@@ -80,12 +65,9 @@ export const AddTransactionPage = () => {
           transactionService.update(lastTx.id, { settledAt: new Date().toISOString() });
         }
       }
-    } else if (accountId) {
-      const acct = accountService.getById(accountId);
-      if (acct) {
-        const newBalance = type === 'expense' ? acct.balance - parsedAmount : acct.balance + parsedAmount;
-        accountService.update(accountId, { balance: newBalance });
-      }
+    } else if (account) {
+      const newBalance = type === 'expense' ? account.balance - parsedAmount : account.balance + parsedAmount;
+      accountService.update(account.id, { balance: newBalance });
     }
 
     toast.success('取引を追加しました');
@@ -100,7 +82,7 @@ export const AddTransactionPage = () => {
   const resetForm = () => {
     setType('expense');
     setAmount('');
-    // categoryId, accountId, pmId, dateはリセットしない
+    // categoryId, selectedSourceId, dateはリセットしない
     setMemo('');
   };
 
@@ -132,7 +114,7 @@ export const AddTransactionPage = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
+                  onClick={() => { setType('income'); setCategoryId(''); }}
                   className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
                     type === 'income' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                   }`}
@@ -194,73 +176,52 @@ export const AddTransactionPage = () => {
                 <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                   {type === 'expense' ? '支払い元' : '入金先'}
                 </label>
-                <div className="space-y-3">
-                  {accounts.length > 0 && (
-                    <div>
-                      <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
-                      <div className="space-y-1">
-                        {accounts.map((acct) => (
-                          <button
-                            key={acct.id}
-                            type="button"
-                            onClick={() => handleSelectAccount(acct.id)}
-                            className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
-                              accountId === acct.id
-                                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                                : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
-                              <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{acct.name}</span>
-                            </div>
-                            {accountId === acct.id && pmId === undefined && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
-                          </button>
-                        ))}
+                <div className="grid grid-cols-2 gap-2">
+                  {allAccounts.map((acct) => (
+                    <button
+                      key={acct.id}
+                      type="button"
+                      onClick={() => setSelectedSourceId(acct.id)}
+                      className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                        selectedSourceId === acct.id
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <div
+                        className="w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
+                      >
+                        <Wallet size={16} />
                       </div>
-                    </div>
-                  )}
+                      <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                        {acct.name}
+                      </span>
+                    </button>
+                  ))}
 
-                  {type === 'expense' && accountId && (
-                    <div>
-                      <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
-                      <div className="space-y-1">
-                        <button
-                          type="button"
-                          onClick={() => setPmId(undefined)}
-                          className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
-                            pmId === undefined
-                              ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                              : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-gray-400" />
-                            <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">口座から引き落とし</span>
-                          </div>
-                          {pmId === undefined && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
-                        </button>
-                        {paymentMethods.map((pm) => (
-                          <button
-                            key={pm.id}
-                            type="button"
-                            onClick={() => handleSelectPM(pm.id)}
-                            className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
-                              pmId === pm.id
-                                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                                : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: pm.color }} />
-                              <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{pm.name}</span>
-                            </div>
-                            {pmId === pm.id && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
-                          </button>
-                        ))}
+                  {type === 'expense' && allPaymentMethods.map((pm) => (
+                    <button
+                      key={pm.id}
+                      type="button"
+                      onClick={() => setSelectedSourceId(pm.id)}
+                      className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                        selectedSourceId === pm.id
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <div
+                        className="w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: `${pm.color || '#9ca3af'}20`, color: pm.color || '#9ca3af' }}
+                      >
+                        <CreditCard size={16} />
                       </div>
-                    </div>
-                  )}
+                      <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                        {pm.name}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -293,7 +254,7 @@ export const AddTransactionPage = () => {
             </Link>
             <button
               type="submit"
-              disabled={!amount || !categoryId || (!accountId && !pmId)}
+              disabled={!amount || !categoryId || !selectedSourceId}
               className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary text-white font-medium text-sm disabled:opacity-50 transition-colors"
             >
               登録
