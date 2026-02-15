@@ -146,3 +146,18 @@ export type ThemeColor = 'grayscale';
 export interface ThemeSettings {
   currentTheme: ThemeColor;
 }
+
+// クイック追加テンプレート
+export interface QuickAddTemplate {
+  id: string;
+  name: string;
+  type: TransactionType;
+  categoryId: string;
+  accountId?: string;
+  paymentMethodId?: string;
+  memo?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type QuickAddTemplateInput = Omit<QuickAddTemplate, 'id' | 'createdAt' | 'updatedAt'>;
