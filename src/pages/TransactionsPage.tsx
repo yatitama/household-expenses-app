@@ -204,7 +204,7 @@ export const TransactionsPage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-900">
       {/* Transaction list */}
-      <div className="flex-1 overflow-y-auto pb-20">
+      <div className="flex-1 overflow-clip pb-20">
         <div className="p-2 md:p-4 lg:p-6">
         {filteredTransactions.length === 0 ? (
           <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center">
@@ -225,7 +225,8 @@ export const TransactionsPage = () => {
                   <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden">
                     <button
                       onClick={() => toggleGroupExpanded(key)}
-                      className="w-full px-4 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                      className="sticky w-full px-4 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left z-10 border-b dark:border-gray-700"
+                      style={{ top: 'max(0px, env(safe-area-inset-top))' }}
                     >
                       <div className="flex items-center gap-2 flex-1">
                         <ChevronDown size={16} className={`text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
