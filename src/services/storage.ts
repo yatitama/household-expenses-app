@@ -18,6 +18,8 @@ import type {
   RecurringPaymentInput,
   LinkedPaymentMethod,
   LinkedPaymentMethodInput,
+  QuickAddTemplate,
+  QuickAddTemplateInput,
 } from '../types';
 
 const STORAGE_KEYS = {
@@ -30,6 +32,7 @@ const STORAGE_KEYS = {
   CARD_BILLINGS: 'household_card_billings',
   RECURRING_PAYMENTS: 'household_recurring_payments',
   LINKED_PAYMENT_METHODS: 'household_linked_payment_methods',
+  QUICK_ADD_TEMPLATES: 'household_quick_add_templates',
   MIGRATION_VERSION: 'household_migration_version',
   APP_SETTINGS: 'household_app_settings',
 } as const;
@@ -664,5 +667,53 @@ export const appSettingsService = {
     const updated = { ...current, ...input };
     localStorage.setItem(STORAGE_KEYS.APP_SETTINGS, JSON.stringify(updated));
     return updated;
+  },
+};
+
+// QuickAddTemplate 操作
+export const quickAddTemplateService = {
+  getAll: (): QuickAddTemplate[] => {
+    return getItems<QuickAddTemplate>(STORAGE_KEYS.QUICK_ADD_TEMPLATES);
+  },
+
+  getById: (id: string): QuickAddTemplate | undefined => {
+    return quickAddTemplateService.getAll().find((t) => t.id === id);
+  },
+
+  create: (input: QuickAddTemplateInput): QuickAddTemplate => {
+    const templates = quickAddTemplateService.getAll();
+    const now = getTimestamp();
+    const newTemplate: QuickAddTemplate = {
+      ...input,
+      id: generateId(),
+      createdAt: now,
+      updatedAt: now,
+    };
+    templates.push(newTemplate);
+    setItems(STORAGE_KEYS.QUICK_ADD_TEMPLATES, templates);
+    return newTemplate;
+  },
+
+  update: (id: string, input: Partial<QuickAddTemplateInput>): QuickAddTemplate | undefined => {
+    const templates = quickAddTemplateService.getAll();
+    const index = templates.findIndex((t) => t.id === id);
+    if (index === -1) return undefined;
+
+    const updated: QuickAddTemplate = {
+      ...templates[index],
+      ...input,
+      updatedAt: getTimestamp(),
+    };
+    templates[index] = updated;
+    setItems(STORAGE_KEYS.QUICK_ADD_TEMPLATES, templates);
+    return updated;
+  },
+
+  delete: (id: string): boolean => {
+    const templates = quickAddTemplateService.getAll();
+    const filtered = templates.filter((t) => t.id !== id);
+    if (filtered.length === templates.length) return false;
+    setItems(STORAGE_KEYS.QUICK_ADD_TEMPLATES, filtered);
+    return true;
   },
 };

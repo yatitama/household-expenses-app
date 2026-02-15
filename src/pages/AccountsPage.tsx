@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -17,10 +17,13 @@ import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnse
 import { AccountModal } from '../components/accounts/modals/AccountModal';
 import { AccountDetailModal } from '../components/accounts/modals/AccountDetailModal';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
+import { QuickAddTemplateGridSection } from '../components/quickAdd/QuickAddTemplateGridSection';
+import { QuickAddTemplateModal } from '../components/quickAdd/QuickAddTemplateModal';
+import { QuickAddTemplateDetailModal } from '../components/quickAdd/QuickAddTemplateDetailModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import { accountService, paymentMethodService, memberService } from '../services/storage';
-import type { Account, AccountInput, RecurringPayment, PaymentMethod, PaymentMethodInput, Transaction } from '../types';
+import { accountService, paymentMethodService, memberService, categoryService, transactionService, quickAddTemplateService } from '../services/storage';
+import type { Account, AccountInput, RecurringPayment, PaymentMethod, PaymentMethodInput, Transaction, QuickAddTemplate, QuickAddTemplateInput, TransactionInput } from '../types';
 
 export const AccountsPage = () => {
   const navigate = useNavigate();
@@ -50,10 +53,20 @@ export const AccountsPage = () => {
   const [isRecurringExpenseModalOpen, setIsRecurringExpenseModalOpen] = useState(false);
   const [isRecurringIncomeModalOpen, setIsRecurringIncomeModalOpen] = useState(false);
 
+  // QuickAddTemplate states
+  const [quickAddTemplates, setQuickAddTemplates] = useState<QuickAddTemplate[]>(() =>
+    quickAddTemplateService.getAll()
+  );
+  const [selectedQuickAddTemplate, setSelectedQuickAddTemplate] = useState<QuickAddTemplate | null>(null);
+  const [isQuickAddTemplateDetailModalOpen, setIsQuickAddTemplateDetailModalOpen] = useState(false);
+  const [isQuickAddTemplateModalOpen, setIsQuickAddTemplateModalOpen] = useState(false);
+  const [editingQuickAddTemplate, setEditingQuickAddTemplate] = useState<QuickAddTemplate | null>(null);
+  const categories = categoryService.getAll();
+
   const pendingByPM = getPendingAmountByPaymentMethod();
   const unlinkedPMs = paymentMethods.filter((pm) => !pm.linkedAccountId);
 
-  useBodyScrollLock(!!activeModal || isRecurringDetailModalOpen || isCardUnsettledSheetOpen || isCardUnsettledDetailOpen || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen || isRecurringExpenseModalOpen || isRecurringIncomeModalOpen);
+  useBodyScrollLock(!!activeModal || isRecurringDetailModalOpen || isCardUnsettledSheetOpen || isCardUnsettledDetailOpen || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen || isRecurringExpenseModalOpen || isRecurringIncomeModalOpen || isQuickAddTemplateDetailModalOpen || isQuickAddTemplateModalOpen);
 
   // Handlers
   const handleAddRecurring = (target: { accountId?: string; paymentMethodId?: string }) => {
@@ -61,6 +74,51 @@ export const AccountsPage = () => {
   };
   const handleEditRecurring = (rp: RecurringPayment) => {
     openModal({ type: 'recurring', data: { editing: rp, target: null } });
+  };
+
+  // QuickAddTemplate handlers
+  const handleQuickAddTemplateClick = (template: QuickAddTemplate) => {
+    setSelectedQuickAddTemplate(template);
+    setIsQuickAddTemplateDetailModalOpen(true);
+  };
+
+  const handleSaveQuickAddTemplate = (input: QuickAddTemplateInput) => {
+    try {
+      if (editingQuickAddTemplate) {
+        quickAddTemplateService.update(editingQuickAddTemplate.id, input);
+        toast.success('テンプレートを更新しました');
+      } else {
+        quickAddTemplateService.create(input);
+        toast.success('テンプレートを作成しました');
+      }
+      setQuickAddTemplates(quickAddTemplateService.getAll());
+      setIsQuickAddTemplateModalOpen(false);
+      setEditingQuickAddTemplate(null);
+    } catch {
+      toast.error('テンプレートの保存に失敗しました');
+    }
+  };
+
+  const handleDeleteQuickAddTemplate = () => {
+    if (editingQuickAddTemplate) {
+      quickAddTemplateService.delete(editingQuickAddTemplate.id);
+      toast.success('テンプレートを削除しました');
+      setQuickAddTemplates(quickAddTemplateService.getAll());
+      setIsQuickAddTemplateModalOpen(false);
+      setEditingQuickAddTemplate(null);
+    }
+  };
+
+  const handleSaveQuickAddTransaction = (input: TransactionInput) => {
+    try {
+      transactionService.create(input);
+      toast.success('取引を登録しました');
+      refreshData();
+      setIsQuickAddTemplateDetailModalOpen(false);
+      setSelectedQuickAddTemplate(null);
+    } catch {
+      toast.error('取引の登録に失敗しました');
+    }
   };
 
   const handleRecurringDetailClick = (rp: RecurringPayment) => {
@@ -207,6 +265,21 @@ export const AccountsPage = () => {
             </div>
           ) : (
             <>
+              {/* クイック追加セクション */}
+              {quickAddTemplates.length > 0 && (
+                <QuickAddTemplateGridSection
+                  templates={quickAddTemplates}
+                  categories={categories}
+                  accounts={accounts}
+                  paymentMethods={paymentMethods}
+                  onTemplateClick={handleQuickAddTemplateClick}
+                  onAddClick={() => {
+                    setEditingQuickAddTemplate(null);
+                    setIsQuickAddTemplateModalOpen(true);
+                  }}
+                />
+              )}
+
               {/* 紐づきなし支払い手段 */}
               {unlinkedPMs.length > 0 && (
                 <div data-section-name="紐付未設定のカード">
@@ -236,6 +309,21 @@ export const AccountsPage = () => {
                       })}
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* クイック追加セクション（テンプレート0件の場合、追加ボタンのみ表示） */}
+              {quickAddTemplates.length === 0 && (
+                <div className="p-2">
+                  <button
+                    onClick={() => {
+                      setEditingQuickAddTemplate(null);
+                      setIsQuickAddTemplateModalOpen(true);
+                    }}
+                    className="w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
+                  >
+                    クイック追加テンプレートを作成
+                  </button>
                 </div>
               )}
             </>
@@ -378,6 +466,40 @@ export const AccountsPage = () => {
           onDelete={() => {}}
         />
       )}
+
+      {isQuickAddTemplateModalOpen && (
+        <QuickAddTemplateModal
+          template={editingQuickAddTemplate}
+          categories={categories}
+          accounts={accounts}
+          paymentMethods={paymentMethods}
+          isOpen={isQuickAddTemplateModalOpen}
+          onSave={handleSaveQuickAddTemplate}
+          onClose={() => {
+            setIsQuickAddTemplateModalOpen(false);
+            setEditingQuickAddTemplate(null);
+          }}
+          onDelete={editingQuickAddTemplate ? handleDeleteQuickAddTemplate : undefined}
+        />
+      )}
+
+      <QuickAddTemplateDetailModal
+        template={selectedQuickAddTemplate}
+        categories={categories}
+        accounts={accounts}
+        paymentMethods={paymentMethods}
+        isOpen={isQuickAddTemplateDetailModalOpen}
+        onSave={handleSaveQuickAddTransaction}
+        onClose={() => {
+          setIsQuickAddTemplateDetailModalOpen(false);
+          setSelectedQuickAddTemplate(null);
+        }}
+        onEdit={() => {
+          setIsQuickAddTemplateDetailModalOpen(false);
+          setEditingQuickAddTemplate(selectedQuickAddTemplate);
+          setIsQuickAddTemplateModalOpen(true);
+        }}
+      />
 
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
