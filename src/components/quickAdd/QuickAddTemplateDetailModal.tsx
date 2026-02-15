@@ -156,7 +156,7 @@ export const QuickAddTemplateDetailModal = ({
             <button
               type="submit"
               disabled={!amount}
-              className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+              className="flex-1 px-4 py-2 btn-primary hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
             >
               登録
             </button>

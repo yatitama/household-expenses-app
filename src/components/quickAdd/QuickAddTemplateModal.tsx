@@ -100,7 +100,7 @@ export const QuickAddTemplateModal = ({
                 type="button"
                 onClick={() => { setType('expense'); setCategoryId(''); }}
                 className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                  type === 'expense' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
+                  type === 'expense' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                 }`}
               >
                 支出
@@ -109,7 +109,7 @@ export const QuickAddTemplateModal = ({
                 type="button"
                 onClick={() => { setType('income'); setCategoryId(''); }}
                 className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                  type === 'income' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
+                  type === 'income' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                 }`}
               >
                 収入
@@ -264,7 +264,7 @@ export const QuickAddTemplateModal = ({
           <button
             type="submit"
             disabled={!name || !amount || !categoryId || !selectedSourceId}
-            className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm disabled:opacity-50 transition-colors"
+            className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary hover:bg-slate-800 text-white font-medium text-sm disabled:opacity-50 transition-colors"
           >
             保存
           </button>
