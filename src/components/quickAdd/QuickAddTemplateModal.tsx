@@ -66,7 +66,7 @@ export const QuickAddTemplateModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose} role="dialog" aria-modal="true" aria-label={template ? 'テンプレートを編集' : 'テンプレートを作成'}>
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
@@ -277,7 +277,7 @@ export const QuickAddTemplateModal = ({
             <button
               type="button"
               onClick={onDelete}
-              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
+              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
             >
               削除
             </button>
@@ -289,7 +289,7 @@ export const QuickAddTemplateModal = ({
             <button
               type="submit"
               disabled={!name}
-              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary hover:text-white font-medium text-sm disabled:opacity-50 transition-colors"
+              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary hover:bg-slate-800 text-white font-medium text-sm disabled:opacity-50 transition-colors"
             >
               保存
             </button>

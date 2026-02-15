@@ -76,7 +76,7 @@ export const FilterSidePanel = ({
                 value={filters.searchQuery}
                 onChange={(e) => updateFilter('searchQuery', e.target.value)}
                 placeholder="メモやカテゴリ名で検索"
-                className="w-full px-3 py-2 text-sm dark:border-slate-500 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent text-gray-900 dark:text-gray-100"
+                className="w-full px-3 py-2 text-sm dark:border-slate-500 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent bg-white text-gray-900 dark:text-gray-100"
               />
             </div>
           ),
@@ -205,7 +205,7 @@ export const FilterSidePanel = ({
     <>
       {/* フローティングパネル */}
       <div
-        className={`fixed bottom-44 left-4 right-4 rounded-2xl   z-50 transition-opacity duration-300 dark:border-slate-600 ${
+        className={`fixed bottom-44 left-4 right-4 bg-white rounded-2xl   z-50 transition-opacity duration-300 dark:border-slate-600 ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         style={{
@@ -230,7 +230,7 @@ export const FilterSidePanel = ({
         </div>
 
         {/* フッター（リセットボタン） */}
-        <div className="p-3 dark:border-slate-600 rounded-b-2xl">
+        <div className="p-3 dark:border-slate-600 bg-white rounded-b-2xl">
           <button
             onClick={resetCurrentFilter}
             className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-600 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium dark:border-slate-500"

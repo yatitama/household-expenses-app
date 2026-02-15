@@ -54,9 +54,9 @@ export const TransactionFilterSheet = ({
       />
 
       {/* Sheet */}
-      <div className="fixed inset-x-0 bottom-0 rounded-t-2xl shadow-2xl z-[1000] flex flex-col max-h-[90vh]">
+      <div className="fixed inset-x-0 bottom-0 bg-white dark:bg-slate-900 rounded-t-2xl shadow-2xl z-[1000] flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="sticky top-0 dark:border-gray-700 z-10 p-3 sm:p-4 border-b flex items-center justify-between">
+        <div className="sticky top-0 bg-white dark:bg-slate-900 dark:border-gray-700 z-10 p-3 sm:p-4 border-b flex items-center justify-between">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
             フィルター
           </h3>
@@ -72,10 +72,10 @@ export const TransactionFilterSheet = ({
         <div className="flex-1 overflow-y-auto min-h-0">
           <div className="p-3 sm:p-4">
             {/* 取引種別セクション */}
-            <div className="space-y-0 rounded-lg overflow-hidden mb-2">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
               <button
                 onClick={() => toggleSection('type')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
@@ -100,7 +100,7 @@ export const TransactionFilterSheet = ({
                   <select
                     value={filters.transactionType}
                     onChange={(e) => updateFilter('transactionType', e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-lg dark:bg-slate-700 text-gray-900 dark:text-gray-100 text-sm border border-gray-200 dark:border-gray-600 transition-colors"
+                    className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 text-sm border border-gray-200 dark:border-gray-600 transition-colors"
                   >
                     <option value="all">すべて</option>
                     <option value="income">収入</option>
@@ -111,10 +111,10 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 期間セクション */}
-            <div className="space-y-0 rounded-lg overflow-hidden mb-2">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
               <button
                 onClick={() => toggleSection('date')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
@@ -151,10 +151,10 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* メンバーセクション */}
-            <div className="space-y-0 rounded-lg overflow-hidden mb-2">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
               <button
                 onClick={() => toggleSection('member')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
@@ -215,10 +215,10 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* カテゴリセクション */}
-            <div className="space-y-0 rounded-lg overflow-hidden mb-2">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
               <button
                 onClick={() => toggleSection('category')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
@@ -285,10 +285,10 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 口座・支払方法セクション */}
-            <div className="space-y-0 rounded-lg overflow-hidden mb-2">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
               <button
                 onClick={() => toggleSection('account')}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
@@ -381,7 +381,7 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 z-10 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-row gap-2 -mx-3 -mb-3 sm:-mx-4 sm:-mb-4">
+            <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-row gap-2 -mx-3 -mb-3 sm:-mx-4 sm:-mb-4">
               <button
                 onClick={resetFilters}
                 className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium"

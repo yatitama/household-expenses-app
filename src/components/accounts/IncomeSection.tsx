@@ -26,7 +26,7 @@ export const IncomeSection = ({
   };
 
   return (
-    <div className="rounded-lg p-3 md:p-4 dark:border-gray-800/30">
+    <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
       {/* ヘッダー */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
