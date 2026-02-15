@@ -152,7 +152,7 @@ export interface QuickAddTemplate {
   id: string;
   name: string;
   type: TransactionType;
-  categoryId: string;
+  categoryId?: string;
   amount?: number;
   accountId?: string;
   paymentMethodId?: string;
