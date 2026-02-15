@@ -234,8 +234,8 @@ export const QuickAddTemplateModal = ({
             </div>
 
             {/* Date */}
-            <div className="overflow-x-hidden">
-              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">日付</label>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400">日付</label>
               <div className="relative">
                 <input
                   type="date"
