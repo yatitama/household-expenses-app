@@ -28,9 +28,9 @@ export class ErrorBoundary extends React.Component<
       const isDevelopment = import.meta.env.DEV;
 
       return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-slate-900">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
           <div
-            className="bg-white rounded-xl p-8 max-w-md w-full text-center dark:border-gray-700"
+            className="rounded-xl p-8 max-w-md w-full text-center dark:border-gray-700"
             role="alert"
             aria-live="assertive"
           >

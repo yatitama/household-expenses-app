@@ -32,7 +32,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
-      <form onSubmit={handleSubmit} className="bg-white w-full sm:max-w-md md:max-w-lg sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+      <form onSubmit={handleSubmit} className="w-full sm:max-w-md md:max-w-lg sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <h3 className="text-base sm:text-lg font-bold mb-4 sm:mb-6 text-gray-900 dark:text-gray-100">{account ? '口座を編集' : '口座を追加'}</h3>
           <div className="space-y-4 sm:space-y-5">
@@ -62,7 +62,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                     memberId === member.id
                       ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
+                      : 'text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
                   }`}
                   style={memberId === member.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
@@ -84,7 +84,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                     accountType === value
                       ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
+                      : 'text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
                   }`}
                   style={accountType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
@@ -129,7 +129,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
             <button
               type="button"
               onClick={() => { onDelete(account.id); onClose(); }}
-              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors text-sm"
+              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium hover:focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors text-sm"
             >
               削除
             </button>

@@ -21,7 +21,7 @@ export const QuickAddTemplateGridSection = ({
   return (
     <div data-section-name="クイック追加">
       <div
-        className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+        className="sticky z-10 p-2 border-b dark:border-gray-700"
         style={{ top: 'max(0px, env(safe-area-inset-top))' }}
       >
         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">クイック追加 ({templates.length}件)</h3>
@@ -46,7 +46,7 @@ export const QuickAddTemplateGridSection = ({
                   e.stopPropagation();
                   onEditClick(template);
                 }}
-                className="absolute bottom-1 right-1 p-1.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                className="absolute bottom-1 right-1 p-1.5 dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
                 aria-label="編集"
               >
                 <Edit2 size={14} className="text-gray-600 dark:text-gray-300" />
@@ -57,7 +57,7 @@ export const QuickAddTemplateGridSection = ({
           {templates.length < 9 && (
             <button
               onClick={onAddClick}
-              className="aspect-square border border-gray-200 dark:border-gray-700 p-2 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded"
+              className="aspect-square border border-gray-200 dark:border-gray-700 p-2 flex items-center justify-center hover:bg-gray-50 dark:hover:transition-colors rounded"
             >
               <Plus size={20} className="text-gray-400 dark:text-gray-500" />
             </button>

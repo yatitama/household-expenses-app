@@ -26,7 +26,7 @@ export const CardGridSection = ({
   }
 
   return (
-    <div className="bg-white rounded-lg p-3 md:p-4">
+    <div className="rounded-lg p-3 md:p-4">
       <div className="grid grid-cols-2 gap-2 md:gap-3">
         {paymentMethods.map((pm) => {
           const cardInfo = cardUnsettledList.find(c => c.paymentMethod.id === pm.id);
@@ -52,7 +52,7 @@ export const CardGridSection = ({
         {onAddClick && (
           <button
             onClick={onAddClick}
-            className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex items-center justify-center hover:bg-gray-50 dark:hover:transition-colors"
           >
             <Plus size={24} className="text-gray-400 dark:text-gray-500" />
           </button>

@@ -33,7 +33,7 @@ export const Tooltip = ({ label, text, position = 'top' }: TooltipProps) => {
       {/* ツールチップ */}
       {isVisible && (
         <div
-          className={`absolute ${positionClasses[position]} left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-gray-700 text-white dark:text-gray-100 text-sm rounded-lg p-2 w-max max-w-[200px] z-50 pointer-events-none`}
+          className={`absolute ${positionClasses[position]} left-1/2 -translate-x-1/2 bg-gray-900 text-white dark:text-gray-100 text-sm rounded-lg p-2 w-max max-w-[200px] z-50 pointer-events-none`}
         >
           {text}
           {/* 矢印 */}

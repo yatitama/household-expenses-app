@@ -269,7 +269,7 @@ export const AccountsPage = () => {
         {/* メインコンテンツエリア */}
         <div className="p-1 md:p-2 lg:p-3 space-y-3 md:space-y-4">
           {accounts.length === 0 ? (
-            <div className="bg-white rounded-xl">
+            <div className="rounded-xl">
               <EmptyState
                 icon={<Wallet size={32} className="text-gray-500 dark:text-gray-400" />}
                 title="口座がありません"
@@ -288,7 +288,7 @@ export const AccountsPage = () => {
               {unlinkedPMs.length > 0 && (
                 <div data-section-name="紐付未設定のカード">
                   <div
-                    className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+                    className="sticky z-10 p-2 border-b dark:border-gray-700"
                     style={{ top: 'max(0px, env(safe-area-inset-top))' }}
                   >
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">紐付未設定のカード ({unlinkedPMs.length}件)</h3>
@@ -324,7 +324,7 @@ export const AccountsPage = () => {
                       setEditingQuickAddTemplate(null);
                       setIsQuickAddTemplateModalOpen(true);
                     }}
-                    className="w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
+                    className="w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:transition-colors text-sm font-medium"
                   >
                     クイック追加テンプレートを作成
                   </button>
