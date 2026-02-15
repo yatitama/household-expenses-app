@@ -1,3 +1,4 @@
+import { useRef, useEffect } from 'react';
 import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../../utils/billingUtils';
 import { AccountGridSection } from './AccountGridSection';
 import { CardGridSection } from './CardGridSection';
@@ -20,6 +21,7 @@ interface AssetCardProps {
   onAddCardClick?: () => void;
   onAddRecurringExpenseClick?: () => void;
   onAddRecurringIncomeClick?: () => void;
+  onSectionRefsReady?: (refs: Record<string, HTMLElement | null>) => void;
 }
 
 export const AssetCard = ({
@@ -32,9 +34,15 @@ export const AssetCard = ({
   onAddCardClick,
   onAddRecurringExpenseClick,
   onAddRecurringIncomeClick,
+  onSectionRefsReady,
 }: AssetCardProps) => {
   const allUnsettledTransactions = getUnsettledTransactions();
   const allUpcomingRecurring = getUpcomingRecurringPayments(31);
+
+  const accountsSectionRef = useRef<HTMLDivElement>(null);
+  const cardsSectionRef = useRef<HTMLDivElement>(null);
+  const expenseSectionRef = useRef<HTMLDivElement>(null);
+  const incomeSectionRef = useRef<HTMLDivElement>(null);
 
   // メンバーごとのアカウント取得
   const allAccountsList = Object.entries(groupedAccounts).flatMap(([, memberAccounts]) => memberAccounts);
@@ -59,28 +67,29 @@ export const AssetCard = ({
   const allUpcomingExpense = allUpcomingRecurring.filter((rp) => rp.type === 'expense');
   const allUpcomingIncome = allUpcomingRecurring.filter((rp) => rp.type === 'income');
 
+  useEffect(() => {
+    if (onSectionRefsReady) {
+      onSectionRefsReady({
+        accounts: accountsSectionRef.current,
+        cards: cardsSectionRef.current,
+        expense: expenseSectionRef.current,
+        income: incomeSectionRef.current,
+      });
+    }
+  }, [onSectionRefsReady]);
+
   return (
     <div className="px-1 md:px-2 lg:px-3">
       {/* 口座セクション */}
-      <div
-        className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700 mt-2 md:mt-3"
-        style={{ top: 'max(0px, env(safe-area-inset-top))' }}
-      >
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
-      </div>
-      <div className="pt-2 pb-3 md:pb-4">
-        <AccountGridSection accounts={allAccountsList} onAccountClick={onAccountClick} onAddClick={onAddAccountClick} />
+      <div ref={accountsSectionRef} data-section-name="口座">
+        <div className="pt-2 pb-3 md:pb-4">
+          <AccountGridSection accounts={allAccountsList} onAccountClick={onAccountClick} onAddClick={onAddAccountClick} />
+        </div>
       </div>
 
       {/* カードセクション */}
       {linkedPaymentMethods.length > 0 && (
-        <>
-          <div
-            className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
-            style={{ top: 'calc(max(0px, env(safe-area-inset-top)) + 40px)' }}
-          >
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">カード</h3>
-          </div>
+        <div ref={cardsSectionRef} data-section-name="カード">
           <div className="pt-2 pb-3 md:pb-4">
             <CardGridSection
               paymentMethods={linkedPaymentMethods}
@@ -89,39 +98,31 @@ export const AssetCard = ({
               onAddClick={onAddCardClick}
             />
           </div>
-        </>
+        </div>
       )}
 
       {/* 定期支出セクション */}
-      <div
-        className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
-        style={{ top: 'calc(max(0px, env(safe-area-inset-top)) + 40px)' }}
-      >
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期支出</h3>
-      </div>
-      <div className="pt-2 pb-3 md:pb-4">
-        <RecurringItemGridSection
-          title=""
-          items={allUpcomingExpense}
-          onItemClick={onRecurringDetailClick || (() => {})}
-          onAddClick={onAddRecurringExpenseClick}
-        />
+      <div ref={expenseSectionRef} data-section-name="定期支出">
+        <div className="pt-2 pb-3 md:pb-4">
+          <RecurringItemGridSection
+            title=""
+            items={allUpcomingExpense}
+            onItemClick={onRecurringDetailClick || (() => {})}
+            onAddClick={onAddRecurringExpenseClick}
+          />
+        </div>
       </div>
 
       {/* 定期収入セクション */}
-      <div
-        className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
-        style={{ top: 'calc(max(0px, env(safe-area-inset-top)) + 40px)' }}
-      >
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期収入</h3>
-      </div>
-      <div className="pt-2 pb-3 md:pb-4">
-        <RecurringItemGridSection
-          title=""
-          items={allUpcomingIncome}
-          onItemClick={onRecurringDetailClick || (() => {})}
-          onAddClick={onAddRecurringIncomeClick}
-        />
+      <div ref={incomeSectionRef} data-section-name="定期収入">
+        <div className="pt-2 pb-3 md:pb-4">
+          <RecurringItemGridSection
+            title=""
+            items={allUpcomingIncome}
+            onItemClick={onRecurringDetailClick || (() => {})}
+            onAddClick={onAddRecurringIncomeClick}
+          />
+        </div>
       </div>
     </div>
   );
