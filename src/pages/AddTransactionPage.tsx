@@ -90,13 +90,12 @@ export const AddTransactionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
-      <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
-        >
-          <div ref={scrollContainerRef} className="overflow-y-auto flex-1 p-3 sm:p-4">
+    <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto flex flex-col flex-1"
+      >
+        <div ref={scrollContainerRef} className="overflow-y-auto flex-1 p-3 sm:p-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
               <Link to="/" className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
@@ -279,7 +278,6 @@ export const AddTransactionPage = () => {
             </button>
           </div>
         </form>
-      </div>
     </div>
   );
 };
