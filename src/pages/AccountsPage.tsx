@@ -473,6 +473,7 @@ export const AccountsPage = () => {
           categories={categories}
           accounts={accounts}
           paymentMethods={paymentMethods}
+          members={memberService.getAll()}
           isOpen={isQuickAddTemplateModalOpen}
           onSave={handleSaveQuickAddTemplate}
           onClose={() => {

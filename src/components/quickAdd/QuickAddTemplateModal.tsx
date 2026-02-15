@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
-import type { QuickAddTemplate, QuickAddTemplateInput, Category, Account, PaymentMethod } from '../../types';
+import { X, Wallet, CreditCard } from 'lucide-react';
+import { getCategoryIcon } from '../../utils/categoryIcons';
+import type { QuickAddTemplate, QuickAddTemplateInput, Category, Account, PaymentMethod, Member } from '../../types';
 
 interface QuickAddTemplateModalProps {
   template?: QuickAddTemplate | null;
   categories: Category[];
   accounts: Account[];
   paymentMethods: PaymentMethod[];
+  members: Member[];
   isOpen: boolean;
   onSave: (input: QuickAddTemplateInput) => void;
   onClose: () => void;
@@ -18,6 +20,7 @@ export const QuickAddTemplateModal = ({
   categories,
   accounts,
   paymentMethods,
+  members,
   isOpen,
   onSave,
   onClose,
@@ -31,6 +34,8 @@ export const QuickAddTemplateModal = ({
   const [accountId, setAccountId] = useState<string | undefined>(() => template?.accountId);
   const [paymentMethodId, setPaymentMethodId] = useState<string | undefined>(() => template?.paymentMethodId);
   const [memo, setMemo] = useState<string | undefined>(() => template?.memo);
+
+  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,172 +54,184 @@ export const QuickAddTemplateModal = ({
 
   if (!isOpen) return null;
 
-  const expenseCategories = categories.filter((c) => c.type === 'expense');
-  const incomeCategories = categories.filter((c) => c.type === 'income');
-  const filteredCategories = type === 'expense' ? expenseCategories : incomeCategories;
+  const filteredCategories = categories.filter((c) => c.type === type);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end z-50">
-      <div className="bg-white dark:bg-slate-800 w-full rounded-t-2xl overflow-y-auto max-h-[90vh]">
-        {/* Header */}
-        <div className="sticky top-0 flex items-center justify-between p-4 border-b dark:border-gray-700 bg-white dark:bg-slate-800">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {template ? 'テンプレートを編集' : 'テンプレートを作成'}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-          >
-            <X size={20} className="text-gray-500 dark:text-gray-400" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-              テンプレート名 <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="例: コンビニ"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose} role="dialog" aria-modal="true" aria-label={template ? 'テンプレートを編集' : 'テンプレートを作成'}>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
+              {template ? 'テンプレートを編集' : 'テンプレートを作成'}
+            </h3>
+            <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
+              <X size={18} className="sm:w-5 sm:h-5" />
+            </button>
           </div>
 
-          {/* Type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-              種類 <span className="text-red-500">*</span>
-            </label>
-            <div className="flex gap-2">
+          <div className="space-y-4 sm:space-y-5">
+            {/* Name */}
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">テンプレート名</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="例: コンビニ"
+                className="w-full border dark:border-gray-600 dark:text-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+              />
+            </div>
+
+            {/* Type */}
+            <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
               <button
                 type="button"
-                onClick={() => setType('expense')}
-                className={`flex-1 px-3 py-2 rounded-lg font-medium transition-colors ${
-                  type === 'expense'
-                    ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                onClick={() => { setType('expense'); setCategoryId(''); }}
+                className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
+                  type === 'expense' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200 dark:bg-gray-700'
                 }`}
               >
                 支出
               </button>
               <button
                 type="button"
-                onClick={() => setType('income')}
-                className={`flex-1 px-3 py-2 rounded-lg font-medium transition-colors ${
-                  type === 'income'
-                    ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                onClick={() => { setType('income'); setCategoryId(''); }}
+                className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
+                  type === 'income' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200 dark:bg-gray-700'
                 }`}
               >
                 収入
               </button>
             </div>
-          </div>
 
-          {/* Category */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-              カテゴリ <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">カテゴリを選択</option>
-              {filteredCategories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Category */}
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
+              <div className="grid grid-cols-4 gap-2">
+                {filteredCategories.map((category) => {
+                  const member = getMember(category.memberId);
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() => setCategoryId(category.id)}
+                      className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors border ${
+                        categoryId === category.id
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                      }`}
+                    >
+                      <div
+                        className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                      >
+                        {getCategoryIcon(category.icon, 14)}
+                      </div>
+                      <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                        {category.name}
+                      </span>
+                      {member && member.id !== 'common' && (
+                        <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
-          {/* Account */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-              支払元口座 (オプション)
-            </label>
-            <select
-              value={accountId || ''}
-              onChange={(e) => setAccountId(e.target.value || undefined)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">未設定</option>
-              {accounts.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.name}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Account and Payment Methods */}
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">支払い元 (オプション)</label>
+              <div className="grid grid-cols-2 gap-2">
+                {accounts.map((acct) => (
+                  <button
+                    key={acct.id}
+                    type="button"
+                    onClick={() => { setAccountId(acct.id); setPaymentMethodId(undefined); }}
+                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
+                      accountId === acct.id && !paymentMethodId
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <div
+                      className="w-6 h-6 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
+                    >
+                      <Wallet size={16} />
+                    </div>
+                    <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                      {acct.name}
+                    </span>
+                  </button>
+                ))}
 
-          {/* Payment Method */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-              支払い手段 (オプション)
-            </label>
-            <select
-              value={paymentMethodId || ''}
-              onChange={(e) => setPaymentMethodId(e.target.value || undefined)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">未設定</option>
-              {paymentMethods.map((pm) => (
-                <option key={pm.id} value={pm.id}>
-                  {pm.name}
-                </option>
-              ))}
-            </select>
-          </div>
+                {paymentMethods.map((pm) => (
+                  <button
+                    key={pm.id}
+                    type="button"
+                    onClick={() => { setPaymentMethodId(pm.id); setAccountId(undefined); }}
+                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
+                      paymentMethodId === pm.id && !accountId
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <div
+                      className="w-6 h-6 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${pm.color || '#9ca3af'}20`, color: pm.color || '#9ca3af' }}
+                    >
+                      <CreditCard size={16} />
+                    </div>
+                    <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                      {pm.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
-          {/* Memo */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-              メモ (オプション)
-            </label>
-            <textarea
-              value={memo || ''}
-              onChange={(e) => setMemo(e.target.value || undefined)}
-              placeholder="テンプレート用のメモ"
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            />
+            {/* Memo */}
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">メモ</label>
+              <input
+                type="text"
+                value={memo || ''}
+                onChange={(e) => setMemo(e.target.value || undefined)}
+                placeholder="任意"
+                className="w-full border dark:border-gray-600 dark:text-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+              />
+            </div>
           </div>
+        </div>
 
-          {/* Buttons */}
-          <div className="flex gap-2 pt-4">
+        {/* Footer Buttons */}
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4 flex gap-3">
+          <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
+            キャンセル
+          </button>
+          {template && onDelete && (
             <button
               type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              onClick={onDelete}
+              className="py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-medium text-sm hover:bg-red-200 dark:hover:bg-red-900/40"
             >
-              キャンセル
+              削除
             </button>
-            {template && onDelete && (
-              <button
-                type="button"
-                onClick={onDelete}
-                className="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg font-medium hover:bg-red-100 dark:hover:bg-red-900/40"
-              >
-                削除
-              </button>
-            )}
-            <button
-              type="submit"
-              disabled={!name || !categoryId}
-              className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white rounded-lg font-medium transition-colors"
-            >
-              保存
-            </button>
-          </div>
-        </form>
-      </div>
+          )}
+          <button
+            type="submit"
+            disabled={!name || !categoryId}
+            className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 text-white font-medium text-sm disabled:opacity-50 transition-colors"
+          >
+            保存
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
