@@ -27,9 +27,9 @@ export const QuickAddTemplateDetailModal = ({
   onClose,
   onEdit,
 }: QuickAddTemplateDetailModalProps) => {
-  const [amount, setAmount] = useState(0);
-  const [date, setDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
-  const [memo, setMemo] = useState('');
+  const [amount, setAmount] = useState(() => template?.amount || 0);
+  const [date, setDate] = useState(() => template?.date || format(new Date(), 'yyyy-MM-dd'));
+  const [memo, setMemo] = useState(() => template?.memo || '');
   const [categoryId, setCategoryId] = useState(() => template?.categoryId || '');
   const [selectedSourceId, setSelectedSourceId] = useState<string>(() => template?.accountId || template?.paymentMethodId || '');
 
