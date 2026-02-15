@@ -229,7 +229,7 @@ export const AccountsPage = () => {
   }, {});
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col grid-background">
+    <div className="min-h-screen flex flex-col">
       {/* クイック追加セクション（一番上） */}
       {accounts.length > 0 && quickAddTemplates.length > 0 && (
         <div className="bg-transparent pt-2 md:pt-4 lg:pt-6">

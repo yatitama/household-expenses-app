@@ -202,7 +202,7 @@ export const TransactionsPage = () => {
   }, [filteredTransactions]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-slate-900">
+    <div className="min-h-screen flex flex-col">
       {/* Transaction list */}
       <div className="flex-1 overflow-clip pb-20">
         <div className="p-2 md:p-4 lg:p-6">

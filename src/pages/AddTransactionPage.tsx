@@ -90,7 +90,7 @@ export const AddTransactionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen">
       <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
         <form
           onSubmit={handleSubmit}
