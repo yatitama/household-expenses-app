@@ -137,7 +137,7 @@ export const AddTransactionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
+    <div className="h-screen bg-white dark:bg-slate-900 flex flex-col overflow-hidden">
       <form
         onSubmit={handleSubmit}
         className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto flex flex-col flex-1"
