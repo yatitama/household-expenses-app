@@ -241,8 +241,8 @@ export const QuickAddTemplateModal = ({
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full border border-gray-200 dark:border-gray-700 dark:text-gray-100 rounded-lg px-3 py-2.5 sm:py-3 pr-10 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
-                  style={{ minWidth: 0, maxWidth: '100%' }}
+                  className="w-full rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
+                  aria-label="日付"
                 />
                 {date && (
                   <button
