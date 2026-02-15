@@ -272,26 +272,28 @@ export const QuickAddTemplateModal = ({
         </div>
 
         {/* Footer Buttons */}
-        <div className="border-t dark:border-gray-700 p-3 sm:p-4 flex gap-3">
-          <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
-            キャンセル
-          </button>
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
           {template && onDelete && (
             <button
               type="button"
               onClick={onDelete}
-              className="py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-medium text-sm hover:bg-red-200 dark:hover:bg-red-900/40 transition-colors"
+              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
             >
               削除
             </button>
           )}
-          <button
-            type="submit"
-            disabled={!name}
-            className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary hover:bg-slate-800 text-white font-medium text-sm disabled:opacity-50 transition-colors"
-          >
-            保存
-          </button>
+          <div className="flex gap-3">
+            <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              disabled={!name}
+              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary hover:bg-slate-800 text-white font-medium text-sm disabled:opacity-50 transition-colors"
+            >
+              保存
+            </button>
+          </div>
         </div>
       </form>
     </div>

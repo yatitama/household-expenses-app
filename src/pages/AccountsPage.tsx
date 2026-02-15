@@ -235,9 +235,6 @@ export const AccountsPage = () => {
         <div className="bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6">
           <QuickAddTemplateGridSection
             templates={quickAddTemplates}
-            categories={categories}
-            accounts={accounts}
-            paymentMethods={paymentMethods}
             onTemplateClick={handleQuickAddTemplateClick}
             onEditClick={(template) => {
               setEditingQuickAddTemplate(template);
