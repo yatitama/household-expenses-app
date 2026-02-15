@@ -229,10 +229,10 @@ export const AccountsPage = () => {
   }, {});
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col grid-background">
+    <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
       {/* クイック追加セクション（一番上） */}
       {accounts.length > 0 && quickAddTemplates.length > 0 && (
-        <div className="bg-transparent pt-2 md:pt-4 lg:pt-6">
+        <div className="bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6">
           <QuickAddTemplateGridSection
             templates={quickAddTemplates}
             onTemplateClick={handleQuickAddTemplateClick}
@@ -250,7 +250,7 @@ export const AccountsPage = () => {
 
       {/* アセットカード + メインコンテンツ */}
       <div className="flex-1 overflow-clip">
-        <div className="bg-transparent pt-2 md:pt-4 lg:pt-6">
+        <div className="bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6">
           {accounts.length > 0 && (
             <AssetCard
               groupedAccounts={groupedAccounts}
