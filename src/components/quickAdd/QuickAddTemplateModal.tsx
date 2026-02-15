@@ -40,7 +40,7 @@ export const QuickAddTemplateModal = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !categoryId) {
+    if (!name || !amount || !categoryId || !selectedSourceId) {
       return;
     }
 
@@ -95,7 +95,7 @@ export const QuickAddTemplateModal = ({
             </div>
 
             {/* Type */}
-            <div className="flex rounded-lg overflow-hidden">
+            <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
               <button
                 type="button"
                 onClick={() => { setType('expense'); setCategoryId(''); }}
@@ -127,6 +127,7 @@ export const QuickAddTemplateModal = ({
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0"
                   className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  required
                 />
               </div>
             </div>
@@ -168,7 +169,9 @@ export const QuickAddTemplateModal = ({
 
             {/* Account and Payment Methods */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">支払い元</label>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
+                {type === 'expense' ? '支払い元' : '入金先'}
+              </label>
               <div className="grid grid-cols-2 gap-2">
                 {accounts.map((acct) => (
                   <button
@@ -193,7 +196,7 @@ export const QuickAddTemplateModal = ({
                   </button>
                 ))}
 
-                {paymentMethods.map((pm) => (
+                {type === 'expense' && paymentMethods.map((pm) => (
                   <button
                     key={pm.id}
                     type="button"
@@ -260,7 +263,7 @@ export const QuickAddTemplateModal = ({
           )}
           <button
             type="submit"
-            disabled={!name || !categoryId}
+            disabled={!name || !amount || !categoryId || !selectedSourceId}
             className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm disabled:opacity-50 transition-colors"
           >
             保存
