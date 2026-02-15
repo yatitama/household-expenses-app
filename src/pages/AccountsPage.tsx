@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -6,7 +6,6 @@ import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
-import { useStickySectionHeader } from '../hooks/useStickySectionHeader';
 import { getPendingAmountByPaymentMethod } from '../utils/billingUtils';
 import { AssetCard } from '../components/accounts/AssetCard';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
@@ -33,7 +32,6 @@ export const AccountsPage = () => {
   } = useAccountOperations();
 
   const { activeModal, openModal, closeModal } = useModalManager();
-  const { activeSection, registerSection } = useStickySectionHeader();
   const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
   const [isRecurringDetailModalOpen, setIsRecurringDetailModalOpen] = useState(false);
   const [selectedCardUnsettledPM, setSelectedCardUnsettledPM] = useState<PaymentMethod | null>(null);
@@ -51,39 +49,11 @@ export const AccountsPage = () => {
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
   const [isRecurringExpenseModalOpen, setIsRecurringExpenseModalOpen] = useState(false);
   const [isRecurringIncomeModalOpen, setIsRecurringIncomeModalOpen] = useState(false);
-  const [activeSectionName, setActiveSectionName] = useState<string>('');
 
   const pendingByPM = getPendingAmountByPaymentMethod();
   const unlinkedPMs = paymentMethods.filter((pm) => !pm.linkedAccountId);
 
   useBodyScrollLock(!!activeModal || isRecurringDetailModalOpen || isCardUnsettledSheetOpen || isCardUnsettledDetailOpen || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen || isRecurringExpenseModalOpen || isRecurringIncomeModalOpen);
-
-  // Handle section refs from AssetCard
-  const handleSectionRefsReady = (refs: Record<string, HTMLElement | null>) => {
-    Object.entries(refs).forEach(([id, element]) => {
-      if (element) {
-        registerSection(id, element);
-      }
-    });
-  };
-
-  // Get current section name from activeSection
-  const getSectionName = (sectionId: string | null) => {
-    if (!sectionId) return '';
-    const sectionNames: Record<string, string> = {
-      accounts: '口座',
-      cards: 'カード',
-      expense: '定期支出',
-      income: '定期収入',
-      unlinked: '紐付未設定のカード',
-    };
-    return sectionNames[sectionId] || '';
-  };
-
-  // Update active section name whenever activeSection changes
-  useEffect(() => {
-    setActiveSectionName(getSectionName(activeSection));
-  }, [activeSection]);
 
   // Handlers
   const handleAddRecurring = (target: { accountId?: string; paymentMethodId?: string }) => {
@@ -204,32 +174,20 @@ export const AccountsPage = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
       {/* アセットカード + メインコンテンツ */}
-      <div className="overflow-y-auto flex-1">
+      <div className="flex-1 overflow-clip">
         <div className="bg-white dark:bg-slate-900 pt-2 md:pt-4 lg:pt-6">
           {accounts.length > 0 && (
-            <>
-              {/* スティッキーセクションヘッダー */}
-              {activeSectionName && (
-                <div
-                  className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
-                  style={{ top: 'max(0px, env(safe-area-inset-top))' }}
-                >
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{activeSectionName}</h3>
-                </div>
-              )}
-              <AssetCard
-                groupedAccounts={groupedAccounts}
-                paymentMethods={paymentMethods}
-                onAccountClick={handleAccountClick}
-                onRecurringDetailClick={handleRecurringDetailClick}
-                onCardUnsettledSheetOpen={handleCardUnsettledSheetOpen}
-                onAddAccountClick={() => { setEditingAccount(null); setIsAccountModalOpen(true); }}
-                onAddCardClick={() => setIsPaymentMethodModalOpen(true)}
-                onAddRecurringExpenseClick={() => setIsRecurringExpenseModalOpen(true)}
-                onAddRecurringIncomeClick={() => setIsRecurringIncomeModalOpen(true)}
-                onSectionRefsReady={handleSectionRefsReady}
-              />
-            </>
+            <AssetCard
+              groupedAccounts={groupedAccounts}
+              paymentMethods={paymentMethods}
+              onAccountClick={handleAccountClick}
+              onRecurringDetailClick={handleRecurringDetailClick}
+              onCardUnsettledSheetOpen={handleCardUnsettledSheetOpen}
+              onAddAccountClick={() => { setEditingAccount(null); setIsAccountModalOpen(true); }}
+              onAddCardClick={() => setIsPaymentMethodModalOpen(true)}
+              onAddRecurringExpenseClick={() => setIsRecurringExpenseModalOpen(true)}
+              onAddRecurringIncomeClick={() => setIsRecurringIncomeModalOpen(true)}
+            />
           )}
         </div>
 
@@ -251,34 +209,32 @@ export const AccountsPage = () => {
             <>
               {/* 紐づきなし支払い手段 */}
               {unlinkedPMs.length > 0 && (
-                <div
-                  ref={(el) => {
-                    if (el) registerSection('unlinked', el);
-                  }}
-                  data-section-name="紐付未設定のカード"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      紐付未設定のカード ({unlinkedPMs.length}件)
-                    </h3>
+                <div data-section-name="紐付未設定のカード">
+                  <div
+                    className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+                    style={{ top: 'max(0px, env(safe-area-inset-top))' }}
+                  >
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">紐付未設定のカード ({unlinkedPMs.length}件)</h3>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {unlinkedPMs.map((pm) => {
-                      const pmRecurrings = recurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
-                      return (
-                        <PaymentMethodCard
-                          key={pm.id}
-                          paymentMethod={pm}
-                          linkedAccountName={undefined}
-                          pendingAmount={pendingByPM[pm.id] || 0}
-                          recurringPayments={pmRecurrings}
-                          onView={() => navigate('/transactions', { state: { filterType: 'payment', paymentMethodIds: [pm.id] } })}
-                          onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
-                          onEditRecurring={handleEditRecurring}
-                          onToggleRecurring={handleToggleRecurring}
-                        />
-                      );
-                    })}
+                  <div className="pt-2 pb-3 md:pb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {unlinkedPMs.map((pm) => {
+                        const pmRecurrings = recurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
+                        return (
+                          <PaymentMethodCard
+                            key={pm.id}
+                            paymentMethod={pm}
+                            linkedAccountName={undefined}
+                            pendingAmount={pendingByPM[pm.id] || 0}
+                            recurringPayments={pmRecurrings}
+                            onView={() => navigate('/transactions', { state: { filterType: 'payment', paymentMethodIds: [pm.id] } })}
+                            onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
+                            onEditRecurring={handleEditRecurring}
+                            onToggleRecurring={handleToggleRecurring}
+                          />
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               )}
