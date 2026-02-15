@@ -153,8 +153,10 @@ export interface QuickAddTemplate {
   name: string;
   type: TransactionType;
   categoryId: string;
+  amount?: number;
   accountId?: string;
   paymentMethodId?: string;
+  date?: string;
   memo?: string;
   createdAt: string;
   updatedAt: string;
