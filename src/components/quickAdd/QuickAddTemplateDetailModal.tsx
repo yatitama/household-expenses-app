@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { X, Calendar } from 'lucide-react';
+import { X, Calendar, Wallet, CreditCard, Check } from 'lucide-react';
 import { format } from 'date-fns';
-import type { QuickAddTemplate, Category, Account, PaymentMethod, TransactionInput } from '../../types';
+import { getCategoryIcon } from '../../utils/categoryIcons';
+import type { QuickAddTemplate, Category, Account, PaymentMethod, TransactionInput, Member } from '../../types';
 
 interface QuickAddTemplateDetailModalProps {
   template?: QuickAddTemplate | null;
   categories: Category[];
   accounts: Account[];
   paymentMethods: PaymentMethod[];
+  members: Member[];
   isOpen: boolean;
   onSave: (input: TransactionInput) => void;
   onClose: () => void;
@@ -19,6 +21,7 @@ export const QuickAddTemplateDetailModal = ({
   categories,
   accounts,
   paymentMethods,
+  members,
   isOpen,
   onSave,
   onClose,
@@ -27,19 +30,28 @@ export const QuickAddTemplateDetailModal = ({
   const [amount, setAmount] = useState(0);
   const [date, setDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const [memo, setMemo] = useState('');
+  const [categoryId, setCategoryId] = useState(() => template?.categoryId || '');
+  const [selectedSourceId, setSelectedSourceId] = useState<string>(() => template?.accountId || template?.paymentMethodId || '');
+
+  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !template?.categoryId || !template?.accountId) {
+    if (!amount || !categoryId || !selectedSourceId) {
       return;
     }
+
+    // Determine if selected source is account or payment method
+    const account = accounts.find((a) => a.id === selectedSourceId);
+    const paymentMethod = paymentMethods.find((p) => p.id === selectedSourceId);
+
     onSave({
       date,
-      type: template.type,
+      type: template!.type,
       amount,
-      categoryId: template.categoryId,
-      accountId: template.accountId,
-      paymentMethodId: template.paymentMethodId,
+      categoryId,
+      accountId: account?.id || paymentMethod?.linkedAccountId || '',
+      paymentMethodId: paymentMethod?.id,
       memo: memo || undefined,
     });
   };
@@ -101,27 +113,137 @@ export const QuickAddTemplateDetailModal = ({
             />
           </div>
 
-          {/* Category Info */}
-          <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-            <p className="text-xs text-gray-500 dark:text-gray-400">カテゴリ</p>
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{category?.name}</p>
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+              カテゴリ {!template?.categoryId && <span className="text-red-500">*</span>}
+            </label>
+            {template?.categoryId && !categoryId ? (
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                <p className="text-xs text-gray-500 dark:text-gray-400">カテゴリ</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{category?.name}</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-4 gap-2">
+                {categories
+                  .filter((c) => c.type === template!.type)
+                  .map((cat) => {
+                    const member = getMember(cat.memberId);
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setCategoryId(categoryId === cat.id ? '' : cat.id)}
+                        className={`relative flex flex-col items-center gap-1 p-1.5 rounded-lg transition-colors ${
+                          categoryId === cat.id
+                            ? 'border border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                            : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                        }`}
+                      >
+                        <div
+                          className="w-6 h-6 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: `${cat.color}20`, color: cat.color }}
+                        >
+                          {getCategoryIcon(cat.icon, 14)}
+                        </div>
+                        <span className="text-[10px] text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                          {cat.name}
+                        </span>
+                        {member && member.id !== 'common' && (
+                          <span className="text-[10px] text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                        )}
+                        {categoryId === cat.id && (
+                          <div className="absolute -top-1 -right-1">
+                            <Check size={16} className="text-blue-500" strokeWidth={2} />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+              </div>
+            )}
           </div>
 
-          {/* Account Info */}
-          {account && (
-            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-              <p className="text-xs text-gray-500 dark:text-gray-400">支払元口座</p>
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{account.name}</p>
-            </div>
-          )}
+          {/* Account and Payment Methods */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+              {template!.type === 'expense' ? '支払い元' : '入金先'} {!template?.accountId && !template?.paymentMethodId && <span className="text-red-500">*</span>}
+            </label>
+            {template?.accountId || template?.paymentMethodId ? (
+              <div className="space-y-2">
+                {account && (
+                  <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">支払元口座</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{account.name}</p>
+                  </div>
+                )}
+                {paymentMethod && (
+                  <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">支払い手段</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{paymentMethod.name}</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-4 gap-2">
+                {accounts.map((acct) => (
+                  <button
+                    key={acct.id}
+                    type="button"
+                    onClick={() => setSelectedSourceId(selectedSourceId === acct.id ? '' : acct.id)}
+                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
+                      selectedSourceId === acct.id
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <div
+                      className="w-6 h-6 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
+                    >
+                      <Wallet size={16} />
+                    </div>
+                    <span className="text-[10px] text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                      {acct.name}
+                    </span>
+                    {selectedSourceId === acct.id && (
+                      <div className="absolute -top-1 -right-1">
+                        <Check size={16} className="text-blue-500" strokeWidth={2} />
+                      </div>
+                    )}
+                  </button>
+                ))}
 
-          {/* Payment Method Info */}
-          {paymentMethod && (
-            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-              <p className="text-xs text-gray-500 dark:text-gray-400">支払い手段</p>
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{paymentMethod.name}</p>
-            </div>
-          )}
+                {template!.type === 'expense' && paymentMethods.map((pm) => (
+                  <button
+                    key={pm.id}
+                    type="button"
+                    onClick={() => setSelectedSourceId(selectedSourceId === pm.id ? '' : pm.id)}
+                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
+                      selectedSourceId === pm.id
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <div
+                      className="w-6 h-6 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${pm.color || '#9ca3af'}20`, color: pm.color || '#9ca3af' }}
+                    >
+                      <CreditCard size={16} />
+                    </div>
+                    <span className="text-[10px] text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                      {pm.name}
+                    </span>
+                    {selectedSourceId === pm.id && (
+                      <div className="absolute -top-1 -right-1">
+                        <Check size={16} className="text-blue-500" strokeWidth={2} />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Memo */}
           <div>
@@ -155,7 +277,7 @@ export const QuickAddTemplateDetailModal = ({
             </button>
             <button
               type="submit"
-              disabled={!amount}
+              disabled={!amount || !categoryId}
               className="flex-1 px-4 py-2 btn-primary hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
             >
               登録
