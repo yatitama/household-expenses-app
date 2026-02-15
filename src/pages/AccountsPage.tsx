@@ -239,6 +239,10 @@ export const AccountsPage = () => {
             accounts={accounts}
             paymentMethods={paymentMethods}
             onTemplateClick={handleQuickAddTemplateClick}
+            onEditClick={(template) => {
+              setEditingQuickAddTemplate(template);
+              setIsQuickAddTemplateModalOpen(true);
+            }}
             onAddClick={() => {
               setEditingQuickAddTemplate(null);
               setIsQuickAddTemplateModalOpen(true);

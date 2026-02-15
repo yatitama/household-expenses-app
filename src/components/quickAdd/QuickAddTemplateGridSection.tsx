@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus, Edit2 } from 'lucide-react';
 import type { QuickAddTemplate, Category, Account, PaymentMethod } from '../../types';
 
 interface QuickAddTemplateGridSectionProps {
@@ -7,6 +7,7 @@ interface QuickAddTemplateGridSectionProps {
   accounts: Account[];
   paymentMethods: PaymentMethod[];
   onTemplateClick: (template: QuickAddTemplate) => void;
+  onEditClick: (template: QuickAddTemplate) => void;
   onAddClick: () => void;
 }
 
@@ -15,6 +16,7 @@ export const QuickAddTemplateGridSection = ({
   accounts,
   paymentMethods,
   onTemplateClick,
+  onEditClick,
   onAddClick,
 }: QuickAddTemplateGridSectionProps) => {
   const getAccountName = (accountId?: string): string => {
@@ -42,25 +44,39 @@ export const QuickAddTemplateGridSection = ({
       <div className="pt-2 pb-3 md:pb-4">
         <div className="grid grid-cols-3 gap-2 md:gap-3 p-2">
           {templates.map((template) => (
-            <button
+            <div
               key={template.id}
-              onClick={() => onTemplateClick(template)}
-              className="aspect-square border border-gray-200 dark:border-gray-700 p-2 hover:opacity-80 transition-opacity flex flex-col justify-between text-left rounded"
+              className="relative aspect-square"
             >
-              <div className="min-w-0">
-                <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                  {template.name}
-                </p>
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 space-y-0.5">
-                {template.accountId && (
-                  <p className="truncate">{getAccountName(template.accountId)}</p>
-                )}
-                {template.paymentMethodId && (
-                  <p className="truncate">{getPaymentMethodName(template.paymentMethodId)}</p>
-                )}
-              </div>
-            </button>
+              <button
+                onClick={() => onTemplateClick(template)}
+                className="w-full h-full border border-gray-200 dark:border-gray-700 p-2 hover:opacity-80 transition-opacity flex flex-col justify-between text-left rounded"
+              >
+                <div className="min-w-0">
+                  <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                    {template.name}
+                  </p>
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 space-y-0.5">
+                  {template.accountId && (
+                    <p className="truncate">{getAccountName(template.accountId)}</p>
+                  )}
+                  {template.paymentMethodId && (
+                    <p className="truncate">{getPaymentMethodName(template.paymentMethodId)}</p>
+                  )}
+                </div>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditClick(template);
+                }}
+                className="absolute top-1 right-1 p-1.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                aria-label="編集"
+              >
+                <Edit2 size={14} className="text-gray-600 dark:text-gray-300" />
+              </button>
+            </div>
           ))}
           {/* Add button */}
           {templates.length < 9 && (
