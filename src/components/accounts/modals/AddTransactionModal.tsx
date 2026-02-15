@@ -7,26 +7,27 @@ import {
   memberService, paymentMethodService,
 } from '../../../services/storage';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
-import type { TransactionType, TransactionInput } from '../../../types';
+import type { TransactionType, TransactionInput, QuickAddTemplate } from '../../../types';
 
 
 interface AddTransactionModalProps {
+  template?: QuickAddTemplate | null;
   onSaved: () => void;
   onClose: () => void;
 }
 
-export const AddTransactionModal = ({ onSaved, onClose }: AddTransactionModalProps) => {
+export const AddTransactionModal = ({ template, onSaved, onClose }: AddTransactionModalProps) => {
   const allAccounts = accountService.getAll();
   const allPaymentMethods = paymentMethodService.getAll();
   const categories = categoryService.getAll();
   const members = memberService.getAll();
 
-  const [type, setType] = useState<TransactionType>('expense');
-  const [amount, setAmount] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [selectedSourceId, setSelectedSourceId] = useState('');
-  const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [memo, setMemo] = useState('');
+  const [type, setType] = useState<TransactionType>(() => template?.type || 'expense');
+  const [amount, setAmount] = useState(() => template?.amount ? String(template.amount) : '');
+  const [categoryId, setCategoryId] = useState(() => template?.categoryId || '');
+  const [selectedSourceId, setSelectedSourceId] = useState(() => template?.accountId || template?.paymentMethodId || '');
+  const [date, setDate] = useState(() => template?.date || format(new Date(), 'yyyy-MM-dd'));
+  const [memo, setMemo] = useState(() => template?.memo || '');
 
   const filteredCategories = categories.filter((c) => c.type === type);
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
