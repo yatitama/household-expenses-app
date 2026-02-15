@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Wallet, CreditCard, Check } from 'lucide-react';
+import { X, Wallet, CreditCard, Check, XCircle } from 'lucide-react';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { QuickAddTemplate, QuickAddTemplateInput, Category, Account, PaymentMethod, Member } from '../../types';
 
@@ -28,9 +28,7 @@ export const QuickAddTemplateModal = ({
 }: QuickAddTemplateModalProps) => {
   const [name, setName] = useState(() => template?.name || '');
   const [type, setType] = useState<'expense' | 'income'>(() => template?.type || 'expense');
-  const [categoryId, setCategoryId] = useState(() =>
-    template?.categoryId || categories.find((c) => c.type === 'expense')?.id || ''
-  );
+  const [categoryId, setCategoryId] = useState(() => template?.categoryId || '');
   const [amount, setAmount] = useState(() => template?.amount?.toString() || '');
   const [selectedSourceId, setSelectedSourceId] = useState<string>(() => template?.accountId || template?.paymentMethodId || '');
   const [date, setDate] = useState(() => template?.date || '');
@@ -40,7 +38,7 @@ export const QuickAddTemplateModal = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !amount || !categoryId || !selectedSourceId) {
+    if (!name) {
       return;
     }
 
@@ -51,7 +49,7 @@ export const QuickAddTemplateModal = ({
     onSave({
       name,
       type,
-      categoryId,
+      categoryId: categoryId || undefined,
       amount: amount ? parseInt(amount, 10) : undefined,
       accountId: account?.id,
       paymentMethodId: paymentMethod?.id,
@@ -142,11 +140,11 @@ export const QuickAddTemplateModal = ({
                     <button
                       key={category.id}
                       type="button"
-                      onClick={() => setCategoryId(category.id)}
+                      onClick={() => setCategoryId(categoryId === category.id ? '' : category.id)}
                       className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                         categoryId === category.id
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                          ? 'border border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                          : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300'
                       }`}
                     >
                       <div
@@ -182,11 +180,11 @@ export const QuickAddTemplateModal = ({
                   <button
                     key={acct.id}
                     type="button"
-                    onClick={() => setSelectedSourceId(acct.id)}
-                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                    onClick={() => setSelectedSourceId(selectedSourceId === acct.id ? '' : acct.id)}
+                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
                       selectedSourceId === acct.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <div
@@ -210,11 +208,11 @@ export const QuickAddTemplateModal = ({
                   <button
                     key={pm.id}
                     type="button"
-                    onClick={() => setSelectedSourceId(pm.id)}
-                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                    onClick={() => setSelectedSourceId(selectedSourceId === pm.id ? '' : pm.id)}
+                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
                       selectedSourceId === pm.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <div
@@ -239,13 +237,25 @@ export const QuickAddTemplateModal = ({
             {/* Date */}
             <div className="overflow-x-hidden">
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">日付</label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
-                style={{ minWidth: 0, maxWidth: '100%' }}
-              />
+              <div className="relative">
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 pr-10 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  style={{ minWidth: 0, maxWidth: '100%' }}
+                />
+                {date && (
+                  <button
+                    type="button"
+                    onClick={() => setDate('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
+                    aria-label="日付をクリア"
+                  >
+                    <XCircle size={18} />
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Memo */}
@@ -278,7 +288,7 @@ export const QuickAddTemplateModal = ({
           )}
           <button
             type="submit"
-            disabled={!name || !amount || !categoryId || !selectedSourceId}
+            disabled={!name}
             className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary hover:bg-slate-800 text-white font-medium text-sm disabled:opacity-50 transition-colors"
           >
             保存
