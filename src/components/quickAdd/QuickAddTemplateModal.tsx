@@ -31,9 +31,8 @@ export const QuickAddTemplateModal = ({
   const [categoryId, setCategoryId] = useState(() =>
     template?.categoryId || categories.find((c) => c.type === 'expense')?.id || ''
   );
-  const [accountId, setAccountId] = useState<string | undefined>(() => template?.accountId);
-  const [paymentMethodId, setPaymentMethodId] = useState<string | undefined>(() => template?.paymentMethodId);
-  const [memo, setMemo] = useState<string | undefined>(() => template?.memo);
+  const [selectedSourceId, setSelectedSourceId] = useState<string>(() => template?.accountId || template?.paymentMethodId || '');
+  const [memo, setMemo] = useState(() => template?.memo || '');
 
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
@@ -42,13 +41,18 @@ export const QuickAddTemplateModal = ({
     if (!name || !categoryId) {
       return;
     }
+
+    // Determine if selected source is account or payment method
+    const account = accounts.find((a) => a.id === selectedSourceId);
+    const paymentMethod = paymentMethods.find((p) => p.id === selectedSourceId);
+
     onSave({
       name,
       type,
       categoryId,
-      accountId,
-      paymentMethodId,
-      memo,
+      accountId: account?.id,
+      paymentMethodId: paymentMethod?.id,
+      memo: memo || undefined,
     });
   };
 
@@ -82,12 +86,12 @@ export const QuickAddTemplateModal = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: コンビニ"
-                className="w-full border dark:border-gray-600 dark:text-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full dark:border-gray-600 dark:text-gray-100 dark:bg-slate-700 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
               />
             </div>
 
             {/* Type */}
-            <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
+            <div className="flex rounded-lg overflow-hidden">
               <button
                 type="button"
                 onClick={() => { setType('expense'); setCategoryId(''); }}
@@ -119,7 +123,7 @@ export const QuickAddTemplateModal = ({
                       key={category.id}
                       type="button"
                       onClick={() => setCategoryId(category.id)}
-                      className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors border ${
+                      className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                         categoryId === category.id
                           ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                           : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -151,11 +155,11 @@ export const QuickAddTemplateModal = ({
                   <button
                     key={acct.id}
                     type="button"
-                    onClick={() => { setAccountId(acct.id); setPaymentMethodId(undefined); }}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
-                      accountId === acct.id && !paymentMethodId
+                    onClick={() => setSelectedSourceId(acct.id)}
+                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                      selectedSourceId === acct.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <div
@@ -174,11 +178,11 @@ export const QuickAddTemplateModal = ({
                   <button
                     key={pm.id}
                     type="button"
-                    onClick={() => { setPaymentMethodId(pm.id); setAccountId(undefined); }}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors border ${
-                      paymentMethodId === pm.id && !accountId
+                    onClick={() => setSelectedSourceId(pm.id)}
+                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                      selectedSourceId === pm.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <div
@@ -200,10 +204,10 @@ export const QuickAddTemplateModal = ({
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">メモ</label>
               <input
                 type="text"
-                value={memo || ''}
-                onChange={(e) => setMemo(e.target.value || undefined)}
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
                 placeholder="任意"
-                className="w-full border dark:border-gray-600 dark:text-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full dark:border-gray-600 dark:text-gray-100 dark:bg-slate-700 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
               />
             </div>
           </div>
@@ -211,14 +215,14 @@ export const QuickAddTemplateModal = ({
 
         {/* Footer Buttons */}
         <div className="border-t dark:border-gray-700 p-3 sm:p-4 flex gap-3">
-          <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
+          <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
             キャンセル
           </button>
           {template && onDelete && (
             <button
               type="button"
               onClick={onDelete}
-              className="py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-medium text-sm hover:bg-red-200 dark:hover:bg-red-900/40"
+              className="py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-medium text-sm hover:bg-red-200 dark:hover:bg-red-900/40 transition-colors"
             >
               削除
             </button>
@@ -226,7 +230,7 @@ export const QuickAddTemplateModal = ({
           <button
             type="submit"
             disabled={!name || !categoryId}
-            className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 text-white font-medium text-sm disabled:opacity-50 transition-colors"
+            className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm disabled:opacity-50 transition-colors"
           >
             保存
           </button>
