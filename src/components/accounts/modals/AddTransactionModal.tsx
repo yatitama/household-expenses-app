@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
-import { X } from 'lucide-react';
+import { X, Wallet, CreditCard } from 'lucide-react';
 import {
   accountService, transactionService, categoryService,
   memberService, paymentMethodService,
 } from '../../../services/storage';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import type { TransactionType, TransactionInput } from '../../../types';
+
 
 interface AddTransactionModalProps {
   defaultAccountId?: string;
@@ -192,25 +193,25 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                 <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                   {type === 'expense' ? '支払い元' : '入金先'}
                 </label>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {accounts.map((acct) => (
                     <button
                       key={acct.id}
                       type="button"
                       onClick={() => handleSelectAccount(acct.id)}
-                      className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                      className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                         accountId === acct.id && pmId === undefined
                           ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
                     >
                       <div
-                        className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: `${acct.color}20`, color: acct.color }}
+                        className="w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
                       >
-                        {getCategoryIcon(acct.icon || 'Banknote', 14)}
+                        <Wallet size={16} />
                       </div>
-                      <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                      <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                         {acct.name}
                       </span>
                     </button>
@@ -221,19 +222,19 @@ export const AddTransactionModal = ({ defaultAccountId, defaultPaymentMethodId, 
                       key={pm.id}
                       type="button"
                       onClick={() => handleSelectPM(pm.id)}
-                      className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                      className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                         pmId === pm.id
                           ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
                     >
                       <div
-                        className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: `${pm.color}20`, color: pm.color }}
+                        className="w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: `${pm.color || '#9ca3af'}20`, color: pm.color || '#9ca3af' }}
                       >
-                        {getCategoryIcon(pm.icon || 'Banknote', 14)}
+                        <CreditCard size={16} />
                       </div>
-                      <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                      <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                         {pm.name}
                       </span>
                     </button>
