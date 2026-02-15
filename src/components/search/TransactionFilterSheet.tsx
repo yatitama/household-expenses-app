@@ -176,7 +176,7 @@ export const TransactionFilterSheet = ({
 
               {isExpanded('member') && (
                 <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     {members.map((member) => (
                       <button
                         key={member.id}
@@ -187,10 +187,10 @@ export const TransactionFilterSheet = ({
                             : [...filters.memberIds, member.id];
                           updateFilter('memberIds', newIds);
                         }}
-                        className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                        className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                           filters.memberIds.includes(member.id)
-                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                            ? 'bg-primary-50 dark:bg-primary-900/30'
+                            : ''
                         }`}
                       >
                         <div
@@ -199,9 +199,14 @@ export const TransactionFilterSheet = ({
                         >
                           <User size={16} />
                         </div>
-                        <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                        <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                           {member.name}
                         </span>
+                        {filters.memberIds.includes(member.id) && (
+                          <div className="absolute -top-1 -right-1">
+                            <Check size={16} className="text-primary-500" strokeWidth={2} />
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -235,7 +240,7 @@ export const TransactionFilterSheet = ({
 
               {isExpanded('category') && (
                 <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     {categories.map((category) => {
                       const member = members.find((m) => m.id === category.memberId);
                       return (
@@ -248,23 +253,28 @@ export const TransactionFilterSheet = ({
                               : [...filters.categoryIds, category.id];
                             updateFilter('categoryIds', newIds);
                           }}
-                          className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                          className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                             filters.categoryIds.includes(category.id)
-                              ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                              : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                              ? 'bg-primary-50 dark:bg-primary-900/30'
+                              : ''
                           }`}
                         >
                           <div
-                            className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
+                            className="w-6 h-6 rounded-full flex items-center justify-center"
                             style={{ backgroundColor: `${category.color}20`, color: category.color }}
                           >
                             {getCategoryIcon(category.icon, 14)}
                           </div>
-                          <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                          <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                             {category.name}
                           </span>
                           {member && member.id !== 'common' && (
-                            <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                            <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                          )}
+                          {filters.categoryIds.includes(category.id) && (
+                            <div className="absolute -top-1 -right-1">
+                              <Check size={16} className="text-primary-500" strokeWidth={2} />
+                            </div>
                           )}
                         </button>
                       );
@@ -274,7 +284,7 @@ export const TransactionFilterSheet = ({
               )}
             </div>
 
-            {/* 口座セクション */}
+            {/* 口座・支払方法セクション */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
               <button
                 onClick={() => toggleSection('account')}
@@ -288,11 +298,11 @@ export const TransactionFilterSheet = ({
                     }`}
                   />
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    口座
+                    口座・支払方法
                   </span>
-                  {filters.accountIds.length > 0 && (
+                  {(filters.accountIds.length > 0 || filters.paymentMethodIds.length > 0) && (
                     <span className="ml-auto text-xs font-medium text-primary-600 dark:text-primary-400">
-                      {filters.accountIds.length}件選択中
+                      {filters.accountIds.length + filters.paymentMethodIds.length}件選択中
                     </span>
                   )}
                 </div>
@@ -300,7 +310,7 @@ export const TransactionFilterSheet = ({
 
               {isExpanded('account') && (
                 <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     {accounts.map((account) => (
                       <button
                         key={account.id}
@@ -311,10 +321,10 @@ export const TransactionFilterSheet = ({
                             : [...filters.accountIds, account.id];
                           updateFilter('accountIds', newIds);
                         }}
-                        className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                        className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                           filters.accountIds.includes(account.id)
-                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                            ? 'bg-primary-50 dark:bg-primary-900/30'
+                            : ''
                         }`}
                       >
                         <div
@@ -323,44 +333,16 @@ export const TransactionFilterSheet = ({
                         >
                           <Wallet size={16} />
                         </div>
-                        <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                        <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                           {account.name}
                         </span>
-                        {filters.accountIds.includes(account.id) && <Check size={12} className="text-primary-600" />}
+                        {filters.accountIds.includes(account.id) && (
+                          <div className="absolute -top-1 -right-1">
+                            <Check size={16} className="text-primary-500" strokeWidth={2} />
+                          </div>
+                        )}
                       </button>
                     ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* 支払方法セクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
-              <button
-                onClick={() => toggleSection('payment')}
-                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
-              >
-                <div className="flex items-center gap-2">
-                  <ChevronDown
-                    size={16}
-                    className={`flex-shrink-0 transition-transform text-gray-600 dark:text-gray-400 ${
-                      isExpanded('payment') ? 'rotate-0' : '-rotate-90'
-                    }`}
-                  />
-                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    支払方法
-                  </span>
-                  {filters.paymentMethodIds.length > 0 && (
-                    <span className="ml-auto text-xs font-medium text-primary-600 dark:text-primary-400">
-                      {filters.paymentMethodIds.length}件選択中
-                    </span>
-                  )}
-                </div>
-              </button>
-
-              {isExpanded('payment') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="grid grid-cols-2 gap-2">
                     {paymentMethods.map((pm) => (
                       <button
                         key={pm.id}
@@ -371,10 +353,10 @@ export const TransactionFilterSheet = ({
                             : [...filters.paymentMethodIds, pm.id];
                           updateFilter('paymentMethodIds', newIds);
                         }}
-                        className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                        className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                           filters.paymentMethodIds.includes(pm.id)
-                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                            ? 'bg-primary-50 dark:bg-primary-900/30'
+                            : ''
                         }`}
                       >
                         <div
@@ -383,8 +365,14 @@ export const TransactionFilterSheet = ({
                         >
                           <CreditCard size={16} />
                         </div>
-                        <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">{pm.name}</span>
-                        {filters.paymentMethodIds.includes(pm.id) && <Check size={12} className="text-primary-600" />}
+                        <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                          {pm.name}
+                        </span>
+                        {filters.paymentMethodIds.includes(pm.id) && (
+                          <div className="absolute -top-1 -right-1">
+                            <Check size={16} className="text-primary-500" strokeWidth={2} />
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
