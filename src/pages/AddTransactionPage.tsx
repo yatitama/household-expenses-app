@@ -140,7 +140,7 @@ export const AddTransactionPage = () => {
     <div className="h-screen bg-white dark:bg-slate-900 flex flex-col overflow-hidden">
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto flex flex-col flex-1"
+        className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto flex flex-col flex-1 min-h-0"
       >
         <div className="p-3 sm:p-4 flex justify-between items-center border-b dark:border-gray-700">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
@@ -148,7 +148,7 @@ export const AddTransactionPage = () => {
             <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
           </Link>
         </div>
-        <div ref={scrollContainerRef} className="overflow-y-auto flex-1">
+        <div ref={scrollContainerRef} className="overflow-y-auto flex-1 min-h-0">
           {allAccounts.length > 0 && quickAddTemplates.length > 0 && (
             <QuickAddTemplateGridSection
               templates={quickAddTemplates}
