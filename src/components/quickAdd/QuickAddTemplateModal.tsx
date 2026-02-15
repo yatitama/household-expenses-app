@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Wallet, CreditCard } from 'lucide-react';
+import { X, Wallet, CreditCard, Check } from 'lucide-react';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { QuickAddTemplate, QuickAddTemplateInput, Category, Account, PaymentMethod, Member } from '../../types';
 
@@ -143,7 +143,7 @@ export const QuickAddTemplateModal = ({
                       key={category.id}
                       type="button"
                       onClick={() => setCategoryId(category.id)}
-                      className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                      className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                         categoryId === category.id
                           ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                           : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -155,11 +155,16 @@ export const QuickAddTemplateModal = ({
                       >
                         {getCategoryIcon(category.icon, 14)}
                       </div>
-                      <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                      <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                         {category.name}
                       </span>
                       {member && member.id !== 'common' && (
-                        <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                        <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                      )}
+                      {categoryId === category.id && (
+                        <div className="absolute -top-1 -right-1">
+                          <Check size={16} className="text-primary-500" strokeWidth={2} />
+                        </div>
                       )}
                     </button>
                   );
@@ -172,13 +177,13 @@ export const QuickAddTemplateModal = ({
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                 {type === 'expense' ? '支払い元' : '入金先'}
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 {accounts.map((acct) => (
                   <button
                     key={acct.id}
                     type="button"
                     onClick={() => setSelectedSourceId(acct.id)}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                       selectedSourceId === acct.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                         : 'hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -190,9 +195,14 @@ export const QuickAddTemplateModal = ({
                     >
                       <Wallet size={16} />
                     </div>
-                    <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                    <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                       {acct.name}
                     </span>
+                    {selectedSourceId === acct.id && (
+                      <div className="absolute -top-1 -right-1">
+                        <Check size={16} className="text-primary-500" strokeWidth={2} />
+                      </div>
+                    )}
                   </button>
                 ))}
 
@@ -201,7 +211,7 @@ export const QuickAddTemplateModal = ({
                     key={pm.id}
                     type="button"
                     onClick={() => setSelectedSourceId(pm.id)}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                    className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                       selectedSourceId === pm.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                         : 'hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -213,9 +223,14 @@ export const QuickAddTemplateModal = ({
                     >
                       <CreditCard size={16} />
                     </div>
-                    <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                    <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                       {pm.name}
                     </span>
+                    {selectedSourceId === pm.id && (
+                      <div className="absolute -top-1 -right-1">
+                        <Check size={16} className="text-primary-500" strokeWidth={2} />
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
@@ -228,7 +243,7 @@ export const QuickAddTemplateModal = ({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
                 style={{ minWidth: 0, maxWidth: '100%' }}
               />
             </div>
