@@ -74,7 +74,10 @@ export const CardUnsettledListModal = ({
           {/* 固定ヘッダー */}
           <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 p-3 sm:p-4 border-b dark:border-gray-700">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{paymentMethod.name}</h3>
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
+                {paymentMethod.name}
+                <span className="text-xs sm:text-sm font-normal text-gray-600 dark:text-gray-400"> - {linkedAccount?.name || 'その他'}</span>
+              </h3>
               <button
                 onClick={onClose}
                 className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
@@ -84,12 +87,11 @@ export const CardUnsettledListModal = ({
             </div>
 
             {/* カード情報 */}
-            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 space-y-1">
-              <p>- {linkedAccount?.name || 'その他'}</p>
-              {paymentMethod.billingType === 'monthly' && (
+            {paymentMethod.billingType === 'monthly' && (
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 <p>毎月{paymentMethod.closingDay || 15}日締め 翌月{paymentMethod.paymentDay || 10}日引落</p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto">
