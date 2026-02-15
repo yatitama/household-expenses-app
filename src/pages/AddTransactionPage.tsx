@@ -140,7 +140,7 @@ export const AddTransactionPage = () => {
     <div className="h-screen bg-white dark:bg-slate-900 flex flex-col overflow-hidden">
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto flex flex-col flex-1"
+        className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto flex flex-col flex-1 min-h-0"
       >
         <div className="p-3 sm:p-4 flex justify-between items-center border-b dark:border-gray-700">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
@@ -148,35 +148,7 @@ export const AddTransactionPage = () => {
             <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
           </Link>
         </div>
-        <div ref={scrollContainerRef} className="overflow-y-auto flex-1">
-          {allAccounts.length > 0 && quickAddTemplates.length > 0 && (
-            <QuickAddTemplateGridSection
-              templates={quickAddTemplates}
-              onTemplateClick={handleQuickAddTemplateClick}
-              onEditClick={(tpl) => {
-                setEditingQuickAddTemplate(tpl);
-                setIsQuickAddTemplateModalOpen(true);
-              }}
-              onAddClick={() => {
-                setEditingQuickAddTemplate(null);
-                setIsQuickAddTemplateModalOpen(true);
-              }}
-            />
-          )}
-          {quickAddTemplates.length === 0 && allAccounts.length > 0 && (
-            <div className="p-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingQuickAddTemplate(null);
-                  setIsQuickAddTemplateModalOpen(true);
-                }}
-                className="w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
-              >
-                + クイック追加テンプレートを作成
-              </button>
-            </div>
-          )}
+        <div ref={scrollContainerRef} className="overflow-y-auto flex-1 min-h-0">
           <div className="p-3 sm:p-4">
             <div className="space-y-4 sm:space-y-5">
               <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
@@ -199,6 +171,33 @@ export const AddTransactionPage = () => {
                   収入
                 </button>
               </div>
+
+              {allAccounts.length > 0 && quickAddTemplates.length > 0 && (
+                <QuickAddTemplateGridSection
+                  templates={quickAddTemplates}
+                  onTemplateClick={handleQuickAddTemplateClick}
+                  onEditClick={(tpl) => {
+                    setEditingQuickAddTemplate(tpl);
+                    setIsQuickAddTemplateModalOpen(true);
+                  }}
+                  onAddClick={() => {
+                    setEditingQuickAddTemplate(null);
+                    setIsQuickAddTemplateModalOpen(true);
+                  }}
+                />
+              )}
+              {quickAddTemplates.length === 0 && allAccounts.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingQuickAddTemplate(null);
+                    setIsQuickAddTemplateModalOpen(true);
+                  }}
+                  className="w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
+                >
+                  + クイック追加テンプレートを作成
+                </button>
+              )}
 
               <div>
                 <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">金額</label>
