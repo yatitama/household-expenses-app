@@ -148,10 +148,10 @@ export const AddTransactionPage = () => {
                         key={category.id}
                         type="button"
                         onClick={() => setCategoryId(category.id)}
-                        className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg border-2 transition-colors ${
+                        className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                           categoryId === category.id
-                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                            ? 'bg-primary-50 dark:bg-primary-900/30'
+                            : ''
                         }`}
                       >
                         <div
@@ -167,8 +167,8 @@ export const AddTransactionPage = () => {
                           <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
                         )}
                         {categoryId === category.id && (
-                          <div className="absolute -top-1 -right-1 bg-primary-600 rounded-full p-1 shadow-md">
-                            <Check size={14} className="text-white" />
+                          <div className="absolute -top-1 -right-1">
+                            <Check size={20} className="text-primary-600" strokeWidth={3} />
                           </div>
                         )}
                       </button>
@@ -187,10 +187,10 @@ export const AddTransactionPage = () => {
                       key={acct.id}
                       type="button"
                       onClick={() => setSelectedSourceId(acct.id)}
-                      className={`relative flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-colors ${
+                      className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                         selectedSourceId === acct.id
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                          ? 'bg-primary-50 dark:bg-primary-900/30'
+                          : ''
                       }`}
                     >
                       <div
@@ -203,8 +203,8 @@ export const AddTransactionPage = () => {
                         {acct.name}
                       </span>
                       {selectedSourceId === acct.id && (
-                        <div className="absolute -top-1 -right-1 bg-primary-600 rounded-full p-1 shadow-md">
-                          <Check size={14} className="text-white" />
+                        <div className="absolute -top-1 -right-1">
+                          <Check size={20} className="text-primary-600" strokeWidth={3} />
                         </div>
                       )}
                     </button>
@@ -215,10 +215,10 @@ export const AddTransactionPage = () => {
                       key={pm.id}
                       type="button"
                       onClick={() => setSelectedSourceId(pm.id)}
-                      className={`relative flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-colors ${
+                      className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                         selectedSourceId === pm.id
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                          ? 'bg-primary-50 dark:bg-primary-900/30'
+                          : ''
                       }`}
                     >
                       <div
@@ -231,8 +231,8 @@ export const AddTransactionPage = () => {
                         {pm.name}
                       </span>
                       {selectedSourceId === pm.id && (
-                        <div className="absolute -top-1 -right-1 bg-primary-600 rounded-full p-1 shadow-md">
-                          <Check size={14} className="text-white" />
+                        <div className="absolute -top-1 -right-1">
+                          <Check size={20} className="text-primary-600" strokeWidth={3} />
                         </div>
                       )}
                     </button>
