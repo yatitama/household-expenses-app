@@ -70,7 +70,7 @@ export const AssetCard = ({
       {/* 口座セクション */}
       <div ref={accountsSectionRef} data-section-name="口座">
         <div
-          className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b border-l dark:border-gray-700"
+          className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
           style={{ top: 'max(0px, env(safe-area-inset-top))' }}
         >
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
@@ -84,7 +84,7 @@ export const AssetCard = ({
       {linkedPaymentMethods.length > 0 && (
         <div ref={cardsSectionRef} data-section-name="カード">
           <div
-            className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b border-l dark:border-gray-700"
+            className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
             style={{ top: 'max(0px, env(safe-area-inset-top))' }}
           >
             <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">カード</h3>
@@ -103,7 +103,7 @@ export const AssetCard = ({
       {/* 定期支出セクション */}
       <div ref={expenseSectionRef} data-section-name="定期支出">
         <div
-          className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b border-l dark:border-gray-700"
+          className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
           style={{ top: 'max(0px, env(safe-area-inset-top))' }}
         >
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期支出</h3>
@@ -121,7 +121,7 @@ export const AssetCard = ({
       {/* 定期収入セクション */}
       <div ref={incomeSectionRef} data-section-name="定期収入">
         <div
-          className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b border-l dark:border-gray-700"
+          className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
           style={{ top: 'max(0px, env(safe-area-inset-top))' }}
         >
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期収入</h3>

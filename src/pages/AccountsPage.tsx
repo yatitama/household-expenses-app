@@ -211,7 +211,7 @@ export const AccountsPage = () => {
               {unlinkedPMs.length > 0 && (
                 <div data-section-name="紐付未設定のカード">
                   <div
-                    className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b border-l dark:border-gray-700"
+                    className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
                     style={{ top: 'max(0px, env(safe-area-inset-top))' }}
                   >
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">紐付未設定のカード ({unlinkedPMs.length}件)</h3>
