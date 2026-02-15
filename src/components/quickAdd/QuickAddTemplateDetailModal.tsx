@@ -136,7 +136,7 @@ export const QuickAddTemplateDetailModal = ({
                         onClick={() => setCategoryId(categoryId === cat.id ? '' : cat.id)}
                         className={`relative flex flex-col items-center gap-1 p-1.5 rounded-lg transition-colors ${
                           categoryId === cat.id
-                            ? 'border border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                            ? 'bg-blue-50 dark:bg-blue-900/30'
                             : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                         }`}
                       >
@@ -193,7 +193,7 @@ export const QuickAddTemplateDetailModal = ({
                     onClick={() => setSelectedSourceId(selectedSourceId === acct.id ? '' : acct.id)}
                     className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                       selectedSourceId === acct.id
-                        ? 'border border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                        ? 'bg-blue-50 dark:bg-blue-900/30'
                         : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
@@ -221,7 +221,7 @@ export const QuickAddTemplateDetailModal = ({
                     onClick={() => setSelectedSourceId(selectedSourceId === pm.id ? '' : pm.id)}
                     className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                       selectedSourceId === pm.id
-                        ? 'border border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                        ? 'bg-blue-50 dark:bg-blue-900/30'
                         : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
