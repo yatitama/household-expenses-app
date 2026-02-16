@@ -16,6 +16,7 @@ import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodM
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { paymentMethodService, memberService } from '../services/storage';
+import { formatCurrency } from '../utils/formatters';
 import type { RecurringPayment, PaymentMethod, PaymentMethodInput, Transaction } from '../types';
 
 export const AccountsPage = () => {
@@ -64,6 +65,12 @@ export const AccountsPage = () => {
     return { paymentMethod: pm, unsettledAmount: amount, unsettledTransactions: pmUnsettled };
   });
 
+  // セクション合計
+  const totalCardUnsettled = cardUnsettledList.reduce((sum, c) => sum + c.unsettledAmount, 0);
+  const totalRecurringExpense = allUpcomingExpense.reduce((sum, rp) => sum + rp.amount, 0);
+  const totalRecurringIncome = allUpcomingIncome.reduce((sum, rp) => sum + rp.amount, 0);
+  const totalNet = totalRecurringIncome - totalRecurringExpense - totalCardUnsettled;
+
   const handleEditRecurring = (rp: RecurringPayment) => {
     openModal({ type: 'recurring', data: { editing: rp, target: null } });
   };
@@ -105,7 +112,7 @@ export const AccountsPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
-      <div className="flex-1 overflow-clip">
+      <div className="flex-1 overflow-clip pb-20">
         {accounts.length === 0 ? (
           <div className="p-4">
             <EmptyState
@@ -127,7 +134,10 @@ export const AccountsPage = () => {
                   className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
                   style={{ top: 'max(0px, env(safe-area-inset-top))' }}
                 >
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">カード</h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">カード</h3>
+                    <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{formatCurrency(totalCardUnsettled)}</p>
+                  </div>
                 </div>
                 <div className="pt-2 pb-3 md:pb-4">
                   <CardGridSection
@@ -146,7 +156,10 @@ export const AccountsPage = () => {
                 className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
                 style={{ top: 'max(0px, env(safe-area-inset-top))' }}
               >
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期支出</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期支出</h3>
+                  <p className="text-xs font-bold text-gray-700 dark:text-gray-300">-{formatCurrency(totalRecurringExpense)}</p>
+                </div>
               </div>
               <div className="pt-2 pb-3 md:pb-4">
                 <RecurringItemGridSection
@@ -164,7 +177,10 @@ export const AccountsPage = () => {
                 className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
                 style={{ top: 'max(0px, env(safe-area-inset-top))' }}
               >
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期収入</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期収入</h3>
+                  <p className="text-xs font-bold text-gray-700 dark:text-gray-300">+{formatCurrency(totalRecurringIncome)}</p>
+                </div>
               </div>
               <div className="pt-2 pb-3 md:pb-4">
                 <RecurringItemGridSection
@@ -177,6 +193,18 @@ export const AccountsPage = () => {
             </div>
           </div>
         )}
+      </div>
+
+      {/* ボトム固定フッター */}
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5">
+        <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-end">
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0">
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">合計</p>
+            <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
+              {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* モーダル群 */}
