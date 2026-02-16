@@ -213,9 +213,9 @@ export const RecurringPaymentModal = ({
                     >
                       {getCategoryIcon(category.icon, 14)}
                     </div>
-                    <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">{category.name}</span>
+                    <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">{category.name}</span>
                     {member && member.id !== 'common' && (
-                      <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                      <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
                     )}
                   </button>
                 );
@@ -245,7 +245,7 @@ export const RecurringPaymentModal = ({
                   >
                     <Wallet size={16} />
                   </div>
-                  <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                  <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                     {acct.name}
                   </span>
                 </button>
@@ -267,7 +267,7 @@ export const RecurringPaymentModal = ({
                   >
                     <CreditCard size={16} />
                   </div>
-                  <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                  <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                     {pm.name}
                   </span>
                 </button>
