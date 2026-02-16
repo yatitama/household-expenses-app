@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { X, Check, ToggleLeft, ToggleRight } from 'lucide-react';
+import { X, ToggleLeft, ToggleRight, Wallet, CreditCard } from 'lucide-react';
 import { categoryService, memberService } from '../../../services/storage';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import type {
@@ -206,19 +206,19 @@ export const RecurringPaymentModal = ({
                     key={category.id}
                     type="button"
                     onClick={() => setCategoryId(category.id)}
-                    className={`flex flex-col items-center gap-1 p-1 sm:p-1.5 rounded-lg transition-colors ${
+                    className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                       categoryId === category.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                     }`}
                   >
                     <div
-                      className="w-5 sm:w-6 h-5 sm:h-6 rounded-full flex items-center justify-center"
+                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
                       style={{ backgroundColor: `${category.color}20`, color: category.color }}
                     >
-                      {getCategoryIcon(category.icon, 12)}
+                      {getCategoryIcon(category.icon, 14)}
                     </div>
-                    <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center">{category.name}</span>
+                    <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">{category.name}</span>
                     {member && member.id !== 'common' && (
                       <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
                     )}
@@ -232,73 +232,57 @@ export const RecurringPaymentModal = ({
             <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
               {type === 'expense' ? '支払い元' : '入金先'}
             </label>
-            <div className="space-y-3">
-              {accounts.length > 0 && (
-                <div>
-                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
-                  <div className="space-y-1">
-                    {accounts.map((acct) => (
-                      <button
-                        key={acct.id}
-                        type="button"
-                        onClick={() => { setAccountId(acct.id); setPmId(undefined); }}
-                        className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
-                          accountId === acct.id && pmId === undefined
-                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
-                          <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{acct.name}</span>
-                        </div>
-                        {accountId === acct.id && pmId === undefined && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
-                      </button>
-                    ))}
+            <div className="grid grid-cols-2 gap-2">
+              {accounts.map((acct) => (
+                <button
+                  key={acct.id}
+                  type="button"
+                  onClick={() => { setAccountId(acct.id); setPmId(undefined); }}
+                  className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                    accountId === acct.id && pmId === undefined
+                      ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
+                  >
+                    <Wallet size={16} />
                   </div>
-                </div>
-              )}
-
-              {type === 'expense' && accountId && (
-                <div>
-                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
-                  <div className="space-y-1">
-                    <button
-                      type="button"
-                      onClick={() => setPmId(undefined)}
-                      className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
-                        pmId === undefined
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-gray-400" />
-                        <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">口座から引き落とし</span>
-                      </div>
-                      {pmId === undefined && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
-                    </button>
-                    {allPaymentMethods.filter((pm) => pm.linkedAccountId === accountId).map((pm) => (
-                      <button
-                        key={pm.id}
-                        type="button"
-                        onClick={() => setPmId(pm.id)}
-                        className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
-                          pmId === pm.id
-                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: pm.color }} />
-                          <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{pm.name}</span>
-                        </div>
-                        {pmId === pm.id && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
-                      </button>
-                    ))}
+                  <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                    {acct.name}
+                  </span>
+                </button>
+              ))}
+              {type === 'expense' && (
+                isFromPM
+                  ? allPaymentMethods.filter((pm) => pm.id === defaultPaymentMethodId)
+                  : isFromAccount
+                    ? allPaymentMethods.filter((pm) => pm.linkedAccountId === defaultAccountId)
+                    : allPaymentMethods
+              ).map((pm) => (
+                <button
+                  key={pm.id}
+                  type="button"
+                  onClick={() => { setAccountId(pm.linkedAccountId || ''); setPmId(pm.id); }}
+                  className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                    pmId === pm.id
+                      ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `${pm.color || '#9ca3af'}20`, color: pm.color || '#9ca3af' }}
+                  >
+                    <CreditCard size={16} />
                   </div>
-                </div>
-              )}
+                  <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                    {pm.name}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
 
