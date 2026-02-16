@@ -88,7 +88,7 @@ export const AddTransactionModal = ({ template, onSaved, onClose }: AddTransacti
         className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
+        <div className="overflow-y-auto flex-1 min-h-0 p-3 sm:p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
             <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">

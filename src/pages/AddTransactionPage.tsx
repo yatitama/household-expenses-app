@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Wallet, CreditCard, Check } from 'lucide-react';
@@ -16,7 +16,6 @@ export const AddTransactionPage = () => {
   const location = useLocation();
   const template = (location.state as { template?: QuickAddTemplate })?.template;
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const allAccounts = accountService.getAll();
   const allPaymentMethods = paymentMethodService.getAll();
   const categories = categoryService.getAll();
@@ -83,11 +82,7 @@ export const AddTransactionPage = () => {
 
     toast.success('取引を追加しました');
     resetForm();
-
-    // スクロール位置を上部に戻す
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = 0;
-    }
+    window.scrollTo(0, 0);
   };
 
   const handleQuickAddTemplateClick = (tpl: QuickAddTemplate) => {
@@ -97,9 +92,7 @@ export const AddTransactionPage = () => {
     setSelectedSourceId(tpl.accountId || tpl.paymentMethodId || '');
     setDate(tpl.date || format(new Date(), 'yyyy-MM-dd'));
     setMemo(tpl.memo || '');
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = 0;
-    }
+    window.scrollTo(0, 0);
   };
 
   const handleSaveQuickAddTemplate = (input: QuickAddTemplateInput) => {
@@ -137,10 +130,10 @@ export const AddTransactionPage = () => {
   };
 
   return (
-    <div className="h-screen bg-white dark:bg-slate-900 flex flex-col overflow-hidden">
+    <div className="bg-white dark:bg-slate-900">
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto flex flex-col flex-1 min-h-0"
+        className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto flex flex-col min-h-screen"
       >
         <div className="p-3 sm:p-4 flex justify-between items-center border-b dark:border-gray-700">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
@@ -148,7 +141,7 @@ export const AddTransactionPage = () => {
             <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
           </Link>
         </div>
-        <div ref={scrollContainerRef} className="overflow-y-auto flex-1 min-h-0">
+        <div className="flex-1">
           <div className="p-3 sm:p-4">
             <div className="space-y-4 sm:space-y-5">
               <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
@@ -340,7 +333,7 @@ export const AddTransactionPage = () => {
             </div>
           </div>
         </div>
-        <div className="border-t dark:border-gray-700 p-3 sm:p-4 flex gap-3">
+        <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex gap-3">
             <Link to="/" className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600 text-center">
               キャンセル
             </Link>
