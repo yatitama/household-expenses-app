@@ -25,12 +25,12 @@ export const QuickAddTemplateGridSection = ({
           {templates.slice(0, 4).map((template) => (
             <div
               key={template.id}
-              className="relative aspect-square"
+              className="relative h-9"
             >
               <button
                 type="button"
                 onClick={() => onTemplateClick(template)}
-                className="w-full h-full border border-gray-200 dark:border-gray-700 p-2 hover:opacity-80 transition-opacity flex items-center justify-center text-center rounded"
+                className="w-full h-full border border-gray-200 dark:border-gray-700 px-2 hover:opacity-80 transition-opacity flex items-center justify-center text-center rounded"
               >
                 <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 break-words leading-tight">
                   {template.name}
@@ -54,7 +54,7 @@ export const QuickAddTemplateGridSection = ({
             <button
               type="button"
               onClick={onAddClick}
-              className="aspect-square border border-gray-200 dark:border-gray-700 p-2 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded"
+              className="h-9 w-full border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded"
             >
               <Plus size={20} className="text-gray-400 dark:text-gray-500" />
             </button>
