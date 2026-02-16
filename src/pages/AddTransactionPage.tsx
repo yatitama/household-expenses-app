@@ -135,7 +135,7 @@ export const AddTransactionPage = () => {
         onSubmit={handleSubmit}
         className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto"
       >
-        <div className="p-3 sm:p-4 flex justify-between items-center border-b dark:border-gray-700">
+        <div className="p-3 sm:p-4 flex justify-between items-center">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
           <Link to="/" className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
             <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
@@ -331,7 +331,7 @@ export const AddTransactionPage = () => {
               </div>
             </div>
           </div>
-        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700">
+        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t border-b dark:border-gray-700">
           <div className="max-w-md mx-auto p-3 sm:p-4 flex gap-3">
             <Link to="/" className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600 text-center">
               キャンセル
