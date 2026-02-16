@@ -20,12 +20,9 @@ export const QuickAddTemplateGridSection = ({
 
   return (
     <div data-section-name="クイック追加">
-      <div className="p-2">
-        <h3 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200">クイック入力</h3>
-      </div>
-      <div className="pt-2 pb-3 md:pb-4">
-        <div className="grid grid-cols-3 gap-2 md:gap-3 p-2">
-          {templates.map((template) => (
+      <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">クイック入力</label>
+      <div className="grid grid-cols-2 gap-2">
+          {templates.slice(0, 4).map((template) => (
             <div
               key={template.id}
               className="relative aspect-square"
@@ -53,7 +50,7 @@ export const QuickAddTemplateGridSection = ({
             </div>
           ))}
           {/* Add button */}
-          {templates.length < 9 && (
+          {templates.length < 4 && (
             <button
               type="button"
               onClick={onAddClick}
@@ -63,7 +60,6 @@ export const QuickAddTemplateGridSection = ({
             </button>
           )}
         </div>
-      </div>
     </div>
   );
 };
