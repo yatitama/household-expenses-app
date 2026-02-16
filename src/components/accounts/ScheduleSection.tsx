@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, CreditCard, Calendar, ArrowRight, ToggleLeft, ToggleRight } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
-import { getCategoryIcon } from '../../utils/categoryIcons';
-import { calculateRecurringNextDate } from '../../utils/billingUtils';
-import { categoryService } from '../../services/storage';
 import type { Transaction, RecurringPayment, PaymentMethod } from '../../types';
 
 interface CardUnsettledInfo {
@@ -32,11 +29,6 @@ export const ScheduleSection = ({
   onToggleRecurring,
 }: ScheduleSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const categories = categoryService.getAll();
-
-  const getCategory = (categoryId: string) => {
-    return categories.find((c) => c.id === categoryId);
-  };
 
   return (
     <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
@@ -107,24 +99,9 @@ export const ScheduleSection = ({
 
               {/* 定期支出の明細 */}
               {upcomingExpense.map((rp) => {
-                const category = getCategory(rp.categoryId);
-
-                // カード紐付けの場合は次回引き落とし日、そうでなければ次回実行日を表示
-                let dateLabel = '';
-                const nextDate = calculateRecurringNextDate(rp);
-                if (nextDate) {
-                  if (rp.paymentMethodId) {
-                    dateLabel = `${nextDate.getMonth() + 1}月${nextDate.getDate()}日引き落とし`;
-                  } else {
-                    dateLabel = rp.frequency === 'monthly'
-                      ? `毎月${rp.dayOfMonth}日`
-                      : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
-                  }
-                } else {
-                  dateLabel = rp.frequency === 'monthly'
-                    ? `毎月${rp.dayOfMonth}日`
-                    : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
-                }
+                const periodLabel = rp.periodType === 'months'
+                  ? (rp.periodValue === 1 ? '毎月' : `${rp.periodValue}ヶ月ごと`)
+                  : (rp.periodValue === 1 ? '毎日' : `${rp.periodValue}日ごと`);
 
                 return (
                   <div
@@ -141,18 +118,12 @@ export const ScheduleSection = ({
                           : <ToggleLeft size={16} className="text-gray-300 dark:text-gray-600" />
                         }
                       </button>
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
-                      >
-                        {getCategoryIcon(category?.icon || '', 12)}
-                      </div>
                       <button
                         onClick={() => onEditRecurring(rp)}
                         className="flex-1 flex flex-col gap-0.5 min-w-0 hover:opacity-70 transition-opacity text-left"
                       >
                         <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dateLabel}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{periodLabel}</p>
                       </button>
                     </div>
                     <div className="flex justify-end w-28">

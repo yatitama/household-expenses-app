@@ -538,14 +538,6 @@ export const recurringPaymentService = {
     return recurringPaymentService.getAll().find((rp) => rp.id === id);
   },
 
-  getByAccountId: (accountId: string): RecurringPayment[] => {
-    return recurringPaymentService.getAll().filter((rp) => rp.accountId === accountId);
-  },
-
-  getByPaymentMethodId: (paymentMethodId: string): RecurringPayment[] => {
-    return recurringPaymentService.getAll().filter((rp) => rp.paymentMethodId === paymentMethodId);
-  },
-
   create: (input: RecurringPaymentInput): RecurringPayment => {
     const items = recurringPaymentService.getAll();
     const now = getTimestamp();

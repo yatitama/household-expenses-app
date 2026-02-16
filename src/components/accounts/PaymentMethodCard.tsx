@@ -1,5 +1,4 @@
 import { Link2 } from 'lucide-react';
-import { categoryService } from '../../services/storage';
 import { formatCurrency } from '../../utils/formatters';
 import { PM_TYPE_ICONS } from './AccountIcons';
 import { PM_TYPE_LABELS, BILLING_TYPE_LABELS } from './constants';
@@ -22,9 +21,6 @@ export const PaymentMethodCard = ({
   onView, onAddRecurring,
   onEditRecurring, onToggleRecurring,
 }: PaymentMethodCardProps) => {
-  const categories = categoryService.getAll();
-  const getCategory = (id: string) => categories.find((c) => c.id === id);
-
   return (
     <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-4">
       <div className="flex items-start">
@@ -57,7 +53,6 @@ export const PaymentMethodCard = ({
         onAdd={onAddRecurring}
         onEdit={onEditRecurring}
         onToggle={onToggleRecurring}
-        getCategory={getCategory}
       />
     </div>
   );

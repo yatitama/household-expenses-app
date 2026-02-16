@@ -1,7 +1,6 @@
 import { Plus, RefreshCw, CreditCard, ToggleLeft, ToggleRight, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { formatCurrency } from '../../utils/formatters';
-import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { RecurringPayment, PaymentMethod, LinkedPaymentMethod } from '../../types';
 
 interface RecurringAndLinkedListProps {
@@ -13,7 +12,6 @@ interface RecurringAndLinkedListProps {
   onAddLinked: () => void;
   onToggleLinked: (lpm: LinkedPaymentMethod) => void;
   onViewPM: (pm: PaymentMethod) => void;
-  getCategory: (id: string) => { name: string; color: string; icon: string } | undefined;
   getPaymentMethod: (id: string) => PaymentMethod | undefined;
   getUnsettledAmount: (paymentMethodId: string) => number;
 }
@@ -23,7 +21,7 @@ export const RecurringAndLinkedList = ({
   onAddRecurring, onEditRecurring, onToggleRecurring,
   onAddLinked, onToggleLinked,
   onViewPM,
-  getCategory, getPaymentMethod, getUnsettledAmount,
+  getPaymentMethod, getUnsettledAmount,
 }: RecurringAndLinkedListProps) => {
   const [isRecurringOpen, setIsRecurringOpen] = useState(false);
   const [isLinkedOpen, setIsLinkedOpen] = useState(false);
@@ -52,10 +50,9 @@ export const RecurringAndLinkedList = ({
             ) : (
               <div className="space-y-2">
                 {recurringItems.map((rp) => {
-                  const category = getCategory(rp.categoryId);
-                  const freqLabel = rp.frequency === 'monthly'
-                    ? `毎月${rp.dayOfMonth}日`
-                    : `毎年${rp.monthOfYear}月${rp.dayOfMonth}日`;
+                  const periodLabel = rp.periodType === 'months'
+                    ? (rp.periodValue === 1 ? '毎月' : `${rp.periodValue}ヶ月ごと`)
+                    : (rp.periodValue === 1 ? '毎日' : `${rp.periodValue}日ごと`);
                   return (
                     <div key={rp.id} className={`flex items-center justify-between text-xs md:text-sm ${rp.isActive ? '' : 'opacity-40'}`}>
                       <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -66,14 +63,8 @@ export const RecurringAndLinkedList = ({
                           }
                         </button>
                         <button onClick={() => onEditRecurring(rp)} className="flex items-center gap-2 min-w-0 flex-1 text-left hover:opacity-70 transition-opacity">
-                          <div
-                            className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: `${category?.color || '#6b7280'}20`, color: category?.color || '#6b7280' }}
-                          >
-                            {getCategoryIcon(category?.icon || '', 14)}
-                          </div>
                           <span className="truncate text-gray-900 dark:text-gray-200">{rp.name}</span>
-                          <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-sm">{freqLabel}</span>
+                          <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-sm">{periodLabel}</span>
                         </button>
                       </div>
                       <span className={`font-medium flex-shrink-0 ml-2 ${rp.type === 'expense' ? 'text-gray-900 dark:text-gray-700' : 'text-gray-700 dark:text-gray-600'}`}>

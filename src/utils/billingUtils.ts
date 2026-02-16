@@ -1,4 +1,4 @@
-import { addMonths, addDays, setDate, lastDayOfMonth, format, isBefore, startOfDay } from 'date-fns';
+import { addMonths, addDays, format, isBefore, startOfDay } from 'date-fns';
 import type { PaymentMethod, Transaction, RecurringPayment } from '../types';
 import { paymentMethodService, transactionService, accountService, recurringPaymentService } from '../services/storage';
 
@@ -143,6 +143,8 @@ export const settleOverdueTransactions = (): void => {
 
 /**
  * 定期支払い・収入の次回発生日を計算する
+ * startDate（未設定時は createdAt の日付部分）を基準日として periodValue ヶ月 or 日ごとの次回発生日を返す
+ * endDate が設定されている場合、その日を過ぎた発生日は null を返す
  */
 export const calculateNextRecurringDate = (
   recurring: RecurringPayment,
@@ -150,121 +152,60 @@ export const calculateNextRecurringDate = (
 ): Date | null => {
   if (!recurring.isActive) return null;
 
-  const today = startOfDay(fromDate);
-  const { frequency, dayOfMonth, monthOfYear } = recurring;
+  const from = startOfDay(fromDate);
+  const refDateStr = recurring.startDate || recurring.createdAt.split('T')[0];
+  const [sy, sm, sd] = refDateStr.split('-').map(Number);
+  const startDate = startOfDay(new Date(sy, sm - 1, sd));
 
-  if (frequency === 'monthly') {
-    // 月次: 今月または来月のdayOfMonth日
-    const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDayOfThisMonth = lastDayOfMonth(thisMonth).getDate();
-    const actualDay = Math.min(dayOfMonth, lastDayOfThisMonth);
+  // endDate が設定されている場合、その日を過ぎていれば null
+  const endDate = recurring.endDate
+    ? startOfDay(new Date(recurring.endDate.split('-').map(Number)[0], recurring.endDate.split('-').map(Number)[1] - 1, recurring.endDate.split('-').map(Number)[2]))
+    : null;
 
-    let nextDate = new Date(today.getFullYear(), today.getMonth(), actualDay);
-    const nextDateStr = format(nextDate, 'yyyy-MM-dd');
-    const todayStr = format(today, 'yyyy-MM-dd');
+  const fromStr = format(from, 'yyyy-MM-dd');
 
-    if (isBefore(nextDate, today) || nextDateStr === todayStr) {
-      // 今日以前なら来月
-      nextDate = addMonths(thisMonth, 1);
-      const lastDayOfNextMonth = lastDayOfMonth(nextDate).getDate();
-      const actualDayNext = Math.min(dayOfMonth, lastDayOfNextMonth);
-      nextDate = setDate(nextDate, actualDayNext);
+  let candidate: Date;
+
+  if (recurring.periodType === 'months') {
+    if (isBefore(from, startDate)) {
+      candidate = startDate;
+    } else {
+      const monthsDiff = (from.getFullYear() - startDate.getFullYear()) * 12
+        + (from.getMonth() - startDate.getMonth());
+      const cyclesPassed = Math.floor(monthsDiff / recurring.periodValue);
+      candidate = addMonths(startDate, cyclesPassed * recurring.periodValue);
+      if (isBefore(candidate, from) || format(candidate, 'yyyy-MM-dd') === fromStr) {
+        candidate = addMonths(startDate, (cyclesPassed + 1) * recurring.periodValue);
+      }
     }
-
-    return startOfDay(nextDate);
+  } else if (recurring.periodType === 'days') {
+    if (isBefore(from, startDate)) {
+      candidate = startDate;
+    } else {
+      const daysDiff = Math.floor((from.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const cyclesPassed = Math.floor(daysDiff / recurring.periodValue);
+      candidate = addDays(startDate, cyclesPassed * recurring.periodValue);
+      if (isBefore(candidate, from) || format(candidate, 'yyyy-MM-dd') === fromStr) {
+        candidate = addDays(startDate, (cyclesPassed + 1) * recurring.periodValue);
+      }
+    }
+  } else {
+    return null;
   }
 
-  if (frequency === 'yearly' && monthOfYear) {
-    // 年次: 今年または来年のmonthOfYear月dayOfMonth日
-    const thisYearMonth = new Date(today.getFullYear(), monthOfYear - 1, 1);
-    const lastDayOfTargetMonth = lastDayOfMonth(thisYearMonth).getDate();
-    const actualDay = Math.min(dayOfMonth, lastDayOfTargetMonth);
+  // endDate を超えている場合は null
+  if (endDate && isBefore(endDate, candidate)) return null;
 
-    let nextDate = new Date(today.getFullYear(), monthOfYear - 1, actualDay);
-    const nextDateStr = format(nextDate, 'yyyy-MM-dd');
-    const todayStr = format(today, 'yyyy-MM-dd');
-
-    if (isBefore(nextDate, today) || nextDateStr === todayStr) {
-      // 今日以前なら来年
-      const nextYearMonth = new Date(today.getFullYear() + 1, monthOfYear - 1, 1);
-      const lastDayOfNextYearMonth = lastDayOfMonth(nextYearMonth).getDate();
-      const actualDayNext = Math.min(dayOfMonth, lastDayOfNextYearMonth);
-      nextDate = new Date(today.getFullYear() + 1, monthOfYear - 1, actualDayNext);
-    }
-
-    return startOfDay(nextDate);
-  }
-
-  return null;
+  return startOfDay(candidate);
 };
 
 /**
- * 定期支払いの次回発生日を計算（カード紐付けの場合はカード引き落とし日を使用）
+ * 定期支払いの次回発生日を計算
  */
 export const calculateRecurringNextDate = (
   recurring: RecurringPayment,
   fromDate: Date = new Date()
 ): Date | null => {
-  if (!recurring.isActive) return null;
-
-  // カード紐付けの場合は引き落とし日を使用
-  if (recurring.paymentMethodId) {
-    const pm = paymentMethodService.getById(recurring.paymentMethodId);
-    if (pm) {
-      const today = startOfDay(fromDate);
-      const { frequency, monthOfYear } = recurring;
-
-      if (frequency === 'monthly') {
-        // 月次の場合、翌月の引き落とし日を計算
-        const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
-        // ダミー日付でカード引き落とし日を計算
-        const dummyDate = format(new Date(today.getFullYear(), today.getMonth(), 1), 'yyyy-MM-dd');
-        const paymentDate = calculatePaymentDate(dummyDate, pm);
-        if (!paymentDate) return null;
-
-        const paymentDay = paymentDate.getDate();
-
-        // 今月の引き落とし日
-        let nextDate = new Date(today.getFullYear(), today.getMonth(), paymentDay);
-        const nextDateStr = format(nextDate, 'yyyy-MM-dd');
-        const todayStr = format(today, 'yyyy-MM-dd');
-
-        if (isBefore(nextDate, today) || nextDateStr === todayStr) {
-          // 今日以前なら来月の引き落とし日
-          const nextMonth = addMonths(thisMonth, 1);
-          nextDate = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), paymentDay);
-        }
-
-        return startOfDay(nextDate);
-      }
-
-      // 年次の場合も同様に計算
-      if (frequency === 'yearly' && monthOfYear) {
-        const thisYearMonth = new Date(today.getFullYear(), monthOfYear - 1, 1);
-        const dummyDate = format(thisYearMonth, 'yyyy-MM-dd');
-        const paymentDate = calculatePaymentDate(dummyDate, pm);
-        if (!paymentDate) return null;
-
-        const paymentDay = paymentDate.getDate();
-
-        let nextDate = new Date(today.getFullYear(), monthOfYear - 1, paymentDay);
-        const nextDateStr = format(nextDate, 'yyyy-MM-dd');
-        const todayStr = format(today, 'yyyy-MM-dd');
-
-        if (isBefore(nextDate, today) || nextDateStr === todayStr) {
-          const nextYearMonth = new Date(today.getFullYear() + 1, monthOfYear - 1, 1);
-          nextDate = new Date(nextYearMonth.getFullYear(), nextYearMonth.getMonth(), paymentDay);
-        }
-
-        return startOfDay(nextDate);
-      }
-
-      return null;
-    }
-  }
-
-  // カード紐付けでない場合は通常の計算
   return calculateNextRecurringDate(recurring, fromDate);
 };
 
@@ -301,68 +242,20 @@ export const getRecurringPaymentsForMonth = (year: number, month: number): Recur
 };
 
 /**
- * 口座ごとの未精算の定期支払い・収入を計算
- * returns: { [accountId]: { expense: number, income: number } }
+ * 定期支払い・収入の合計を計算
+ * returns: { expense: number, income: number }
  */
-export const getPendingRecurringByAccount = (days: number = 31): Record<string, { expense: number; income: number }> => {
+export const getPendingRecurringSummary = (days: number = 31): { expense: number; income: number } => {
   const upcoming = getUpcomingRecurringPayments(days);
-  const result: Record<string, { expense: number; income: number }> = {};
-
-  for (const rp of upcoming) {
-    const accountId = rp.accountId;
-    if (!result[accountId]) {
-      result[accountId] = { expense: 0, income: 0 };
-    }
-
-    if (rp.type === 'expense') {
-      result[accountId].expense += rp.amount;
-    } else {
-      result[accountId].income += rp.amount;
-    }
-  }
-
-  return result;
-};
-
-/**
- * 口座ごとの総合的な未精算額を計算（カード + 定期支払い・収入）
- * returns: { [accountId]: { cardPending, recurringExpense, recurringIncome, totalPending } }
- */
-export const getTotalPendingByAccount = (recurringDays: number = 31): Record<
-  string,
-  {
-    cardPending: number;
-    recurringExpense: number;
-    recurringIncome: number;
-    totalPending: number;
-  }
-> => {
-  const cardPending = getPendingAmountByAccount();
-  const recurringPending = getPendingRecurringByAccount(recurringDays);
-  const result: Record<
-    string,
-    {
-      cardPending: number;
-      recurringExpense: number;
-      recurringIncome: number;
-      totalPending: number;
-    }
-  > = {};
-
-  // すべての口座IDを収集
-  const allAccountIds = new Set([...Object.keys(cardPending), ...Object.keys(recurringPending)]);
-
-  for (const accountId of allAccountIds) {
-    const card = cardPending[accountId] || 0;
-    const recurring = recurringPending[accountId] || { expense: 0, income: 0 };
-
-    result[accountId] = {
-      cardPending: card,
-      recurringExpense: recurring.expense,
-      recurringIncome: recurring.income,
-      totalPending: card + recurring.expense - recurring.income,
-    };
-  }
-
-  return result;
+  return upcoming.reduce(
+    (acc, rp) => {
+      if (rp.type === 'expense') {
+        acc.expense += rp.amount;
+      } else {
+        acc.income += rp.amount;
+      }
+      return acc;
+    },
+    { expense: 0, income: 0 }
+  );
 };

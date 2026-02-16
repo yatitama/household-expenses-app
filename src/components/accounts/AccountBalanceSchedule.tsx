@@ -46,9 +46,8 @@ export const AccountBalanceSchedule = ({
     };
   });
 
-  // Get upcoming recurring payments for this account
-  const upcomingRecurring = getUpcomingRecurringPayments(31)
-    .filter((rp) => rp.accountId === account.id);
+  // Get upcoming recurring payments
+  const upcomingRecurring = getUpcomingRecurringPayments(31);
 
   // Separate into expense and income
   const upcomingExpense = upcomingRecurring.filter((rp) => rp.type === 'expense');

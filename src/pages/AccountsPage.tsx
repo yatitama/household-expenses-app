@@ -256,10 +256,6 @@ export const AccountsPage = () => {
       {activeModal?.type === 'recurring' && activeModal.data && (
         <RecurringPaymentModal
           recurringPayment={activeModal.data.editing}
-          defaultAccountId={activeModal.data.target?.accountId}
-          defaultPaymentMethodId={activeModal.data.target?.paymentMethodId}
-          accounts={accounts}
-          paymentMethods={paymentMethods}
           onSave={(input) => { handleSaveRecurring(input, activeModal.data.editing); closeModal(); }}
           onClose={() => closeModal()}
           onDelete={handleDeleteRecurring}
@@ -323,30 +319,22 @@ export const AccountsPage = () => {
       {isRecurringExpenseModalOpen && (
         <RecurringPaymentModal
           recurringPayment={null}
-          defaultAccountId={accounts[0]?.id}
-          accounts={accounts}
-          paymentMethods={paymentMethods}
           onSave={(input) => {
             handleSaveRecurring({ ...input, type: 'expense' }, null);
             setIsRecurringExpenseModalOpen(false);
           }}
           onClose={() => setIsRecurringExpenseModalOpen(false)}
-          onDelete={() => {}}
         />
       )}
 
       {isRecurringIncomeModalOpen && (
         <RecurringPaymentModal
           recurringPayment={null}
-          defaultAccountId={accounts[0]?.id}
-          accounts={accounts}
-          paymentMethods={paymentMethods}
           onSave={(input) => {
             handleSaveRecurring({ ...input, type: 'income' }, null);
             setIsRecurringIncomeModalOpen(false);
           }}
           onClose={() => setIsRecurringIncomeModalOpen(false)}
-          onDelete={() => {}}
         />
       )}
 
