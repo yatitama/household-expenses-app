@@ -285,6 +285,22 @@ export const getUpcomingRecurringPayments = (days: number = 31): RecurringPaymen
 };
 
 /**
+ * 指定年月に発生する定期支払い・収入を取得
+ */
+export const getRecurringPaymentsForMonth = (year: number, month: number): RecurringPayment[] => {
+  const all = recurringPaymentService.getAll();
+  // 対象月の前日から計算することで、対象月内の発生日を取得する
+  const prevDay = new Date(year, month - 1, 0); // 前月末日
+
+  return all.filter((rp) => {
+    if (!rp.isActive) return false;
+    const nextDate = calculateRecurringNextDate(rp, prevDay);
+    if (!nextDate) return false;
+    return nextDate.getFullYear() === year && nextDate.getMonth() + 1 === month;
+  });
+};
+
+/**
  * 口座ごとの未精算の定期支払い・収入を計算
  * returns: { [accountId]: { expense: number, income: number } }
  */

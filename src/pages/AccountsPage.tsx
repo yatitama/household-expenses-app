@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet } from 'lucide-react';
+import { Wallet, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
-import { getUnsettledTransactions, getUpcomingRecurringPayments } from '../utils/billingUtils';
+import { getUnsettledTransactions, getRecurringPaymentsForMonth } from '../utils/billingUtils';
 import { CardGridSection } from '../components/accounts/CardGridSection';
 import { RecurringItemGridSection } from '../components/accounts/RecurringItemGridSection';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
@@ -29,6 +29,29 @@ export const AccountsPage = () => {
   } = useAccountOperations();
 
   const { activeModal, openModal, closeModal } = useModalManager();
+
+  const now = new Date();
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
+
+  const handlePrevMonth = () => {
+    if (selectedMonth === 1) {
+      setSelectedYear((y) => y - 1);
+      setSelectedMonth(12);
+    } else {
+      setSelectedMonth((m) => m - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (selectedMonth === 12) {
+      setSelectedYear((y) => y + 1);
+      setSelectedMonth(1);
+    } else {
+      setSelectedMonth((m) => m + 1);
+    }
+  };
+
   const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
   const [isRecurringDetailModalOpen, setIsRecurringDetailModalOpen] = useState(false);
   const [selectedCardUnsettledPM, setSelectedCardUnsettledPM] = useState<PaymentMethod | null>(null);
@@ -51,10 +74,13 @@ export const AccountsPage = () => {
     isRecurringIncomeModalOpen
   );
 
-  const allUnsettledTransactions = getUnsettledTransactions();
-  const allUpcomingRecurring = getUpcomingRecurringPayments(31);
-  const allUpcomingExpense = allUpcomingRecurring.filter((rp) => rp.type === 'expense');
-  const allUpcomingIncome = allUpcomingRecurring.filter((rp) => rp.type === 'income');
+  const allUnsettledTransactions = getUnsettledTransactions().filter((t) => {
+    const [y, m] = t.date.split('-').map(Number);
+    return y === selectedYear && m === selectedMonth;
+  });
+  const allMonthRecurring = getRecurringPaymentsForMonth(selectedYear, selectedMonth);
+  const allUpcomingExpense = allMonthRecurring.filter((rp) => rp.type === 'expense');
+  const allUpcomingIncome = allMonthRecurring.filter((rp) => rp.type === 'income');
 
   const linkedPaymentMethods = paymentMethods.filter((pm) => pm.linkedAccountId);
   const cardUnsettledList = linkedPaymentMethods.map((pm) => {
@@ -197,7 +223,26 @@ export const AccountsPage = () => {
 
       {/* ボトム固定フッター */}
       <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5">
-        <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-end">
+        <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-between">
+          {/* 月セレクタ */}
+          <div className="flex items-center gap-0.5">
+            <button
+              onClick={handlePrevMonth}
+              className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[4rem] text-center">
+              {selectedYear !== now.getFullYear() ? `${selectedYear}年` : ''}{selectedMonth}月
+            </span>
+            <button
+              onClick={handleNextMonth}
+              className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+          {/* 合計 */}
           <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0">
             <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">合計</p>
             <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
