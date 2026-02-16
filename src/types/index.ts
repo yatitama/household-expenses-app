@@ -83,8 +83,8 @@ export interface Budget {
   amount: number;
 }
 
-// 定期支払い頻度
-export type RecurringFrequency = 'monthly' | 'yearly';
+// 定期支払い周期タイプ
+export type RecurringPeriodType = 'months' | 'days';
 
 // 定期支払い
 export interface RecurringPayment {
@@ -92,13 +92,8 @@ export interface RecurringPayment {
   name: string;
   amount: number;
   type: TransactionType;
-  categoryId: string;
-  accountId: string;
-  paymentMethodId?: string;
-  frequency: RecurringFrequency;
-  dayOfMonth: number;
-  monthOfYear?: number; // yearlyの場合のみ（1-12）
-  memo?: string;
+  periodType: RecurringPeriodType; // 'months' | 'days'
+  periodValue: number;             // 何ヶ月に一回 or 何日に一回
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

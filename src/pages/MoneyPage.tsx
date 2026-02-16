@@ -23,7 +23,7 @@ import type { Account, AccountInput, RecurringPayment, PaymentMethod, PaymentMet
 export const MoneyPage = () => {
   const navigate = useNavigate();
   const {
-    accounts, paymentMethods, recurringPayments,
+    accounts, paymentMethods,
     refreshData,
     handleSaveRecurring, handleToggleRecurring, handleDeleteRecurring,
     confirmDialog, closeConfirmDialog,
@@ -43,8 +43,8 @@ export const MoneyPage = () => {
 
   useBodyScrollLock(!!activeModal || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen);
 
-  const handleAddRecurring = (target: { accountId?: string; paymentMethodId?: string }) => {
-    openModal({ type: 'recurring', data: { editing: null, target } });
+  const handleAddRecurring = (_target?: { accountId?: string; paymentMethodId?: string }) => {
+    openModal({ type: 'recurring', data: { editing: null, target: null } });
   };
 
   const handleEditRecurring = (rp: RecurringPayment) => {
@@ -163,16 +163,15 @@ export const MoneyPage = () => {
               <div className="pt-2 pb-3 md:pb-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {unlinkedPMs.map((pm) => {
-                    const pmRecurrings = recurringPayments.filter((rp) => rp.paymentMethodId === pm.id);
                     return (
                       <PaymentMethodCard
                         key={pm.id}
                         paymentMethod={pm}
                         linkedAccountName={undefined}
                         pendingAmount={pendingByPM[pm.id] || 0}
-                        recurringPayments={pmRecurrings}
+                        recurringPayments={[]}
                         onView={() => navigate('/transactions', { state: { filterType: 'payment', paymentMethodIds: [pm.id] } })}
-                        onAddRecurring={() => handleAddRecurring({ paymentMethodId: pm.id, accountId: pm.linkedAccountId })}
+                        onAddRecurring={() => handleAddRecurring({ })}
                         onEditRecurring={handleEditRecurring}
                         onToggleRecurring={handleToggleRecurring}
                       />
@@ -209,10 +208,6 @@ export const MoneyPage = () => {
       {activeModal?.type === 'recurring' && activeModal.data && (
         <RecurringPaymentModal
           recurringPayment={activeModal.data.editing}
-          defaultAccountId={activeModal.data.target?.accountId}
-          defaultPaymentMethodId={activeModal.data.target?.paymentMethodId}
-          accounts={accounts}
-          paymentMethods={paymentMethods}
           onSave={(input) => { handleSaveRecurring(input, activeModal.data.editing); closeModal(); }}
           onClose={() => closeModal()}
           onDelete={handleDeleteRecurring}

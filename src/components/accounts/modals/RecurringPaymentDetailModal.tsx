@@ -1,7 +1,5 @@
 import { Pencil } from 'lucide-react';
 import { formatCurrency } from '../../../utils/formatters';
-import { getCategoryIcon } from '../../../utils/categoryIcons';
-import { categoryService } from '../../../services/storage';
 import type { RecurringPayment } from '../../../types';
 
 interface RecurringPaymentDetailModalProps {
@@ -19,15 +17,12 @@ export const RecurringPaymentDetailModal = ({
 }: RecurringPaymentDetailModalProps) => {
   if (!isOpen || !recurringPayment) return null;
 
-  const categories = categoryService.getAll();
-  const category = categories.find((c) => c.id === recurringPayment.categoryId);
-
-  const getFrequencyLabel = () => {
-    if (recurringPayment.frequency === 'monthly') {
-      return `毎月${recurringPayment.dayOfMonth}日`;
-    } else {
-      return `毎年${recurringPayment.monthOfYear}月${recurringPayment.dayOfMonth}日`;
+  const getPeriodLabel = () => {
+    const { periodType, periodValue } = recurringPayment;
+    if (periodType === 'months') {
+      return periodValue === 1 ? '毎月' : `${periodValue}ヶ月ごと`;
     }
+    return periodValue === 1 ? '毎日' : `${periodValue}日ごと`;
   };
 
   const typeLabel = recurringPayment.type === 'income' ? '収入' : '支出';
@@ -52,28 +47,11 @@ export const RecurringPaymentDetailModal = ({
               </div>
             </div>
 
-            {/* タイプとカテゴリ */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">タイプ</label>
-                <div className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
-                  {typeLabel}
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
-                <div className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                  <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{
-                      backgroundColor: `${category?.color || '#6b7280'}20`,
-                      color: category?.color || '#6b7280',
-                    }}
-                  >
-                    {getCategoryIcon(category?.icon || '', 12)}
-                  </div>
-                  {category?.name}
-                </div>
+            {/* タイプ */}
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">タイプ</label>
+              <div className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
+                {typeLabel}
               </div>
             </div>
 
@@ -89,19 +67,9 @@ export const RecurringPaymentDetailModal = ({
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">周期</label>
               <div className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
-                {getFrequencyLabel()}
+                {getPeriodLabel()}
               </div>
             </div>
-
-            {/* メモ */}
-            {recurringPayment.memo && (
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">メモ</label>
-                <div className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100 break-words">
-                  {recurringPayment.memo}
-                </div>
-              </div>
-            )}
 
             {/* ステータス */}
             <div>
