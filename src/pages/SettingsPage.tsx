@@ -1,22 +1,30 @@
 import { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, CreditCard, RefreshCw } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService, cardBillingService, linkedPaymentMethodService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { COLORS } from '../components/accounts/constants';
 import { COMMON_MEMBER_ID } from '../types';
-import type { Member, MemberInput, Category, CategoryInput, TransactionType } from '../types';
+import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
+import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
+import type { Member, MemberInput, Category, CategoryInput, TransactionType, PaymentMethod, PaymentMethodInput, RecurringPayment, RecurringPaymentInput, Account } from '../types';
 
 export const SettingsPage = () => {
   // デフォルトで全セクション折りたたみ（モバイルファースト）
   const [membersOpen, setMembersOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [cardsOpen, setCardsOpen] = useState(false);
+  const [recurringOpen, setRecurringOpen] = useState(false);
   const [dataManagementOpen, setDataManagementOpen] = useState(false);
   const [members, setMembers] = useState<Member[]>(() => memberService.getAll());
   const [categories, setCategories] = useState<Category[]>(() => categoryService.getAll());
   const [categoryFilterType, setCategoryFilterType] = useState<TransactionType>('expense');
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => paymentMethodService.getAll());
+  const [accounts, setAccounts] = useState<Account[]>(() => accountService.getAll());
+  const [recurringPayments, setRecurringPayments] = useState<RecurringPayment[]>(() => recurringPaymentService.getAll());
+  const [recurringFilterType, setRecurringFilterType] = useState<TransactionType>('expense');
 
   // Member modal state
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
@@ -26,6 +34,14 @@ export const SettingsPage = () => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
+  // Card modal state
+  const [isCardModalOpen, setIsCardModalOpen] = useState(false);
+  const [editingCard, setEditingCard] = useState<PaymentMethod | null>(null);
+
+  // Recurring modal state
+  const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
+  const [editingRecurring, setEditingRecurring] = useState<RecurringPayment | null>(null);
+
   // Confirm dialog state
   const [confirmDialogState, setConfirmDialogState] = useState<{
     isOpen: boolean;
@@ -34,10 +50,12 @@ export const SettingsPage = () => {
     onConfirm: () => void;
   }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
 
-  useBodyScrollLock(isMemberModalOpen || isCategoryModalOpen);
+  useBodyScrollLock(isMemberModalOpen || isCategoryModalOpen || isCardModalOpen || isRecurringModalOpen);
 
   const refreshMembers = useCallback(() => setMembers(memberService.getAll()), []);
   const refreshCategories = useCallback(() => setCategories(categoryService.getAll()), []);
+  const refreshPaymentMethods = useCallback(() => setPaymentMethods(paymentMethodService.getAll()), []);
+  const refreshRecurringPayments = useCallback(() => setRecurringPayments(recurringPaymentService.getAll()), []);
 
   const filteredCategories = categories.filter((c) => c.type === categoryFilterType);
 
@@ -94,6 +112,61 @@ export const SettingsPage = () => {
     refreshCategories(); setIsCategoryModalOpen(false);
   };
 
+
+  // Card handlers
+  const handleAddCard = () => { setEditingCard(null); setIsCardModalOpen(true); };
+  const handleEditCard = (pm: PaymentMethod) => { setEditingCard(pm); setIsCardModalOpen(true); };
+  const handleDeleteCard = (id: string) => {
+    setConfirmDialogState({
+      isOpen: true,
+      title: 'カードを削除',
+      message: 'このカードを削除してもよろしいですか？',
+      onConfirm: () => {
+        paymentMethodService.delete(id);
+        refreshPaymentMethods();
+        toast.success('カードを削除しました');
+      },
+    });
+  };
+  const handleSaveCard = (input: PaymentMethodInput) => {
+    if (editingCard) {
+      paymentMethodService.update(editingCard.id, input);
+      toast.success('カードを更新しました');
+    } else {
+      paymentMethodService.create(input);
+      toast.success('カードを追加しました');
+    }
+    refreshPaymentMethods();
+    setAccounts(accountService.getAll());
+    setIsCardModalOpen(false);
+  };
+
+  // Recurring handlers
+  const handleAddRecurring = () => { setEditingRecurring(null); setIsRecurringModalOpen(true); };
+  const handleEditRecurring = (rp: RecurringPayment) => { setEditingRecurring(rp); setIsRecurringModalOpen(true); };
+  const handleDeleteRecurring = (id: string) => {
+    setConfirmDialogState({
+      isOpen: true,
+      title: '定期取引を削除',
+      message: 'この定期取引を削除してもよろしいですか？',
+      onConfirm: () => {
+        recurringPaymentService.delete(id);
+        refreshRecurringPayments();
+        toast.success('定期取引を削除しました');
+      },
+    });
+  };
+  const handleSaveRecurring = (input: RecurringPaymentInput) => {
+    if (editingRecurring) {
+      recurringPaymentService.update(editingRecurring.id, input);
+      toast.success('定期取引を更新しました');
+    } else {
+      recurringPaymentService.create(input);
+      toast.success('定期取引を追加しました');
+    }
+    refreshRecurringPayments();
+    setIsRecurringModalOpen(false);
+  };
 
   // Data management
   const handleExport = () => {
@@ -333,6 +406,142 @@ export const SettingsPage = () => {
       </div>
 
 
+      {/* カード管理 */}
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
+        <button
+          aria-label={cardsOpen ? 'カード管理を折りたたむ' : 'カード管理を展開'}
+          onClick={() => setCardsOpen(!cardsOpen)}
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          aria-expanded={cardsOpen}
+        >
+          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
+            <CreditCard size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-700 dark:text-gray-600" />
+            <div className="text-left">
+              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">カード管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">カードを追加・編集</p>
+            </div>
+          </div>
+          {cardsOpen ? <ChevronUp size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" />}
+        </button>
+
+        {cardsOpen && (
+          <div className="border-t dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
+            <button
+              onClick={handleAddCard}
+              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors"
+              style={{ backgroundColor: 'var(--theme-primary)' }}
+            >
+              <Plus size={16} />
+              カードを追加
+            </button>
+
+            {paymentMethods.length === 0 ? (
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">カードがありません</p>
+            ) : (
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                {paymentMethods.map((pm) => {
+                  const owner = getMember(pm.memberId);
+                  return (
+                    <button
+                      key={pm.id}
+                      onClick={() => handleEditCard(pm)}
+                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
+                    >
+                      <div
+                        className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${pm.color}20`, color: pm.color }}
+                      >
+                        <CreditCard size={16} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{pm.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{owner?.name || '共通'}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 定期取引管理 */}
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
+        <button
+          aria-label={recurringOpen ? '定期取引管理を折りたたむ' : '定期取引管理を展開'}
+          onClick={() => setRecurringOpen(!recurringOpen)}
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          aria-expanded={recurringOpen}
+        >
+          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
+            <RefreshCw size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-700 dark:text-gray-600" />
+            <div className="text-left">
+              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">定期取引管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">定期支出・収入を追加・編集</p>
+            </div>
+          </div>
+          {recurringOpen ? <ChevronUp size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" />}
+        </button>
+
+        {recurringOpen && (
+          <div className="border-t dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
+            {/* Type toggle */}
+            <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
+              <button
+                onClick={() => setRecurringFilterType('expense')}
+                className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
+                  recurringFilterType === 'expense' ? 'text-white' : 'bg-white text-gray-900 dark:text-gray-200'
+                }`}
+                style={recurringFilterType === 'expense' ? { backgroundColor: 'var(--theme-primary)' } : {}}
+              >
+                支出
+              </button>
+              <button
+                onClick={() => setRecurringFilterType('income')}
+                className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
+                  recurringFilterType === 'income' ? 'text-white' : 'bg-white text-gray-900 dark:text-gray-200'
+                }`}
+                style={recurringFilterType === 'income' ? { backgroundColor: 'var(--theme-primary)' } : {}}
+              >
+                収入
+              </button>
+            </div>
+
+            <button
+              onClick={handleAddRecurring}
+              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors"
+              style={{ backgroundColor: 'var(--theme-primary)' }}
+            >
+              <Plus size={16} />
+              定期取引を追加
+            </button>
+
+            {recurringPayments.filter((rp) => rp.type === recurringFilterType).length === 0 ? (
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">定期取引がありません</p>
+            ) : (
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                {recurringPayments.filter((rp) => rp.type === recurringFilterType).map((rp) => (
+                  <button
+                    key={rp.id}
+                    onClick={() => handleEditRecurring(rp)}
+                    className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                      <RefreshCw size={16} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{rp.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">¥{rp.amount.toLocaleString()}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* データ管理 */}
       <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
         <button
@@ -416,6 +625,27 @@ export const SettingsPage = () => {
         />
       )}
 
+      {/* Card Modal */}
+      {isCardModalOpen && (
+        <PaymentMethodModal
+          paymentMethod={editingCard}
+          members={members}
+          accounts={accounts}
+          onSave={handleSaveCard}
+          onClose={() => { setIsCardModalOpen(false); setEditingCard(null); }}
+          onDelete={editingCard ? handleDeleteCard : undefined}
+        />
+      )}
+
+      {/* Recurring Modal */}
+      {isRecurringModalOpen && (
+        <RecurringPaymentModal
+          recurringPayment={editingRecurring}
+          onSave={handleSaveRecurring}
+          onClose={() => { setIsRecurringModalOpen(false); setEditingRecurring(null); }}
+          onDelete={editingRecurring ? handleDeleteRecurring : undefined}
+        />
+      )}
 
       <ConfirmDialog
         isOpen={confirmDialogState.isOpen}
