@@ -26,12 +26,7 @@ export const RecurringPaymentModal = ({
   const categories = categoryService.getAll();
   const members = memberService.getAll();
 
-  const isFromPM = !!defaultPaymentMethodId;
-  const isFromAccount = !!defaultAccountId && !defaultPaymentMethodId;
-
-  const accounts = isFromAccount
-    ? allAccounts.filter((a) => a.id === defaultAccountId)
-    : isFromPM ? [] : allAccounts;
+  const accounts = allAccounts;
 
   const [name, setName] = useState(recurringPayment?.name || '');
   const [amount, setAmount] = useState(recurringPayment?.amount.toString() || '');
@@ -255,13 +250,7 @@ export const RecurringPaymentModal = ({
                   </span>
                 </button>
               ))}
-              {type === 'expense' && (
-                isFromPM
-                  ? allPaymentMethods.filter((pm) => pm.id === defaultPaymentMethodId)
-                  : isFromAccount
-                    ? allPaymentMethods.filter((pm) => pm.linkedAccountId === defaultAccountId)
-                    : allPaymentMethods
-              ).map((pm) => (
+              {type === 'expense' && allPaymentMethods.map((pm) => (
                 <button
                   key={pm.id}
                   type="button"
