@@ -42,10 +42,10 @@ export const QuickAddTemplateGridSection = ({
                   e.stopPropagation();
                   onEditClick(template);
                 }}
-                className="absolute bottom-1 right-1 p-1.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                className="absolute -top-2 -right-2 w-5 h-5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors z-10"
                 aria-label="編集"
               >
-                <Edit2 size={14} className="text-gray-600 dark:text-gray-300" />
+                <Edit2 size={10} className="text-gray-600 dark:text-gray-300" />
               </button>
             </div>
           ))}
