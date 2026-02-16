@@ -136,7 +136,7 @@ export const AccountsPage = () => {
                 >
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">カード</h3>
-                    <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{formatCurrency(totalCardUnsettled)}</p>
+                    <p className="text-xs font-bold text-gray-700 dark:text-gray-300">-{formatCurrency(totalCardUnsettled)}</p>
                   </div>
                 </div>
                 <div className="pt-2 pb-3 md:pb-4">
