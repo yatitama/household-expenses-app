@@ -71,6 +71,15 @@ export const RecurringPaymentDetailModal = ({
               </div>
             </div>
 
+            {/* 期間 */}
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">期間</label>
+              <div className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
+                {recurringPayment.startDate}
+                {recurringPayment.endDate ? ` 〜 ${recurringPayment.endDate}` : ' 〜 無期限'}
+              </div>
+            </div>
+
             {/* ステータス */}
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">ステータス</label>

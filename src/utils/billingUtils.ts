@@ -143,7 +143,8 @@ export const settleOverdueTransactions = (): void => {
 
 /**
  * 定期支払い・収入の次回発生日を計算する
- * createdAt を基準日として periodValue ヶ月 or 日ごとの次回発生日を返す
+ * startDate を基準日として periodValue ヶ月 or 日ごとの次回発生日を返す
+ * endDate が設定されている場合、その日を過ぎた発生日は null を返す
  */
 export const calculateNextRecurringDate = (
   recurring: RecurringPayment,
@@ -152,36 +153,49 @@ export const calculateNextRecurringDate = (
   if (!recurring.isActive) return null;
 
   const from = startOfDay(fromDate);
-  const [startYear, startMonth, startDay] = recurring.createdAt.split('T')[0].split('-').map(Number);
-  const startDate = startOfDay(new Date(startYear, startMonth - 1, startDay));
+  const [sy, sm, sd] = recurring.startDate.split('-').map(Number);
+  const startDate = startOfDay(new Date(sy, sm - 1, sd));
+
+  // endDate が設定されている場合、その日を過ぎていれば null
+  const endDate = recurring.endDate
+    ? startOfDay(new Date(recurring.endDate.split('-').map(Number)[0], recurring.endDate.split('-').map(Number)[1] - 1, recurring.endDate.split('-').map(Number)[2]))
+    : null;
 
   const fromStr = format(from, 'yyyy-MM-dd');
 
+  let candidate: Date;
+
   if (recurring.periodType === 'months') {
-    // startDate < from の場合: 何サイクル後かを計算
-    if (isBefore(from, startDate)) return startDate;
-    const monthsDiff = (from.getFullYear() - startDate.getFullYear()) * 12
-      + (from.getMonth() - startDate.getMonth());
-    const cyclesPassed = Math.floor(monthsDiff / recurring.periodValue);
-    let candidate = addMonths(startDate, cyclesPassed * recurring.periodValue);
-    if (isBefore(candidate, from) || format(candidate, 'yyyy-MM-dd') === fromStr) {
-      candidate = addMonths(startDate, (cyclesPassed + 1) * recurring.periodValue);
+    if (isBefore(from, startDate)) {
+      candidate = startDate;
+    } else {
+      const monthsDiff = (from.getFullYear() - startDate.getFullYear()) * 12
+        + (from.getMonth() - startDate.getMonth());
+      const cyclesPassed = Math.floor(monthsDiff / recurring.periodValue);
+      candidate = addMonths(startDate, cyclesPassed * recurring.periodValue);
+      if (isBefore(candidate, from) || format(candidate, 'yyyy-MM-dd') === fromStr) {
+        candidate = addMonths(startDate, (cyclesPassed + 1) * recurring.periodValue);
+      }
     }
-    return startOfDay(candidate);
+  } else if (recurring.periodType === 'days') {
+    if (isBefore(from, startDate)) {
+      candidate = startDate;
+    } else {
+      const daysDiff = Math.floor((from.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const cyclesPassed = Math.floor(daysDiff / recurring.periodValue);
+      candidate = addDays(startDate, cyclesPassed * recurring.periodValue);
+      if (isBefore(candidate, from) || format(candidate, 'yyyy-MM-dd') === fromStr) {
+        candidate = addDays(startDate, (cyclesPassed + 1) * recurring.periodValue);
+      }
+    }
+  } else {
+    return null;
   }
 
-  if (recurring.periodType === 'days') {
-    if (isBefore(from, startDate)) return startDate;
-    const daysDiff = Math.floor((from.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    const cyclesPassed = Math.floor(daysDiff / recurring.periodValue);
-    let candidate = addDays(startDate, cyclesPassed * recurring.periodValue);
-    if (isBefore(candidate, from) || format(candidate, 'yyyy-MM-dd') === fromStr) {
-      candidate = addDays(startDate, (cyclesPassed + 1) * recurring.periodValue);
-    }
-    return startOfDay(candidate);
-  }
+  // endDate を超えている場合は null
+  if (endDate && isBefore(endDate, candidate)) return null;
 
-  return null;
+  return startOfDay(candidate);
 };
 
 /**

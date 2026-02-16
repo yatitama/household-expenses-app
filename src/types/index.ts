@@ -94,6 +94,8 @@ export interface RecurringPayment {
   type: TransactionType;
   periodType: RecurringPeriodType; // 'months' | 'days'
   periodValue: number;             // 何ヶ月に一回 or 何日に一回
+  startDate: string;               // 'yyyy-MM-dd' - 開始日（周期計算の基準日）
+  endDate?: string;                // 'yyyy-MM-dd' - 終了日（任意）
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

@@ -18,11 +18,15 @@ interface RecurringPaymentModalProps {
 export const RecurringPaymentModal = ({
   recurringPayment, onSave, onClose, onDelete,
 }: RecurringPaymentModalProps) => {
+  const today = new Date().toISOString().split('T')[0];
+
   const [name, setName] = useState(recurringPayment?.name || '');
   const [amount, setAmount] = useState(recurringPayment?.amount.toString() || '');
   const [type, setType] = useState<TransactionType>(recurringPayment?.type || 'expense');
   const [periodType, setPeriodType] = useState<RecurringPeriodType>(recurringPayment?.periodType || 'months');
   const [periodValue, setPeriodValue] = useState(recurringPayment?.periodValue.toString() || '1');
+  const [startDate, setStartDate] = useState(recurringPayment?.startDate || today);
+  const [endDate, setEndDate] = useState(recurringPayment?.endDate || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +45,8 @@ export const RecurringPaymentModal = ({
       type,
       periodType,
       periodValue: parsedPeriodValue,
+      startDate,
+      endDate: endDate || undefined,
       isActive: recurringPayment?.isActive ?? true,
     });
   };
@@ -151,6 +157,44 @@ export const RecurringPaymentModal = ({
                   : `${periodValue || '?'}日ごとに発生`
                 }
               </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">開始日</label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
+                  終了日
+                  <span className="text-gray-400 font-normal ml-1">(任意)</span>
+                </label>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="date"
+                    value={endDate}
+                    min={startDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="flex-1 min-w-0 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  />
+                  {endDate && (
+                    <button
+                      type="button"
+                      onClick={() => setEndDate('')}
+                      className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+                      aria-label="終了日をクリア"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
