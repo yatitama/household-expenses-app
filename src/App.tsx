@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Layout } from './components/Layout';
 import { AccountsPage } from './pages/AccountsPage';
+import { MoneyPage } from './pages/MoneyPage';
 import { AddTransactionPage } from './pages/AddTransactionPage';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -25,6 +26,7 @@ export const App = () => {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<AccountsPage />} />
+            <Route path="money" element={<MoneyPage />} />
             <Route path="add-transaction" element={<AddTransactionPage />} />
             <Route path="transactions" element={<TransactionsPage />} />
             <Route path="settings" element={<SettingsPage />} />
