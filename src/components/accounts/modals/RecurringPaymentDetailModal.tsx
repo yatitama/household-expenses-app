@@ -75,7 +75,7 @@ export const RecurringPaymentDetailModal = ({
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">期間</label>
               <div className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
-                {recurringPayment.startDate}
+                {recurringPayment.startDate || recurringPayment.createdAt.split('T')[0]}
                 {recurringPayment.endDate ? ` 〜 ${recurringPayment.endDate}` : ' 〜 無期限'}
               </div>
             </div>

@@ -143,7 +143,7 @@ export const settleOverdueTransactions = (): void => {
 
 /**
  * 定期支払い・収入の次回発生日を計算する
- * startDate を基準日として periodValue ヶ月 or 日ごとの次回発生日を返す
+ * startDate（未設定時は createdAt の日付部分）を基準日として periodValue ヶ月 or 日ごとの次回発生日を返す
  * endDate が設定されている場合、その日を過ぎた発生日は null を返す
  */
 export const calculateNextRecurringDate = (
@@ -153,7 +153,8 @@ export const calculateNextRecurringDate = (
   if (!recurring.isActive) return null;
 
   const from = startOfDay(fromDate);
-  const [sy, sm, sd] = recurring.startDate.split('-').map(Number);
+  const refDateStr = recurring.startDate || recurring.createdAt.split('T')[0];
+  const [sy, sm, sd] = refDateStr.split('-').map(Number);
   const startDate = startOfDay(new Date(sy, sm - 1, sd));
 
   // endDate が設定されている場合、その日を過ぎていれば null
