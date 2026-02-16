@@ -206,19 +206,19 @@ export const RecurringPaymentModal = ({
                     key={category.id}
                     type="button"
                     onClick={() => setCategoryId(category.id)}
-                    className={`flex flex-col items-center gap-1 p-1 sm:p-1.5 rounded-lg transition-colors ${
+                    className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                       categoryId === category.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
                     }`}
                   >
                     <div
-                      className="w-5 sm:w-6 h-5 sm:h-6 rounded-full flex items-center justify-center"
+                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
                       style={{ backgroundColor: `${category.color}20`, color: category.color }}
                     >
-                      {getCategoryIcon(category.icon, 12)}
+                      {getCategoryIcon(category.icon, 14)}
                     </div>
-                    <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center">{category.name}</span>
+                    <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">{category.name}</span>
                     {member && member.id !== 'common' && (
                       <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
                     )}
