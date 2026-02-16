@@ -61,17 +61,12 @@ export const AccountsPage = () => {
   const [isCardUnsettledDetailOpen, setIsCardUnsettledDetailOpen] = useState(false);
   const [editingPaymentMethod, setEditingPaymentMethod] = useState<PaymentMethod | null>(null);
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
-  const [isRecurringExpenseModalOpen, setIsRecurringExpenseModalOpen] = useState(false);
-  const [isRecurringIncomeModalOpen, setIsRecurringIncomeModalOpen] = useState(false);
-
   useBodyScrollLock(
     !!activeModal ||
     isRecurringDetailModalOpen ||
     isCardUnsettledSheetOpen ||
     isCardUnsettledDetailOpen ||
-    isPaymentMethodModalOpen ||
-    isRecurringExpenseModalOpen ||
-    isRecurringIncomeModalOpen
+    isPaymentMethodModalOpen
   );
 
   const allUnsettledTransactions = getUnsettledTransactions().filter((t) => {
@@ -170,7 +165,6 @@ export const AccountsPage = () => {
                     paymentMethods={linkedPaymentMethods}
                     cardUnsettledList={cardUnsettledList}
                     onCardClick={handleCardUnsettledSheetOpen}
-                    onAddClick={() => navigate('/money')}
                   />
                 </div>
               </div>
@@ -192,7 +186,6 @@ export const AccountsPage = () => {
                   title=""
                   items={allUpcomingExpense}
                   onItemClick={handleRecurringDetailClick}
-                  onAddClick={() => setIsRecurringExpenseModalOpen(true)}
                 />
               </div>
             </div>
@@ -213,7 +206,6 @@ export const AccountsPage = () => {
                   title=""
                   items={allUpcomingIncome}
                   onItemClick={handleRecurringDetailClick}
-                  onAddClick={() => setIsRecurringIncomeModalOpen(true)}
                 />
               </div>
             </div>
@@ -313,28 +305,6 @@ export const AccountsPage = () => {
               setEditingPaymentMethod(null);
             }
           } : undefined}
-        />
-      )}
-
-      {isRecurringExpenseModalOpen && (
-        <RecurringPaymentModal
-          recurringPayment={null}
-          onSave={(input) => {
-            handleSaveRecurring({ ...input, type: 'expense' }, null);
-            setIsRecurringExpenseModalOpen(false);
-          }}
-          onClose={() => setIsRecurringExpenseModalOpen(false)}
-        />
-      )}
-
-      {isRecurringIncomeModalOpen && (
-        <RecurringPaymentModal
-          recurringPayment={null}
-          onSave={(input) => {
-            handleSaveRecurring({ ...input, type: 'income' }, null);
-            setIsRecurringIncomeModalOpen(false);
-          }}
-          onClose={() => setIsRecurringIncomeModalOpen(false)}
         />
       )}
 
