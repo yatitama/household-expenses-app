@@ -130,10 +130,10 @@ export const AddTransactionPage = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900">
+    <div className="bg-white dark:bg-slate-900 pb-32 md:pb-20">
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto flex flex-col min-h-screen"
+        className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto"
       >
         <div className="p-3 sm:p-4 flex justify-between items-center border-b dark:border-gray-700">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h3>
@@ -141,8 +141,7 @@ export const AddTransactionPage = () => {
             <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
           </Link>
         </div>
-        <div className="flex-1">
-          <div className="p-3 sm:p-4">
+        <div className="p-3 sm:p-4">
             <div className="space-y-4 sm:space-y-5">
               <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
                 <button
@@ -332,8 +331,8 @@ export const AddTransactionPage = () => {
               </div>
             </div>
           </div>
-        </div>
-        <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex gap-3">
+        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700">
+          <div className="max-w-md mx-auto p-3 sm:p-4 flex gap-3">
             <Link to="/" className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600 text-center">
               キャンセル
             </Link>
@@ -345,6 +344,7 @@ export const AddTransactionPage = () => {
               登録
             </button>
           </div>
+        </div>
         </form>
       {isQuickAddTemplateModalOpen && (
         <QuickAddTemplateModal
