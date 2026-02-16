@@ -227,7 +227,7 @@ export const RecurringPaymentModal = ({
             <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
               {type === 'expense' ? '支払い元' : '入金先'}
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {accounts.map((acct) => (
                 <button
                   key={acct.id}
