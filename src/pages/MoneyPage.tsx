@@ -17,6 +17,7 @@ import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodM
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { accountService, paymentMethodService, memberService } from '../services/storage';
+import { formatCurrency } from '../utils/formatters';
 import type { Account, AccountInput, RecurringPayment, PaymentMethod, PaymentMethodInput } from '../types';
 
 export const MoneyPage = () => {
@@ -38,6 +39,7 @@ export const MoneyPage = () => {
 
   const pendingByPM = getPendingAmountByPaymentMethod();
   const unlinkedPMs = paymentMethods.filter((pm) => !pm.linkedAccountId);
+  const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
 
   useBodyScrollLock(!!activeModal || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen);
 
@@ -118,7 +120,7 @@ export const MoneyPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
-      <div className="flex-1 overflow-clip">
+      <div className="flex-1 overflow-clip pb-20">
         <div className="px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6">
           {/* 口座セクション */}
           <div data-section-name="口座">
@@ -180,6 +182,18 @@ export const MoneyPage = () => {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* ボトム固定フッター */}
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5">
+        <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-end">
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0">
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">合計</p>
+            <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
+              {totalBalance >= 0 ? '+' : ''}{formatCurrency(totalBalance)}
+            </p>
+          </div>
         </div>
       </div>
 
