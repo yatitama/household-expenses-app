@@ -690,8 +690,8 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <form onSubmit={handleSubmit} className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
           <div className="space-y-3 sm:space-y-4">
@@ -770,8 +770,8 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <form onSubmit={handleSubmit} className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
           <div className="space-y-3 sm:space-y-4">
