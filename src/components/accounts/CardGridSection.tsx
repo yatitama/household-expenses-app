@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import { RefreshCw, Tag, CreditCard } from 'lucide-react';
+import { RefreshCw, CreditCard } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { Transaction, Category, PaymentMethod } from '../../types';
 
-type ViewMode = 'category' | 'payment';
+export type CardGridViewMode = 'category' | 'payment';
 
 interface RecurringGridItem {
   label: string;
@@ -16,6 +15,7 @@ interface CardGridSectionProps {
   transactions: Transaction[];
   categories: Category[];
   paymentMethods?: PaymentMethod[];
+  viewMode?: CardGridViewMode;
   onCategoryClick?: (category: Category | undefined, transactions: Transaction[]) => void;
   recurringItem?: RecurringGridItem;
   emptyMessage?: string;
@@ -25,12 +25,11 @@ export const CardGridSection = ({
   transactions,
   categories,
   paymentMethods = [],
+  viewMode = 'category',
   onCategoryClick,
   recurringItem,
   emptyMessage = '利用なし',
 }: CardGridSectionProps) => {
-  const [viewMode, setViewMode] = useState<ViewMode>('category');
-
   // カテゴリ別グルーピング
   const categoryGrouped = transactions.reduce(
     (acc, t) => {
@@ -67,18 +66,11 @@ export const CardGridSection = ({
   const hasContent =
     viewMode === 'category'
       ? sortedCategoryEntries.length > 0 || !!recurringItem
-      : sortedPaymentEntries.length > 0;
-
-  const showToggle = paymentMethods.length > 0 || transactions.some((t) => !t.paymentMethodId);
+      : sortedPaymentEntries.length > 0 || !!recurringItem;
 
   if (!hasContent) {
     return (
       <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
-        {showToggle && (
-          <div className="flex justify-end mb-2">
-            <ToggleButton viewMode={viewMode} onToggle={setViewMode} />
-          </div>
-        )}
         <p className="text-xs text-gray-500 dark:text-gray-400 text-center py-2">{emptyMessage}</p>
       </div>
     );
@@ -86,33 +78,29 @@ export const CardGridSection = ({
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
-      {showToggle && (
-        <div className="flex justify-end mb-2">
-          <ToggleButton viewMode={viewMode} onToggle={setViewMode} />
-        </div>
-      )}
       <div className="grid grid-cols-2 gap-2 md:gap-3">
-        {viewMode === 'category' ? (
-          <>
-            {recurringItem && (
-              <button
-                onClick={recurringItem.onClick}
-                className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
-              >
-                <div className="flex items-center gap-1.5">
-                  <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
-                    <RefreshCw size={12} />
-                  </div>
-                  <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                    {recurringItem.label}
-                  </p>
-                </div>
-                <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                  {formatCurrency(recurringItem.total)}
-                </p>
-              </button>
-            )}
-            {sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => (
+        {/* 定期アイテムは常に表示 */}
+        {recurringItem && (
+          <button
+            onClick={recurringItem.onClick}
+            className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
+          >
+            <div className="flex items-center gap-1.5">
+              <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                <RefreshCw size={12} />
+              </div>
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                {recurringItem.label}
+              </p>
+            </div>
+            <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+              {formatCurrency(recurringItem.total)}
+            </p>
+          </button>
+        )}
+
+        {viewMode === 'category'
+          ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => (
               <button
                 key={category?.id ?? '__none__'}
                 onClick={() => onCategoryClick?.(category, catTransactions)}
@@ -136,11 +124,8 @@ export const CardGridSection = ({
                   {formatCurrency(amount)}
                 </p>
               </button>
-            ))}
-          </>
-        ) : (
-          <>
-            {sortedPaymentEntries.map(([key, { name, amount, transactions: pmTransactions }]) => (
+            ))
+          : sortedPaymentEntries.map(([key, { name, amount, transactions: pmTransactions }]) => (
               <button
                 key={key}
                 onClick={() => onCategoryClick?.(undefined, pmTransactions)}
@@ -159,43 +144,7 @@ export const CardGridSection = ({
                 </p>
               </button>
             ))}
-          </>
-        )}
       </div>
     </div>
   );
 };
-
-interface ToggleButtonProps {
-  viewMode: ViewMode;
-  onToggle: (mode: ViewMode) => void;
-}
-
-const ToggleButton = ({ viewMode, onToggle }: ToggleButtonProps) => (
-  <div className="flex items-center gap-0.5 bg-gray-100 dark:bg-slate-800 rounded-md p-0.5">
-    <button
-      onClick={() => onToggle('category')}
-      className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
-        viewMode === 'category'
-          ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 shadow-sm font-medium'
-          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-      }`}
-      title="カテゴリ別"
-    >
-      <Tag size={12} />
-      <span>カテゴリ</span>
-    </button>
-    <button
-      onClick={() => onToggle('payment')}
-      className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
-        viewMode === 'payment'
-          ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 shadow-sm font-medium'
-          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-      }`}
-      title="支払い元別"
-    >
-      <CreditCard size={12} />
-      <span>支払い元</span>
-    </button>
-  </div>
-);

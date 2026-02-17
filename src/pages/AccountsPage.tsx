@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Wallet, ChevronLeft, ChevronRight, Tag, CreditCard } from 'lucide-react';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { getRecurringPaymentsForMonth } from '../utils/billingUtils';
-import { CardGridSection } from '../components/accounts/CardGridSection';
+import { CardGridSection, type CardGridViewMode } from '../components/accounts/CardGridSection';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { RecurringPaymentDetailModal } from '../components/accounts/modals/RecurringPaymentDetailModal';
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
@@ -58,6 +58,7 @@ export const AccountsPage = () => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isRecurringExpenseListOpen, setIsRecurringExpenseListOpen] = useState(false);
   const [isRecurringIncomeListOpen, setIsRecurringIncomeListOpen] = useState(false);
+  const [expenseViewMode, setExpenseViewMode] = useState<CardGridViewMode>('category');
 
   useBodyScrollLock(
     !!activeModal ||
@@ -138,7 +139,25 @@ export const AccountsPage = () => {
                 style={{ top: 'max(0px, env(safe-area-inset-top))' }}
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">支出</h3>
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">支出</h3>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        onClick={() => setExpenseViewMode('category')}
+                        className={`p-1 rounded transition-colors ${expenseViewMode === 'category' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
+                        title="カテゴリ別"
+                      >
+                        <Tag size={13} />
+                      </button>
+                      <button
+                        onClick={() => setExpenseViewMode('payment')}
+                        className={`p-1 rounded transition-colors ${expenseViewMode === 'payment' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
+                        title="支払い元別"
+                      >
+                        <CreditCard size={13} />
+                      </button>
+                    </div>
+                  </div>
                   <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
                     -{formatCurrency(totalExpenses + totalRecurringExpense)}
                   </p>
@@ -149,6 +168,7 @@ export const AccountsPage = () => {
                   transactions={allMonthExpenses}
                   categories={categories}
                   paymentMethods={paymentMethods}
+                  viewMode={expenseViewMode}
                   onCategoryClick={handleCategoryClick}
                   recurringItem={allUpcomingExpense.length > 0 ? {
                     label: '定期支出',
@@ -177,7 +197,6 @@ export const AccountsPage = () => {
                 <CardGridSection
                   transactions={allMonthIncomes}
                   categories={categories}
-                  paymentMethods={paymentMethods}
                   onCategoryClick={handleCategoryClick}
                   recurringItem={allUpcomingIncome.length > 0 ? {
                     label: '定期収入',
