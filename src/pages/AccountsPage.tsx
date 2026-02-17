@@ -181,11 +181,9 @@ export const AccountsPage = () => {
                   accounts={allAccounts}
                   viewMode={expenseViewMode}
                   onCategoryClick={handleCategoryClick}
-                  recurringItem={allUpcomingExpense.length > 0 ? {
-                    label: '定期支出',
-                    total: totalRecurringExpense,
-                    onClick: () => setIsRecurringExpenseListOpen(true),
-                  } : undefined}
+                  recurringPayments={allUpcomingExpense}
+                  recurringLabel="定期支出"
+                  onRecurringClick={() => setIsRecurringExpenseListOpen(true)}
                   emptyMessage="支出なし"
                 />
               </div>
@@ -209,11 +207,9 @@ export const AccountsPage = () => {
                   transactions={allMonthIncomes}
                   categories={categories}
                   onCategoryClick={handleCategoryClick}
-                  recurringItem={allUpcomingIncome.length > 0 ? {
-                    label: '定期収入',
-                    total: totalRecurringIncome,
-                    onClick: () => setIsRecurringIncomeListOpen(true),
-                  } : undefined}
+                  recurringPayments={allUpcomingIncome}
+                  recurringLabel="定期収入"
+                  onRecurringClick={() => setIsRecurringIncomeListOpen(true)}
                   emptyMessage="収入なし"
                 />
               </div>

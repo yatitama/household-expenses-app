@@ -1,15 +1,9 @@
 import { RefreshCw, CreditCard, User } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
-import type { Transaction, Category, PaymentMethod, Member, Account } from '../../types';
+import type { Transaction, Category, PaymentMethod, Member, Account, RecurringPayment } from '../../types';
 
 export type CardGridViewMode = 'category' | 'payment' | 'member';
-
-interface RecurringGridItem {
-  label: string;
-  total: number;
-  onClick: () => void;
-}
 
 interface CardGridSectionProps {
   transactions: Transaction[];
@@ -19,7 +13,9 @@ interface CardGridSectionProps {
   accounts?: Account[];
   viewMode?: CardGridViewMode;
   onCategoryClick?: (category: Category | undefined, transactions: Transaction[]) => void;
-  recurringItem?: RecurringGridItem;
+  recurringPayments?: RecurringPayment[];
+  recurringLabel?: string;
+  onRecurringClick?: () => void;
   emptyMessage?: string;
 }
 
@@ -31,10 +27,12 @@ export const CardGridSection = ({
   accounts = [],
   viewMode = 'category',
   onCategoryClick,
-  recurringItem,
+  recurringPayments = [],
+  recurringLabel = '定期',
+  onRecurringClick,
   emptyMessage = '利用なし',
 }: CardGridSectionProps) => {
-  // カテゴリ別グルーピング
+  // カテゴリ別グルーピング（取引 + 定期）
   const categoryGrouped = transactions.reduce(
     (acc, t) => {
       const cat = categories.find((c) => c.id === t.categoryId);
@@ -48,8 +46,17 @@ export const CardGridSection = ({
     },
     {} as Record<string, { category: Category | undefined; amount: number; transactions: Transaction[] }>
   );
+  // カテゴリが設定された定期支払いを既存バケットにマージ
+  for (const rp of recurringPayments) {
+    if (!rp.categoryId) continue;
+    const cat = categories.find((c) => c.id === rp.categoryId);
+    if (!categoryGrouped[rp.categoryId]) {
+      categoryGrouped[rp.categoryId] = { category: cat, amount: 0, transactions: [] };
+    }
+    categoryGrouped[rp.categoryId].amount += rp.amount;
+  }
 
-  // 支払い元別グルーピング
+  // 支払い元別グルーピング（取引 + 定期）
   const paymentGrouped = transactions.reduce(
     (acc, t) => {
       const key = t.paymentMethodId || '__cash__';
@@ -63,8 +70,17 @@ export const CardGridSection = ({
     },
     {} as Record<string, { paymentMethod: PaymentMethod | undefined; name: string; amount: number; transactions: Transaction[] }>
   );
+  // 支払い元が設定された定期支払いをマージ
+  for (const rp of recurringPayments) {
+    if (!rp.paymentMethodId) continue;
+    const pm = paymentMethods.find((p) => p.id === rp.paymentMethodId);
+    if (!paymentGrouped[rp.paymentMethodId]) {
+      paymentGrouped[rp.paymentMethodId] = { paymentMethod: pm, name: pm?.name ?? '現金', amount: 0, transactions: [] };
+    }
+    paymentGrouped[rp.paymentMethodId].amount += rp.amount;
+  }
 
-  // メンバー別グルーピング（accountId → account.memberId → member）
+  // メンバー別グルーピング（accountId → account.memberId → member）（取引 + 定期）
   const memberGrouped = transactions.reduce(
     (acc, t) => {
       const account = accounts.find((a) => a.id === t.accountId);
@@ -79,6 +95,17 @@ export const CardGridSection = ({
     },
     {} as Record<string, { member: Member | undefined; name: string; amount: number; transactions: Transaction[] }>
   );
+  // 口座が設定された定期支払いをメンバーバケットにマージ
+  for (const rp of recurringPayments) {
+    if (!rp.accountId) continue;
+    const account = accounts.find((a) => a.id === rp.accountId);
+    const memberId = account?.memberId || '__unknown__';
+    const member = members.find((m) => m.id === memberId);
+    if (!memberGrouped[memberId]) {
+      memberGrouped[memberId] = { member, name: member?.name ?? '不明', amount: 0, transactions: [] };
+    }
+    memberGrouped[memberId].amount += rp.amount;
+  }
 
   const sortedCategoryEntries = Object.entries(categoryGrouped).sort((a, b) => {
     const aIdx = categories.findIndex((c) => c.id === a[1].category?.id);
@@ -105,12 +132,25 @@ export const CardGridSection = ({
     return aIdx - bIdx;
   });
 
+  // 各モードで「未分類」の定期支払い
+  const uncategorizedRecurring = recurringPayments.filter((rp) => !rp.categoryId);
+  const unassignedPaymentRecurring = recurringPayments.filter((rp) => !rp.paymentMethodId);
+  const unassignedMemberRecurring = recurringPayments.filter((rp) => !rp.accountId);
+
+  const uncategorizedTotal = uncategorizedRecurring.reduce((sum, rp) => sum + rp.amount, 0);
+  const unassignedPaymentTotal = unassignedPaymentRecurring.reduce((sum, rp) => sum + rp.amount, 0);
+  const unassignedMemberTotal = unassignedMemberRecurring.reduce((sum, rp) => sum + rp.amount, 0);
+
+  const showRecurringTileCategory = uncategorizedRecurring.length > 0;
+  const showRecurringTilePayment = unassignedPaymentRecurring.length > 0;
+  const showRecurringTileMember = unassignedMemberRecurring.length > 0;
+
   const hasContent =
     viewMode === 'category'
-      ? sortedCategoryEntries.length > 0 || !!recurringItem
+      ? sortedCategoryEntries.length > 0 || showRecurringTileCategory
       : viewMode === 'payment'
-      ? sortedPaymentEntries.length > 0 || !!recurringItem
-      : sortedMemberEntries.length > 0 || !!recurringItem;
+      ? sortedPaymentEntries.length > 0 || showRecurringTilePayment
+      : sortedMemberEntries.length > 0 || showRecurringTileMember;
 
   if (!hasContent) {
     return (
@@ -195,10 +235,10 @@ export const CardGridSection = ({
               </button>
             ))}
 
-        {/* 定期アイテムは末尾に表示 */}
-        {recurringItem && (
+        {/* 未分類の定期アイテムは末尾に表示 */}
+        {viewMode === 'category' && showRecurringTileCategory && (
           <button
-            onClick={recurringItem.onClick}
+            onClick={onRecurringClick}
             className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
           >
             <div className="flex items-center gap-1.5">
@@ -206,11 +246,47 @@ export const CardGridSection = ({
                 <RefreshCw size={12} />
               </div>
               <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                {recurringItem.label}
+                {recurringLabel}
               </p>
             </div>
             <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-              {formatCurrency(recurringItem.total)}
+              {formatCurrency(uncategorizedTotal)}
+            </p>
+          </button>
+        )}
+        {viewMode === 'payment' && showRecurringTilePayment && (
+          <button
+            onClick={onRecurringClick}
+            className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
+          >
+            <div className="flex items-center gap-1.5">
+              <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                <RefreshCw size={12} />
+              </div>
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                {recurringLabel}
+              </p>
+            </div>
+            <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+              {formatCurrency(unassignedPaymentTotal)}
+            </p>
+          </button>
+        )}
+        {viewMode === 'member' && showRecurringTileMember && (
+          <button
+            onClick={onRecurringClick}
+            className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
+          >
+            <div className="flex items-center gap-1.5">
+              <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                <RefreshCw size={12} />
+              </div>
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                {recurringLabel}
+              </p>
+            </div>
+            <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+              {formatCurrency(unassignedMemberTotal)}
             </p>
           </button>
         )}

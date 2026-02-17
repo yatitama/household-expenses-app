@@ -97,6 +97,9 @@ export interface RecurringPayment {
   startDate?: string;              // 'yyyy-MM-dd' - 開始日（未指定時は登録日から）
   endDate?: string;                // 'yyyy-MM-dd' - 終了日（未指定時は無期限）
   isActive: boolean;
+  categoryId?: string;
+  accountId?: string;
+  paymentMethodId?: string;
   createdAt: string;
   updatedAt: string;
 }
