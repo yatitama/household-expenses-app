@@ -8,11 +8,7 @@ import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryI
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import type { Category, CategoryInput, TransactionType } from '../types';
-
-const COLORS = [
-  '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6',
-  '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e',
-];
+import { COLORS } from '../components/accounts/constants';
 
 export const CategoriesPage = () => {
   const navigate = useNavigate();
