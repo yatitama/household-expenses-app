@@ -121,7 +121,7 @@ export const RecurringPaymentModal = ({
                 type="button"
                 onClick={() => handleTypeChange('expense')}
                 className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                  type === 'expense' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
+                  type === 'expense' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                 }`}
               >
                 支出
@@ -130,7 +130,7 @@ export const RecurringPaymentModal = ({
                 type="button"
                 onClick={() => handleTypeChange('income')}
                 className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                  type === 'income' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
+                  type === 'income' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                 }`}
               >
                 収入
@@ -191,11 +191,11 @@ export const RecurringPaymentModal = ({
                       >
                         {getCategoryIcon(category.icon, 14)}
                       </div>
-                      <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                      <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                         {category.name}
                       </span>
                       {member && member.id !== 'common' && (
-                        <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
+                        <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
                       )}
                     </button>
                   );
@@ -226,7 +226,7 @@ export const RecurringPaymentModal = ({
                     >
                       <Wallet size={14} />
                     </div>
-                    <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                    <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                       {acct.name}
                     </span>
                   </button>
@@ -248,7 +248,7 @@ export const RecurringPaymentModal = ({
                     >
                       <CreditCard size={14} />
                     </div>
-                    <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                    <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                       {pm.name}
                     </span>
                   </button>
@@ -375,7 +375,7 @@ export const RecurringPaymentModal = ({
             <button
               type="submit"
               disabled={!name || !amount || !periodValue || !categoryId || !selectedSourceId}
-              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm disabled:opacity-50 transition-colors"
+              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary text-white font-medium text-sm disabled:opacity-50 transition-colors"
             >
               保存
             </button>
