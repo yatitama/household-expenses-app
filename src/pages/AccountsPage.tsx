@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
-import { getUnsettledTransactions, getRecurringPaymentsForMonth } from '../utils/billingUtils';
+import { getRecurringPaymentsForMonth } from '../utils/billingUtils';
 import { CardGridSection } from '../components/accounts/CardGridSection';
 import { RecurringItemGridSection } from '../components/accounts/RecurringItemGridSection';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
@@ -15,7 +15,7 @@ import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnse
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import { paymentMethodService, memberService, categoryService } from '../services/storage';
+import { paymentMethodService, memberService, categoryService, transactionService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
 import type { RecurringPayment, PaymentMethod, PaymentMethodInput, Transaction } from '../types';
 
@@ -70,7 +70,8 @@ export const AccountsPage = () => {
     isPaymentMethodModalOpen
   );
 
-  const allUnsettledTransactions = getUnsettledTransactions().filter((t) => {
+  const allMonthCardTransactions = transactionService.getAll().filter((t) => {
+    if (!t.paymentMethodId) return false;
     const [y, m] = t.date.split('-').map(Number);
     return y === selectedYear && m === selectedMonth;
   });
@@ -80,7 +81,7 @@ export const AccountsPage = () => {
 
   const linkedPaymentMethods = paymentMethods.filter((pm) => pm.linkedAccountId);
   const cardUnsettledList = linkedPaymentMethods.map((pm) => {
-    const pmUnsettled = allUnsettledTransactions.filter((t) => t.paymentMethodId === pm.id);
+    const pmUnsettled = allMonthCardTransactions.filter((t) => t.paymentMethodId === pm.id);
     const amount = pmUnsettled.reduce((sum: number, t: Transaction) => {
       return sum + (t.type === 'expense' ? t.amount : -t.amount);
     }, 0);
