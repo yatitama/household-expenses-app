@@ -145,7 +145,6 @@ export const CategoriesPage = () => {
         <CategoryModal
           category={editingCategory}
           type={filterType}
-          members={members}
           onSave={handleSave}
           onClose={() => setIsModalOpen(false)}
         />
@@ -172,9 +171,8 @@ interface CategoryModalProps {
   onClose: () => void;
 }
 
-const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryModalProps) => {
+const CategoryModal = ({ category, type, onSave, onClose }: Omit<CategoryModalProps, 'members'>) => {
   const [name, setName] = useState(category?.name || '');
-  const [memberId, setMemberId] = useState(category?.memberId || COMMON_MEMBER_ID);
   const [color, setColor] = useState(category?.color || COLORS[0]);
   const [icon, setIcon] = useState(category?.icon || ICON_NAMES[0]);
 
@@ -183,17 +181,21 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
     onSave({
       name,
       type,
-      memberId,
+      memberId: COMMON_MEMBER_ID,
       color,
       icon,
     });
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-3 sm:p-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
+      <div
+        className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="overflow-y-auto overscroll-contain flex-1 min-h-0 p-3 sm:p-4">
         <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
-        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+        <form id="category-form" onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           {/* 名前 */}
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">名前</label>
@@ -205,28 +207,6 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
               className="w-full dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
-          </div>
-
-          {/* メンバー */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">対象メンバー</label>
-            <div className="flex flex-wrap gap-2">
-              {members.map((member) => (
-                <button
-                  key={member.id}
-                  type="button"
-                  onClick={() => setMemberId(member.id)}
-                  className={`flex items-center gap-2 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
-                    memberId === member.id
-                      ? 'bg-gray-800 text-white'
-                      : 'bg-white text-gray-700 dark:text-gray-300 dark:border-gray-600 hover:border-gray-400'
-                  }`}
-                >
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
-                  {member.name}
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* 色 */}
@@ -271,23 +251,24 @@ const CategoryModal = ({ category, type, members, onSave, onClose }: CategoryMod
             </div>
           </div>
 
-          {/* ボタン */}
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50"
-            >
-              キャンセル
-            </button>
-            <button
-              type="submit"
-              className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-gray-800 text-white font-medium text-sm hover:bg-gray-800"
-            >
-              保存
-            </button>
-          </div>
         </form>
+        </div>
+        <div className="border-t p-3 sm:p-4 flex gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50"
+          >
+            キャンセル
+          </button>
+          <button
+            type="submit"
+            form="category-form"
+            className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-gray-800 text-white font-medium text-sm hover:bg-gray-700"
+          >
+            保存
+          </button>
+        </div>
       </div>
     </div>
   );
