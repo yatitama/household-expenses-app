@@ -13,7 +13,7 @@ import { CategoryTransactionsModal } from '../components/accounts/modals/Categor
 import { RecurringListModal } from '../components/accounts/modals/RecurringListModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import { categoryService, transactionService } from '../services/storage';
+import { categoryService, transactionService, paymentMethodService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
 import type { RecurringPayment, Transaction, Category } from '../types';
 
@@ -85,6 +85,7 @@ export const AccountsPage = () => {
   const allUpcomingIncome = allMonthRecurring.filter((rp) => rp.type === 'income');
 
   const categories = categoryService.getAll();
+  const paymentMethods = paymentMethodService.getAll();
 
   const totalExpenses = allMonthExpenses.reduce((sum, t) => sum + t.amount, 0);
   const totalIncomes = allMonthIncomes.reduce((sum, t) => sum + t.amount, 0);
@@ -147,6 +148,7 @@ export const AccountsPage = () => {
                 <CardGridSection
                   transactions={allMonthExpenses}
                   categories={categories}
+                  paymentMethods={paymentMethods}
                   onCategoryClick={handleCategoryClick}
                   recurringItem={allUpcomingExpense.length > 0 ? {
                     label: '定期支出',
@@ -175,6 +177,7 @@ export const AccountsPage = () => {
                 <CardGridSection
                   transactions={allMonthIncomes}
                   categories={categories}
+                  paymentMethods={paymentMethods}
                   onCategoryClick={handleCategoryClick}
                   recurringItem={allUpcomingIncome.length > 0 ? {
                     label: '定期収入',
