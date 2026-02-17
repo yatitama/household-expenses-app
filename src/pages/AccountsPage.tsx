@@ -1,30 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, ChevronLeft, ChevronRight, Tag, CreditCard } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Wallet, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { getRecurringPaymentsForMonth } from '../utils/billingUtils';
 import { CardGridSection } from '../components/accounts/CardGridSection';
-import { RecurringItemGridSection } from '../components/accounts/RecurringItemGridSection';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { RecurringPaymentDetailModal } from '../components/accounts/modals/RecurringPaymentDetailModal';
-import { CardUnsettledListModal } from '../components/accounts/modals/CardUnsettledListModal';
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { CategoryTransactionsModal } from '../components/accounts/modals/CategoryTransactionsModal';
-import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
+import { RecurringListModal } from '../components/accounts/modals/RecurringListModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import { paymentMethodService, memberService, categoryService, transactionService } from '../services/storage';
+import { categoryService, transactionService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
-import type { RecurringPayment, PaymentMethod, PaymentMethodInput, Transaction, Category } from '../types';
+import type { RecurringPayment, Transaction, Category } from '../types';
 
 export const AccountsPage = () => {
   const navigate = useNavigate();
   const {
-    accounts, paymentMethods,
-    refreshData,
+    accounts,
     handleSaveRecurring, handleDeleteRecurring,
     confirmDialog, closeConfirmDialog,
   } = useAccountOperations();
@@ -55,75 +51,54 @@ export const AccountsPage = () => {
 
   const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
   const [isRecurringDetailModalOpen, setIsRecurringDetailModalOpen] = useState(false);
-  const [selectedCardUnsettledPM, setSelectedCardUnsettledPM] = useState<PaymentMethod | null>(null);
-  const [cardUnsettledTransactions, setCardUnsettledTransactions] = useState<Transaction[]>([]);
-  const [isCardUnsettledSheetOpen, setIsCardUnsettledSheetOpen] = useState(false);
-  const [selectedCardUnsettledTransaction, setSelectedCardUnsettledTransaction] = useState<Transaction | null>(null);
-  const [isCardUnsettledDetailOpen, setIsCardUnsettledDetailOpen] = useState(false);
-  const [editingPaymentMethod, setEditingPaymentMethod] = useState<PaymentMethod | null>(null);
-  const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
-  const [cardViewMode, setCardViewMode] = useState<'category' | 'card'>('category');
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [isTransactionDetailOpen, setIsTransactionDetailOpen] = useState(false);
   const [selectedCategoryForModal, setSelectedCategoryForModal] = useState<Category | undefined>(undefined);
   const [categoryModalTransactions, setCategoryModalTransactions] = useState<Transaction[]>([]);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isRecurringExpenseListOpen, setIsRecurringExpenseListOpen] = useState(false);
+  const [isRecurringIncomeListOpen, setIsRecurringIncomeListOpen] = useState(false);
+
   useBodyScrollLock(
     !!activeModal ||
     isRecurringDetailModalOpen ||
-    isCardUnsettledSheetOpen ||
-    isCardUnsettledDetailOpen ||
-    isPaymentMethodModalOpen ||
-    isCategoryModalOpen
+    isTransactionDetailOpen ||
+    isCategoryModalOpen ||
+    isRecurringExpenseListOpen ||
+    isRecurringIncomeListOpen
   );
 
-  const allMonthCardTransactions = transactionService.getAll().filter((t) => {
-    if (!t.paymentMethodId) return false;
+  const allMonthExpenses = transactionService.getAll().filter((t) => {
+    if (t.type !== 'expense') return false;
     const [y, m] = t.date.split('-').map(Number);
     return y === selectedYear && m === selectedMonth;
   });
+
+  const allMonthIncomes = transactionService.getAll().filter((t) => {
+    if (t.type !== 'income') return false;
+    const [y, m] = t.date.split('-').map(Number);
+    return y === selectedYear && m === selectedMonth;
+  });
+
   const allMonthRecurring = getRecurringPaymentsForMonth(selectedYear, selectedMonth);
   const allUpcomingExpense = allMonthRecurring.filter((rp) => rp.type === 'expense');
   const allUpcomingIncome = allMonthRecurring.filter((rp) => rp.type === 'income');
 
-  const linkedPaymentMethods = paymentMethods.filter((pm) => pm.linkedAccountId);
-  const cardUnsettledList = linkedPaymentMethods.map((pm) => {
-    const pmUnsettled = allMonthCardTransactions.filter((t) => t.paymentMethodId === pm.id);
-    const amount = pmUnsettled.reduce((sum: number, t: Transaction) => {
-      return sum + (t.type === 'expense' ? t.amount : -t.amount);
-    }, 0);
-    return { paymentMethod: pm, unsettledAmount: amount, unsettledTransactions: pmUnsettled };
-  });
-
   const categories = categoryService.getAll();
 
-  // セクション合計
-  const totalCardUnsettled = cardUnsettledList.reduce((sum, c) => sum + c.unsettledAmount, 0);
+  const totalExpenses = allMonthExpenses.reduce((sum, t) => sum + t.amount, 0);
+  const totalIncomes = allMonthIncomes.reduce((sum, t) => sum + t.amount, 0);
   const totalRecurringExpense = allUpcomingExpense.reduce((sum, rp) => sum + rp.amount, 0);
   const totalRecurringIncome = allUpcomingIncome.reduce((sum, rp) => sum + rp.amount, 0);
-  const totalNet = totalRecurringIncome - totalRecurringExpense - totalCardUnsettled;
+  const totalNet = (totalIncomes + totalRecurringIncome) - (totalExpenses + totalRecurringExpense);
 
   const handleEditRecurring = (rp: RecurringPayment) => {
     openModal({ type: 'recurring', data: { editing: rp, target: null } });
   };
 
-  const handleRecurringDetailClick = (rp: RecurringPayment) => {
+  const handleRecurringItemClick = (rp: RecurringPayment) => {
     setSelectedRecurring(rp);
     setIsRecurringDetailModalOpen(true);
-  };
-
-  const handleEditCardFromDetail = (pm: PaymentMethod) => {
-    setEditingPaymentMethod(pm);
-    setIsPaymentMethodModalOpen(true);
-  };
-
-  const handleCardUnsettledSheetOpen = (pm: PaymentMethod, transactions: Transaction[]) => {
-    setSelectedCardUnsettledPM(pm);
-    setCardUnsettledTransactions(transactions);
-    setIsCardUnsettledSheetOpen(true);
-  };
-
-  const handleCardUnsettledTransactionClick = (transaction: Transaction) => {
-    setSelectedCardUnsettledTransaction(transaction);
-    setIsCardUnsettledDetailOpen(true);
   };
 
   const handleCategoryClick = (category: Category | undefined, transactions: Transaction[]) => {
@@ -132,18 +107,10 @@ export const AccountsPage = () => {
     setIsCategoryModalOpen(true);
   };
 
-  const handleEditPaymentMethod = (input: PaymentMethodInput) => {
-    try {
-      if (editingPaymentMethod) {
-        paymentMethodService.update(editingPaymentMethod.id, input);
-        toast.success('カードを更新しました');
-      }
-      refreshData();
-      setIsPaymentMethodModalOpen(false);
-      setEditingPaymentMethod(null);
-    } catch (error) {
-      toast.error('カードの更新に失敗しました');
-    }
+  const handleTransactionClick = (transaction: Transaction) => {
+    setIsCategoryModalOpen(false);
+    setSelectedTransaction(transaction);
+    setIsTransactionDetailOpen(true);
   };
 
   return (
@@ -163,76 +130,58 @@ export const AccountsPage = () => {
           </div>
         ) : (
           <div className="px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6">
-            {/* カードセクション */}
-            {linkedPaymentMethods.length > 0 && (
-              <div data-section-name="カード利用">
-                <div
-                  className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
-                  style={{ top: 'max(0px, env(safe-area-inset-top))' }}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">カード利用</h3>
-                      <button
-                        onClick={() => setCardViewMode((m) => m === 'category' ? 'card' : 'category')}
-                        className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400 transition-colors"
-                        title={cardViewMode === 'category' ? 'カードごとに表示' : 'カテゴリごとに表示'}
-                      >
-                        {cardViewMode === 'category' ? <CreditCard size={14} /> : <Tag size={14} />}
-                      </button>
-                    </div>
-                    <p className="text-xs font-bold text-gray-700 dark:text-gray-300">-{formatCurrency(totalCardUnsettled)}</p>
-                  </div>
-                </div>
-                <div className="pt-2 pb-3 md:pb-4">
-                  <CardGridSection
-                    paymentMethods={linkedPaymentMethods}
-                    cardUnsettledList={cardUnsettledList}
-                    onCardClick={handleCardUnsettledSheetOpen}
-                    onCategoryClick={handleCategoryClick}
-                    viewMode={cardViewMode}
-                    categories={categories}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* 定期支出セクション */}
-            <div data-section-name="定期支出">
+            {/* 支出セクション */}
+            <div data-section-name="支出">
               <div
                 className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
                 style={{ top: 'max(0px, env(safe-area-inset-top))' }}
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期支出</h3>
-                  <p className="text-xs font-bold text-gray-700 dark:text-gray-300">-{formatCurrency(totalRecurringExpense)}</p>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">支出</h3>
+                  <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                    -{formatCurrency(totalExpenses + totalRecurringExpense)}
+                  </p>
                 </div>
               </div>
               <div className="pt-2 pb-3 md:pb-4">
-                <RecurringItemGridSection
-                  title=""
-                  items={allUpcomingExpense}
-                  onItemClick={handleRecurringDetailClick}
+                <CardGridSection
+                  transactions={allMonthExpenses}
+                  categories={categories}
+                  onCategoryClick={handleCategoryClick}
+                  recurringItem={allUpcomingExpense.length > 0 ? {
+                    label: '定期支出',
+                    total: totalRecurringExpense,
+                    onClick: () => setIsRecurringExpenseListOpen(true),
+                  } : undefined}
+                  emptyMessage="支出なし"
                 />
               </div>
             </div>
 
-            {/* 定期収入セクション */}
-            <div data-section-name="定期収入">
+            {/* 収入セクション */}
+            <div data-section-name="収入">
               <div
                 className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
                 style={{ top: 'max(0px, env(safe-area-inset-top))' }}
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">定期収入</h3>
-                  <p className="text-xs font-bold text-gray-700 dark:text-gray-300">+{formatCurrency(totalRecurringIncome)}</p>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">収入</h3>
+                  <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                    +{formatCurrency(totalIncomes + totalRecurringIncome)}
+                  </p>
                 </div>
               </div>
               <div className="pt-2 pb-3 md:pb-4">
-                <RecurringItemGridSection
-                  title=""
-                  items={allUpcomingIncome}
-                  onItemClick={handleRecurringDetailClick}
+                <CardGridSection
+                  transactions={allMonthIncomes}
+                  categories={categories}
+                  onCategoryClick={handleCategoryClick}
+                  recurringItem={allUpcomingIncome.length > 0 ? {
+                    label: '定期収入',
+                    total: totalRecurringIncome,
+                    onClick: () => setIsRecurringIncomeListOpen(true),
+                  } : undefined}
+                  emptyMessage="収入なし"
                 />
               </div>
             </div>
@@ -291,28 +240,6 @@ export const AccountsPage = () => {
         onEdit={handleEditRecurring}
       />
 
-      <CardUnsettledListModal
-        paymentMethod={selectedCardUnsettledPM}
-        transactions={cardUnsettledTransactions}
-        isOpen={isCardUnsettledSheetOpen}
-        onClose={() => {
-          setIsCardUnsettledSheetOpen(false);
-          setSelectedCardUnsettledPM(null);
-          setCardUnsettledTransactions([]);
-        }}
-        onTransactionClick={handleCardUnsettledTransactionClick}
-        onEdit={handleEditCardFromDetail}
-      />
-
-      <CardUnsettledDetailModal
-        transaction={selectedCardUnsettledTransaction}
-        isOpen={isCardUnsettledDetailOpen}
-        onClose={() => {
-          setIsCardUnsettledDetailOpen(false);
-          setSelectedCardUnsettledTransaction(null);
-        }}
-      />
-
       <CategoryTransactionsModal
         category={selectedCategoryForModal}
         transactions={categoryModalTransactions}
@@ -322,34 +249,41 @@ export const AccountsPage = () => {
           setSelectedCategoryForModal(undefined);
           setCategoryModalTransactions([]);
         }}
-        onTransactionClick={(transaction) => {
-          setIsCategoryModalOpen(false);
-          setSelectedCardUnsettledTransaction(transaction);
-          setIsCardUnsettledDetailOpen(true);
+        onTransactionClick={handleTransactionClick}
+      />
+
+      <CardUnsettledDetailModal
+        transaction={selectedTransaction}
+        isOpen={isTransactionDetailOpen}
+        onClose={() => {
+          setIsTransactionDetailOpen(false);
+          setSelectedTransaction(null);
         }}
       />
 
-      {isPaymentMethodModalOpen && (
-        <PaymentMethodModal
-          paymentMethod={editingPaymentMethod}
-          members={memberService.getAll()}
-          accounts={accounts}
-          onSave={handleEditPaymentMethod}
-          onClose={() => {
-            setIsPaymentMethodModalOpen(false);
-            setEditingPaymentMethod(null);
-          }}
-          onDelete={editingPaymentMethod ? () => {
-            if (editingPaymentMethod) {
-              paymentMethodService.delete(editingPaymentMethod.id);
-              toast.success('カードを削除しました');
-              refreshData();
-              setIsPaymentMethodModalOpen(false);
-              setEditingPaymentMethod(null);
-            }
-          } : undefined}
-        />
-      )}
+      <RecurringListModal
+        title="定期支出"
+        items={allUpcomingExpense}
+        total={totalRecurringExpense}
+        isOpen={isRecurringExpenseListOpen}
+        onClose={() => setIsRecurringExpenseListOpen(false)}
+        onItemClick={(item) => {
+          setIsRecurringExpenseListOpen(false);
+          handleRecurringItemClick(item);
+        }}
+      />
+
+      <RecurringListModal
+        title="定期収入"
+        items={allUpcomingIncome}
+        total={totalRecurringIncome}
+        isOpen={isRecurringIncomeListOpen}
+        onClose={() => setIsRecurringIncomeListOpen(false)}
+        onItemClick={(item) => {
+          setIsRecurringIncomeListOpen(false);
+          handleRecurringItemClick(item);
+        }}
+      />
 
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
