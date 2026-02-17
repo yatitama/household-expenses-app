@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, ChevronLeft, ChevronRight, Tag, CreditCard } from 'lucide-react';
+import { Wallet, ChevronLeft, ChevronRight, Tag, CreditCard, Users } from 'lucide-react';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
@@ -13,7 +13,7 @@ import { CategoryTransactionsModal } from '../components/accounts/modals/Categor
 import { RecurringListModal } from '../components/accounts/modals/RecurringListModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import { categoryService, transactionService, paymentMethodService } from '../services/storage';
+import { categoryService, transactionService, paymentMethodService, memberService, accountService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
 import type { RecurringPayment, Transaction, Category } from '../types';
 
@@ -87,6 +87,8 @@ export const AccountsPage = () => {
 
   const categories = categoryService.getAll();
   const paymentMethods = paymentMethodService.getAll();
+  const members = memberService.getAll();
+  const allAccounts = accountService.getAll();
 
   const totalExpenses = allMonthExpenses.reduce((sum, t) => sum + t.amount, 0);
   const totalIncomes = allMonthIncomes.reduce((sum, t) => sum + t.amount, 0);
@@ -156,6 +158,13 @@ export const AccountsPage = () => {
                       >
                         <CreditCard size={13} />
                       </button>
+                      <button
+                        onClick={() => setExpenseViewMode('member')}
+                        className={`p-1 rounded transition-colors ${expenseViewMode === 'member' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
+                        title="メンバー別"
+                      >
+                        <Users size={13} />
+                      </button>
                     </div>
                   </div>
                   <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
@@ -168,6 +177,8 @@ export const AccountsPage = () => {
                   transactions={allMonthExpenses}
                   categories={categories}
                   paymentMethods={paymentMethods}
+                  members={members}
+                  accounts={allAccounts}
                   viewMode={expenseViewMode}
                   onCategoryClick={handleCategoryClick}
                   recurringItem={allUpcomingExpense.length > 0 ? {
