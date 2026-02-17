@@ -70,14 +70,22 @@ export const CardGridSection = ({
     },
     {} as Record<string, { paymentMethod: PaymentMethod | undefined; name: string; amount: number; transactions: Transaction[] }>
   );
-  // 支払い元が設定された定期支払いをマージ
+  // 支払い元が設定された定期支払いをマージ（カードまたは口座で振り分け）
   for (const rp of recurringPayments) {
-    if (!rp.paymentMethodId) continue;
-    const pm = paymentMethods.find((p) => p.id === rp.paymentMethodId);
-    if (!paymentGrouped[rp.paymentMethodId]) {
-      paymentGrouped[rp.paymentMethodId] = { paymentMethod: pm, name: pm?.name ?? '現金', amount: 0, transactions: [] };
+    if (rp.paymentMethodId) {
+      const pm = paymentMethods.find((p) => p.id === rp.paymentMethodId);
+      if (!paymentGrouped[rp.paymentMethodId]) {
+        paymentGrouped[rp.paymentMethodId] = { paymentMethod: pm, name: pm?.name ?? '現金', amount: 0, transactions: [] };
+      }
+      paymentGrouped[rp.paymentMethodId].amount += rp.amount;
+    } else if (rp.accountId) {
+      const acc = accounts.find((a) => a.id === rp.accountId);
+      const key = `__account__${rp.accountId}`;
+      if (!paymentGrouped[key]) {
+        paymentGrouped[key] = { paymentMethod: undefined, name: acc?.name ?? '口座', amount: 0, transactions: [] };
+      }
+      paymentGrouped[key].amount += rp.amount;
     }
-    paymentGrouped[rp.paymentMethodId].amount += rp.amount;
   }
 
   // メンバー別グルーピング（accountId → account.memberId → member）（取引 + 定期）
@@ -134,7 +142,7 @@ export const CardGridSection = ({
 
   // 各モードで「未分類」の定期支払い
   const uncategorizedRecurring = recurringPayments.filter((rp) => !rp.categoryId);
-  const unassignedPaymentRecurring = recurringPayments.filter((rp) => !rp.paymentMethodId);
+  const unassignedPaymentRecurring = recurringPayments.filter((rp) => !rp.paymentMethodId && !rp.accountId);
   const unassignedMemberRecurring = recurringPayments.filter((rp) => !rp.accountId);
 
   const uncategorizedTotal = uncategorizedRecurring.reduce((sum, rp) => sum + rp.amount, 0);

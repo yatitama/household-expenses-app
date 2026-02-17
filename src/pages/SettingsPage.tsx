@@ -534,21 +534,30 @@ export const SettingsPage = () => {
               <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">定期取引がありません</p>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                {recurringPayments.filter((rp) => rp.type === recurringFilterType).map((rp) => (
+                {recurringPayments.filter((rp) => rp.type === recurringFilterType).map((rp) => {
+                  const cat = categories.find((c) => c.id === rp.categoryId);
+                  return (
                   <button
                     key={rp.id}
                     onClick={() => handleEditRecurring(rp)}
                     className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
                   >
-                    <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-                      <RefreshCw size={16} />
+                    <div
+                      className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{
+                        backgroundColor: `${cat?.color || '#6b7280'}20`,
+                        color: cat?.color || '#6b7280',
+                      }}
+                    >
+                      {cat ? getCategoryIcon(cat.icon, 16) : <RefreshCw size={16} />}
                     </div>
                     <div className="flex-1">
                       <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{rp.name}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">¥{rp.amount.toLocaleString()}</p>
                     </div>
                   </button>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
