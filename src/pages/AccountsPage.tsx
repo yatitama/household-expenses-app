@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Wallet, ChevronLeft, ChevronRight, Tag, CreditCard } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
-import { getUnsettledTransactions, getRecurringPaymentsForMonth } from '../utils/billingUtils';
+import { getRecurringPaymentsForMonth } from '../utils/billingUtils';
 import { CardGridSection } from '../components/accounts/CardGridSection';
 import { RecurringItemGridSection } from '../components/accounts/RecurringItemGridSection';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
@@ -15,7 +15,7 @@ import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnse
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import { paymentMethodService, memberService } from '../services/storage';
+import { paymentMethodService, memberService, categoryService, transactionService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
 import type { RecurringPayment, PaymentMethod, PaymentMethodInput, Transaction } from '../types';
 
@@ -61,6 +61,7 @@ export const AccountsPage = () => {
   const [isCardUnsettledDetailOpen, setIsCardUnsettledDetailOpen] = useState(false);
   const [editingPaymentMethod, setEditingPaymentMethod] = useState<PaymentMethod | null>(null);
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
+  const [cardViewMode, setCardViewMode] = useState<'category' | 'card'>('category');
   useBodyScrollLock(
     !!activeModal ||
     isRecurringDetailModalOpen ||
@@ -69,7 +70,8 @@ export const AccountsPage = () => {
     isPaymentMethodModalOpen
   );
 
-  const allUnsettledTransactions = getUnsettledTransactions().filter((t) => {
+  const allMonthCardTransactions = transactionService.getAll().filter((t) => {
+    if (!t.paymentMethodId) return false;
     const [y, m] = t.date.split('-').map(Number);
     return y === selectedYear && m === selectedMonth;
   });
@@ -79,12 +81,14 @@ export const AccountsPage = () => {
 
   const linkedPaymentMethods = paymentMethods.filter((pm) => pm.linkedAccountId);
   const cardUnsettledList = linkedPaymentMethods.map((pm) => {
-    const pmUnsettled = allUnsettledTransactions.filter((t) => t.paymentMethodId === pm.id);
+    const pmUnsettled = allMonthCardTransactions.filter((t) => t.paymentMethodId === pm.id);
     const amount = pmUnsettled.reduce((sum: number, t: Transaction) => {
       return sum + (t.type === 'expense' ? t.amount : -t.amount);
     }, 0);
     return { paymentMethod: pm, unsettledAmount: amount, unsettledTransactions: pmUnsettled };
   });
+
+  const categories = categoryService.getAll();
 
   // セクション合計
   const totalCardUnsettled = cardUnsettledList.reduce((sum, c) => sum + c.unsettledAmount, 0);
@@ -150,13 +154,22 @@ export const AccountsPage = () => {
           <div className="px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6">
             {/* カードセクション */}
             {linkedPaymentMethods.length > 0 && (
-              <div data-section-name="カード">
+              <div data-section-name="カード利用">
                 <div
                   className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
                   style={{ top: 'max(0px, env(safe-area-inset-top))' }}
                 >
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">カード</h3>
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">カード利用</h3>
+                      <button
+                        onClick={() => setCardViewMode((m) => m === 'category' ? 'card' : 'category')}
+                        className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400 transition-colors"
+                        title={cardViewMode === 'category' ? 'カードごとに表示' : 'カテゴリごとに表示'}
+                      >
+                        {cardViewMode === 'category' ? <CreditCard size={14} /> : <Tag size={14} />}
+                      </button>
+                    </div>
                     <p className="text-xs font-bold text-gray-700 dark:text-gray-300">-{formatCurrency(totalCardUnsettled)}</p>
                   </div>
                 </div>
@@ -165,6 +178,8 @@ export const AccountsPage = () => {
                     paymentMethods={linkedPaymentMethods}
                     cardUnsettledList={cardUnsettledList}
                     onCardClick={handleCardUnsettledSheetOpen}
+                    viewMode={cardViewMode}
+                    categories={categories}
                   />
                 </div>
               </div>
