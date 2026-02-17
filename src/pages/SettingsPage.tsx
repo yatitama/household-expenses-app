@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, CreditCard, RefreshCw } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService, cardBillingService, linkedPaymentMethodService } from '../services/storage';
@@ -56,6 +56,19 @@ export const SettingsPage = () => {
   const refreshCategories = useCallback(() => setCategories(categoryService.getAll()), []);
   const refreshPaymentMethods = useCallback(() => setPaymentMethods(paymentMethodService.getAll()), []);
   const refreshRecurringPayments = useCallback(() => setRecurringPayments(recurringPaymentService.getAll()), []);
+
+  // 必須フィールドが欠けている古い形式の定期取引を自動削除
+  useEffect(() => {
+    const all = recurringPaymentService.getAll();
+    const invalid = all.filter(
+      (rp) => rp.amount == null || rp.periodValue == null || !['months', 'days'].includes(rp.periodType)
+    );
+    if (invalid.length > 0) {
+      invalid.forEach((rp) => recurringPaymentService.delete(rp.id));
+      refreshRecurringPayments();
+      toast.success(`古い形式の定期取引 ${invalid.length}件を削除しました`);
+    }
+  }, [refreshRecurringPayments]);
 
   const filteredCategories = categories.filter((c) => c.type === categoryFilterType);
 
