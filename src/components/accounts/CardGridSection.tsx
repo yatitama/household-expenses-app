@@ -11,6 +11,7 @@ interface CardGridSectionProps {
     unsettledTransactions: Transaction[];
   }>;
   onCardClick: (paymentMethod: PaymentMethod, transactions: Transaction[]) => void;
+  onCategoryClick?: (category: Category | undefined, transactions: Transaction[]) => void;
   onAddClick?: () => void;
   viewMode?: 'card' | 'category';
   categories?: Category[];
@@ -20,6 +21,7 @@ export const CardGridSection = ({
   paymentMethods,
   cardUnsettledList,
   onCardClick,
+  onCategoryClick,
   onAddClick,
   viewMode = 'category',
   categories = [],
@@ -38,12 +40,13 @@ export const CardGridSection = ({
         const cat = categories.find((c) => c.id === t.categoryId);
         const key = t.categoryId;
         if (!acc[key]) {
-          acc[key] = { category: cat, amount: 0 };
+          acc[key] = { category: cat, amount: 0, transactions: [] };
         }
         acc[key].amount += t.type === 'expense' ? t.amount : -t.amount;
+        acc[key].transactions.push(t);
         return acc;
       },
-      {} as Record<string, { category: Category | undefined; amount: number }>
+      {} as Record<string, { category: Category | undefined; amount: number; transactions: Transaction[] }>
     );
 
     const sortedEntries = Object.entries(grouped).sort((a, b) => b[1].amount - a[1].amount);
@@ -59,10 +62,11 @@ export const CardGridSection = ({
     return (
       <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
         <div className="grid grid-cols-2 gap-2 md:gap-3">
-          {sortedEntries.map(([categoryId, { category, amount }]) => (
-            <div
+          {sortedEntries.map(([categoryId, { category, amount, transactions: catTransactions }]) => (
+            <button
               key={categoryId}
-              className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between"
+              onClick={() => onCategoryClick?.(category, catTransactions)}
+              className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
             >
               <div className="flex items-center gap-1.5">
                 <div
@@ -81,7 +85,7 @@ export const CardGridSection = ({
               <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                 {formatCurrency(amount)}
               </p>
-            </div>
+            </button>
           ))}
         </div>
       </div>

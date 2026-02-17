@@ -12,12 +12,13 @@ import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPa
 import { RecurringPaymentDetailModal } from '../components/accounts/modals/RecurringPaymentDetailModal';
 import { CardUnsettledListModal } from '../components/accounts/modals/CardUnsettledListModal';
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
+import { CategoryTransactionsModal } from '../components/accounts/modals/CategoryTransactionsModal';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { paymentMethodService, memberService, categoryService, transactionService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
-import type { RecurringPayment, PaymentMethod, PaymentMethodInput, Transaction } from '../types';
+import type { RecurringPayment, PaymentMethod, PaymentMethodInput, Transaction, Category } from '../types';
 
 export const AccountsPage = () => {
   const navigate = useNavigate();
@@ -62,12 +63,16 @@ export const AccountsPage = () => {
   const [editingPaymentMethod, setEditingPaymentMethod] = useState<PaymentMethod | null>(null);
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
   const [cardViewMode, setCardViewMode] = useState<'category' | 'card'>('category');
+  const [selectedCategoryForModal, setSelectedCategoryForModal] = useState<Category | undefined>(undefined);
+  const [categoryModalTransactions, setCategoryModalTransactions] = useState<Transaction[]>([]);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   useBodyScrollLock(
     !!activeModal ||
     isRecurringDetailModalOpen ||
     isCardUnsettledSheetOpen ||
     isCardUnsettledDetailOpen ||
-    isPaymentMethodModalOpen
+    isPaymentMethodModalOpen ||
+    isCategoryModalOpen
   );
 
   const allMonthCardTransactions = transactionService.getAll().filter((t) => {
@@ -119,6 +124,12 @@ export const AccountsPage = () => {
   const handleCardUnsettledTransactionClick = (transaction: Transaction) => {
     setSelectedCardUnsettledTransaction(transaction);
     setIsCardUnsettledDetailOpen(true);
+  };
+
+  const handleCategoryClick = (category: Category | undefined, transactions: Transaction[]) => {
+    setSelectedCategoryForModal(category);
+    setCategoryModalTransactions(transactions);
+    setIsCategoryModalOpen(true);
   };
 
   const handleEditPaymentMethod = (input: PaymentMethodInput) => {
@@ -178,6 +189,7 @@ export const AccountsPage = () => {
                     paymentMethods={linkedPaymentMethods}
                     cardUnsettledList={cardUnsettledList}
                     onCardClick={handleCardUnsettledSheetOpen}
+                    onCategoryClick={handleCategoryClick}
                     viewMode={cardViewMode}
                     categories={categories}
                   />
@@ -298,6 +310,22 @@ export const AccountsPage = () => {
         onClose={() => {
           setIsCardUnsettledDetailOpen(false);
           setSelectedCardUnsettledTransaction(null);
+        }}
+      />
+
+      <CategoryTransactionsModal
+        category={selectedCategoryForModal}
+        transactions={categoryModalTransactions}
+        isOpen={isCategoryModalOpen}
+        onClose={() => {
+          setIsCategoryModalOpen(false);
+          setSelectedCategoryForModal(undefined);
+          setCategoryModalTransactions([]);
+        }}
+        onTransactionClick={(transaction) => {
+          setIsCategoryModalOpen(false);
+          setSelectedCardUnsettledTransaction(transaction);
+          setIsCardUnsettledDetailOpen(true);
         }}
       />
 
