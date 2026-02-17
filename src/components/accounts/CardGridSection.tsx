@@ -60,8 +60,22 @@ export const CardGridSection = ({
     {} as Record<string, { paymentMethod: PaymentMethod | undefined; name: string; amount: number; transactions: Transaction[] }>
   );
 
-  const sortedCategoryEntries = Object.entries(categoryGrouped).sort((a, b) => b[1].amount - a[1].amount);
-  const sortedPaymentEntries = Object.entries(paymentGrouped).sort((a, b) => b[1].amount - a[1].amount);
+  const sortedCategoryEntries = Object.entries(categoryGrouped).sort((a, b) => {
+    const aIdx = categories.findIndex((c) => c.id === a[1].category?.id);
+    const bIdx = categories.findIndex((c) => c.id === b[1].category?.id);
+    if (aIdx === -1 && bIdx === -1) return 0;
+    if (aIdx === -1) return 1;
+    if (bIdx === -1) return -1;
+    return aIdx - bIdx;
+  });
+  const sortedPaymentEntries = Object.entries(paymentGrouped).sort((a, b) => {
+    const aIdx = paymentMethods.findIndex((p) => p.id === a[1].paymentMethod?.id);
+    const bIdx = paymentMethods.findIndex((p) => p.id === b[1].paymentMethod?.id);
+    if (aIdx === -1 && bIdx === -1) return 0;
+    if (aIdx === -1) return 1;
+    if (bIdx === -1) return -1;
+    return aIdx - bIdx;
+  });
 
   const hasContent =
     viewMode === 'category'
@@ -79,26 +93,6 @@ export const CardGridSection = ({
   return (
     <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
       <div className="grid grid-cols-2 gap-2 md:gap-3">
-        {/* 定期アイテムは常に表示 */}
-        {recurringItem && (
-          <button
-            onClick={recurringItem.onClick}
-            className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
-          >
-            <div className="flex items-center gap-1.5">
-              <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
-                <RefreshCw size={12} />
-              </div>
-              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                {recurringItem.label}
-              </p>
-            </div>
-            <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-              {formatCurrency(recurringItem.total)}
-            </p>
-          </button>
-        )}
-
         {viewMode === 'category'
           ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => (
               <button
@@ -144,6 +138,26 @@ export const CardGridSection = ({
                 </p>
               </button>
             ))}
+
+        {/* 定期アイテムは末尾に表示 */}
+        {recurringItem && (
+          <button
+            onClick={recurringItem.onClick}
+            className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
+          >
+            <div className="flex items-center gap-1.5">
+              <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                <RefreshCw size={12} />
+              </div>
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                {recurringItem.label}
+              </p>
+            </div>
+            <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+              {formatCurrency(recurringItem.total)}
+            </p>
+          </button>
+        )}
       </div>
     </div>
   );
