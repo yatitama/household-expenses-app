@@ -57,6 +57,14 @@ export const RecurringPaymentModal = ({
       toast.error('名前、金額、周期を入力してください');
       return;
     }
+    if (!categoryId) {
+      toast.error('カテゴリを選択してください');
+      return;
+    }
+    if (!selectedSourceId) {
+      toast.error(type === 'expense' ? '支払い元を選択してください' : '入金先を選択してください');
+      return;
+    }
     const parsedPeriodValue = parseInt(periodValue, 10);
     if (!parsedPeriodValue || parsedPeriodValue < 1) {
       toast.error('周期は1以上の整数を入力してください');
@@ -162,7 +170,6 @@ export const RecurringPaymentModal = ({
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                 カテゴリ
-                <span className="text-gray-400 font-normal ml-1">(任意)</span>
               </label>
               <div className="grid grid-cols-4 gap-2">
                 {filteredCategories.map((category) => {
@@ -200,7 +207,6 @@ export const RecurringPaymentModal = ({
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                 {type === 'expense' ? '支払い元' : '入金先'}
-                <span className="text-gray-400 font-normal ml-1">(任意)</span>
               </label>
               <div className="grid grid-cols-4 gap-2">
                 {allAccounts.map((acct) => (
@@ -220,7 +226,7 @@ export const RecurringPaymentModal = ({
                     >
                       <Wallet size={14} />
                     </div>
-                    <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                    <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                       {acct.name}
                     </span>
                   </button>
@@ -242,7 +248,7 @@ export const RecurringPaymentModal = ({
                     >
                       <CreditCard size={14} />
                     </div>
-                    <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                    <span className="text-xs text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                       {pm.name}
                     </span>
                   </button>
@@ -267,8 +273,9 @@ export const RecurringPaymentModal = ({
                     type="button"
                     onClick={() => setPeriodType('months')}
                     className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                      periodType === 'months' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
+                      periodType === 'months' ? 'text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                     }`}
+                    style={periodType === 'months' ? { backgroundColor: 'var(--theme-primary)' } : {}}
                   >
                     ヶ月に一回
                   </button>
@@ -276,8 +283,9 @@ export const RecurringPaymentModal = ({
                     type="button"
                     onClick={() => setPeriodType('days')}
                     className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                      periodType === 'days' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
+                      periodType === 'days' ? 'text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                     }`}
+                    style={periodType === 'days' ? { backgroundColor: 'var(--theme-primary)' } : {}}
                   >
                     日に一回
                   </button>
@@ -366,7 +374,7 @@ export const RecurringPaymentModal = ({
             </button>
             <button
               type="submit"
-              disabled={!name || !amount || !periodValue}
+              disabled={!name || !amount || !periodValue || !categoryId || !selectedSourceId}
               className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm disabled:opacity-50 transition-colors"
             >
               保存
