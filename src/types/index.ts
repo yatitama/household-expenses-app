@@ -168,7 +168,7 @@ export interface SavingsGoal {
   id: string;
   name: string;           // 貯金名 (例: ○○旅行貯金)
   targetAmount: number;   // 目標金額
-  targetDate: string;     // いつまで (yyyy-MM-dd)
+  targetDate: string;     // いつまで (yyyy-MM)
   startMonth: string;     // 開始月 (yyyy-MM, 作成月)
   excludedMonths: string[]; // 除外した月 (yyyy-MM形式)
   createdAt: string;
