@@ -18,7 +18,7 @@ export const Tooltip = ({ label, text, position = 'top' }: TooltipProps) => {
   };
 
   return (
-    <div className="relative inline-block group">
+    <div className="relative inline-flex items-center group">
       <button
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
