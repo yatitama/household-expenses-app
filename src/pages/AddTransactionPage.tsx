@@ -90,6 +90,7 @@ export const AddTransactionPage = () => {
     setSelectedSourceId(tpl.accountId || tpl.paymentMethodId || '');
     setDate(tpl.date || format(new Date(), 'yyyy-MM-dd'));
     setMemo(tpl.memo || '');
+    toast.success(`「${tpl.name}」を反映しました`);
     window.scrollTo(0, 0);
   };
 
@@ -97,23 +98,23 @@ export const AddTransactionPage = () => {
     try {
       if (editingQuickAddTemplate) {
         quickAddTemplateService.update(editingQuickAddTemplate.id, input);
-        toast.success('テンプレートを更新しました');
+        toast.success('クイック入力を更新しました');
       } else {
         quickAddTemplateService.create(input);
-        toast.success('テンプレートを作成しました');
+        toast.success('クイック入力を作成しました');
       }
       setQuickAddTemplates(quickAddTemplateService.getAll());
       setIsQuickAddTemplateModalOpen(false);
       setEditingQuickAddTemplate(null);
     } catch {
-      toast.error('テンプレートの保存に失敗しました');
+      toast.error('クイック入力の保存に失敗しました');
     }
   };
 
   const handleDeleteQuickAddTemplate = () => {
     if (editingQuickAddTemplate) {
       quickAddTemplateService.delete(editingQuickAddTemplate.id);
-      toast.success('テンプレートを削除しました');
+      toast.success('クイック入力を削除しました');
       setQuickAddTemplates(quickAddTemplateService.getAll());
       setIsQuickAddTemplateModalOpen(false);
       setEditingQuickAddTemplate(null);
@@ -156,9 +157,9 @@ export const AddTransactionPage = () => {
                 </button>
               </div>
 
-              {allAccounts.length > 0 && quickAddTemplates.length > 0 && (
+              {allAccounts.length > 0 && quickAddTemplates.filter((t) => t.type === type).length > 0 && (
                 <QuickAddTemplateGridSection
-                  templates={quickAddTemplates}
+                  templates={quickAddTemplates.filter((t) => t.type === type)}
                   onTemplateClick={handleQuickAddTemplateClick}
                   onEditClick={(tpl) => {
                     setEditingQuickAddTemplate(tpl);
@@ -170,7 +171,7 @@ export const AddTransactionPage = () => {
                   }}
                 />
               )}
-              {quickAddTemplates.length === 0 && allAccounts.length > 0 && (
+              {quickAddTemplates.filter((t) => t.type === type).length === 0 && allAccounts.length > 0 && (
                 <button
                   type="button"
                   onClick={() => {
@@ -179,7 +180,7 @@ export const AddTransactionPage = () => {
                   }}
                   className="w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
                 >
-                  + クイック追加テンプレートを作成
+                  + クイック入力を作成
                 </button>
               )}
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Wallet, CreditCard, Check } from 'lucide-react';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { QuickAddTemplate, QuickAddTemplateInput, Category, Account, PaymentMethod } from '../../types';
@@ -32,6 +32,11 @@ export const QuickAddTemplateModal = ({
   const [date, setDate] = useState(() => template?.date || '');
   const [memo, setMemo] = useState(() => template?.memo || '');
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) {
@@ -59,7 +64,7 @@ export const QuickAddTemplateModal = ({
   const filteredCategories = categories.filter((c) => c.type === type);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose} role="dialog" aria-modal="true" aria-label={template ? 'テンプレートを編集' : 'テンプレートを作成'}>
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose} role="dialog" aria-modal="true" aria-label={template ? 'クイック入力を編集' : 'クイック入力を作成'}>
       <form
         onSubmit={handleSubmit}
         className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
@@ -68,7 +73,7 @@ export const QuickAddTemplateModal = ({
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
-              {template ? 'テンプレートを編集' : 'テンプレートを作成'}
+              {template ? 'クイック入力を編集' : 'クイック入力を作成'}
             </h3>
             <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
               <X size={18} className="sm:w-5 sm:h-5" />
@@ -76,18 +81,6 @@ export const QuickAddTemplateModal = ({
           </div>
 
           <div className="space-y-4 sm:space-y-5">
-            {/* Name */}
-            <div>
-              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">テンプレート名</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="例: コンビニ"
-                className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
-              />
-            </div>
-
             {/* Type */}
             <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
               <button
@@ -108,6 +101,18 @@ export const QuickAddTemplateModal = ({
               >
                 収入
               </button>
+            </div>
+
+            {/* Name */}
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">クイック入力名</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="例: コンビニ"
+                className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+              />
             </div>
 
             {/* Amount */}
