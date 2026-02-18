@@ -18,7 +18,7 @@ import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { accountService, paymentMethodService, memberService, savingsGoalService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
-import { calculateAccumulatedAmount, calculateMonthlyAmount, toYearMonth } from '../utils/savingsUtils';
+import { calculateAccumulatedAmount, toYearMonth } from '../utils/savingsUtils';
 import type { Account, AccountInput, RecurringPayment, PaymentMethod, PaymentMethodInput } from '../types';
 
 export const MoneyPage = () => {
@@ -178,16 +178,23 @@ export const MoneyPage = () => {
               <div className="pt-2 pb-3 md:pb-4 px-1">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {savingsGoals.map((goal) => {
-                    const monthly = calculateMonthlyAmount(goal);
+                    const accumulated = calculateAccumulatedAmount(goal, currentRealMonth);
+                    const progress = Math.min(100, goal.targetAmount > 0 ? (accumulated / goal.targetAmount) * 100 : 0);
                     return (
-                      <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between">
+                      <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-3 md:p-4 flex flex-col gap-2">
                         <div className="flex items-center gap-1.5">
                           <PiggyBank size={12} className="text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                           <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{goal.name}</p>
                         </div>
                         <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                          ¥{monthly.toLocaleString()}
+                          ¥{accumulated.toLocaleString()} / ¥{goal.targetAmount.toLocaleString()}
                         </p>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5">
+                          <div
+                            className="bg-black dark:bg-white h-1.5"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
                       </div>
                     );
                   })}
