@@ -7,10 +7,9 @@ import type { FilterOptions } from '../../hooks/useTransactionFilter';
 interface FilterSidePanelProps {
   isOpen: boolean;
   onClose: () => void;
-  filterType: 'type' | 'date' | 'member' | 'category' | 'account' | 'payment' | 'sort' | 'search' | null;
+  filterType: 'type' | 'date' | 'category' | 'account' | 'payment' | 'sort' | 'search' | null;
   filters: FilterOptions;
   updateFilter: <K extends keyof FilterOptions>(key: K, value: FilterOptions[K]) => void;
-  members: { id: string; name: string; color: string }[];
   categories: { id: string; name: string; color: string }[];
   accounts: { id: string; name: string }[];
   paymentMethods: { id: string; name: string }[];
@@ -22,7 +21,6 @@ export const FilterSidePanel = ({
   filterType,
   filters,
   updateFilter,
-  members,
   categories,
   accounts,
   paymentMethods,
@@ -40,8 +38,6 @@ export const FilterSidePanel = ({
         break;
       case 'date':
         updateFilter('dateRange', { start: '', end: '' });
-        break;
-      case 'member':
         break;
       case 'category':
         updateFilter('categoryIds', []);
@@ -121,12 +117,6 @@ export const FilterSidePanel = ({
               onEndChange={(v) => updateFilter('dateRange', { ...filters.dateRange, end: v })}
             />
           ),
-        };
-
-      case 'member':
-        return {
-          title: 'メンバー',
-          content: null,
         };
 
       case 'category':

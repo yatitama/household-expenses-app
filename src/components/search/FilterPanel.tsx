@@ -10,7 +10,6 @@ interface FilterPanelProps {
   updateFilter: <K extends keyof FilterOptions>(key: K, value: FilterOptions[K]) => void;
   resetFilters: () => void;
   activeFilterCount: number;
-  members: { id: string; name: string; color: string }[];
   categories: { id: string; name: string; color: string }[];
   accounts: { id: string; name: string }[];
   paymentMethods: { id: string; name: string }[];
@@ -21,7 +20,6 @@ export const FilterPanel = ({
   updateFilter,
   resetFilters,
   activeFilterCount,
-  members,
   categories,
   accounts,
   paymentMethods,
