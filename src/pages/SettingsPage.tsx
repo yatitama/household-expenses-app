@@ -973,12 +973,12 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
   const [name, setName] = useState(goal?.name || '');
   const [targetAmount, setTargetAmount] = useState(goal ? String(goal.targetAmount) : '');
   const [targetDate, setTargetDate] = useState(goal?.targetDate || '');
+  const [startMonth, setStartMonth] = useState(goal?.startMonth ?? todayYM);
 
   // プレビュー: 毎月の貯金額を計算
   const previewMonthly = (() => {
     const amount = parseInt(targetAmount, 10);
     if (!amount || !targetDate) return null;
-    const startMonth = goal?.startMonth ?? todayYM;
     const targetMonth = targetDate.substring(0, 7);
     if (targetMonth < startMonth) return null;
     const allMonths = getMonthsInRange(startMonth, targetMonth);
@@ -996,7 +996,7 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
       name,
       targetAmount: amount,
       targetDate,
-      startMonth: goal?.startMonth ?? todayYM,
+      startMonth,
       excludedMonths: goal?.excludedMonths ?? [],
     });
   };
@@ -1026,6 +1026,16 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
                 onChange={(e) => setTargetAmount(e.target.value)}
                 placeholder="例: 100000"
                 min="1"
+                className="w-full dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">いつから</label>
+              <input
+                type="month"
+                value={startMonth}
+                onChange={(e) => setStartMonth(e.target.value)}
                 className="w-full dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
                 required
               />
