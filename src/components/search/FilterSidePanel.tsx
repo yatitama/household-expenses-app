@@ -42,7 +42,6 @@ export const FilterSidePanel = ({
         updateFilter('dateRange', { start: '', end: '' });
         break;
       case 'member':
-        updateFilter('memberIds', []);
         break;
       case 'category':
         updateFilter('categoryIds', []);
@@ -127,14 +126,7 @@ export const FilterSidePanel = ({
       case 'member':
         return {
           title: 'メンバー',
-          content: (
-            <MultiSelect
-              label=""
-              options={members.map((m) => ({ id: m.id, name: m.name, color: m.color }))}
-              selectedIds={filters.memberIds}
-              onChange={(ids) => updateFilter('memberIds', ids)}
-            />
-          ),
+          content: null,
         };
 
       case 'category':

@@ -2,21 +2,20 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Check } from 'lucide-react';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
-import type { Account, PaymentMethod, Member, Transaction, TransactionType, TransactionInput } from '../../../types';
+import type { Account, PaymentMethod, Transaction, TransactionType, TransactionInput } from '../../../types';
 
 interface EditTransactionModalProps {
   transaction: Transaction;
   accounts: Account[];
   paymentMethods: PaymentMethod[];
-  categories: { id: string; name: string; type: TransactionType; color: string; icon: string; memberId: string }[];
-  members: Member[];
+  categories: { id: string; name: string; type: TransactionType; color: string; icon: string }[];
   onSave: (input: TransactionInput) => void;
   onClose: () => void;
   onDelete?: (id: string) => void;
 }
 
 export const EditTransactionModal = ({
-  transaction, accounts, paymentMethods, categories, members, onSave, onClose, onDelete,
+  transaction, accounts, paymentMethods, categories, onSave, onClose, onDelete,
 }: EditTransactionModalProps) => {
   const [type, setType] = useState<TransactionType>(transaction.type);
   const [amount, setAmount] = useState(transaction.amount.toString());
@@ -27,7 +26,6 @@ export const EditTransactionModal = ({
   const [memo, setMemo] = useState(transaction.memo || '');
 
   const filteredCategories = categories.filter((c) => c.type === type);
-  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   const handleSelectAccount = (id: string) => {
     setAccountId(id);
@@ -104,7 +102,6 @@ export const EditTransactionModal = ({
             <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
             <div className="grid grid-cols-4 gap-2">
               {filteredCategories.map((category) => {
-                const member = getMember(category.memberId);
                 return (
                   <button
                     key={category.id}
@@ -125,9 +122,6 @@ export const EditTransactionModal = ({
                     <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                       {category.name}
                     </span>
-                    {member && member.id !== 'common' && (
-                      <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
-                    )}
                   </button>
                 );
               })}

@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { X, Wallet, CreditCard } from 'lucide-react';
 import {
   accountService, transactionService, categoryService,
-  memberService, paymentMethodService,
+  paymentMethodService,
 } from '../../../services/storage';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import type { TransactionType, TransactionInput, QuickAddTemplate } from '../../../types';
@@ -20,7 +20,6 @@ export const AddTransactionModal = ({ template, onSaved, onClose }: AddTransacti
   const allAccounts = accountService.getAll();
   const allPaymentMethods = paymentMethodService.getAll();
   const categories = categoryService.getAll();
-  const members = memberService.getAll();
 
   const [type, setType] = useState<TransactionType>(() => template?.type || 'expense');
   const [amount, setAmount] = useState(() => template?.amount ? String(template.amount) : '');
@@ -30,7 +29,6 @@ export const AddTransactionModal = ({ template, onSaved, onClose }: AddTransacti
   const [memo, setMemo] = useState(() => template?.memo || '');
 
   const filteredCategories = categories.filter((c) => c.type === type);
-  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,7 +135,6 @@ export const AddTransactionModal = ({ template, onSaved, onClose }: AddTransacti
                 <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
                 <div className="grid grid-cols-4 gap-2">
                   {filteredCategories.map((category) => {
-                    const member = getMember(category.memberId);
                     return (
                       <button
                         key={category.id}
@@ -158,9 +155,6 @@ export const AddTransactionModal = ({ template, onSaved, onClose }: AddTransacti
                         <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
                           {category.name}
                         </span>
-                        {member && member.id !== 'common' && (
-                          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
-                        )}
                       </button>
                     );
                   })}

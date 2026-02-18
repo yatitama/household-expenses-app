@@ -5,7 +5,7 @@ import { Wallet, CreditCard, Check } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   accountService, transactionService, categoryService,
-  paymentMethodService, memberService, quickAddTemplateService,
+  paymentMethodService, quickAddTemplateService,
 } from '../services/storage';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { QuickAddTemplateGridSection } from '../components/quickAdd/QuickAddTemplateGridSection';
@@ -19,7 +19,6 @@ export const AddTransactionPage = () => {
   const allAccounts = accountService.getAll();
   const allPaymentMethods = paymentMethodService.getAll();
   const categories = categoryService.getAll();
-  const members = memberService.getAll();
 
   const [type, setType] = useState<TransactionType>(() => template?.type || 'expense');
   const [amount, setAmount] = useState(() => template?.amount ? String(template.amount) : '');
@@ -35,7 +34,6 @@ export const AddTransactionPage = () => {
   const [isQuickAddTemplateModalOpen, setIsQuickAddTemplateModalOpen] = useState(false);
 
   const filteredCategories = categories.filter((c) => c.type === type);
-  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,7 +202,6 @@ export const AddTransactionPage = () => {
                 <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
                 <div className="grid grid-cols-4 gap-2">
                   {filteredCategories.map((category) => {
-                    const member = getMember(category.memberId);
                     return (
                       <button
                         key={category.id}
@@ -225,9 +222,6 @@ export const AddTransactionPage = () => {
                         <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                           {category.name}
                         </span>
-                        {member && member.id !== 'common' && (
-                          <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
-                        )}
                         {categoryId === category.id && (
                           <div className="absolute -top-1 -right-1">
                             <Check size={16} className="text-primary-500" strokeWidth={2} />
@@ -345,7 +339,6 @@ export const AddTransactionPage = () => {
           categories={categories}
           accounts={allAccounts}
           paymentMethods={allPaymentMethods}
-          members={members}
           isOpen={isQuickAddTemplateModalOpen}
           onSave={handleSaveQuickAddTemplate}
           onClose={() => {

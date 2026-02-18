@@ -2,14 +2,13 @@ import { useState } from 'react';
 import { X, Wallet, CreditCard, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { getCategoryIcon } from '../../utils/categoryIcons';
-import type { QuickAddTemplate, Category, Account, PaymentMethod, TransactionInput, Member } from '../../types';
+import type { QuickAddTemplate, Category, Account, PaymentMethod, TransactionInput } from '../../types';
 
 interface QuickAddTemplateDetailModalProps {
   template?: QuickAddTemplate | null;
   categories: Category[];
   accounts: Account[];
   paymentMethods: PaymentMethod[];
-  members: Member[];
   isOpen: boolean;
   onSave: (input: TransactionInput) => void;
   onClose: () => void;
@@ -21,7 +20,6 @@ export const QuickAddTemplateDetailModal = ({
   categories,
   accounts,
   paymentMethods,
-  members,
   isOpen,
   onSave,
   onClose,
@@ -32,8 +30,6 @@ export const QuickAddTemplateDetailModal = ({
   const [memo, setMemo] = useState(() => template?.memo || '');
   const [categoryId, setCategoryId] = useState(() => template?.categoryId || '');
   const [selectedSourceId, setSelectedSourceId] = useState<string>(() => template?.accountId || template?.paymentMethodId || '');
-
-  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,7 +124,6 @@ export const QuickAddTemplateDetailModal = ({
                 {categories
                   .filter((c) => c.type === template!.type)
                   .map((cat) => {
-                    const member = getMember(cat.memberId);
                     return (
                       <button
                         key={cat.id}
@@ -149,9 +144,6 @@ export const QuickAddTemplateDetailModal = ({
                         <span className="text-[10px] text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                           {cat.name}
                         </span>
-                        {member && member.id !== 'common' && (
-                          <span className="text-[10px] text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
-                        )}
                         {categoryId === cat.id && (
                           <div className="absolute -top-1 -right-1">
                             <Check size={16} className="text-blue-500" strokeWidth={2} />

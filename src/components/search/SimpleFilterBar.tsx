@@ -55,9 +55,9 @@ export const SimpleFilterBar = ({
     },
     {
       id: 'member',
-      label: `メンバー${filters.memberIds.length > 0 ? ` (${filters.memberIds.length})` : ''}`,
-      isActive: filters.memberIds.length > 0,
-      onClear: () => updateFilter('memberIds', []),
+      label: 'メンバー',
+      isActive: false,
+      onClear: () => {},
     },
     {
       id: 'category',

@@ -70,7 +70,6 @@ export interface Category {
   id: string;
   name: string;
   type: TransactionType;
-  memberId: string;
   color: string;
   icon: string;
 }
