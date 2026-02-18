@@ -171,6 +171,7 @@ export interface SavingsGoal {
   targetDate: string;     // いつまで (yyyy-MM)
   startMonth: string;     // 開始月 (yyyy-MM, 作成月)
   excludedMonths: string[]; // 除外した月 (yyyy-MM形式)
+  monthlyOverrides: Record<string, number>; // 月別金額上書き (yyyy-MM → 金額)
   createdAt: string;
   updatedAt: string;
 }

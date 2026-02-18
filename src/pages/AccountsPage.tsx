@@ -15,7 +15,8 @@ import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { categoryService, transactionService, paymentMethodService, memberService, accountService, savingsGoalService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
-import { calculateMonthlyAmount, isMonthExcluded } from '../utils/savingsUtils';
+import { calculateMonthlyAmount, getEffectiveMonthlyAmount, isMonthExcluded } from '../utils/savingsUtils';
+import { SavingsMonthSheet } from '../components/savings/SavingsMonthSheet';
 import type { RecurringPayment, Transaction, Category, SavingsGoal } from '../types';
 
 export const AccountsPage = () => {
@@ -61,6 +62,7 @@ export const AccountsPage = () => {
   const [isRecurringIncomeListOpen, setIsRecurringIncomeListOpen] = useState(false);
   const [expenseViewMode, setExpenseViewMode] = useState<CardGridViewMode>('category');
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => savingsGoalService.getAll());
+  const [selectedGoalForSheet, setSelectedGoalForSheet] = useState<SavingsGoal | null>(null);
 
   useBodyScrollLock(
     !!activeModal ||
@@ -68,7 +70,8 @@ export const AccountsPage = () => {
     isTransactionDetailOpen ||
     isCategoryModalOpen ||
     isRecurringExpenseListOpen ||
-    isRecurringIncomeListOpen
+    isRecurringIncomeListOpen ||
+    !!selectedGoalForSheet
   );
 
   const allMonthExpenses = transactionService.getAll().filter((t) => {
@@ -99,19 +102,27 @@ export const AccountsPage = () => {
   const totalRecurringExpense = allUpcomingExpense.reduce((sum, rp) => sum + rp.amount, 0);
   const totalRecurringIncome = allUpcomingIncome.reduce((sum, rp) => sum + rp.amount, 0);
 
-  // 貯金: 表示中の月が除外されていなければ月額を計上
+  // 貯金: 表示中の月が除外されていなければ月額を計上 (月別上書きがあればその金額)
   const totalSavings = savingsGoals.reduce((sum, goal) => {
     const targetMonth = goal.targetDate.substring(0, 7);
     if (viewMonth < goal.startMonth || viewMonth > targetMonth) return sum;
     if (isMonthExcluded(goal, viewMonth)) return sum;
-    return sum + calculateMonthlyAmount(goal);
+    return sum + getEffectiveMonthlyAmount(goal, viewMonth);
   }, 0);
 
   const totalNet = (totalIncomes + totalRecurringIncome) - (totalExpenses + totalRecurringExpense + totalSavings);
 
-  const handleToggleSavingsMonth = (goalId: string) => {
-    savingsGoalService.toggleExcludeMonth(goalId, viewMonth);
+  const handleSaveSavingsMonth = (goalId: string, excluded: boolean, overrideAmount: number | null) => {
+    const goal = savingsGoals.find((g) => g.id === goalId);
+    if (!goal) return;
+
+    const wasExcluded = isMonthExcluded(goal, viewMonth);
+    if (excluded !== wasExcluded) {
+      savingsGoalService.toggleExcludeMonth(goalId, viewMonth);
+    }
+    savingsGoalService.setMonthlyOverride(goalId, viewMonth, overrideAmount);
     setSavingsGoals(savingsGoalService.getAll());
+    setSelectedGoalForSheet(null);
   };
 
   const handleEditRecurring = (rp: RecurringPayment) => {
@@ -256,12 +267,14 @@ export const AccountsPage = () => {
                       const targetMonth = goal.targetDate.substring(0, 7);
                       const isOutOfRange = viewMonth < goal.startMonth || viewMonth > targetMonth;
                       const excluded = isMonthExcluded(goal, viewMonth);
-                      const monthly = calculateMonthlyAmount(goal);
+                      const effective = getEffectiveMonthlyAmount(goal, viewMonth);
+                      const standard = calculateMonthlyAmount(goal);
+                      const hasOverride = !excluded && !isOutOfRange && (goal.monthlyOverrides ?? {})[viewMonth] !== undefined;
                       const isActive = !isOutOfRange && !excluded;
                       return (
                         <button
                           key={goal.id}
-                          onClick={() => { if (!isOutOfRange) handleToggleSavingsMonth(goal.id); }}
+                          onClick={() => { if (!isOutOfRange) setSelectedGoalForSheet(goal); }}
                           disabled={isOutOfRange}
                           className={`p-3 text-left transition-all h-24 md:h-28 flex flex-col justify-between ${
                             isOutOfRange
@@ -282,15 +295,22 @@ export const AccountsPage = () => {
                           ) : isOutOfRange ? (
                             <p className="text-right text-xs text-gray-400 dark:text-gray-500">対象外</p>
                           ) : (
-                            <p className="text-right text-sm font-bold text-gray-900 dark:text-gray-100">
-                              ¥{monthly.toLocaleString()}
-                            </p>
+                            <div className="text-right">
+                              <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                                ¥{effective.toLocaleString()}
+                              </p>
+                              {hasOverride && (
+                                <p className="text-xs text-gray-400 dark:text-gray-500 line-through">
+                                  ¥{standard.toLocaleString()}
+                                </p>
+                              )}
+                            </div>
                           )}
                         </button>
                       );
                     })}
                   </div>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 px-1">タップで今月を除外/含める</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 px-1">タップで金額調整・除外設定</p>
                 </div>
               </div>
             )}
@@ -403,6 +423,15 @@ export const AccountsPage = () => {
         confirmText="削除"
         confirmVariant="danger"
       />
+
+      {selectedGoalForSheet && (
+        <SavingsMonthSheet
+          goal={selectedGoalForSheet}
+          month={viewMonth}
+          onSave={(excluded, overrideAmount) => handleSaveSavingsMonth(selectedGoalForSheet.id, excluded, overrideAmount)}
+          onClose={() => setSelectedGoalForSheet(null)}
+        />
+      )}
     </div>
   );
 };

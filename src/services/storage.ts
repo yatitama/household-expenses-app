@@ -727,6 +727,7 @@ export const savingsGoalService = {
     const goals = savingsGoalService.getAll();
     const now = getTimestamp();
     const newGoal: SavingsGoal = {
+      monthlyOverrides: {},
       ...input,
       id: generateId(),
       createdAt: now,
@@ -773,6 +774,30 @@ export const savingsGoalService = {
     const updated: SavingsGoal = {
       ...goal,
       excludedMonths,
+      updatedAt: getTimestamp(),
+    };
+    goals[index] = updated;
+    setItems(STORAGE_KEYS.SAVINGS_GOALS, goals);
+    return updated;
+  },
+
+  // 指定月の金額上書きをセット (amount=null で上書き削除)
+  setMonthlyOverride: (id: string, month: string, amount: number | null): SavingsGoal | undefined => {
+    const goals = savingsGoalService.getAll();
+    const index = goals.findIndex((g) => g.id === id);
+    if (index === -1) return undefined;
+
+    const goal = goals[index];
+    const monthlyOverrides = { ...(goal.monthlyOverrides ?? {}) };
+    if (amount === null) {
+      delete monthlyOverrides[month];
+    } else {
+      monthlyOverrides[month] = amount;
+    }
+
+    const updated: SavingsGoal = {
+      ...goal,
+      monthlyOverrides,
       updatedAt: getTimestamp(),
     };
     goals[index] = updated;

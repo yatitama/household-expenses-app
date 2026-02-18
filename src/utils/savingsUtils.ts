@@ -55,15 +55,21 @@ export const calculateMonthlyAmount = (goal: SavingsGoal): number => {
   return Math.ceil(goal.targetAmount / activeMonths.length);
 };
 
+// 指定月の実際の貯金額 (月別上書きがあればそれを、なければ通常月額を返す)
+export const getEffectiveMonthlyAmount = (goal: SavingsGoal, month: string): number => {
+  const overrides = goal.monthlyOverrides ?? {};
+  if (month in overrides) return overrides[month];
+  return calculateMonthlyAmount(goal);
+};
+
 // 貯金目標の今月時点での貯まった金額を計算する
-// (現在の実際の月までの非除外月 × 月額)
+// (現在の実際の月までの非除外月の合計。月別上書きがあればその金額を使用)
 export const calculateAccumulatedAmount = (goal: SavingsGoal, currentRealMonth: string): number => {
   const targetMonth = getTargetMonth(goal.targetDate);
   const endMonth = compareMonths(currentRealMonth, targetMonth) <= 0 ? currentRealMonth : targetMonth;
   const allMonths = getMonthsInRange(goal.startMonth, endMonth);
   const activePassedMonths = allMonths.filter((m) => !goal.excludedMonths.includes(m));
-  const monthlyAmount = calculateMonthlyAmount(goal);
-  return activePassedMonths.length * monthlyAmount;
+  return activePassedMonths.reduce((sum, m) => sum + getEffectiveMonthlyAmount(goal, m), 0);
 };
 
 // 指定月が除外されているかどうか
