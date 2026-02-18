@@ -972,16 +972,15 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
   const todayYM = toYearMonth(new Date());
   const [name, setName] = useState(goal?.name || '');
   const [targetAmount, setTargetAmount] = useState(goal ? String(goal.targetAmount) : '');
-  const [targetDate, setTargetDate] = useState(goal?.targetDate || '');
+  const [targetDate, setTargetDate] = useState(goal?.targetDate?.substring(0, 7) || '');
   const [startMonth, setStartMonth] = useState(goal?.startMonth ?? todayYM);
 
   // プレビュー: 毎月の貯金額を計算
   const previewMonthly = (() => {
     const amount = parseInt(targetAmount, 10);
     if (!amount || !targetDate) return null;
-    const targetMonth = targetDate.substring(0, 7);
-    if (targetMonth < startMonth) return null;
-    const allMonths = getMonthsInRange(startMonth, targetMonth);
+    if (targetDate < startMonth) return null;
+    const allMonths = getMonthsInRange(startMonth, targetDate);
     const excludedMonths = goal?.excludedMonths ?? [];
     const activeMonths = allMonths.filter((m) => !excludedMonths.includes(m));
     if (activeMonths.length === 0) return amount;
@@ -1043,22 +1042,24 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
             <div>
               <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">いつまで</label>
               <input
-                type="date"
+                type="month"
                 value={targetDate}
                 onChange={(e) => setTargetDate(e.target.value)}
                 className="w-full dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
                 required
               />
             </div>
-            {previewMonthly !== null && (
-              <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3">
-                <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">毎月の貯金額 (自動算出)</p>
-                <p className="text-lg font-bold text-emerald-700 dark:text-emerald-300">¥{previewMonthly.toLocaleString()}</p>
-              </div>
-            )}
           </div>
         </div>
         <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
+          {previewMonthly !== null && (
+            <div className="flex justify-end">
+              <div className="text-right">
+                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">毎月の貯金額</p>
+                <p className="text-lg font-bold" style={{ color: 'var(--theme-primary)' }}>¥{previewMonthly.toLocaleString()}</p>
+              </div>
+            </div>
+          )}
           {goal && onDelete && (
             <button
               type="button"
