@@ -646,7 +646,10 @@ export const SettingsPage = () => {
                       <div className="flex-1">
                         <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{goal.name}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                          目標: ¥{goal.targetAmount.toLocaleString()} / {goal.targetDate.substring(0, 7)}まで / 月¥{monthly.toLocaleString()} ({activeCount}ヶ月)
+                          目標: ¥{goal.targetAmount.toLocaleString()} / {goal.startMonth}〜{goal.targetDate.substring(0, 7)}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          月¥{monthly.toLocaleString()} ({activeCount}ヶ月)
                         </p>
                       </div>
                     </button>
