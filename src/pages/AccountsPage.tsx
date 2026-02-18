@@ -15,7 +15,7 @@ import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { categoryService, transactionService, paymentMethodService, memberService, accountService, savingsGoalService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
-import { calculateMonthlyAmount, toYearMonth, isMonthExcluded } from '../utils/savingsUtils';
+import { calculateMonthlyAmount, isMonthExcluded } from '../utils/savingsUtils';
 import type { RecurringPayment, Transaction, Category, SavingsGoal } from '../types';
 
 export const AccountsPage = () => {
@@ -93,7 +93,6 @@ export const AccountsPage = () => {
   const allAccounts = accountService.getAll();
 
   const viewMonth = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}`;
-  const currentRealMonth = toYearMonth(new Date());
 
   const totalExpenses = allMonthExpenses.reduce((sum, t) => sum + t.amount, 0);
   const totalIncomes = allMonthIncomes.reduce((sum, t) => sum + t.amount, 0);
