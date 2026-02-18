@@ -1049,15 +1049,17 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
                 required
               />
             </div>
-            {previewMonthly !== null && (
-              <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3">
-                <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">毎月の貯金額 (自動算出)</p>
-                <p className="text-lg font-bold text-emerald-700 dark:text-emerald-300">¥{previewMonthly.toLocaleString()}</p>
-              </div>
-            )}
           </div>
         </div>
         <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
+          {previewMonthly !== null && (
+            <div className="flex justify-end">
+              <div className="text-right">
+                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">毎月の貯金額</p>
+                <p className="text-lg font-bold" style={{ color: 'var(--theme-primary)' }}>¥{previewMonthly.toLocaleString()}</p>
+              </div>
+            </div>
+          )}
           {goal && onDelete && (
             <button
               type="button"
