@@ -727,8 +727,8 @@ export const savingsGoalService = {
     const goals = savingsGoalService.getAll();
     const now = getTimestamp();
     const newGoal: SavingsGoal = {
-      monthlyOverrides: {},
       ...input,
+      monthlyOverrides: input.monthlyOverrides ?? {},
       id: generateId(),
       createdAt: now,
       updatedAt: now,
