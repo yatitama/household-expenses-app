@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, ChevronLeft, ChevronRight, Tag, CreditCard, Users } from 'lucide-react';
+import { Wallet, ChevronLeft, ChevronRight, Tag, CreditCard, Users, PiggyBank } from 'lucide-react';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
@@ -13,9 +13,10 @@ import { CategoryTransactionsModal } from '../components/accounts/modals/Categor
 import { RecurringListModal } from '../components/accounts/modals/RecurringListModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import { categoryService, transactionService, paymentMethodService, memberService, accountService } from '../services/storage';
+import { categoryService, transactionService, paymentMethodService, memberService, accountService, savingsGoalService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
-import type { RecurringPayment, Transaction, Category } from '../types';
+import { calculateMonthlyAmount, toYearMonth, isMonthExcluded } from '../utils/savingsUtils';
+import type { RecurringPayment, Transaction, Category, SavingsGoal } from '../types';
 
 export const AccountsPage = () => {
   const navigate = useNavigate();
@@ -59,6 +60,7 @@ export const AccountsPage = () => {
   const [isRecurringExpenseListOpen, setIsRecurringExpenseListOpen] = useState(false);
   const [isRecurringIncomeListOpen, setIsRecurringIncomeListOpen] = useState(false);
   const [expenseViewMode, setExpenseViewMode] = useState<CardGridViewMode>('category');
+  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => savingsGoalService.getAll());
 
   useBodyScrollLock(
     !!activeModal ||
@@ -90,11 +92,28 @@ export const AccountsPage = () => {
   const members = memberService.getAll();
   const allAccounts = accountService.getAll();
 
+  const viewMonth = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}`;
+  const currentRealMonth = toYearMonth(new Date());
+
   const totalExpenses = allMonthExpenses.reduce((sum, t) => sum + t.amount, 0);
   const totalIncomes = allMonthIncomes.reduce((sum, t) => sum + t.amount, 0);
   const totalRecurringExpense = allUpcomingExpense.reduce((sum, rp) => sum + rp.amount, 0);
   const totalRecurringIncome = allUpcomingIncome.reduce((sum, rp) => sum + rp.amount, 0);
-  const totalNet = (totalIncomes + totalRecurringIncome) - (totalExpenses + totalRecurringExpense);
+
+  // 貯金: 表示中の月が除外されていなければ月額を計上
+  const totalSavings = savingsGoals.reduce((sum, goal) => {
+    const targetMonth = goal.targetDate.substring(0, 7);
+    if (viewMonth < goal.startMonth || viewMonth > targetMonth) return sum;
+    if (isMonthExcluded(goal, viewMonth)) return sum;
+    return sum + calculateMonthlyAmount(goal);
+  }, 0);
+
+  const totalNet = (totalIncomes + totalRecurringIncome) - (totalExpenses + totalRecurringExpense + totalSavings);
+
+  const handleToggleSavingsMonth = (goalId: string) => {
+    savingsGoalService.toggleExcludeMonth(goalId, viewMonth);
+    setSavingsGoals(savingsGoalService.getAll());
+  };
 
   const handleEditRecurring = (rp: RecurringPayment) => {
     openModal({ type: 'recurring', data: { editing: rp, target: null } });
@@ -214,6 +233,73 @@ export const AccountsPage = () => {
                 />
               </div>
             </div>
+
+            {/* 貯金セクション */}
+            {savingsGoals.length > 0 && (
+              <div data-section-name="貯金">
+                <div
+                  className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+                  style={{ top: 'max(0px, env(safe-area-inset-top))' }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <PiggyBank size={14} className="text-emerald-600 dark:text-emerald-400" />
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">貯金</h3>
+                    </div>
+                    <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                      -{formatCurrency(totalSavings)}
+                    </p>
+                  </div>
+                </div>
+                <div className="pt-2 pb-3 md:pb-4 px-1">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                    {savingsGoals.map((goal) => {
+                      const targetMonth = goal.targetDate.substring(0, 7);
+                      const isOutOfRange = viewMonth < goal.startMonth || viewMonth > targetMonth;
+                      const excluded = isMonthExcluded(goal, viewMonth);
+                      const monthly = calculateMonthlyAmount(goal);
+                      const isActive = !isOutOfRange && !excluded;
+                      return (
+                        <button
+                          key={goal.id}
+                          onClick={() => { if (!isOutOfRange) handleToggleSavingsMonth(goal.id); }}
+                          disabled={isOutOfRange}
+                          className={`rounded-xl p-3 text-left transition-all ${
+                            isOutOfRange
+                              ? 'bg-gray-50 dark:bg-slate-800 opacity-40 cursor-default'
+                              : excluded
+                              ? 'bg-gray-100 dark:bg-slate-800 border-2 border-dashed border-gray-300 dark:border-gray-600'
+                              : 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <PiggyBank size={13} className={isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400'} />
+                            <span className={`text-xs font-medium truncate ${isActive ? 'text-emerald-800 dark:text-emerald-200' : 'text-gray-500 dark:text-gray-400'}`}>
+                              {goal.name}
+                            </span>
+                          </div>
+                          {excluded && !isOutOfRange ? (
+                            <p className="text-xs text-gray-400 dark:text-gray-500">除外中 (タップで戻す)</p>
+                          ) : isOutOfRange ? (
+                            <p className="text-xs text-gray-400 dark:text-gray-500">対象外</p>
+                          ) : (
+                            <>
+                              <p className={`text-sm font-bold ${isActive ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-400'}`}>
+                                ¥{monthly.toLocaleString()}
+                              </p>
+                              <p className="text-xs text-emerald-600 dark:text-emerald-500">
+                                {goal.targetDate.substring(0, 7)}まで
+                              </p>
+                            </>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 px-1">タップで今月を除外/含める</p>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

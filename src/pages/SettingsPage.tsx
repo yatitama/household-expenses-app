@@ -1,14 +1,15 @@
 import { useState, useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, CreditCard, RefreshCw } from 'lucide-react';
-import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService, cardBillingService, linkedPaymentMethodService } from '../services/storage';
+import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, CreditCard, RefreshCw, PiggyBank } from 'lucide-react';
+import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService, cardBillingService, linkedPaymentMethodService, savingsGoalService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { COLORS } from '../components/accounts/constants';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
-import type { Member, MemberInput, Category, CategoryInput, TransactionType, PaymentMethod, PaymentMethodInput, RecurringPayment, RecurringPaymentInput, Account } from '../types';
+import { calculateMonthlyAmount, toYearMonth, getMonthsInRange, getTargetMonth } from '../utils/savingsUtils';
+import type { Member, MemberInput, Category, CategoryInput, TransactionType, PaymentMethod, PaymentMethodInput, RecurringPayment, RecurringPaymentInput, Account, SavingsGoal, SavingsGoalInput } from '../types';
 
 export const SettingsPage = () => {
   // デフォルトで全セクション折りたたみ（モバイルファースト）
@@ -24,6 +25,12 @@ export const SettingsPage = () => {
   const [accounts, setAccounts] = useState<Account[]>(() => accountService.getAll());
   const [recurringPayments, setRecurringPayments] = useState<RecurringPayment[]>(() => recurringPaymentService.getAll());
   const [recurringFilterType, setRecurringFilterType] = useState<TransactionType>('expense');
+  const [savingsOpen, setSavingsOpen] = useState(false);
+  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => savingsGoalService.getAll());
+
+  // Savings modal state
+  const [isSavingsModalOpen, setIsSavingsModalOpen] = useState(false);
+  const [editingSavingsGoal, setEditingSavingsGoal] = useState<SavingsGoal | null>(null);
 
   // Member modal state
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
@@ -49,12 +56,13 @@ export const SettingsPage = () => {
     onConfirm: () => void;
   }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
 
-  useBodyScrollLock(isMemberModalOpen || isCategoryModalOpen || isCardModalOpen || isRecurringModalOpen);
+  useBodyScrollLock(isMemberModalOpen || isCategoryModalOpen || isCardModalOpen || isRecurringModalOpen || isSavingsModalOpen);
 
   const refreshMembers = useCallback(() => setMembers(memberService.getAll()), []);
   const refreshCategories = useCallback(() => setCategories(categoryService.getAll()), []);
   const refreshPaymentMethods = useCallback(() => setPaymentMethods(paymentMethodService.getAll()), []);
   const refreshRecurringPayments = useCallback(() => setRecurringPayments(recurringPaymentService.getAll()), []);
+  const refreshSavingsGoals = useCallback(() => setSavingsGoals(savingsGoalService.getAll()), []);
 
   // 必須フィールドが欠けている古い形式の定期取引を自動削除
   useEffect(() => {
@@ -178,6 +186,33 @@ export const SettingsPage = () => {
     }
     refreshRecurringPayments();
     setIsRecurringModalOpen(false);
+  };
+
+  // Savings handlers
+  const handleAddSavingsGoal = () => { setEditingSavingsGoal(null); setIsSavingsModalOpen(true); };
+  const handleEditSavingsGoal = (goal: SavingsGoal) => { setEditingSavingsGoal(goal); setIsSavingsModalOpen(true); };
+  const handleDeleteSavingsGoal = (id: string) => {
+    setConfirmDialogState({
+      isOpen: true,
+      title: '貯金を削除',
+      message: 'この貯金目標を削除してもよろしいですか？',
+      onConfirm: () => {
+        savingsGoalService.delete(id);
+        refreshSavingsGoals();
+        toast.success('貯金目標を削除しました');
+      },
+    });
+  };
+  const handleSaveSavingsGoal = (input: SavingsGoalInput) => {
+    if (editingSavingsGoal) {
+      savingsGoalService.update(editingSavingsGoal.id, input);
+      toast.success('貯金目標を更新しました');
+    } else {
+      savingsGoalService.create(input);
+      toast.success('貯金目標を追加しました');
+    }
+    refreshSavingsGoals();
+    setIsSavingsModalOpen(false);
   };
 
   // Data management
@@ -561,6 +596,68 @@ export const SettingsPage = () => {
         )}
       </div>
 
+      {/* 貯金管理 */}
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
+        <button
+          aria-label={savingsOpen ? '貯金管理を折りたたむ' : '貯金管理を展開'}
+          onClick={() => setSavingsOpen(!savingsOpen)}
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          aria-expanded={savingsOpen}
+        >
+          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
+            <PiggyBank size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-700 dark:text-gray-600" />
+            <div className="text-left">
+              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">貯金管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">貯金目標を追加・編集</p>
+            </div>
+          </div>
+          {savingsOpen ? <ChevronUp size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" />}
+        </button>
+
+        {savingsOpen && (
+          <div className="border-t dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
+            <button
+              onClick={handleAddSavingsGoal}
+              className="w-full flex items-center justify-center gap-2 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors"
+              style={{ backgroundColor: 'var(--theme-primary)' }}
+            >
+              <Plus size={16} />
+              貯金目標を追加
+            </button>
+
+            {savingsGoals.length === 0 ? (
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">貯金目標がありません</p>
+            ) : (
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                {savingsGoals.map((goal) => {
+                  const monthly = calculateMonthlyAmount(goal);
+                  const targetMonth = getTargetMonth(goal.targetDate);
+                  const allMonths = getMonthsInRange(goal.startMonth, targetMonth);
+                  const activeCount = allMonths.filter((m) => !goal.excludedMonths.includes(m)).length;
+                  return (
+                    <button
+                      key={goal.id}
+                      onClick={() => handleEditSavingsGoal(goal)}
+                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
+                    >
+                      <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+                        <PiggyBank size={16} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{goal.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          目標: ¥{goal.targetAmount.toLocaleString()} / {goal.targetDate.substring(0, 7)}まで / 月¥{monthly.toLocaleString()} ({activeCount}ヶ月)
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* データ管理 */}
       <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
         <button
@@ -662,6 +759,16 @@ export const SettingsPage = () => {
           onSave={handleSaveRecurring}
           onClose={() => { setIsRecurringModalOpen(false); setEditingRecurring(null); }}
           onDelete={editingRecurring ? handleDeleteRecurring : undefined}
+        />
+      )}
+
+      {/* Savings Goal Modal */}
+      {isSavingsModalOpen && (
+        <SavingsGoalModal
+          goal={editingSavingsGoal}
+          onSave={handleSaveSavingsGoal}
+          onClose={() => { setIsSavingsModalOpen(false); setEditingSavingsGoal(null); }}
+          onDelete={editingSavingsGoal ? handleDeleteSavingsGoal : undefined}
         />
       )}
 
@@ -834,6 +941,118 @@ const CategoryModal = ({ category, type, onSave, onClose, onDelete }: CategoryMo
             <button
               type="button"
               onClick={() => { onDelete(category.id); onClose(); }}
+              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
+            >
+              削除
+            </button>
+          )}
+          <div className="flex gap-3">
+            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100">
+              キャンセル
+            </button>
+            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors" style={{ backgroundColor: 'var(--theme-primary)' }}>
+              保存
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+// Savings Goal Modal
+interface SavingsGoalModalProps {
+  goal: SavingsGoal | null;
+  onSave: (input: SavingsGoalInput) => void;
+  onClose: () => void;
+  onDelete?: (id: string) => void;
+}
+
+const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalProps) => {
+  const todayYM = toYearMonth(new Date());
+  const [name, setName] = useState(goal?.name || '');
+  const [targetAmount, setTargetAmount] = useState(goal ? String(goal.targetAmount) : '');
+  const [targetDate, setTargetDate] = useState(goal?.targetDate || '');
+
+  // プレビュー: 毎月の貯金額を計算
+  const previewMonthly = (() => {
+    const amount = parseInt(targetAmount, 10);
+    if (!amount || !targetDate) return null;
+    const startMonth = goal?.startMonth ?? todayYM;
+    const targetMonth = targetDate.substring(0, 7);
+    if (targetMonth < startMonth) return null;
+    const allMonths = getMonthsInRange(startMonth, targetMonth);
+    const excludedMonths = goal?.excludedMonths ?? [];
+    const activeMonths = allMonths.filter((m) => !excludedMonths.includes(m));
+    if (activeMonths.length === 0) return amount;
+    return Math.ceil(amount / activeMonths.length);
+  })();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const amount = parseInt(targetAmount, 10);
+    if (!amount || !targetDate) return;
+    onSave({
+      name,
+      targetAmount: amount,
+      targetDate,
+      startMonth: goal?.startMonth ?? todayYM,
+      excludedMonths: goal?.excludedMonths ?? [],
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{goal ? '貯金目標を編集' : '貯金目標を追加'}</h3>
+          <div className="space-y-3 sm:space-y-4">
+            <div>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">貯金名</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="例: 夏休み旅行貯金"
+                className="w-full dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">目標金額 (円)</label>
+              <input
+                type="number"
+                value={targetAmount}
+                onChange={(e) => setTargetAmount(e.target.value)}
+                placeholder="例: 100000"
+                min="1"
+                className="w-full dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">いつまで</label>
+              <input
+                type="date"
+                value={targetDate}
+                onChange={(e) => setTargetDate(e.target.value)}
+                className="w-full dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                required
+              />
+            </div>
+            {previewMonthly !== null && (
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3">
+                <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">毎月の貯金額 (自動算出)</p>
+                <p className="text-lg font-bold text-emerald-700 dark:text-emerald-300">¥{previewMonthly.toLocaleString()}</p>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
+          {goal && onDelete && (
+            <button
+              type="button"
+              onClick={() => { onDelete(goal.id); onClose(); }}
               className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
             >
               削除
