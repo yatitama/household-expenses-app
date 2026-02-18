@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { X, Wallet, CreditCard, Check } from 'lucide-react';
 import { getCategoryIcon } from '../../utils/categoryIcons';
-import type { QuickAddTemplate, QuickAddTemplateInput, Category, Account, PaymentMethod, Member } from '../../types';
+import type { QuickAddTemplate, QuickAddTemplateInput, Category, Account, PaymentMethod } from '../../types';
 
 interface QuickAddTemplateModalProps {
   template?: QuickAddTemplate | null;
   categories: Category[];
   accounts: Account[];
   paymentMethods: PaymentMethod[];
-  members: Member[];
   isOpen: boolean;
   onSave: (input: QuickAddTemplateInput) => void;
   onClose: () => void;
@@ -20,7 +19,6 @@ export const QuickAddTemplateModal = ({
   categories,
   accounts,
   paymentMethods,
-  members,
   isOpen,
   onSave,
   onClose,
@@ -33,8 +31,6 @@ export const QuickAddTemplateModal = ({
   const [selectedSourceId, setSelectedSourceId] = useState<string>(() => template?.accountId || template?.paymentMethodId || '');
   const [date, setDate] = useState(() => template?.date || '');
   const [memo, setMemo] = useState(() => template?.memo || '');
-
-  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,7 +130,6 @@ export const QuickAddTemplateModal = ({
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
               <div className="grid grid-cols-4 gap-2">
                 {filteredCategories.map((category) => {
-                  const member = getMember(category.memberId);
                   return (
                     <button
                       key={category.id}
@@ -155,9 +150,6 @@ export const QuickAddTemplateModal = ({
                       <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                         {category.name}
                       </span>
-                      {member && member.id !== 'common' && (
-                        <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
-                      )}
                       {categoryId === category.id && (
                         <div className="absolute -top-1 -right-1">
                           <Check size={16} className="text-primary-500" strokeWidth={2} />

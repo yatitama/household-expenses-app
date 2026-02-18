@@ -1,4 +1,4 @@
-import { X, RotateCcw, ChevronDown, Check, User, Wallet, CreditCard } from 'lucide-react';
+import { X, RotateCcw, ChevronDown, Check, Wallet, CreditCard } from 'lucide-react';
 import { useState } from 'react';
 import { DateRangePicker } from './DateRangePicker';
 import { getCategoryIcon } from '../../utils/categoryIcons';
@@ -8,8 +8,7 @@ interface TransactionFilterSheetProps {
   filters: FilterOptions;
   updateFilter: <K extends keyof FilterOptions>(key: K, value: FilterOptions[K]) => void;
   resetFilters: () => void;
-  members: { id: string; name: string; color: string }[];
-  categories: { id: string; name: string; color: string; icon: string; memberId: string }[];
+  categories: { id: string; name: string; color: string; icon: string }[];
   accounts: { id: string; name: string; color?: string }[];
   paymentMethods: { id: string; name: string; color?: string }[];
   isOpen: boolean;
@@ -20,7 +19,6 @@ export const TransactionFilterSheet = ({
   filters,
   updateFilter,
   resetFilters,
-  members,
   categories,
   accounts,
   paymentMethods,
@@ -150,70 +148,6 @@ export const TransactionFilterSheet = ({
               )}
             </div>
 
-            {/* メンバーセクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
-              <button
-                onClick={() => toggleSection('member')}
-                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
-              >
-                <div className="flex items-center gap-2">
-                  <ChevronDown
-                    size={16}
-                    className={`flex-shrink-0 transition-transform text-gray-600 dark:text-gray-400 ${
-                      isExpanded('member') ? 'rotate-0' : '-rotate-90'
-                    }`}
-                  />
-                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    メンバー
-                  </span>
-                  {filters.memberIds.length > 0 && (
-                    <span className="ml-auto text-xs font-medium text-primary-600 dark:text-primary-400">
-                      {filters.memberIds.length}件選択中
-                    </span>
-                  )}
-                </div>
-              </button>
-
-              {isExpanded('member') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="grid grid-cols-4 gap-2">
-                    {members.map((member) => (
-                      <button
-                        key={member.id}
-                        type="button"
-                        onClick={() => {
-                          const newIds = filters.memberIds.includes(member.id)
-                            ? filters.memberIds.filter((id) => id !== member.id)
-                            : [...filters.memberIds, member.id];
-                          updateFilter('memberIds', newIds);
-                        }}
-                        className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
-                          filters.memberIds.includes(member.id)
-                            ? 'bg-primary-50 dark:bg-primary-900/30'
-                            : ''
-                        }`}
-                      >
-                        <div
-                          className="w-6 h-6 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: `${member.color}20`, color: member.color }}
-                        >
-                          <User size={16} />
-                        </div>
-                        <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
-                          {member.name}
-                        </span>
-                        {filters.memberIds.includes(member.id) && (
-                          <div className="absolute -top-1 -right-1">
-                            <Check size={16} className="text-primary-500" strokeWidth={2} />
-                          </div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* カテゴリセクション */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
               <button
@@ -242,7 +176,6 @@ export const TransactionFilterSheet = ({
                 <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
                   <div className="grid grid-cols-4 gap-2">
                     {categories.map((category) => {
-                      const member = members.find((m) => m.id === category.memberId);
                       return (
                         <button
                           key={category.id}
@@ -268,9 +201,6 @@ export const TransactionFilterSheet = ({
                           <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                             {category.name}
                           </span>
-                          {member && member.id !== 'common' && (
-                            <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
-                          )}
                           {filters.categoryIds.includes(category.id) && (
                             <div className="absolute -top-1 -right-1">
                               <Check size={16} className="text-primary-500" strokeWidth={2} />

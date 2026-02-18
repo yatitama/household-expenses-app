@@ -1,19 +1,19 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Receipt, Sliders, ChevronDown, Calendar, LayoutGrid, Users, Wallet, CreditCard } from 'lucide-react';
+import { Receipt, Sliders, ChevronDown, Calendar, LayoutGrid, Wallet, CreditCard } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { TransactionFilterSheet } from '../components/search/TransactionFilterSheet';
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
-import { categoryService, memberService, accountService, paymentMethodService, transactionService } from '../services/storage';
+import { categoryService, accountService, paymentMethodService, transactionService } from '../services/storage';
 import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import type { Transaction, TransactionInput } from '../types';
 
-export type GroupByType = 'date' | 'category' | 'member' | 'account' | 'payment';
+export type GroupByType = 'date' | 'category' | 'account' | 'payment';
 
 export const TransactionsPage = () => {
   const [searchParams] = useSearchParams();
@@ -40,7 +40,7 @@ export const TransactionsPage = () => {
   };
 
   // グループ化タイプを循環
-  const groupByOptions: GroupByType[] = ['date', 'category', 'member', 'account', 'payment'];
+  const groupByOptions: GroupByType[] = ['date', 'category', 'account', 'payment'];
   const handleCycleGroupBy = () => {
     const currentIndex = groupByOptions.indexOf(groupBy);
     const nextIndex = (currentIndex + 1) % groupByOptions.length;
@@ -54,8 +54,6 @@ export const TransactionsPage = () => {
         return { label: '日付', icon: <Calendar size={16} /> };
       case 'category':
         return { label: 'カテゴリ', icon: <LayoutGrid size={16} /> };
-      case 'member':
-        return { label: 'メンバー', icon: <Users size={16} /> };
       case 'account':
         return { label: '口座', icon: <Wallet size={16} /> };
       case 'payment':
@@ -88,7 +86,6 @@ export const TransactionsPage = () => {
     }
   }, [searchParams, location, updateFilter]);
 
-  const members = useMemo(() => memberService.getAll(), []);
   const categories = useMemo(() => categoryService.getAll(), []);
   const accounts = useMemo(() => accountService.getAll(), []);
   const paymentMethods = useMemo(() => paymentMethodService.getAll(), []);
@@ -150,11 +147,6 @@ export const TransactionsPage = () => {
           const categoryName = getCategoryName(transaction.categoryId);
           return { key: transaction.categoryId, label: categoryName };
         }
-        case 'member': {
-          const category = categories.find((c) => c.id === transaction.categoryId);
-          const member = members.find((m) => m.id === category?.memberId);
-          return { key: member?.id || 'unknown', label: member?.name || '不明' };
-        }
         case 'account': {
           const accountName = getAccountName(transaction.accountId);
           return { key: transaction.accountId, label: accountName || '不明' };
@@ -188,7 +180,7 @@ export const TransactionsPage = () => {
     } else {
       return entries.sort((a, b) => b[1].label.localeCompare(a[1].label));
     }
-  }, [filteredTransactions, groupBy, categories, members, getCategoryName, getAccountName, getPaymentMethodName]);
+  }, [filteredTransactions, groupBy, categories, getCategoryName, getAccountName, getPaymentMethodName]);
 
   // 合計を計算
   const totalNet = useMemo(() => {
@@ -349,7 +341,6 @@ export const TransactionsPage = () => {
           accounts={accounts}
           paymentMethods={paymentMethods}
           categories={categories}
-          members={members}
           onSave={handleSaveEdit}
           onClose={() => setEditingTransaction(null)}
           onDelete={handleDelete}
@@ -361,7 +352,6 @@ export const TransactionsPage = () => {
         filters={filters}
         updateFilter={updateFilter}
         resetFilters={resetFilters}
-        members={members}
         categories={categories}
         accounts={accounts}
         paymentMethods={paymentMethods}

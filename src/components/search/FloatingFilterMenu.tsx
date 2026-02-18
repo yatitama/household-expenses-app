@@ -55,7 +55,6 @@ export const FloatingFilterMenu = ({
     switch (type) {
       case 'date': return { icon: Calendar, label: '日付', color: 'bg-gray-600' };
       case 'category': return { icon: Tag, label: 'カテゴリ', color: 'bg-gray-700' };
-      case 'member': return { icon: User, label: 'メンバー', color: 'bg-gray-600' };
       case 'account': return { icon: Wallet, label: '口座', color: 'bg-gray-700' };
       case 'payment': return { icon: CreditCard, label: '支払い方法', color: 'bg-gray-700' };
     }
@@ -66,7 +65,6 @@ export const FloatingFilterMenu = ({
   const groupingOptions: Array<{ value: GroupByType; label: string }> = [
     { value: 'date', label: '日付' },
     { value: 'category', label: 'カテゴリ' },
-    { value: 'member', label: 'メンバー' },
     { value: 'account', label: '口座' },
     { value: 'payment', label: '支払い方法' },
   ];
@@ -74,7 +72,7 @@ export const FloatingFilterMenu = ({
   // 各フィルターがアクティブかどうかを判定
   const isTypeActive = filters.transactionType !== 'all';
   const isDateActive = filters.dateRange.start !== '' || filters.dateRange.end !== '';
-  const isMemberActive = filters.memberIds.length > 0;
+  const isMemberActive = false;
   const isCategoryActive = filters.categoryIds.length > 0;
   const isAccountActive = filters.accountIds.length > 0;
   const isPaymentActive = filters.paymentMethodIds.length > 0;
@@ -85,7 +83,7 @@ export const FloatingFilterMenu = ({
   const searchActiveCount = isSearchActive ? 1 : 0;
   const typeActiveCount = isTypeActive ? 1 : 0;
   const dateActiveCount = isDateActive ? 1 : 0;
-  const memberActiveCount = filters.memberIds.length;
+  const memberActiveCount = 0;
   const categoryActiveCount = filters.categoryIds.length;
   const accountActiveCount = filters.accountIds.length;
   const paymentActiveCount = filters.paymentMethodIds.length;

@@ -2,8 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Plus, Edit2, Trash2, Tag } from 'lucide-react';
-import { categoryService, memberService } from '../services/storage';
-import { COMMON_MEMBER_ID } from '../types';
+import { categoryService } from '../services/storage';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
@@ -13,7 +12,6 @@ import { COLORS } from '../components/accounts/constants';
 export const CategoriesPage = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>(() => categoryService.getAll());
-  const members = memberService.getAll();
   const [filterType, setFilterType] = useState<TransactionType>('expense');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -60,8 +58,6 @@ export const CategoriesPage = () => {
     refreshCategories();
     setIsModalOpen(false);
   };
-
-  const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   return (
     <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
@@ -111,7 +107,6 @@ export const CategoriesPage = () => {
       ) : (
         <div className="bg-white rounded-lg sm:rounded-xl divide-y divide-gray-100">
           {filteredCategories.map((category) => {
-            const member = getMember(category.memberId);
             return (
               <div key={category.id} className="flex items-center justify-between p-3 sm:p-4">
                 <div className="flex items-center gap-2 sm:gap-3">
@@ -123,7 +118,6 @@ export const CategoriesPage = () => {
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm font-medium text-gray-900">{category.name}</p>
-                    <p className="text-xs text-gray-500">{member?.name || '共通'}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
@@ -166,12 +160,11 @@ export const CategoriesPage = () => {
 interface CategoryModalProps {
   category: Category | null;
   type: TransactionType;
-  members: { id: string; name: string; color: string }[];
   onSave: (input: CategoryInput) => void;
   onClose: () => void;
 }
 
-const CategoryModal = ({ category, type, onSave, onClose }: Omit<CategoryModalProps, 'members'>) => {
+const CategoryModal = ({ category, type, onSave, onClose }: CategoryModalProps) => {
   const [name, setName] = useState(category?.name || '');
   const [color, setColor] = useState(category?.color || COLORS[0]);
   const [icon, setIcon] = useState(category?.icon || ICON_NAMES[0]);
@@ -181,7 +174,6 @@ const CategoryModal = ({ category, type, onSave, onClose }: Omit<CategoryModalPr
     onSave({
       name,
       type,
-      memberId: COMMON_MEMBER_ID,
       color,
       icon,
     });

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { X, Calendar, ArrowRight } from 'lucide-react';
 import {
   accountService, transactionService, categoryService,
-  memberService, paymentMethodService,
+  paymentMethodService,
 } from '../../../services/storage';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
@@ -39,7 +39,6 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
   const allPMs = paymentMethodService.getAll();
   const allAccounts = accountService.getAll();
   const categories = categoryService.getAll();
-  const members = memberService.getAll();
   const getCategory = (categoryId: string) => categories.find((c) => c.id === categoryId);
 
   const refreshTransactions = () => {
@@ -207,7 +206,6 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
             accounts={allAccounts}
             paymentMethods={allPMs}
             categories={categories}
-            members={members}
             onSave={handleSaveEdit}
             onClose={() => setEditingTransaction(null)}
             onDelete={(id) => {

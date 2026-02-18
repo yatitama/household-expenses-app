@@ -6,7 +6,6 @@ import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { COLORS } from '../components/accounts/constants';
-import { COMMON_MEMBER_ID } from '../types';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import type { Member, MemberInput, Category, CategoryInput, TransactionType, PaymentMethod, PaymentMethodInput, RecurringPayment, RecurringPaymentInput, Account } from '../types';
@@ -392,7 +391,6 @@ export const SettingsPage = () => {
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredCategories.map((category) => {
-                  const member = getMember(category.memberId);
                   return (
                     <button
                       key={category.id}
@@ -407,7 +405,6 @@ export const SettingsPage = () => {
                       </div>
                       <div className="flex-1">
                         <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{member?.name || '共通'}</p>
                       </div>
                     </button>
                   );
@@ -640,7 +637,6 @@ export const SettingsPage = () => {
         <CategoryModal
           category={editingCategory}
           type={categoryFilterType}
-          members={members}
           onSave={handleSaveCategory}
           onClose={() => setIsCategoryModalOpen(false)}
           onDelete={handleDeleteCategory}
@@ -761,21 +757,19 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
 interface CategoryModalProps {
   category: Category | null;
   type: TransactionType;
-  members: { id: string; name: string; color: string }[];
   onSave: (input: CategoryInput) => void;
   onClose: () => void;
   onDelete?: (id: string) => void;
 }
 
-const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: CategoryModalProps) => {
+const CategoryModal = ({ category, type, onSave, onClose, onDelete }: CategoryModalProps) => {
   const [name, setName] = useState(category?.name || '');
-  const [memberId, setMemberId] = useState(category?.memberId || COMMON_MEMBER_ID);
   const [color, setColor] = useState(category?.color || COLORS[0]);
   const [icon, setIcon] = useState(category?.icon || ICON_NAMES[0]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ name, type, memberId, color, icon });
+    onSave({ name, type, color, icon });
   };
 
   return (
@@ -794,27 +788,6 @@ const CategoryModal = ({ category, type, members, onSave, onClose, onDelete }: C
                 className="w-full dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
                 required
               />
-            </div>
-            <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">対象メンバー</label>
-              <div className="flex flex-wrap gap-2">
-                {members.map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => setMemberId(m.id)}
-                    className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
-                      memberId === m.id
-                        ? 'text-white border-transparent'
-                        : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
-                    }`}
-                    style={memberId === m.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
-                  >
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: m.color }} />
-                    {m.name}
-                  </button>
-                ))}
-              </div>
             </div>
             <div>
               <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>

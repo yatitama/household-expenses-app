@@ -80,14 +80,6 @@ export const FilterPanel = ({
             onEndChange={(v) => updateFilter('dateRange', { ...filters.dateRange, end: v })}
           />
 
-          {/* Members */}
-          <MultiSelect
-            label="メンバー"
-            options={members.map((m) => ({ id: m.id, name: m.name, color: m.color }))}
-            selectedIds={filters.memberIds}
-            onChange={(ids) => updateFilter('memberIds', ids)}
-          />
-
           {/* Categories */}
           <MultiSelect
             label="カテゴリ"

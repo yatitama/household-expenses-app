@@ -2,7 +2,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { X, Wallet, CreditCard } from 'lucide-react';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
-import { categoryService, paymentMethodService, accountService, memberService } from '../../../services/storage';
+import { categoryService, paymentMethodService, accountService } from '../../../services/storage';
 import type {
   RecurringPayment,
   RecurringPaymentInput,
@@ -25,7 +25,6 @@ export const RecurringPaymentModal = ({
   const allCategories = categoryService.getAll();
   const allAccounts = accountService.getAll();
   const allPaymentMethods = paymentMethodService.getAll();
-  const allMembers = memberService.getAll();
 
   const [name, setName] = useState(recurringPayment?.name || '');
   const [amount, setAmount] = useState(recurringPayment?.amount.toString() || '');
@@ -43,7 +42,6 @@ export const RecurringPaymentModal = ({
   });
 
   const filteredCategories = allCategories.filter((c) => c.type === type);
-  const getMember = (memberId: string) => allMembers.find((m) => m.id === memberId);
 
   const handleTypeChange = (newType: TransactionType) => {
     setType(newType);
@@ -173,7 +171,6 @@ export const RecurringPaymentModal = ({
               </label>
               <div className="grid grid-cols-4 gap-2">
                 {filteredCategories.map((category) => {
-                  const member = getMember(category.memberId);
                   return (
                     <button
                       key={category.id}
@@ -194,9 +191,6 @@ export const RecurringPaymentModal = ({
                       <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                         {category.name}
                       </span>
-                      {member && member.id !== 'common' && (
-                        <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 leading-none">{member.name}</span>
-                      )}
                     </button>
                   );
                 })}

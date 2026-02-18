@@ -5,7 +5,6 @@ import { transactionService, categoryService } from '../services/storage';
 export interface FilterOptions {
   searchQuery: string;
   dateRange: { start: string; end: string };
-  memberIds: string[];
   categoryIds: string[];
   transactionType: 'all' | 'income' | 'expense';
   accountIds: string[];
@@ -18,7 +17,6 @@ export interface FilterOptions {
 const createDefaultFilters = (): FilterOptions => ({
   searchQuery: '',
   dateRange: { start: '', end: '' },
-  memberIds: [],
   categoryIds: [],
   transactionType: 'all',
   accountIds: [],
@@ -56,14 +54,6 @@ export const useTransactionFilter = () => {
     if (filters.dateRange.end) {
       const end = parseISO(filters.dateRange.end);
       result = result.filter((t) => parseISO(t.date) <= end);
-    }
-
-    // Member filter (via category membership)
-    if (filters.memberIds.length > 0) {
-      const memberCategoryIds = categories
-        .filter((c) => filters.memberIds.includes(c.memberId))
-        .map((c) => c.id);
-      result = result.filter((t) => memberCategoryIds.includes(t.categoryId));
     }
 
     // Category filter
@@ -126,7 +116,6 @@ export const useTransactionFilter = () => {
     let count = 0;
     if (filters.searchQuery) count++;
     if (filters.dateRange.start || filters.dateRange.end) count++;
-    if (filters.memberIds.length > 0) count++;
     if (filters.categoryIds.length > 0) count++;
     if (filters.transactionType !== 'all') count++;
     if (filters.accountIds.length > 0) count++;
