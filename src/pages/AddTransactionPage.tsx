@@ -90,6 +90,7 @@ export const AddTransactionPage = () => {
     setSelectedSourceId(tpl.accountId || tpl.paymentMethodId || '');
     setDate(tpl.date || format(new Date(), 'yyyy-MM-dd'));
     setMemo(tpl.memo || '');
+    toast.success(`「${tpl.name}」を反映しました`);
     window.scrollTo(0, 0);
   };
 
