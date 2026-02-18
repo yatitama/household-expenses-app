@@ -14,10 +14,6 @@ export const QuickAddTemplateGridSection = ({
   onEditClick,
   onAddClick,
 }: QuickAddTemplateGridSectionProps) => {
-  if (templates.length === 0) {
-    return null;
-  }
-
   return (
     <div data-section-name="クイック追加">
       <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">クイック入力</label>

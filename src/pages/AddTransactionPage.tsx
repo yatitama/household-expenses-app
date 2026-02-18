@@ -157,7 +157,7 @@ export const AddTransactionPage = () => {
                 </button>
               </div>
 
-              {allAccounts.length > 0 && quickAddTemplates.filter((t) => t.type === type).length > 0 && (
+              {allAccounts.length > 0 && (
                 <QuickAddTemplateGridSection
                   templates={quickAddTemplates.filter((t) => t.type === type)}
                   onTemplateClick={handleQuickAddTemplateClick}
@@ -170,18 +170,6 @@ export const AddTransactionPage = () => {
                     setIsQuickAddTemplateModalOpen(true);
                   }}
                 />
-              )}
-              {quickAddTemplates.filter((t) => t.type === type).length === 0 && allAccounts.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingQuickAddTemplate(null);
-                    setIsQuickAddTemplateModalOpen(true);
-                  }}
-                  className="w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
-                >
-                  + クイック入力を作成
-                </button>
               )}
 
               <div>
