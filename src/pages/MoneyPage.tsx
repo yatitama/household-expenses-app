@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet } from 'lucide-react';
+import { Wallet, PiggyBank } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
@@ -16,8 +16,9 @@ import { AccountDetailModal } from '../components/accounts/modals/AccountDetailM
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import { accountService, paymentMethodService, memberService } from '../services/storage';
+import { accountService, paymentMethodService, memberService, savingsGoalService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
+import { calculateAccumulatedAmount, calculateMonthlyAmount, toYearMonth } from '../utils/savingsUtils';
 import type { Account, AccountInput, RecurringPayment, PaymentMethod, PaymentMethodInput } from '../types';
 
 export const MoneyPage = () => {
@@ -40,6 +41,12 @@ export const MoneyPage = () => {
   const pendingByPM = getPendingAmountByPaymentMethod();
   const unlinkedPMs = paymentMethods.filter((pm) => !pm.linkedAccountId);
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
+
+  const currentRealMonth = toYearMonth(new Date());
+  const savingsGoals = savingsGoalService.getAll();
+  const totalAccumulatedSavings = savingsGoals.reduce((sum, goal) => {
+    return sum + calculateAccumulatedAmount(goal, currentRealMonth);
+  }, 0);
 
   useBodyScrollLock(!!activeModal || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen);
 
@@ -150,6 +157,68 @@ export const MoneyPage = () => {
               )}
             </div>
           </div>
+
+          {/* 貯金セクション */}
+          {savingsGoals.length > 0 && (
+            <div data-section-name="貯金">
+              <div
+                className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+                style={{ top: 'max(0px, env(safe-area-inset-top))' }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <PiggyBank size={14} className="text-emerald-600 dark:text-emerald-400" />
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">貯金</h3>
+                  </div>
+                  <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                    +{formatCurrency(totalAccumulatedSavings)}
+                  </p>
+                </div>
+              </div>
+              <div className="pt-2 pb-3 md:pb-4 px-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {savingsGoals.map((goal) => {
+                    const accumulated = calculateAccumulatedAmount(goal, currentRealMonth);
+                    const monthly = calculateMonthlyAmount(goal);
+                    const targetMonth = goal.targetDate.substring(0, 7);
+                    const progressPct = goal.targetAmount > 0 ? Math.min(100, Math.round((accumulated / goal.targetAmount) * 100)) : 0;
+                    const isCompleted = currentRealMonth > targetMonth;
+                    return (
+                      <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
+                            <PiggyBank size={15} className="text-emerald-600 dark:text-emerald-400" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{goal.name}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{goal.targetDate.substring(0, 7)}まで / 月¥{monthly.toLocaleString()}</p>
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="flex items-end justify-between">
+                            <p className="text-lg font-bold text-emerald-700 dark:text-emerald-300">¥{accumulated.toLocaleString()}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">/ ¥{goal.targetAmount.toLocaleString()}</p>
+                          </div>
+                          <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-emerald-500 dark:bg-emerald-400 rounded-full transition-all"
+                              style={{ width: `${progressPct}%` }}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-emerald-600 dark:text-emerald-400">{progressPct}%</p>
+                            {isCompleted && (
+                              <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">完了</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* 紐付未設定のカード */}
           {unlinkedPMs.length > 0 && (

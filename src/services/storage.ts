@@ -20,6 +20,8 @@ import type {
   LinkedPaymentMethodInput,
   QuickAddTemplate,
   QuickAddTemplateInput,
+  SavingsGoal,
+  SavingsGoalInput,
 } from '../types';
 
 const STORAGE_KEYS = {
@@ -33,6 +35,7 @@ const STORAGE_KEYS = {
   RECURRING_PAYMENTS: 'household_recurring_payments',
   LINKED_PAYMENT_METHODS: 'household_linked_payment_methods',
   QUICK_ADD_TEMPLATES: 'household_quick_add_templates',
+  SAVINGS_GOALS: 'household_savings_goals',
   MIGRATION_VERSION: 'household_migration_version',
   APP_SETTINGS: 'household_app_settings',
 } as const;
@@ -707,5 +710,73 @@ export const quickAddTemplateService = {
     if (filtered.length === templates.length) return false;
     setItems(STORAGE_KEYS.QUICK_ADD_TEMPLATES, filtered);
     return true;
+  },
+};
+
+// SavingsGoal 操作
+export const savingsGoalService = {
+  getAll: (): SavingsGoal[] => {
+    return getItems<SavingsGoal>(STORAGE_KEYS.SAVINGS_GOALS);
+  },
+
+  getById: (id: string): SavingsGoal | undefined => {
+    return savingsGoalService.getAll().find((g) => g.id === id);
+  },
+
+  create: (input: SavingsGoalInput): SavingsGoal => {
+    const goals = savingsGoalService.getAll();
+    const now = getTimestamp();
+    const newGoal: SavingsGoal = {
+      ...input,
+      id: generateId(),
+      createdAt: now,
+      updatedAt: now,
+    };
+    goals.push(newGoal);
+    setItems(STORAGE_KEYS.SAVINGS_GOALS, goals);
+    return newGoal;
+  },
+
+  update: (id: string, input: Partial<SavingsGoalInput>): SavingsGoal | undefined => {
+    const goals = savingsGoalService.getAll();
+    const index = goals.findIndex((g) => g.id === id);
+    if (index === -1) return undefined;
+
+    const updated: SavingsGoal = {
+      ...goals[index],
+      ...input,
+      updatedAt: getTimestamp(),
+    };
+    goals[index] = updated;
+    setItems(STORAGE_KEYS.SAVINGS_GOALS, goals);
+    return updated;
+  },
+
+  delete: (id: string): boolean => {
+    const goals = savingsGoalService.getAll();
+    const filtered = goals.filter((g) => g.id !== id);
+    if (filtered.length === goals.length) return false;
+    setItems(STORAGE_KEYS.SAVINGS_GOALS, filtered);
+    return true;
+  },
+
+  toggleExcludeMonth: (id: string, month: string): SavingsGoal | undefined => {
+    const goals = savingsGoalService.getAll();
+    const index = goals.findIndex((g) => g.id === id);
+    if (index === -1) return undefined;
+
+    const goal = goals[index];
+    const excludedMonths = goal.excludedMonths.includes(month)
+      ? goal.excludedMonths.filter((m) => m !== month)
+      : [...goal.excludedMonths, month];
+
+    const updated: SavingsGoal = {
+      ...goal,
+      excludedMonths,
+      updatedAt: getTimestamp(),
+    };
+    goals[index] = updated;
+    setItems(STORAGE_KEYS.SAVINGS_GOALS, goals);
+    return updated;
   },
 };
