@@ -171,7 +171,7 @@ export const MoneyPage = () => {
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">貯金</h3>
                   </div>
                   <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                    +{formatCurrency(totalAccumulatedSavings)}
+                    -{formatCurrency(totalAccumulatedSavings)}
                   </p>
                 </div>
               </div>
