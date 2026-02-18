@@ -157,9 +157,9 @@ export const AddTransactionPage = () => {
                 </button>
               </div>
 
-              {allAccounts.length > 0 && quickAddTemplates.length > 0 && (
+              {allAccounts.length > 0 && quickAddTemplates.filter((t) => t.type === type).length > 0 && (
                 <QuickAddTemplateGridSection
-                  templates={quickAddTemplates}
+                  templates={quickAddTemplates.filter((t) => t.type === type)}
                   onTemplateClick={handleQuickAddTemplateClick}
                   onEditClick={(tpl) => {
                     setEditingQuickAddTemplate(tpl);
@@ -171,7 +171,7 @@ export const AddTransactionPage = () => {
                   }}
                 />
               )}
-              {quickAddTemplates.length === 0 && allAccounts.length > 0 && (
+              {quickAddTemplates.filter((t) => t.type === type).length === 0 && allAccounts.length > 0 && (
                 <button
                   type="button"
                   onClick={() => {
