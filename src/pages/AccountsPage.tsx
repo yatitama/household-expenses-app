@@ -263,33 +263,28 @@ export const AccountsPage = () => {
                           key={goal.id}
                           onClick={() => { if (!isOutOfRange) handleToggleSavingsMonth(goal.id); }}
                           disabled={isOutOfRange}
-                          className={`rounded-xl p-3 text-left transition-all ${
+                          className={`p-3 text-left transition-all h-24 md:h-28 flex flex-col justify-between ${
                             isOutOfRange
-                              ? 'bg-gray-50 dark:bg-slate-800 opacity-40 cursor-default'
+                              ? 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 opacity-40 cursor-default'
                               : excluded
-                              ? 'bg-gray-100 dark:bg-slate-800 border-2 border-dashed border-gray-300 dark:border-gray-600'
-                              : 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800'
+                              ? 'bg-white dark:bg-slate-800 border border-dashed border-gray-300 dark:border-gray-600'
+                              : 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700'
                           }`}
                         >
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <PiggyBank size={13} className={isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400'} />
-                            <span className={`text-xs font-medium truncate ${isActive ? 'text-emerald-800 dark:text-emerald-200' : 'text-gray-500 dark:text-gray-400'}`}>
+                          <div className="flex items-center gap-1.5">
+                            <PiggyBank size={12} className={isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400'} />
+                            <span className="text-xs font-medium truncate text-gray-900 dark:text-gray-100">
                               {goal.name}
                             </span>
                           </div>
                           {excluded && !isOutOfRange ? (
-                            <p className="text-xs text-gray-400 dark:text-gray-500">除外中 (タップで戻す)</p>
+                            <p className="text-right text-xs text-gray-400 dark:text-gray-500">除外中</p>
                           ) : isOutOfRange ? (
-                            <p className="text-xs text-gray-400 dark:text-gray-500">対象外</p>
+                            <p className="text-right text-xs text-gray-400 dark:text-gray-500">対象外</p>
                           ) : (
-                            <>
-                              <p className={`text-sm font-bold ${isActive ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-400'}`}>
-                                ¥{monthly.toLocaleString()}
-                              </p>
-                              <p className="text-xs text-emerald-600 dark:text-emerald-500">
-                                {goal.targetDate.substring(0, 7)}まで
-                              </p>
-                            </>
+                            <p className="text-right text-sm font-bold text-gray-900 dark:text-gray-100">
+                              ¥{monthly.toLocaleString()}
+                            </p>
                           )}
                         </button>
                       );
