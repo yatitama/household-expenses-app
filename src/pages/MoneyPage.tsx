@@ -178,40 +178,16 @@ export const MoneyPage = () => {
               <div className="pt-2 pb-3 md:pb-4 px-1">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {savingsGoals.map((goal) => {
-                    const accumulated = calculateAccumulatedAmount(goal, currentRealMonth);
                     const monthly = calculateMonthlyAmount(goal);
-                    const targetMonth = goal.targetDate.substring(0, 7);
-                    const progressPct = goal.targetAmount > 0 ? Math.min(100, Math.round((accumulated / goal.targetAmount) * 100)) : 0;
-                    const isCompleted = currentRealMonth > targetMonth;
                     return (
-                      <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
-                            <PiggyBank size={15} className="text-emerald-600 dark:text-emerald-400" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{goal.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{goal.targetDate.substring(0, 7)}まで / 月¥{monthly.toLocaleString()}</p>
-                          </div>
+                      <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <PiggyBank size={12} className="text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                          <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{goal.name}</p>
                         </div>
-                        <div className="space-y-1">
-                          <div className="flex items-end justify-between">
-                            <p className="text-lg font-bold text-emerald-700 dark:text-emerald-300">¥{accumulated.toLocaleString()}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">/ ¥{goal.targetAmount.toLocaleString()}</p>
-                          </div>
-                          <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-emerald-500 dark:bg-emerald-400 rounded-full transition-all"
-                              style={{ width: `${progressPct}%` }}
-                            />
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <p className="text-xs text-emerald-600 dark:text-emerald-400">{progressPct}%</p>
-                            {isCompleted && (
-                              <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">完了</p>
-                            )}
-                          </div>
-                        </div>
+                        <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+                          ¥{monthly.toLocaleString()}
+                        </p>
                       </div>
                     );
                   })}
