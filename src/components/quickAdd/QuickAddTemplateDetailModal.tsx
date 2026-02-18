@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Wallet, CreditCard, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { getCategoryIcon } from '../../utils/categoryIcons';
@@ -30,6 +30,11 @@ export const QuickAddTemplateDetailModal = ({
   const [memo, setMemo] = useState(() => template?.memo || '');
   const [categoryId, setCategoryId] = useState(() => template?.categoryId || '');
   const [selectedSourceId, setSelectedSourceId] = useState<string>(() => template?.accountId || template?.paymentMethodId || '');
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
