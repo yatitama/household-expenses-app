@@ -1,4 +1,5 @@
 import { Plus, Edit2 } from 'lucide-react';
+import { Tooltip } from '../feedback/Tooltip';
 import type { QuickAddTemplate } from '../../types';
 
 interface QuickAddTemplateGridSectionProps {
@@ -16,7 +17,14 @@ export const QuickAddTemplateGridSection = ({
 }: QuickAddTemplateGridSectionProps) => {
   return (
     <div data-section-name="クイック追加">
-      <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">クイック入力</label>
+      <div className="flex items-center mb-2">
+        <label className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200">クイック入力</label>
+        <Tooltip
+          label="クイック入力とは"
+          text="よく使う支出・収入をボタンに登録できます。タップするだけで金額・カテゴリが自動入力されます。"
+          position="bottom"
+        />
+      </div>
       <div className="grid grid-cols-2 gap-2">
           {templates.slice(0, 4).map((template) => (
             <div
