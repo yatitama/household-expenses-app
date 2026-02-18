@@ -9,7 +9,6 @@ interface SimpleFilterBarProps {
   updateFilter: <K extends keyof FilterOptions>(key: K, value: FilterOptions[K]) => void;
   resetFilters: () => void;
   activeFilterCount: number;
-  members: { id: string; name: string; color: string }[];
   categories: { id: string; name: string; color: string }[];
   accounts: { id: string; name: string }[];
   paymentMethods: { id: string; name: string }[];
@@ -18,14 +17,13 @@ interface SimpleFilterBarProps {
   onGroupByChange: (groupBy: GroupByType) => void;
 }
 
-type FilterType = 'type' | 'date' | 'member' | 'category' | 'account' | 'payment';
+type FilterType = 'type' | 'date' | 'category' | 'account' | 'payment';
 
 export const SimpleFilterBar = ({
   filters,
   updateFilter,
   resetFilters,
   activeFilterCount,
-  members,
   categories,
   accounts,
   paymentMethods,
@@ -52,12 +50,6 @@ export const SimpleFilterBar = ({
       label: '日付',
       isActive: filters.dateRange.start !== '' || filters.dateRange.end !== '',
       onClear: () => updateFilter('dateRange', { start: '', end: '' }),
-    },
-    {
-      id: 'member',
-      label: 'メンバー',
-      isActive: false,
-      onClear: () => {},
     },
     {
       id: 'category',
@@ -145,7 +137,6 @@ export const SimpleFilterBar = ({
           >
             <option value="date">日付</option>
             <option value="category">カテゴリ</option>
-            <option value="member">メンバー</option>
             <option value="account">口座</option>
             <option value="payment">支払方法</option>
           </select>
@@ -169,7 +160,6 @@ export const SimpleFilterBar = ({
         filterType={activePanel}
         filters={filters}
         updateFilter={updateFilter}
-        members={members}
         categories={categories}
         accounts={accounts}
         paymentMethods={paymentMethods}
