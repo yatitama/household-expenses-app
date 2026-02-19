@@ -46,13 +46,21 @@ export const getTargetMonth = (targetDate: string): string => {
 };
 
 // 貯金目標の毎月の貯金額を計算する
-// アクティブな月 = 開始月〜目標月のうち除外されていない月
+// 月別上書き済みの月はその金額を確定分として差し引き、残りを非上書き月で均等割
 export const calculateMonthlyAmount = (goal: SavingsGoal): number => {
   const targetMonth = getTargetMonth(goal.targetDate);
   const allMonths = getMonthsInRange(goal.startMonth, targetMonth);
   const activeMonths = allMonths.filter((m) => !goal.excludedMonths.includes(m));
   if (activeMonths.length === 0) return goal.targetAmount;
-  return Math.ceil(goal.targetAmount / activeMonths.length);
+
+  const overrides = goal.monthlyOverrides ?? {};
+  const overrideTotal = activeMonths
+    .filter((m) => m in overrides)
+    .reduce((sum, m) => sum + overrides[m], 0);
+  const nonOverrideMonths = activeMonths.filter((m) => !(m in overrides));
+  if (nonOverrideMonths.length === 0) return 0;
+
+  return Math.ceil((goal.targetAmount - overrideTotal) / nonOverrideMonths.length);
 };
 
 // 指定月の実際の貯金額 (月別上書きがあればそれを、なければ通常月額を返す)
