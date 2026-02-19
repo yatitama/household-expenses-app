@@ -1,4 +1,5 @@
 import { RefreshCw, CreditCard, User } from 'lucide-react';
+import { ACCOUNT_TYPE_ICONS_XS } from './AccountIcons';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { Transaction, Category, PaymentMethod, Member, Account, RecurringPayment } from '../../types';
@@ -61,28 +62,30 @@ export const CardGridSection = ({
     (acc, t) => {
       const key = t.paymentMethodId || '__cash__';
       const pm = paymentMethods.find((p) => p.id === t.paymentMethodId);
+      const linkedAccount = pm ? accounts.find((a) => a.id === pm.linkedAccountId) : undefined;
       if (!acc[key]) {
-        acc[key] = { paymentMethod: pm, name: pm?.name ?? '現金', amount: 0, transactions: [] };
+        acc[key] = { paymentMethod: pm, account: linkedAccount, name: pm?.name ?? '現金', amount: 0, transactions: [] };
       }
       acc[key].amount += t.type === 'expense' ? t.amount : -t.amount;
       acc[key].transactions.push(t);
       return acc;
     },
-    {} as Record<string, { paymentMethod: PaymentMethod | undefined; name: string; amount: number; transactions: Transaction[] }>
+    {} as Record<string, { paymentMethod: PaymentMethod | undefined; account: Account | undefined; name: string; amount: number; transactions: Transaction[] }>
   );
   // 支払い元が設定された定期支払いをマージ（カードまたは口座で振り分け）
   for (const rp of recurringPayments) {
     if (rp.paymentMethodId) {
       const pm = paymentMethods.find((p) => p.id === rp.paymentMethodId);
+      const linkedAccount = pm ? accounts.find((a) => a.id === pm.linkedAccountId) : undefined;
       if (!paymentGrouped[rp.paymentMethodId]) {
-        paymentGrouped[rp.paymentMethodId] = { paymentMethod: pm, name: pm?.name ?? '現金', amount: 0, transactions: [] };
+        paymentGrouped[rp.paymentMethodId] = { paymentMethod: pm, account: linkedAccount, name: pm?.name ?? '現金', amount: 0, transactions: [] };
       }
       paymentGrouped[rp.paymentMethodId].amount += rp.amount;
     } else if (rp.accountId) {
       const acc = accounts.find((a) => a.id === rp.accountId);
       const key = `__account__${rp.accountId}`;
       if (!paymentGrouped[key]) {
-        paymentGrouped[key] = { paymentMethod: undefined, name: acc?.name ?? '口座', amount: 0, transactions: [] };
+        paymentGrouped[key] = { paymentMethod: undefined, account: acc, name: acc?.name ?? '口座', amount: 0, transactions: [] };
       }
       paymentGrouped[key].amount += rp.amount;
     }
@@ -198,31 +201,35 @@ export const CardGridSection = ({
               </button>
             ))
           : viewMode === 'payment'
-          ? sortedPaymentEntries.map(([key, { paymentMethod, name, amount, transactions: pmTransactions }]) => (
-              <button
-                key={key}
-                onClick={() => onCategoryClick?.(undefined, pmTransactions)}
-                className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
-              >
-                <div className="flex items-center gap-1.5">
-                  <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{
-                      backgroundColor: `${paymentMethod?.color || '#6b7280'}20`,
-                      color: paymentMethod?.color || '#6b7280',
-                    }}
-                  >
-                    <CreditCard size={12} />
+          ? sortedPaymentEntries.map(([key, { account: entryAccount, name, amount, transactions: pmTransactions }]) => {
+              const cardColor = entryAccount?.color || '#6b7280';
+              const cardIcon = entryAccount ? ACCOUNT_TYPE_ICONS_XS[entryAccount.type] : <CreditCard size={12} />;
+              return (
+                <button
+                  key={key}
+                  onClick={() => onCategoryClick?.(undefined, pmTransactions)}
+                  className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{
+                        backgroundColor: `${cardColor}20`,
+                        color: cardColor,
+                      }}
+                    >
+                      {cardIcon}
+                    </div>
+                    <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                      {name}
+                    </p>
                   </div>
-                  <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                    {name}
+                  <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+                    {formatCurrency(amount)}
                   </p>
-                </div>
-                <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                  {formatCurrency(amount)}
-                </p>
-              </button>
-            ))
+                </button>
+              );
+            })
           : sortedMemberEntries.map(([key, { member, name, amount, transactions: memberTransactions }]) => (
               <button
                 key={key}
