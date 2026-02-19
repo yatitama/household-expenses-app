@@ -24,6 +24,13 @@ type DisplayItem =
   | { kind: 'transaction'; data: Transaction }
   | { kind: 'recurring'; data: RecurringOccurrence };
 
+const getPeriodLabel = (payment: RecurringPayment): string => {
+  if (payment.periodType === 'months') {
+    return payment.periodValue === 1 ? '毎月' : `${payment.periodValue}ヶ月ごと`;
+  }
+  return payment.periodValue === 1 ? '毎日' : `${payment.periodValue}日ごと`;
+};
+
 export const TransactionsPage = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -395,11 +402,14 @@ export const TransactionsPage = () => {
                                       : <RefreshCw size={10} />
                                     }
                                   </div>
-                                  <div className="relative min-w-0 flex-1">
-                                    <p className="truncate text-gray-900 dark:text-gray-100 font-medium pr-3">
+                                  <div className="min-w-0 flex-1">
+                                    <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
                                       {p.name}
                                     </p>
-                                    <RefreshCw size={8} className="absolute top-0.5 right-0 text-gray-400 dark:text-gray-500" />
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                      <RefreshCw size={10} />
+                                      {getPeriodLabel(p)}
+                                    </p>
                                   </div>
                                 </div>
                                 <span className={`font-semibold flex-shrink-0 ${
