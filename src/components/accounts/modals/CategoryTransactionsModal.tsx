@@ -125,11 +125,9 @@ export const CategoryTransactionsModal = ({
                       className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
                     >
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="flex-shrink-0 text-xs border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded font-medium">
-                            定期
-                          </span>
-                          <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
+                        <div className="relative min-w-0">
+                          <p className="truncate text-gray-900 dark:text-gray-100 pr-3">{rp.name}</p>
+                          <RefreshCw size={8} className="absolute top-0.5 right-0 text-gray-400 dark:text-gray-500" />
                         </div>
                         <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                           <RefreshCw size={10} />
