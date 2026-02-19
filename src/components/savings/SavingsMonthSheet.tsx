@@ -42,12 +42,15 @@ export const SavingsMonthSheet = ({ goal, month, onSave, onClose }: SavingsMonth
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/50 z-50 flex items-end"
-      onClick={onClose}
-    >
+    <>
+      {/* 背景オーバーレイ */}
       <div
-        className="w-full bg-white dark:bg-slate-800 rounded-t-2xl shadow-2xl flex flex-col max-h-[80vh]"
+        className="fixed inset-0 bg-black/50 z-60"
+        onClick={onClose}
+      />
+      {/* シートパネル */}
+      <div
+        className="fixed inset-x-0 bottom-16 md:bottom-0 z-60 bg-white dark:bg-slate-800 rounded-t-2xl shadow-2xl flex flex-col max-h-[80vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ヘッダー */}
@@ -133,6 +136,6 @@ export const SavingsMonthSheet = ({ goal, month, onSave, onClose }: SavingsMonth
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
