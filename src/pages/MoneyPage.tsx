@@ -135,7 +135,15 @@ export const MoneyPage = () => {
               className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
               style={{ top: 'max(0px, env(safe-area-inset-top))' }}
             >
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><Landmark size={14} />口座</h3>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Landmark size={14} className="text-gray-900 dark:text-gray-100" />
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
+                </div>
+                <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
+                  {formatCurrency(totalBalance)}
+                </p>
+              </div>
             </div>
             <div className="pt-2 pb-3 md:pb-4">
               {accounts.length === 0 ? (
