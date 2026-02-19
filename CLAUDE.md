@@ -2,29 +2,29 @@
 
 ## プロジェクト概要
 夫婦と子供の家族構成で、個人と共通の口座・カードを一元管理できる家計簿アプリ。
-1人が全体を管理し、収支・予算・カード請求を可視化する。
+1人が全体を管理し、収支・予算・カード請求を可視化する。SPAとしてlocalStorageにデータを保存。
 
 ## 技術スタック
-- React 19 / TypeScript 5 / Vite / Tailwind CSS 4
+- React 19 / TypeScript 5.9 / Vite 7 / Tailwind CSS 4
+- ルーティング: react-router-dom 7（HashRouter）
 - データ保存: localStorage
-- グラフ: Recharts
+- グラフ: Recharts 3
 - アイコン: Lucide React
-- 日付操作: date-fns
-
-## ディレクトリ構成
-- `src/components/` - 再利用可能なUIコンポーネント
-- `src/pages/` - ページコンポーネント
-- `src/hooks/` - カスタムHooks
-- `src/services/` - ビジネスロジック・localStorage操作
-- `src/types/` - TypeScript型定義
-- `src/utils/` - ユーティリティ関数
-- `docs/` - 設計書・仕様書
+- 日付操作: date-fns 4
+- 通知: react-hot-toast
 
 ## 開発コマンド
-- `npm run dev` - 開発サーバー起動（http://localhost:5173）
-- `npm run build` - プロダクションビルド
-- `npm run preview` - ビルド結果のプレビュー
-- `npm run lint` - ESLintによるコードチェック
+- `npm run dev` — 開発サーバー起動（http://localhost:5173）
+- `npm run build` — プロダクションビルド（`tsc -b && vite build`）
+- `npm run preview` — ビルド結果のプレビュー
+- `npm run lint` — ESLintによるコードチェック
+
+## コミット前の必須手順
+**コミット前に必ず以下を実行し、エラーがないことを確認すること:**
+1. `npm install` — 依存パッケージのインストール/更新
+2. `npm run build` — TypeScript型チェック＋Viteビルド
+
+ビルドエラーがある状態でコミットしてはならない。
 
 ## コーディング規約
 - `any`禁止、`unknown`を使用
@@ -34,21 +34,82 @@
 - ファイル名: PascalCase（コンポーネント）、camelCase（その他）
 - 1ファイル1エクスポートを原則とする
 
-## データモデル
-主要な型定義は`src/types/`を参照。
+## ディレクトリ構成
+```
+src/
+├── components/           # UIコンポーネント
+│   ├── accounts/         #   口座・取引関連
+│   │   └── modals/       #     モーダルダイアログ群（16種）
+│   ├── feedback/         #   フィードバックUI（ConfirmDialog, ErrorBoundary等）
+│   ├── quickAdd/         #   クイック追加テンプレート
+│   ├── savings/          #   貯金目標
+│   └── search/           #   検索・フィルタUI
+├── contexts/             # React Context（テーマ）
+├── hooks/                # カスタムHooks
+│   └── accounts/         #   口座操作系
+├── pages/                # ページコンポーネント（5画面）
+├── services/             # データ永続化・ビジネスロジック
+├── types/                # TypeScript型定義
+└── utils/                # ユーティリティ関数
+```
 
-- **Account**: 口座・カード情報（夫個人/妻個人/共通）
-- **Transaction**: 収支記録
-- **Category**: カテゴリ情報
-- **Budget**: 月別予算
-- **CardBilling**: カード請求情報
+## ページ構成（ルーティング）
+| パス | コンポーネント | 概要 |
+|---|---|---|
+| `/` | `AccountsPage` | 月別収支サマリー・カテゴリ別内訳 |
+| `/money` | `MoneyPage` | 口座一覧・総資産・貯金目標 |
+| `/add-transaction` | `AddTransactionPage` | 取引登録フォーム |
+| `/transactions` | `TransactionsPage` | 取引一覧・検索・フィルタ |
+| `/settings` | `SettingsPage` | マスタ管理・データ管理 |
+
+## データモデル概要
+型定義: `src/types/index.ts` / 詳細仕様: `docs/data-models.md`
+
+| エンティティ | 説明 |
+|---|---|
+| Member | 家族メンバー（共通・夫・妻） |
+| Account | 口座（cash/bank/emoney）— 残高を持つ資産 |
+| PaymentMethod | 支払い手段（credit_card/debit_card）— 口座に紐づく |
+| Transaction | 取引記録（収入/支出） |
+| Category | カテゴリ（支出11種+収入4種がデフォルト） |
+| Budget | 月別予算 |
+| RecurringPayment | 定期取引（発生日はオンデマンド計算） |
+| CardBilling | カード請求情報 |
+| LinkedPaymentMethod | カードと口座の追加紐付け |
+| QuickAddTemplate | クイック追加テンプレート |
+| SavingsGoal | 貯金目標（月額自動計算） |
+
+## 重要なビジネスロジック
+- **口座と支払い手段は分離**: 口座が資産（残高）を持ち、カードは口座に紐づく支払い手段
+- **精算ロジック**: 即時精算（debit/cash）と月次精算（credit）の2種。詳細は `docs/account-payment-method-separation.md`
+- **自動精算**: アプリ起動時に引き落とし日を過ぎた未精算取引を自動処理
+- **定期取引**: データは定義のみ保存、発生日は `calculateNextRecurringDate()` でオンデマンド計算
+- **貯金目標**: 月別上書き・除外月に対応した月額自動計算
+
+## 主要サービス・ユーティリティ
+- `src/services/storage.ts` — 全エンティティのCRUD、マイグレーション
+- `src/utils/billingUtils.ts` — 請求日計算、精算処理、定期取引計算
+- `src/utils/savingsUtils.ts` — 貯金目標の月額・累計計算
+- `src/utils/formatters.ts` — 通貨・日付フォーマット（日本語）
+
+詳細仕様: `docs/services-hooks-utils.md`
+
+## 仕様ドキュメント一覧
+| ドキュメント | 内容 |
+|---|---|
+| `docs/architecture.md` | アーキテクチャ概要、ルーティング、初期化フロー、ディレクトリ構成 |
+| `docs/data-models.md` | 全データモデルの詳細仕様、フィールド定義、ER関係 |
+| `docs/pages-and-features.md` | 各ページの機能仕様、使用コンポーネント・モーダル一覧 |
+| `docs/services-hooks-utils.md` | サービス層API、カスタムHooks、ユーティリティ関数の詳細 |
+| `docs/account-payment-method-separation.md` | 口座と支払い手段の分離設計（ADR） |
+| `docs/design.md` | 初期設計書（一部は実装と乖離あり） |
 
 ## 重要なルール
 - データは全てlocalStorageに保存
 - 将来的にクラウドDBへの移行を考慮した設計
 - ビジュアル重視・シンプルな操作性を重視
-- レスポンシブデザイン（モバイル対応）
-- 色分けとアイコンで視認性を向上
+- レスポンシブデザイン（モバイルはボトムナビ、デスクトップはサイドバー）
+- グレースケールベースのテーマ、ダークモード対応
 
 ## gh コマンド
 - `gh`コマンドには必ず`-R yatitama/household-expenses-app`オプションを付けること
