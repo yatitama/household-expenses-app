@@ -1,23 +1,37 @@
-import { X } from 'lucide-react';
+import { X, RefreshCw } from 'lucide-react';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { paymentMethodService } from '../../../services/storage';
-import type { Category, Transaction } from '../../../types';
+import type { Category, Transaction, RecurringPayment } from '../../../types';
 
 interface CategoryTransactionsModalProps {
   category: Category | undefined;
   transactions: Transaction[];
+  recurringPayments?: RecurringPayment[];
   isOpen: boolean;
   onClose: () => void;
   onTransactionClick?: (transaction: Transaction) => void;
+  onRecurringClick?: (payment: RecurringPayment) => void;
 }
+
+const getPeriodLabel = (payment: RecurringPayment): string => {
+  if (payment.periodType === 'months') {
+    return payment.periodValue === 1 ? '毎月' : `毎${payment.periodValue}ヶ月`;
+  }
+  if (payment.periodType === 'days') {
+    return payment.periodValue === 1 ? '毎日' : `毎${payment.periodValue}日`;
+  }
+  return '';
+};
 
 export const CategoryTransactionsModal = ({
   category,
   transactions,
+  recurringPayments = [],
   isOpen,
   onClose,
   onTransactionClick,
+  onRecurringClick,
 }: CategoryTransactionsModalProps) => {
   if (!isOpen) return null;
 
@@ -25,9 +39,15 @@ export const CategoryTransactionsModal = ({
 
   const sorted = [...transactions].sort((a, b) => b.date.localeCompare(a.date));
 
-  const total = transactions.reduce((sum, t) => {
+  const transactionTotal = transactions.reduce((sum, t) => {
     return sum + (t.type === 'expense' ? t.amount : -t.amount);
   }, 0);
+
+  const recurringTotal = recurringPayments.reduce((sum, rp) => {
+    return sum + (rp.type === 'expense' ? rp.amount : -rp.amount);
+  }, 0);
+
+  const total = transactionTotal + recurringTotal;
 
   return (
     <div
@@ -68,34 +88,60 @@ export const CategoryTransactionsModal = ({
           {/* 明細リスト */}
           <div className="flex-1 overflow-y-auto">
             <div className="space-y-1 p-3 sm:p-4">
-              {sorted.length === 0 ? (
+              {sorted.length === 0 && recurringPayments.length === 0 ? (
                 <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">明細なし</p>
               ) : (
-                sorted.map((transaction) => {
-                  const pm = paymentMethods.find((p) => p.id === transaction.paymentMethodId);
-                  return (
+                <>
+                  {sorted.map((transaction) => {
+                    const pm = paymentMethods.find((p) => p.id === transaction.paymentMethodId);
+                    return (
+                      <button
+                        key={transaction.id}
+                        onClick={() => onTransactionClick?.(transaction)}
+                        className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-gray-900 dark:text-gray-100">
+                            {transaction.memo || category?.name || 'その他'}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {formatDate(transaction.date)}
+                            {pm && (
+                              <span className="ml-1.5 text-gray-400 dark:text-gray-500">· {pm.name}</span>
+                            )}
+                          </p>
+                        </div>
+                        <span className="text-gray-900 dark:text-gray-100 font-semibold flex-shrink-0">
+                          {formatCurrency(transaction.amount)}
+                        </span>
+                      </button>
+                    );
+                  })}
+
+                  {recurringPayments.map((rp) => (
                     <button
-                      key={transaction.id}
-                      onClick={() => onTransactionClick?.(transaction)}
-                      className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
+                      key={rp.id}
+                      onClick={() => onRecurringClick?.(rp)}
+                      className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors text-left"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-gray-900 dark:text-gray-100">
-                          {transaction.memo || category?.name || 'その他'}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {formatDate(transaction.date)}
-                          {pm && (
-                            <span className="ml-1.5 text-gray-400 dark:text-gray-500">· {pm.name}</span>
-                          )}
+                        <div className="flex items-center gap-1.5">
+                          <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
+                          <span className="flex-shrink-0 text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded font-medium">
+                            定期
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                          <RefreshCw size={10} />
+                          {getPeriodLabel(rp)}
                         </p>
                       </div>
                       <span className="text-gray-900 dark:text-gray-100 font-semibold flex-shrink-0">
-                        {formatCurrency(transaction.amount)}
+                        {formatCurrency(rp.amount)}
                       </span>
                     </button>
-                  );
-                })
+                  ))}
+                </>
               )}
             </div>
           </div>

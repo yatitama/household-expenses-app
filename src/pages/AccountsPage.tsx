@@ -57,6 +57,7 @@ export const AccountsPage = () => {
   const [isTransactionDetailOpen, setIsTransactionDetailOpen] = useState(false);
   const [selectedCategoryForModal, setSelectedCategoryForModal] = useState<Category | undefined>(undefined);
   const [categoryModalTransactions, setCategoryModalTransactions] = useState<Transaction[]>([]);
+  const [categoryModalRecurringItems, setCategoryModalRecurringItems] = useState<RecurringPayment[]>([]);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isRecurringExpenseListOpen, setIsRecurringExpenseListOpen] = useState(false);
   const [isRecurringIncomeListOpen, setIsRecurringIncomeListOpen] = useState(false);
@@ -134,9 +135,10 @@ export const AccountsPage = () => {
     setIsRecurringDetailModalOpen(true);
   };
 
-  const handleCategoryClick = (category: Category | undefined, transactions: Transaction[]) => {
+  const handleCategoryClick = (category: Category | undefined, transactions: Transaction[], recurring: RecurringPayment[]) => {
     setSelectedCategoryForModal(category);
     setCategoryModalTransactions(transactions);
+    setCategoryModalRecurringItems(recurring);
     setIsCategoryModalOpen(true);
   };
 
@@ -372,13 +374,19 @@ export const AccountsPage = () => {
       <CategoryTransactionsModal
         category={selectedCategoryForModal}
         transactions={categoryModalTransactions}
+        recurringPayments={categoryModalRecurringItems}
         isOpen={isCategoryModalOpen}
         onClose={() => {
           setIsCategoryModalOpen(false);
           setSelectedCategoryForModal(undefined);
           setCategoryModalTransactions([]);
+          setCategoryModalRecurringItems([]);
         }}
         onTransactionClick={handleTransactionClick}
+        onRecurringClick={(rp) => {
+          setIsCategoryModalOpen(false);
+          handleRecurringItemClick(rp);
+        }}
       />
 
       <CardUnsettledDetailModal

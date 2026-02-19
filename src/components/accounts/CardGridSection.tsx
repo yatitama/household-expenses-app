@@ -13,7 +13,7 @@ interface CardGridSectionProps {
   members?: Member[];
   accounts?: Account[];
   viewMode?: CardGridViewMode;
-  onCategoryClick?: (category: Category | undefined, transactions: Transaction[]) => void;
+  onCategoryClick?: (category: Category | undefined, transactions: Transaction[], recurringPayments: RecurringPayment[]) => void;
   recurringPayments?: RecurringPayment[];
   recurringLabel?: string;
   onRecurringClick?: () => void;
@@ -177,10 +177,12 @@ export const CardGridSection = ({
     <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
       <div className="grid grid-cols-2 gap-2 md:gap-3">
         {viewMode === 'category'
-          ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => (
+          ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => {
+              const catRecurring = recurringPayments.filter((rp) => rp.categoryId === category?.id);
+              return (
               <button
                 key={category?.id ?? '__none__'}
-                onClick={() => onCategoryClick?.(category, catTransactions)}
+                onClick={() => onCategoryClick?.(category, catTransactions, catRecurring)}
                 className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
               >
                 <div className="flex items-center gap-1.5">
@@ -201,15 +203,18 @@ export const CardGridSection = ({
                   {formatCurrency(amount)}
                 </p>
               </button>
-            ))
+            );})
           : viewMode === 'payment'
           ? sortedPaymentEntries.map(([key, { account: entryAccount, name, amount, transactions: pmTransactions }]) => {
               const cardColor = entryAccount?.color || '#6b7280';
               const cardIcon = entryAccount ? ACCOUNT_TYPE_ICONS_XS[entryAccount.type] : <CreditCard size={12} />;
+              const pmRecurring = key.startsWith('__account__')
+                ? recurringPayments.filter((rp) => !rp.paymentMethodId && rp.accountId === key.slice('__account__'.length))
+                : recurringPayments.filter((rp) => rp.paymentMethodId === key);
               return (
                 <button
                   key={key}
-                  onClick={() => onCategoryClick?.(undefined, pmTransactions)}
+                  onClick={() => onCategoryClick?.(undefined, pmTransactions, pmRecurring)}
                   className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
                 >
                   <div className="flex items-center gap-1.5">
@@ -232,10 +237,15 @@ export const CardGridSection = ({
                 </button>
               );
             })
-          : sortedMemberEntries.map(([key, { member, name, amount, transactions: memberTransactions }]) => (
+          : sortedMemberEntries.map(([key, { member, name, amount, transactions: memberTransactions }]) => {
+              const memberRecurring = recurringPayments.filter((rp) => {
+                const acct = accounts.find((a) => a.id === rp.accountId);
+                return (acct?.memberId || '__unknown__') === key;
+              });
+              return (
               <button
                 key={key}
-                onClick={() => onCategoryClick?.(undefined, memberTransactions)}
+                onClick={() => onCategoryClick?.(undefined, memberTransactions, memberRecurring)}
                 className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
               >
                 <div className="flex items-center gap-1.5">
@@ -256,7 +266,7 @@ export const CardGridSection = ({
                   {formatCurrency(amount)}
                 </p>
               </button>
-            ))}
+            );})}
 
         {/* 未分類の定期アイテムは末尾に表示 */}
         {viewMode === 'category' && showRecurringTileCategory && (
