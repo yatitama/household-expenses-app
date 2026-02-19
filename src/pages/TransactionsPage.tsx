@@ -9,6 +9,8 @@ import { TransactionFilterSheet } from '../components/search/TransactionFilterSh
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
 import { RecurringPaymentDetailModal } from '../components/accounts/modals/RecurringPaymentDetailModal';
+import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
+import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { categoryService, accountService, paymentMethodService, transactionService, recurringPaymentService } from '../services/storage';
 import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
 import { formatCurrency, formatDate } from '../utils/formatters';
@@ -34,7 +36,9 @@ export const TransactionsPage = () => {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
   const [isRecurringDetailOpen, setIsRecurringDetailOpen] = useState(false);
-  useBodyScrollLock(!!editingTransaction || isDetailOpen || isFilterSheetOpen || isRecurringDetailOpen);
+  const [editingRecurring, setEditingRecurring] = useState<RecurringPayment | null>(null);
+  const { handleSaveRecurring, handleDeleteRecurring } = useAccountOperations();
+  useBodyScrollLock(!!editingTransaction || isDetailOpen || isFilterSheetOpen || isRecurringDetailOpen || !!editingRecurring);
 
   const toggleGroupExpanded = (groupKey: string) => {
     setExpandedGroups((prev) => {
@@ -483,7 +487,24 @@ export const TransactionsPage = () => {
         recurringPayment={selectedRecurring}
         isOpen={isRecurringDetailOpen}
         onClose={() => setIsRecurringDetailOpen(false)}
+        onEdit={(rp) => {
+          setIsRecurringDetailOpen(false);
+          setEditingRecurring(rp);
+        }}
       />
+
+      {/* Recurring Edit Modal */}
+      {editingRecurring && (
+        <RecurringPaymentModal
+          recurringPayment={editingRecurring}
+          onSave={(input) => {
+            handleSaveRecurring(input, editingRecurring);
+            setEditingRecurring(null);
+          }}
+          onClose={() => setEditingRecurring(null)}
+          onDelete={handleDeleteRecurring}
+        />
+      )}
 
       {/* Edit Transaction Modal */}
       {editingTransaction && (
