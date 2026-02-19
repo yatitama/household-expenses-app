@@ -170,7 +170,7 @@ export const MoneyPage = () => {
                     <PiggyBank size={14} className="text-emerald-600 dark:text-emerald-400" />
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">貯金</h3>
                   </div>
-                  <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                  <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
                     -{formatCurrency(totalAccumulatedSavings)}
                   </p>
                 </div>
