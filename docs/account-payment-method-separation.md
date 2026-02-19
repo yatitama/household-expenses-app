@@ -23,6 +23,8 @@
 | type | AccountType | 口座タイプ |
 | balance | number | 残高 |
 | color | string | 表示色 |
+| icon? | string | アイコン名 |
+| order? | number | 表示順序（ドラッグ&ドロップ対応） |
 | createdAt/updatedAt | string | タイムスタンプ |
 
 ### PaymentMethodType（支払い手段タイプ）
@@ -50,6 +52,7 @@
 | paymentDay | number? | 引き落とし日（1-31、monthly時） |
 | paymentMonthOffset | number? | 引き落とし月オフセット（0=当月,1=翌月,2=翌々月） |
 | color | string | 表示色 |
+| icon? | string | アイコン名 |
 | createdAt/updatedAt | string | タイムスタンプ |
 
 ### Transaction（取引記録）変更点
@@ -115,4 +118,4 @@
 
 ## マイグレーション
 既存の credit_card / debit_card タイプの Account を PaymentMethod に変換。
-linkedAccountId は未設定 → ユーザーに設定を促す。
+linkedAccountId は空文字列 `''` に設定される（ユーザーが後から口座を紐付ける必要がある）。

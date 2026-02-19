@@ -1,6 +1,6 @@
 # データモデル仕様
 
-型定義ファイル: `src/types/index.ts`
+型定義ファイル: `src/types/index.ts`（※ `AppSettings` のみ `src/services/storage.ts` で定義）
 
 ## エンティティ一覧
 

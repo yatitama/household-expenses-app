@@ -47,8 +47,10 @@
 ## コンポーネントツリー
 
 ```
+<!-- main.tsx -->
 <StrictMode>
   <HashRouter>
+    <!-- App.tsx -->
     <ErrorBoundary>
       <ThemeProvider>
         <Routes>

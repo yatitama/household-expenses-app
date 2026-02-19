@@ -1,5 +1,17 @@
 # 家計簿アプリ設計書
 
+> **注意: これは初期設計時のドキュメントであり、現在の実装とは乖離があります。**
+> 現在の正確な仕様は以下を参照してください:
+> - データモデル: `docs/data-models.md`
+> - アーキテクチャ: `docs/architecture.md`
+> - ページ・機能仕様: `docs/pages-and-features.md`
+> - 口座/支払い手段分離: `docs/account-payment-method-separation.md`
+>
+> **主な乖離点:**
+> - Section 4 のデータ構造は v2 マイグレーションにより大幅に変更済み（Account/PaymentMethod分離、Category.scope廃止、receiptImageUrl廃止）
+> - Section 5 の技術スタックはバージョンが古い（React 18→19, Tailwind 3→4 等）
+> - Section 3.4 統計画面は未実装
+
 ## 1. プロジェクト概要
 
 ### 目的

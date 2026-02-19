@@ -8,15 +8,17 @@
 
 #### 共通CRUD API
 
-各サービスは以下の標準メソッドを持つ:
+大部分のサービスは以下の標準メソッドを持つ:
 
 | メソッド | 戻り値 | 説明 |
 |---|---|---|
 | `getAll()` | `T[]` | 全件取得 |
-| `getById(id)` | `T \| undefined` | ID指定で1件取得 |
+| `getById(id)` | `T \| undefined` | ID指定で1件取得 ※ |
 | `create(input)` | `T` | 新規作成（id, timestamps自動付与） |
 | `update(id, input)` | `T \| undefined` | 部分更新 |
 | `delete(id)` | `boolean` | 削除 |
+
+※ `budgetService` と `cardBillingService` は `getById` を持たない
 
 #### サービス一覧と追加メソッド
 
@@ -86,15 +88,18 @@ localStorageのデータバージョンを確認し、必要なマイグレー�
 
 取引一覧のフィルタリングを管理するHook。
 
-**フィルタ条件**:
-- `searchQuery` — テキスト検索（メモ・カテゴリ名に対して部分一致）
-- `startDate` / `endDate` — 日付範囲
-- `selectedCategories` — カテゴリID配列
-- `selectedType` — `'all' | 'income' | 'expense'`
-- `selectedAccounts` — 口座ID配列
-- `selectedPaymentMethods` — 支払い手段ID配列
-- `unsettledOnly` — 未精算のみ
-- `sortBy` — `'date-desc' | 'date-asc' | 'amount-desc' | 'amount-asc'`
+**フィルタ条件** (`FilterOptions` インターフェース):
+- `searchQuery` — テキスト検索（メモ・金額・カテゴリ名に対して部分一致）
+- `dateRange` — `{ start: string; end: string }` 日付範囲
+- `categoryIds` — カテゴリID配列
+- `transactionType` — `'all' | 'income' | 'expense'`
+- `accountIds` — 口座ID配列
+- `paymentMethodIds` — 支払い手段ID配列
+- `unsettled` — 未精算のみ
+- `sortBy` — `'date' | 'amount' | 'category'`
+- `sortOrder` — `'asc' | 'desc'`
+
+**返り値**: `{ filters, filteredTransactions, updateFilter, resetFilters, activeFilterCount }`
 
 ### useModalManager
 

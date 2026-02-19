@@ -57,8 +57,6 @@
 - `PaymentMethodModal` — 支払い手段の新規追加/編集
 - `AddTransactionModal` — 口座を指定した取引追加
 - `RecurringPaymentModal` — 定期取引追加
-- `LinkedPaymentMethodModal` — カード紐付け管理
-- `GradientPickerModal` — 総資産カードのグラデーション色変更
 - `ConfirmDialog` — 削除確認
 
 ---
@@ -85,7 +83,6 @@
 
 ### 使用モーダル
 - `QuickAddTemplateModal` — テンプレートの新規追加/編集
-- `QuickAddTemplateDetailModal` — テンプレート詳細
 
 ---
 
@@ -106,7 +103,7 @@
   - 支払い手段（複数選択）
   - 未精算のみ
   - テキスト検索（メモ・カテゴリ名）
-  - ソート（日付順、金額順）
+  - ソート（日付順、金額順、カテゴリ順 × 昇順/降順）
 
 ### 使用モーダル
 - `EditTransactionModal` — 取引の編集

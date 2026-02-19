@@ -104,6 +104,18 @@ src/
 | `docs/account-payment-method-separation.md` | 口座と支払い手段の分離設計（ADR） |
 | `docs/design.md` | 初期設計書（一部は実装と乖離あり） |
 
+## ドキュメント同期ルール
+ソースコードを修正した際は、以下を必ず確認し、関連するドキュメントを最新の状態に更新すること:
+
+- **型定義・データモデル変更時** → `docs/data-models.md`, `docs/account-payment-method-separation.md`
+- **ページ追加・ルーティング変更時** → `docs/architecture.md`, `docs/pages-and-features.md`, CLAUDE.md のページ構成テーブル
+- **コンポーネント追加・モーダル追加時** → `docs/pages-and-features.md`
+- **サービス・Hook・ユーティリティ変更時** → `docs/services-hooks-utils.md`
+- **技術スタック・依存関係変更時** → `docs/architecture.md`, CLAUDE.md の技術スタック
+- **ディレクトリ構成変更時** → `docs/architecture.md`, CLAUDE.md のディレクトリ構成
+
+ドキュメントが実装と乖離した状態を放置しないこと。
+
 ## 重要なルール
 - データは全てlocalStorageに保存
 - 将来的にクラウドDBへの移行を考慮した設計
