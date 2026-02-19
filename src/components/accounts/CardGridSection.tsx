@@ -60,11 +60,13 @@ export const CardGridSection = ({
   // 支払い元別グルーピング（取引 + 定期）
   const paymentGrouped = transactions.reduce(
     (acc, t) => {
-      const key = t.paymentMethodId || '__cash__';
+      const key = t.paymentMethodId ?? `__account__${t.accountId}`;
       const pm = paymentMethods.find((p) => p.id === t.paymentMethodId);
-      const linkedAccount = pm ? accounts.find((a) => a.id === pm.linkedAccountId) : undefined;
+      const linkedAccount = pm
+        ? accounts.find((a) => a.id === pm.linkedAccountId)
+        : accounts.find((a) => a.id === t.accountId);
       if (!acc[key]) {
-        acc[key] = { paymentMethod: pm, account: linkedAccount, name: pm?.name ?? '現金', amount: 0, transactions: [] };
+        acc[key] = { paymentMethod: pm, account: linkedAccount, name: pm?.name ?? linkedAccount?.name ?? '現金', amount: 0, transactions: [] };
       }
       acc[key].amount += t.type === 'expense' ? t.amount : -t.amount;
       acc[key].transactions.push(t);
