@@ -8,13 +8,13 @@ import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { TransactionFilterSheet } from '../components/search/TransactionFilterSheet';
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
-import { RecurringDetailModal } from '../components/accounts/modals/RecurringDetailModal';
+import { RecurringPaymentDetailModal } from '../components/accounts/modals/RecurringPaymentDetailModal';
 import { categoryService, accountService, paymentMethodService, transactionService, recurringPaymentService } from '../services/storage';
 import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { getRecurringOccurrencesInRange, type RecurringOccurrence } from '../utils/recurringOccurrences';
-import type { Transaction, TransactionInput } from '../types';
+import type { Transaction, TransactionInput, RecurringPayment } from '../types';
 
 export type GroupByType = 'date' | 'category' | 'account' | 'payment';
 
@@ -32,7 +32,7 @@ export const TransactionsPage = () => {
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const [selectedRecurring, setSelectedRecurring] = useState<RecurringOccurrence | null>(null);
+  const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
   const [isRecurringDetailOpen, setIsRecurringDetailOpen] = useState(false);
   useBodyScrollLock(!!editingTransaction || isDetailOpen || isFilterSheetOpen || isRecurringDetailOpen);
 
@@ -376,7 +376,7 @@ export const TransactionsPage = () => {
                               <button
                                 key={`recurring-${p.id}-${occ.date}-${idx}`}
                                 onClick={() => {
-                                  setSelectedRecurring(occ);
+                                  setSelectedRecurring(occ.payment);
                                   setIsRecurringDetailOpen(true);
                                 }}
                                 className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
@@ -479,9 +479,8 @@ export const TransactionsPage = () => {
       />
 
       {/* Recurring Detail Modal */}
-      <RecurringDetailModal
-        payment={selectedRecurring?.payment ?? null}
-        occurrenceDate={selectedRecurring?.date ?? null}
+      <RecurringPaymentDetailModal
+        recurringPayment={selectedRecurring}
         isOpen={isRecurringDetailOpen}
         onClose={() => setIsRecurringDetailOpen(false)}
       />
