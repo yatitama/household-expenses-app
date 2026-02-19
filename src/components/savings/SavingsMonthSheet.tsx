@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, PiggyBank } from 'lucide-react';
+import { X, PiggyBank, RotateCcw } from 'lucide-react';
 import { calculateMonthlyAmount, getEffectiveMonthlyAmount, isMonthExcluded } from '../../utils/savingsUtils';
 import type { SavingsGoal } from '../../types';
 
@@ -19,6 +19,7 @@ export const SavingsMonthSheet = ({ goal, month, onSave, onClose }: SavingsMonth
   const standardAmount = calculateMonthlyAmount(goal);
   const effectiveAmount = getEffectiveMonthlyAmount(goal, month);
   const initialExcluded = isMonthExcluded(goal, month);
+  const hasOverride = !initialExcluded && (goal.monthlyOverrides ?? {})[month] !== undefined;
 
   const [excluded, setExcluded] = useState(initialExcluded);
   const [amountStr, setAmountStr] = useState(String(effectiveAmount));
@@ -89,6 +90,16 @@ export const SavingsMonthSheet = ({ goal, month, onSave, onClose }: SavingsMonth
                 className="w-full pl-7 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-right text-base font-bold text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
               />
             </div>
+            {hasOverride && (
+              <button
+                type="button"
+                onClick={() => onSave(false, null)}
+                className="mt-1.5 flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+              >
+                <RotateCcw size={11} />
+                均等分配に戻す
+              </button>
+            )}
           </div>
 
           {/* 除外トグル */}
