@@ -67,7 +67,7 @@ export const EditTransactionModal = ({
             </button>
             <button
               type="button"
-              onClick={() => { setType('income'); setCategoryId(''); setPmId(undefined); }}
+              onClick={() => { setType('income'); setCategoryId(''); }}
               className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
                 type === 'income' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
               }`}
