@@ -9,6 +9,8 @@ import { TransactionFilterSheet } from '../components/search/TransactionFilterSh
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
 import { RecurringPaymentDetailModal } from '../components/accounts/modals/RecurringPaymentDetailModal';
+import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
+import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { categoryService, accountService, paymentMethodService, transactionService, recurringPaymentService } from '../services/storage';
 import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
 import { formatCurrency, formatDate } from '../utils/formatters';
@@ -34,7 +36,9 @@ export const TransactionsPage = () => {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
   const [isRecurringDetailOpen, setIsRecurringDetailOpen] = useState(false);
-  useBodyScrollLock(!!editingTransaction || isDetailOpen || isFilterSheetOpen || isRecurringDetailOpen);
+  const [editingRecurring, setEditingRecurring] = useState<RecurringPayment | null>(null);
+  const { handleSaveRecurring, handleDeleteRecurring } = useAccountOperations();
+  useBodyScrollLock(!!editingTransaction || isDetailOpen || isFilterSheetOpen || isRecurringDetailOpen || !!editingRecurring);
 
   const toggleGroupExpanded = (groupKey: string) => {
     setExpandedGroups((prev) => {
@@ -382,9 +386,6 @@ export const TransactionsPage = () => {
                                 className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                               >
                                 <div className="flex items-center gap-2 min-w-0 flex-1">
-                                  <span className="flex-shrink-0 text-xs border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded font-medium">
-                                    定期
-                                  </span>
                                   <div
                                     className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
                                     style={{ backgroundColor: `${color}20`, color }}
@@ -394,9 +395,12 @@ export const TransactionsPage = () => {
                                       : <RefreshCw size={10} />
                                     }
                                   </div>
-                                  <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
-                                    {p.name}
-                                  </p>
+                                  <div className="relative min-w-0 flex-1">
+                                    <p className="truncate text-gray-900 dark:text-gray-100 font-medium pr-3">
+                                      {p.name}
+                                    </p>
+                                    <RefreshCw size={8} className="absolute top-0.5 right-0 text-gray-400 dark:text-gray-500" />
+                                  </div>
                                 </div>
                                 <span className={`font-semibold flex-shrink-0 ${
                                   p.type === 'income' ? 'text-green-600' : 'text-red-600'
@@ -483,7 +487,24 @@ export const TransactionsPage = () => {
         recurringPayment={selectedRecurring}
         isOpen={isRecurringDetailOpen}
         onClose={() => setIsRecurringDetailOpen(false)}
+        onEdit={(rp) => {
+          setIsRecurringDetailOpen(false);
+          setEditingRecurring(rp);
+        }}
       />
+
+      {/* Recurring Edit Modal */}
+      {editingRecurring && (
+        <RecurringPaymentModal
+          recurringPayment={editingRecurring}
+          onSave={(input) => {
+            handleSaveRecurring(input, editingRecurring);
+            setEditingRecurring(null);
+          }}
+          onClose={() => setEditingRecurring(null)}
+          onDelete={handleDeleteRecurring}
+        />
+      )}
 
       {/* Edit Transaction Modal */}
       {editingTransaction && (
