@@ -198,14 +198,20 @@ export const CardGridSection = ({
               </button>
             ))
           : viewMode === 'payment'
-          ? sortedPaymentEntries.map(([key, { name, amount, transactions: pmTransactions }]) => (
+          ? sortedPaymentEntries.map(([key, { paymentMethod, name, amount, transactions: pmTransactions }]) => (
               <button
                 key={key}
                 onClick={() => onCategoryClick?.(undefined, pmTransactions)}
                 className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
               >
                 <div className="flex items-center gap-1.5">
-                  <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                  <div
+                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{
+                      backgroundColor: `${paymentMethod?.color || '#6b7280'}20`,
+                      color: paymentMethod?.color || '#6b7280',
+                    }}
+                  >
                     <CreditCard size={12} />
                   </div>
                   <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
