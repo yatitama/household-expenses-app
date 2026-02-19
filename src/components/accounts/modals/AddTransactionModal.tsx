@@ -152,7 +152,7 @@ export const AddTransactionModal = ({ template, onSaved, onClose }: AddTransacti
                         >
                           {getCategoryIcon(category.icon, 14)}
                         </div>
-                        <span className="text-xs sm:text-sm text-gray-900 dark:text-gray-200 truncate w-full text-center leading-tight">
+                        <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                           {category.name}
                         </span>
                       </button>
