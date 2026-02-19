@@ -1,7 +1,7 @@
 import { Pencil } from 'lucide-react';
 import { formatCurrency } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
-import { categoryService } from '../../../services/storage';
+import { categoryService, accountService, paymentMethodService } from '../../../services/storage';
 import type { Transaction } from '../../../types';
 
 interface CardUnsettledDetailModalProps {
@@ -21,6 +21,14 @@ export const CardUnsettledDetailModal = ({
 
   const categories = categoryService.getAll();
   const category = categories.find((c) => c.id === transaction.categoryId);
+
+  const accounts = accountService.getAll();
+  const account = accounts.find((a) => a.id === transaction.accountId);
+
+  const paymentMethods = paymentMethodService.getAll();
+  const paymentMethod = transaction.paymentMethodId
+    ? paymentMethods.find((pm) => pm.id === transaction.paymentMethodId)
+    : undefined;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[1000]" onClick={onClose}>
@@ -66,6 +74,30 @@ export const CardUnsettledDetailModal = ({
                 {transaction.date}
               </div>
             </div>
+
+            {/* 口座 */}
+            {account && (
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">口座</label>
+                <div className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                  <span
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: account.color || '#9ca3af' }}
+                  />
+                  {account.name}
+                </div>
+              </div>
+            )}
+
+            {/* 支払方法 */}
+            {paymentMethod && (
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">支払方法</label>
+                <div className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
+                  {paymentMethod.name}
+                </div>
+              </div>
+            )}
 
             {/* メモ */}
             {transaction.memo && (
