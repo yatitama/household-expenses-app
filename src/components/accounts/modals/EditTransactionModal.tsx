@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Check } from 'lucide-react';
+import { Check, Wallet, CreditCard } from 'lucide-react';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import type { Account, PaymentMethod, Transaction, TransactionType, TransactionInput } from '../../../types';
 
@@ -20,34 +20,26 @@ export const EditTransactionModal = ({
   const [type, setType] = useState<TransactionType>(transaction.type);
   const [amount, setAmount] = useState(transaction.amount.toString());
   const [categoryId, setCategoryId] = useState(transaction.categoryId);
-  const [accountId, setAccountId] = useState(transaction.accountId);
-  const [pmId, setPmId] = useState<string | undefined>(transaction.paymentMethodId);
+  const [selectedSourceId, setSelectedSourceId] = useState(transaction.paymentMethodId || transaction.accountId);
   const [date, setDate] = useState(transaction.date);
   const [memo, setMemo] = useState(transaction.memo || '');
 
   const filteredCategories = categories.filter((c) => c.type === type);
 
-  const handleSelectAccount = (id: string) => {
-    setAccountId(id);
-    setPmId(undefined);
-  };
-
-  const handleSelectPM = (id: string) => {
-    setPmId(id);
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !categoryId || (!accountId && !pmId)) {
+    if (!amount || !categoryId || !selectedSourceId) {
       toast.error('金額、カテゴリ、支払い元を入力してください');
       return;
     }
+    const account = accounts.find((a) => a.id === selectedSourceId);
+    const paymentMethod = paymentMethods.find((p) => p.id === selectedSourceId);
     onSave({
       type,
       amount: parseInt(amount, 10),
       categoryId,
-      accountId,
-      paymentMethodId: pmId,
+      accountId: account?.id || paymentMethod?.linkedAccountId || '',
+      paymentMethodId: paymentMethod?.id,
       date,
       memo: memo || undefined,
     });
@@ -132,73 +124,62 @@ export const EditTransactionModal = ({
             <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
               {type === 'expense' ? '支払い元' : '入金先'}
             </label>
-            <div className="space-y-3">
-              {accounts.length > 0 && (
-                <div>
-                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">口座</p>
-                  <div className="space-y-1">
-                    {accounts.map((acct) => (
-                      <button
-                        key={acct.id}
-                        type="button"
-                        onClick={() => handleSelectAccount(acct.id)}
-                        className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
-                          accountId === acct.id && !pmId
-                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
-                          <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{acct.name}</span>
-                        </div>
-                        {accountId === acct.id && !pmId && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
-                      </button>
-                    ))}
+            <div className="grid grid-cols-4 gap-2">
+              {accounts.map((acct) => (
+                <button
+                  key={acct.id}
+                  type="button"
+                  onClick={() => setSelectedSourceId(acct.id)}
+                  className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                    selectedSourceId === acct.id
+                      ? 'bg-primary-50 dark:bg-primary-900/30'
+                      : ''
+                  }`}
+                >
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
+                  >
+                    <Wallet size={16} />
                   </div>
-                </div>
-              )}
+                  <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                    {acct.name}
+                  </span>
+                  {selectedSourceId === acct.id && (
+                    <div className="absolute -top-1 -right-1">
+                      <Check size={16} className="text-primary-500" strokeWidth={2} />
+                    </div>
+                  )}
+                </button>
+              ))}
 
-              {type === 'expense' && accountId && (
-                <div>
-                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">支払い手段</p>
-                  <div className="space-y-1">
-                    <button
-                      type="button"
-                      onClick={() => setPmId(undefined)}
-                      className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
-                        pmId === undefined
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-gray-400" />
-                        <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">口座から引き落とし</span>
-                      </div>
-                      {pmId === undefined && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
-                    </button>
-                    {paymentMethods.filter((pm) => pm.linkedAccountId === accountId).map((pm) => (
-                      <button
-                        key={pm.id}
-                        type="button"
-                        onClick={() => handleSelectPM(pm.id)}
-                        className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
-                          pmId === pm.id
-                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: pm.color }} />
-                          <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{pm.name}</span>
-                        </div>
-                        {pmId === pm.id && <Check size={14} className="sm:w-4 sm:h-4 text-primary-600" />}
-                      </button>
-                    ))}
+              {type === 'expense' && paymentMethods.map((pm) => (
+                <button
+                  key={pm.id}
+                  type="button"
+                  onClick={() => setSelectedSourceId(pm.id)}
+                  className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                    selectedSourceId === pm.id
+                      ? 'bg-primary-50 dark:bg-primary-900/30'
+                      : ''
+                  }`}
+                >
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `${pm.color || '#9ca3af'}20`, color: pm.color || '#9ca3af' }}
+                  >
+                    <CreditCard size={16} />
                   </div>
-                </div>
-              )}
+                  <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                    {pm.name}
+                  </span>
+                  {selectedSourceId === pm.id && (
+                    <div className="absolute -top-1 -right-1">
+                      <Check size={16} className="text-primary-500" strokeWidth={2} />
+                    </div>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -242,7 +223,7 @@ export const EditTransactionModal = ({
             </button>
             <button
               type="submit"
-              disabled={!amount || !categoryId || (!accountId && !pmId)}
+              disabled={!amount || !categoryId || !selectedSourceId}
               className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary text-white font-medium text-sm disabled:opacity-50 hover:bg-primary-dark transition-colors"
             >
               保存
