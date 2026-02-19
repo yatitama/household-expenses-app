@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
+import { ACCOUNT_TYPE_ICONS_SM } from './AccountIcons';
 import type { Account } from '../../types';
 
 interface AccountGridSectionProps {
@@ -24,9 +25,20 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
             onClick={() => onAccountClick?.(account)}
             className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 text-left h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity"
           >
-            <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-              {account.name}
-            </p>
+            <div className="flex items-center gap-1.5">
+              <div
+                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  backgroundColor: `${account.color}20`,
+                  color: account.color,
+                }}
+              >
+                {ACCOUNT_TYPE_ICONS_SM[account.type]}
+              </div>
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                {account.name}
+              </p>
+            </div>
             <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
               {formatCurrency(account.balance)}
             </p>
