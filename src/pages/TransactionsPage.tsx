@@ -1,19 +1,26 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
+import { format, startOfMonth, endOfMonth } from 'date-fns';
 import toast from 'react-hot-toast';
-import { Receipt, Sliders, ChevronDown, Calendar, LayoutGrid, Wallet, CreditCard } from 'lucide-react';
+import { Receipt, Sliders, ChevronDown, Calendar, LayoutGrid, Wallet, CreditCard, RefreshCw } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { TransactionFilterSheet } from '../components/search/TransactionFilterSheet';
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
-import { categoryService, accountService, paymentMethodService, transactionService } from '../services/storage';
+import { RecurringDetailModal } from '../components/accounts/modals/RecurringDetailModal';
+import { categoryService, accountService, paymentMethodService, transactionService, recurringPaymentService } from '../services/storage';
 import { revertTransactionBalance, applyTransactionBalance } from '../components/accounts/balanceHelpers';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
+import { getRecurringOccurrencesInRange, type RecurringOccurrence } from '../utils/recurringOccurrences';
 import type { Transaction, TransactionInput } from '../types';
 
 export type GroupByType = 'date' | 'category' | 'account' | 'payment';
+
+type DisplayItem =
+  | { kind: 'transaction'; data: Transaction }
+  | { kind: 'recurring'; data: RecurringOccurrence };
 
 export const TransactionsPage = () => {
   const [searchParams] = useSearchParams();
@@ -25,7 +32,9 @@ export const TransactionsPage = () => {
   const [groupBy, setGroupBy] = useState<GroupByType>('date');
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  useBodyScrollLock(!!editingTransaction || isDetailOpen || isFilterSheetOpen);
+  const [selectedRecurring, setSelectedRecurring] = useState<RecurringOccurrence | null>(null);
+  const [isRecurringDetailOpen, setIsRecurringDetailOpen] = useState(false);
+  useBodyScrollLock(!!editingTransaction || isDetailOpen || isFilterSheetOpen || isRecurringDetailOpen);
 
   const toggleGroupExpanded = (groupKey: string) => {
     setExpandedGroups((prev) => {
@@ -136,53 +145,137 @@ export const TransactionsPage = () => {
     setEditingTransaction(null);
   };
 
-  // Group transactions by selected groupBy type
-  const groupedTransactions = useMemo(() => {
-    // Get group key and label for a transaction
-    const getGroupKeyAndLabel = (transaction: Transaction): { key: string; label: string } => {
-      switch (groupBy) {
-        case 'date':
-          return { key: transaction.date, label: formatDate(transaction.date) };
-        case 'category': {
-          const categoryName = getCategoryName(transaction.categoryId);
-          return { key: transaction.categoryId, label: categoryName };
-        }
-        case 'account': {
-          const accountName = getAccountName(transaction.accountId);
-          return { key: transaction.accountId, label: accountName || '不明' };
-        }
-        case 'payment': {
-          if (transaction.paymentMethodId) {
-            const paymentName = getPaymentMethodName(transaction.paymentMethodId);
-            return { key: transaction.paymentMethodId, label: paymentName || '不明' };
+  // 表示対象の日付範囲（フィルターが未設定の場合は今月）
+  const displayRange = useMemo(() => {
+    if (filters.dateRange.start && filters.dateRange.end) {
+      return { start: filters.dateRange.start, end: filters.dateRange.end };
+    }
+    const today = new Date();
+    return {
+      start: format(startOfMonth(today), 'yyyy-MM-dd'),
+      end: format(endOfMonth(today), 'yyyy-MM-dd'),
+    };
+  }, [filters.dateRange]);
+
+  // 定期取引の発生日一覧（フィルター適用済み）
+  const recurringOccurrences = useMemo(() => {
+    // 未精算フィルター時は定期取引を非表示
+    if (filters.unsettled) return [];
+
+    const allRecurring = recurringPaymentService.getAll();
+    const occurrences = getRecurringOccurrencesInRange(allRecurring, displayRange.start, displayRange.end);
+
+    return occurrences.filter((occ) => {
+      const p = occ.payment;
+
+      // 種別フィルター
+      if (filters.transactionType !== 'all' && p.type !== filters.transactionType) return false;
+
+      // キーワード検索（名称）
+      if (filters.searchQuery) {
+        const query = filters.searchQuery.toLowerCase();
+        if (!p.name.toLowerCase().includes(query)) return false;
+      }
+
+      // カテゴリフィルター
+      if (filters.categoryIds.length > 0) {
+        if (!p.categoryId || !filters.categoryIds.includes(p.categoryId)) return false;
+      }
+
+      // 口座フィルター
+      if (filters.accountIds.length > 0) {
+        if (!p.accountId || !filters.accountIds.includes(p.accountId)) return false;
+      }
+
+      // 支払方法フィルター
+      if (filters.paymentMethodIds.length > 0) {
+        if (!p.paymentMethodId || !filters.paymentMethodIds.includes(p.paymentMethodId)) return false;
+      }
+
+      return true;
+    });
+  }, [filters, displayRange]);
+
+  // Group transactions and recurring occurrences by selected groupBy type
+  const groupedItems = useMemo(() => {
+    // 通常取引と定期取引を統合
+    const transactionItems: DisplayItem[] = filteredTransactions.map((t) => ({ kind: 'transaction', data: t }));
+    const recurringItems: DisplayItem[] = recurringOccurrences.map((occ) => ({ kind: 'recurring', data: occ }));
+    const allItems: DisplayItem[] = [...transactionItems, ...recurringItems];
+
+    const getGroupKeyAndLabel = (item: DisplayItem): { key: string; label: string } => {
+      if (item.kind === 'transaction') {
+        const t = item.data;
+        switch (groupBy) {
+          case 'date':
+            return { key: t.date, label: formatDate(t.date) };
+          case 'category': {
+            const categoryName = getCategoryName(t.categoryId);
+            return { key: t.categoryId, label: categoryName };
           }
-          return { key: 'direct', label: '口座直接' };
+          case 'account': {
+            const accountName = getAccountName(t.accountId);
+            return { key: t.accountId, label: accountName || '不明' };
+          }
+          case 'payment': {
+            if (t.paymentMethodId) {
+              const paymentName = getPaymentMethodName(t.paymentMethodId);
+              return { key: t.paymentMethodId, label: paymentName || '不明' };
+            }
+            return { key: 'direct', label: '口座直接' };
+          }
+          default:
+            return { key: t.date, label: formatDate(t.date) };
         }
-        default:
-          return { key: transaction.date, label: formatDate(transaction.date) };
+      } else {
+        const { payment, date } = item.data;
+        switch (groupBy) {
+          case 'date':
+            return { key: date, label: formatDate(date) };
+          case 'category': {
+            if (payment.categoryId) {
+              return { key: payment.categoryId, label: getCategoryName(payment.categoryId) };
+            }
+            return { key: 'recurring-none', label: '未設定' };
+          }
+          case 'account': {
+            if (payment.accountId) {
+              return { key: payment.accountId, label: getAccountName(payment.accountId) || '不明' };
+            }
+            return { key: 'recurring-none', label: '不明' };
+          }
+          case 'payment': {
+            if (payment.paymentMethodId) {
+              return { key: payment.paymentMethodId, label: getPaymentMethodName(payment.paymentMethodId) || '不明' };
+            }
+            return { key: 'direct', label: '口座直接' };
+          }
+          default:
+            return { key: date, label: formatDate(date) };
+        }
       }
     };
 
-    const groups = new Map<string, { label: string; transactions: typeof filteredTransactions }>();
-    for (const t of filteredTransactions) {
-      const { key, label } = getGroupKeyAndLabel(t);
+    const groups = new Map<string, { label: string; items: DisplayItem[] }>();
+    for (const item of allItems) {
+      const { key, label } = getGroupKeyAndLabel(item);
       const existing = groups.get(key);
       if (existing) {
-        existing.transactions.push(t);
+        existing.items.push(item);
       } else {
-        groups.set(key, { label, transactions: [t] });
+        groups.set(key, { label, items: [item] });
       }
     }
-    // Sort groups by descending order
+
     const entries = Array.from(groups.entries());
     if (groupBy === 'date') {
       return entries.sort((a, b) => b[0].localeCompare(a[0]));
     } else {
       return entries.sort((a, b) => b[1].label.localeCompare(a[1].label));
     }
-  }, [filteredTransactions, groupBy, categories, getCategoryName, getAccountName, getPaymentMethodName]);
+  }, [filteredTransactions, recurringOccurrences, groupBy, getCategoryName, getAccountName, getPaymentMethodName]);
 
-  // 合計を計算
+  // 合計を計算（定期取引を含む）
   const totalNet = useMemo(() => {
     const income = filteredTransactions
       .filter((t) => t.type === 'income')
@@ -190,25 +283,37 @@ export const TransactionsPage = () => {
     const expense = filteredTransactions
       .filter((t) => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0);
-    return income - expense;
-  }, [filteredTransactions]);
+    const recurringIncome = recurringOccurrences
+      .filter((occ) => occ.payment.type === 'income')
+      .reduce((sum, occ) => sum + occ.payment.amount, 0);
+    const recurringExpense = recurringOccurrences
+      .filter((occ) => occ.payment.type === 'expense')
+      .reduce((sum, occ) => sum + occ.payment.amount, 0);
+    return income - expense + recurringIncome - recurringExpense;
+  }, [filteredTransactions, recurringOccurrences]);
+
+  const totalItemCount = filteredTransactions.length + recurringOccurrences.length;
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-900">
       {/* Transaction list */}
       <div className="flex-1 overflow-clip pb-20">
         <div className="p-2 md:p-4 lg:p-6">
-        {filteredTransactions.length === 0 ? (
+        {groupedItems.length === 0 ? (
           <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center">
             <Receipt size={40} className="md:w-12 md:h-12 mx-auto text-primary-600 mb-2 md:mb-3" />
             <p className="text-xs md:text-sm text-primary-600">取引がありません</p>
           </div>
         ) : (
           <div className="space-y-2 md:space-y-3">
-            {groupedTransactions.map(([key, { label, transactions }]) => {
+            {groupedItems.map(([key, { label, items }]) => {
               // グループ内の合計を計算
-              const groupTotal = transactions.reduce((sum, t) => {
-                return sum + (t.type === 'income' ? t.amount : -t.amount);
+              const groupTotal = items.reduce((sum, item) => {
+                if (item.kind === 'transaction') {
+                  return sum + (item.data.type === 'income' ? item.data.amount : -item.data.amount);
+                } else {
+                  return sum + (item.data.payment.type === 'income' ? item.data.payment.amount : -item.data.payment.amount);
+                }
               }, 0);
 
               const isExpanded = expandedGroups.has(key);
@@ -232,36 +337,75 @@ export const TransactionsPage = () => {
                     </button>
                     {isExpanded && (
                       <div className="px-0 pb-0 border-t border-gray-200 dark:border-gray-700 pt-0 divide-y divide-gray-50 dark:divide-gray-700">
-                        {transactions.map((t) => {
-                          const color = getCategoryColor(t.categoryId);
-
-                          return (
-                            <button
-                              key={t.id}
-                              onClick={() => {
-                                setSelectedTransaction(t);
-                                setIsDetailOpen(true);
-                              }}
-                              className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
-                            >
-                              <div className="flex items-center gap-2 min-w-0 flex-1">
-                                <div
-                                  className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                                  style={{ backgroundColor: `${color}20`, color }}
-                                >
-                                  {getCategoryIcon(getCategoryIconName(t.categoryId), 12)}
+                        {items.map((item, idx) => {
+                          if (item.kind === 'transaction') {
+                            const t = item.data;
+                            const color = getCategoryColor(t.categoryId);
+                            return (
+                              <button
+                                key={t.id}
+                                onClick={() => {
+                                  setSelectedTransaction(t);
+                                  setIsDetailOpen(true);
+                                }}
+                                className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                              >
+                                <div className="flex items-center gap-2 min-w-0 flex-1">
+                                  <div
+                                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                                    style={{ backgroundColor: `${color}20`, color }}
+                                  >
+                                    {getCategoryIcon(getCategoryIconName(t.categoryId), 12)}
+                                  </div>
+                                  <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
+                                    {getCategoryName(t.categoryId)}
+                                  </p>
                                 </div>
-                                <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
-                                  {getCategoryName(t.categoryId)}
-                                </p>
-                              </div>
-                              <span className={`text-gray-900 dark:text-gray-200 font-semibold flex-shrink-0 ${
-                                t.type === 'income' ? 'text-green-600' : 'text-red-600'
-                              }`}>
-                                {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
-                              </span>
-                            </button>
-                          );
+                                <span className={`text-gray-900 dark:text-gray-200 font-semibold flex-shrink-0 ${
+                                  t.type === 'income' ? 'text-green-600' : 'text-red-600'
+                                }`}>
+                                  {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
+                                </span>
+                              </button>
+                            );
+                          } else {
+                            const occ = item.data;
+                            const p = occ.payment;
+                            const color = p.categoryId ? getCategoryColor(p.categoryId) : '#9ca3af';
+                            return (
+                              <button
+                                key={`recurring-${p.id}-${occ.date}-${idx}`}
+                                onClick={() => {
+                                  setSelectedRecurring(occ);
+                                  setIsRecurringDetailOpen(true);
+                                }}
+                                className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-left"
+                              >
+                                <div className="flex items-center gap-2 min-w-0 flex-1">
+                                  <div
+                                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                                    style={{ backgroundColor: `${color}20`, color }}
+                                  >
+                                    {p.categoryId
+                                      ? getCategoryIcon(getCategoryIconName(p.categoryId), 12)
+                                      : <RefreshCw size={10} />
+                                    }
+                                  </div>
+                                  <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
+                                    {p.name}
+                                  </p>
+                                  <span className="flex-shrink-0 text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded font-medium">
+                                    定期
+                                  </span>
+                                </div>
+                                <span className={`font-semibold flex-shrink-0 ${
+                                  p.type === 'income' ? 'text-green-600' : 'text-red-600'
+                                }`}>
+                                  {p.type === 'income' ? '+' : '-'}{formatCurrency(p.amount)}
+                                </span>
+                              </button>
+                            );
+                          }
                         })}
                       </div>
                     )}
@@ -305,7 +449,7 @@ export const TransactionsPage = () => {
 
             {/* Transaction Count */}
             <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
-              {filteredTransactions.length}件
+              {totalItemCount}件
             </p>
           </div>
 
@@ -332,6 +476,14 @@ export const TransactionsPage = () => {
           setSelectedTransaction(transaction);
           setEditingTransaction(transaction);
         }}
+      />
+
+      {/* Recurring Detail Modal */}
+      <RecurringDetailModal
+        payment={selectedRecurring?.payment ?? null}
+        occurrenceDate={selectedRecurring?.date ?? null}
+        isOpen={isRecurringDetailOpen}
+        onClose={() => setIsRecurringDetailOpen(false)}
       />
 
       {/* Edit Transaction Modal */}
