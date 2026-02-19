@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, ChevronLeft, ChevronRight, Tag, CreditCard, Users, PiggyBank } from 'lucide-react';
+import { Wallet, ChevronLeft, ChevronRight, Tag, CreditCard, Users, PiggyBank, TrendingDown, TrendingUp } from 'lucide-react';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
@@ -171,7 +171,7 @@ export const AccountsPage = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">支出</h3>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingDown size={14} />支出</h3>
                     <div className="flex items-center gap-0.5">
                       <button
                         onClick={() => setExpenseViewMode('category')}
@@ -225,7 +225,7 @@ export const AccountsPage = () => {
                 style={{ top: 'max(0px, env(safe-area-inset-top))' }}
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">収入</h3>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingUp size={14} />収入</h3>
                   <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
                     +{formatCurrency(totalIncomes + totalRecurringIncome)}
                   </p>

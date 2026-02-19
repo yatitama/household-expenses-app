@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, PiggyBank } from 'lucide-react';
+import { Wallet, PiggyBank, Landmark } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
@@ -135,7 +135,15 @@ export const MoneyPage = () => {
               className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
               style={{ top: 'max(0px, env(safe-area-inset-top))' }}
             >
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Landmark size={14} className="text-gray-900 dark:text-gray-100" />
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
+                </div>
+                <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
+                  {formatCurrency(totalBalance)}
+                </p>
+              </div>
             </div>
             <div className="pt-2 pb-3 md:pb-4">
               {accounts.length === 0 ? (
