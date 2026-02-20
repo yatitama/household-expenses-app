@@ -17,7 +17,7 @@ const defaultExpenseCategories: Category[] = [
   { id: 'cat-telecom', name: '通信費', type: 'expense', color: '#e5e7eb', icon: 'Wifi' },
   { id: 'cat-housing', name: '住居費', type: 'expense', color: '#d9dcde', icon: 'Home' },
   { id: 'cat-education', name: '教育費', type: 'expense', color: '#d1d5db', icon: 'GraduationCap' },
-  { id: 'cat-medical', name: '医療費', type: 'expense', color: '#c3c7cc', icon: 'Heart' },
+  { id: 'cat-medical', name: '医療費', type: 'expense', color: '#c3c7cc', icon: 'HeartPulse' },
   { id: 'cat-transport', name: '交通費', type: 'expense', color: '#b5b9bf', icon: 'Car' },
   { id: 'cat-entertainment', name: '娯楽費', type: 'expense', color: '#9ca3af', icon: 'Gamepad2' },
   { id: 'cat-clothing', name: '衣服', type: 'expense', color: '#8e9199', icon: 'Shirt' },
