@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { X, Wallet, CreditCard } from 'lucide-react';
+import { X, Trash2, Check, Wallet, CreditCard } from 'lucide-react';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { categoryService, paymentMethodService, accountService } from '../../../services/storage';
 import type {
@@ -34,7 +34,6 @@ export const RecurringPaymentModal = ({
   const [startDate, setStartDate] = useState(recurringPayment?.startDate || '');
   const [endDate, setEndDate] = useState(recurringPayment?.endDate || '');
   const [categoryId, setCategoryId] = useState(recurringPayment?.categoryId || '');
-  // 口座・支払い元を1つのIDで管理（AddTransactionModalと同じパターン）
   const [selectedSourceId, setSelectedSourceId] = useState<string>(() => {
     if (recurringPayment?.paymentMethodId) return recurringPayment.paymentMethodId;
     if (recurringPayment?.accountId) return recurringPayment.accountId;
@@ -69,7 +68,6 @@ export const RecurringPaymentModal = ({
       return;
     }
 
-    // selectedSourceIdが口座かカードかを判定
     const selectedAccount = allAccounts.find((a) => a.id === selectedSourceId);
     const selectedPaymentMethod = allPaymentMethods.find((pm) => pm.id === selectedSourceId);
     const resolvedAccountId = selectedAccount?.id
@@ -97,21 +95,33 @@ export const RecurringPaymentModal = ({
         className="bg-white dark:bg-gray-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-y-auto flex-1 min-h-0 p-3 sm:p-4">
-          <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+          <div className="flex items-center gap-2">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
               {recurringPayment ? '定期取引を編集' : '定期取引を追加'}
             </h3>
-            <button
-              type="button"
-              onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg"
-              aria-label="閉じる"
-            >
-              <X size={18} className="sm:w-5 sm:h-5" />
-            </button>
+            {recurringPayment && onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(recurringPayment.id); onClose(); }}
+                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                aria-label="削除"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
           </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+        </div>
 
+        <div className="overflow-y-auto flex-1 min-h-0 p-3 sm:p-4">
           <div className="space-y-4 sm:space-y-5">
             {/* 収入/支出切り替え */}
             <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
@@ -143,7 +153,7 @@ export const RecurringPaymentModal = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 家賃、携帯料金、Netflix"
-                className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
@@ -158,7 +168,7 @@ export const RecurringPaymentModal = ({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                   required
                 />
               </div>
@@ -170,30 +180,33 @@ export const RecurringPaymentModal = ({
                 カテゴリ
               </label>
               <div className="grid grid-cols-4 gap-2">
-                {filteredCategories.map((category) => {
-                  return (
-                    <button
-                      key={category.id}
-                      type="button"
-                      onClick={() => setCategoryId(categoryId === category.id ? '' : category.id)}
-                      className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors border ${
-                        categoryId === category.id
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                      }`}
+                {filteredCategories.map((category) => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => setCategoryId(categoryId === category.id ? '' : category.id)}
+                    className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                      categoryId === category.id
+                        ? 'bg-gray-100 dark:bg-gray-700'
+                        : ''
+                    }`}
+                  >
+                    <div
+                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${category.color}20`, color: category.color }}
                     >
-                      <div
-                        className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: `${category.color}20`, color: category.color }}
-                      >
-                        {getCategoryIcon(category.icon, 14)}
+                      {getCategoryIcon(category.icon, 14)}
+                    </div>
+                    <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                      {category.name}
+                    </span>
+                    {categoryId === category.id && (
+                      <div className="absolute -top-1 -right-1">
+                        <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                       </div>
-                      <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
-                        {category.name}
-                      </span>
-                    </button>
-                  );
-                })}
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -208,10 +221,10 @@ export const RecurringPaymentModal = ({
                     key={acct.id}
                     type="button"
                     onClick={() => setSelectedSourceId(selectedSourceId === acct.id ? '' : acct.id)}
-                    className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors border ${
+                    className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                       selectedSourceId === acct.id
-                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                        ? 'bg-gray-100 dark:bg-gray-700'
+                        : ''
                     }`}
                   >
                     <div
@@ -223,6 +236,11 @@ export const RecurringPaymentModal = ({
                     <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                       {acct.name}
                     </span>
+                    {selectedSourceId === acct.id && (
+                      <div className="absolute -top-1 -right-1">
+                        <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                      </div>
+                    )}
                   </button>
                 ))}
                 {allPaymentMethods.map((pm) => (
@@ -230,10 +248,10 @@ export const RecurringPaymentModal = ({
                     key={pm.id}
                     type="button"
                     onClick={() => setSelectedSourceId(selectedSourceId === pm.id ? '' : pm.id)}
-                    className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors border ${
+                    className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                       selectedSourceId === pm.id
-                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                        ? 'bg-gray-100 dark:bg-gray-700'
+                        : ''
                     }`}
                   >
                     <div
@@ -245,6 +263,11 @@ export const RecurringPaymentModal = ({
                     <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                       {pm.name}
                     </span>
+                    {selectedSourceId === pm.id && (
+                      <div className="absolute -top-1 -right-1">
+                        <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
@@ -259,7 +282,7 @@ export const RecurringPaymentModal = ({
                   min="1"
                   value={periodValue}
                   onChange={(e) => setPeriodValue(e.target.value)}
-                  className="w-20 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  className="w-20 bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
                   required
                 />
                 <div className="flex rounded-lg overflow-hidden flex-1">
@@ -305,7 +328,7 @@ export const RecurringPaymentModal = ({
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="flex-1 min-w-0 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
+                    className="flex-1 min-w-0 bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                   />
                   {startDate && (
                     <button
@@ -330,7 +353,7 @@ export const RecurringPaymentModal = ({
                     value={endDate}
                     min={startDate || today}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="flex-1 min-w-0 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
+                    className="flex-1 min-w-0 bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                   />
                   {endDate && (
                     <button
@@ -348,32 +371,14 @@ export const RecurringPaymentModal = ({
           </div>
         </div>
 
-        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
-          {recurringPayment && onDelete && (
-            <button
-              type="button"
-              onClick={() => { onDelete(recurringPayment.id); onClose(); }}
-              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
-            >
-              削除
-            </button>
-          )}
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600"
-            >
-              キャンセル
-            </button>
-            <button
-              type="submit"
-              disabled={!name || !amount || !periodValue || !categoryId || !selectedSourceId}
-              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary text-white font-medium text-sm disabled:opacity-50 transition-colors"
-            >
-              保存
-            </button>
-          </div>
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4">
+          <button
+            type="submit"
+            disabled={!name || !amount || !periodValue || !categoryId || !selectedSourceId}
+            className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary text-white font-medium text-sm disabled:opacity-50 transition-colors"
+          >
+            保存
+          </button>
         </div>
       </form>
     </div>

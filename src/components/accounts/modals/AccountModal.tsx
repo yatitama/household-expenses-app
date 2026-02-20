@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { X, Trash2, Check } from 'lucide-react';
 import { ACCOUNT_TYPE_LABELS, COLORS } from '../constants';
 import { ACCOUNT_TYPE_ICONS } from '../AccountIcons';
 import { COMMON_MEMBER_ID } from '../../../types';
@@ -32,42 +33,73 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
-      <form onSubmit={handleSubmit} className="bg-white w-full sm:max-w-md md:max-w-lg sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md md:max-w-lg sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{account ? '口座を編集' : '口座を追加'}</h3>
+            {account && onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(account.id); onClose(); }}
+                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                aria-label="削除"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
-          <h3 className="text-base sm:text-lg font-bold mb-4 sm:mb-6 text-gray-900 dark:text-gray-100">{account ? '口座を編集' : '口座を追加'}</h3>
           <div className="space-y-4 sm:space-y-5">
           <div>
-            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
-              名前
-              <span className="text-danger-600 ml-1">*</span>
-            </label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">名前</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 夫メイン銀行"
-              className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             />
           </div>
 
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">所有者</label>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {members.map((member) => (
                 <button
                   key={member.id}
                   type="button"
                   onClick={() => setMemberId(member.id)}
-                  className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+                  className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                     memberId === member.id
-                      ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
+                      ? 'bg-gray-100 dark:bg-gray-700'
+                      : ''
                   }`}
-                  style={memberId === member.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
-                  {member.name}
+                  <div
+                    className="w-7 h-7 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `${member.color}30` }}
+                  >
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
+                  </div>
+                  <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                    {member.name}
+                  </span>
+                  {memberId === member.id && (
+                    <div className="absolute -top-1 -right-1">
+                      <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
@@ -81,15 +113,23 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                   key={value}
                   type="button"
                   onClick={() => setAccountType(value)}
-                  className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+                  className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                     accountType === value
-                      ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
+                      ? 'bg-gray-100 dark:bg-gray-700'
+                      : ''
                   }`}
-                  style={accountType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
-                  {ACCOUNT_TYPE_ICONS[value]}
-                  {label}
+                  <div className="text-gray-600 dark:text-gray-400">
+                    {ACCOUNT_TYPE_ICONS[value]}
+                  </div>
+                  <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                    {label}
+                  </span>
+                  {accountType === value && (
+                    <div className="absolute -top-1 -right-1">
+                      <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
@@ -101,7 +141,8 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
               type="number"
               value={balance}
               onChange={(e) => setBalance(e.target.value)}
-              className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              placeholder="0"
+              className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2.5 text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
             />
           </div>
 
@@ -124,24 +165,10 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
 
           </div>
         </div>
-        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
-          {account && onDelete && (
-            <button
-              type="button"
-              onClick={() => { onDelete(account.id); onClose(); }}
-              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors text-sm"
-            >
-              削除
-            </button>
-          )}
-          <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-slate-600 text-sm">
-              キャンセル
-            </button>
-            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>
-              保存
-            </button>
-          </div>
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4">
+          <button type="submit" className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>
+            保存
+          </button>
         </div>
       </form>
     </div>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
-import { Wallet, CreditCard, Check } from 'lucide-react';
+import { Wallet, CreditCard, Check, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   accountService, transactionService, categoryService,
@@ -134,6 +134,12 @@ export const AddTransactionPage = () => {
         onSubmit={handleSubmit}
         className="bg-white dark:bg-slate-900 w-full max-w-md mx-auto"
       >
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">取引を追加</h2>
+          <Link to="/" className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" aria-label="閉じる">
+            <X size={18} />
+          </Link>
+        </div>
         <div className="p-3 sm:p-4">
             <div className="space-y-4 sm:space-y-5">
               <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
@@ -181,7 +187,7 @@ export const AddTransactionPage = () => {
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="0"
-                    className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                    className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                     required
                   />
                 </div>
@@ -198,7 +204,7 @@ export const AddTransactionPage = () => {
                         onClick={() => setCategoryId(category.id)}
                         className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                           categoryId === category.id
-                            ? 'bg-primary-50 dark:bg-primary-900/30'
+                            ? 'bg-gray-100 dark:bg-gray-700'
                             : ''
                         }`}
                       >
@@ -213,7 +219,7 @@ export const AddTransactionPage = () => {
                         </span>
                         {categoryId === category.id && (
                           <div className="absolute -top-1 -right-1">
-                            <Check size={16} className="text-primary-500" strokeWidth={2} />
+                            <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                           </div>
                         )}
                       </button>
@@ -234,7 +240,7 @@ export const AddTransactionPage = () => {
                       onClick={() => setSelectedSourceId(acct.id)}
                       className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                         selectedSourceId === acct.id
-                          ? 'bg-primary-50 dark:bg-primary-900/30'
+                          ? 'bg-gray-100 dark:bg-gray-700'
                           : ''
                       }`}
                     >
@@ -249,7 +255,7 @@ export const AddTransactionPage = () => {
                       </span>
                       {selectedSourceId === acct.id && (
                         <div className="absolute -top-1 -right-1">
-                          <Check size={16} className="text-primary-500" strokeWidth={2} />
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                         </div>
                       )}
                     </button>
@@ -262,7 +268,7 @@ export const AddTransactionPage = () => {
                       onClick={() => setSelectedSourceId(pm.id)}
                       className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                         selectedSourceId === pm.id
-                          ? 'bg-primary-50 dark:bg-primary-900/30'
+                          ? 'bg-gray-100 dark:bg-gray-700'
                           : ''
                       }`}
                     >
@@ -277,7 +283,7 @@ export const AddTransactionPage = () => {
                       </span>
                       {selectedSourceId === pm.id && (
                         <div className="absolute -top-1 -right-1">
-                          <Check size={16} className="text-primary-500" strokeWidth={2} />
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                         </div>
                       )}
                     </button>
@@ -291,7 +297,7 @@ export const AddTransactionPage = () => {
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
+                  className="w-full bg-gray-50 dark:bg-slate-700 rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
                 />
               </div>
 
@@ -302,20 +308,17 @@ export const AddTransactionPage = () => {
                   value={memo}
                   onChange={(e) => setMemo(e.target.value)}
                   placeholder="任意"
-                  className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
                 />
               </div>
             </div>
           </div>
         <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700">
-          <div className="max-w-md mx-auto p-3 sm:p-4 flex gap-3">
-            <Link to="/" className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600 text-center">
-              キャンセル
-            </Link>
+          <div className="max-w-md mx-auto p-3 sm:p-4">
             <button
               type="submit"
               disabled={!amount || !categoryId || !selectedSourceId}
-              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary text-white font-medium text-sm disabled:opacity-50 transition-colors"
+              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary text-white font-medium text-sm disabled:opacity-50 transition-colors"
             >
               登録
             </button>

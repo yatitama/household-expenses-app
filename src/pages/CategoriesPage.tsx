@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ArrowLeft, Plus, Edit2, Trash2, Tag } from 'lucide-react';
+import { ArrowLeft, Plus, Edit2, Trash2, Tag, X, Check } from 'lucide-react';
 import { categoryService } from '../services/storage';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
@@ -182,28 +182,38 @@ const CategoryModal = ({ category, type, onSave, onClose }: CategoryModalProps) 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
       <div
-        className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+        </div>
         <div className="overflow-y-auto overscroll-contain flex-1 min-h-0 p-3 sm:p-4">
-        <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
         <form id="category-form" onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           {/* 名前 */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">名前</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">名前</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 食費"
-              className="w-full dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-600"
               required
             />
           </div>
 
           {/* 色 */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">色</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">色</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map((c) => (
                 <button
@@ -211,7 +221,7 @@ const CategoryModal = ({ category, type, onSave, onClose }: CategoryModalProps) 
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-8 h-8 rounded-full transition-transform ${
-                    color === c ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''
+                    color === c ? 'ring-2 ring-offset-2 ring-primary-600 scale-110' : ''
                   }`}
                   style={{ backgroundColor: c }}
                 />
@@ -221,7 +231,7 @@ const CategoryModal = ({ category, type, onSave, onClose }: CategoryModalProps) 
 
           {/* アイコン */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">アイコン</label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">アイコン</label>
             <div className="grid grid-cols-6 gap-2">
               {ICON_NAMES.map((i) => {
                 const IconComponent = ICON_COMPONENTS[i];
@@ -230,13 +240,18 @@ const CategoryModal = ({ category, type, onSave, onClose }: CategoryModalProps) 
                     key={i}
                     type="button"
                     onClick={() => setIcon(i)}
-                    className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-colors ${
+                    className={`relative w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-colors ${
                       icon === i
-                        ? 'border-gray-700 bg-gray-100 text-gray-800 dark:text-gray-600'
-                        : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                        : 'text-gray-600 dark:text-gray-400'
                     }`}
                   >
                     <IconComponent size={16} className="sm:w-5 sm:h-5" />
+                    {icon === i && (
+                      <div className="absolute -top-1 -right-1">
+                        <Check size={12} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -245,18 +260,11 @@ const CategoryModal = ({ category, type, onSave, onClose }: CategoryModalProps) 
 
         </form>
         </div>
-        <div className="border-t p-3 sm:p-4 flex gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50"
-          >
-            キャンセル
-          </button>
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4">
           <button
             type="submit"
             form="category-form"
-            className="flex-1 py-2 px-3 sm:px-4 rounded-lg bg-gray-800 text-white font-medium text-sm hover:bg-gray-700"
+            className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-800 text-white font-medium text-sm hover:bg-gray-700"
           >
             保存
           </button>
