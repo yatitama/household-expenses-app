@@ -805,8 +805,8 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
           <div className="flex items-center gap-2">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
@@ -891,8 +891,8 @@ const CategoryModal = ({ category, type, onSave, onClose, onDelete }: CategoryMo
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
           <div className="flex items-center gap-2">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
@@ -1025,8 +1025,8 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
           <div className="flex items-center gap-2">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{goal ? '貯金目標を編集' : '貯金目標を追加'}</h3>

@@ -298,10 +298,14 @@
 - **`document.body.style.overflow` を直接操作してはならない**。必ず `useBodyScrollLock` フックを使うこと。
 - インポートパス: `modals/` 配下では `'../../../hooks/useBodyScrollLock'`、その他では相対パスで適宜調整。
 
+#### 閉じ方
+- **シート外タッチ（バックドロップクリック）** と **右上の ✕ ボタン** の両方で閉じられるようにする。
+- バックドロップ `div` に `onClick={onClose}` を付け、シート本体（`form`）に `onClick={(e) => e.stopPropagation()}` を付ける。
+
 #### ヘッダー
 - `flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700` を必ず付ける。
 - 左側: タイトル（`text-base sm:text-lg font-bold`）の右横に削除アイコンを配置（`<Trash2 size={16} />`）。
-- 右端: **✕ ボタン**（`<X size={18} />`）を必ず配置する。バックドロップクリックは不要（✕ ボタンのみで閉じる）。
+- 右端: **✕ ボタン**（`<X size={18} />`）を必ず配置する。
 
   ```
   [シート名] [🗑 アイコン（削除対象あり時のみ）] ............. [✕]
@@ -339,8 +343,8 @@ export const XxxModal = ({ item, onSave, onClose, onDelete }: XxxModalProps) => 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
 
         {/* ヘッダー */}
         <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
