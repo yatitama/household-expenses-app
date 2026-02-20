@@ -34,6 +34,18 @@
 - ファイル名: PascalCase（コンポーネント）、camelCase（その他）
 - 1ファイル1エクスポートを原則とする
 
+## UIコンポーネント規約
+
+### 情報表示シート（閲覧専用ボトムシート/モーダル）
+**編集・追加フォーム以外の「情報を見るだけ」のシートを新規作成・修正する際は、必ず以下の仕様に従うこと。**
+詳細仕様: `docs/pages-and-features.md` の「情報表示シートの標準仕様」セクション
+
+- 上辺の角丸なし（`rounded-t-*` 禁止）。デスクトップのみ `sm:rounded-xl`
+- **閉じ方は右上の ✕ ボタンとシート外タッチのみ**。ボトムに「閉じる」ボタンを置かない
+- ヘッダー右端に ✕ ボタン必須（`X` アイコン `size={18}`）、ヘッダー下辺に `border-b` 必須
+- 編集・削除アクションはフッターではなく、**シート名の右隣にアイコンのみ**配置
+- フッター（合計表示など）は上辺に `border-t`、下辺にボーダーなし、ボタン禁止
+
 ## ディレクトリ構成
 ```
 src/
@@ -109,7 +121,7 @@ src/
 
 - **型定義・データモデル変更時** → `docs/data-models.md`, `docs/account-payment-method-separation.md`
 - **ページ追加・ルーティング変更時** → `docs/architecture.md`, `docs/pages-and-features.md`, CLAUDE.md のページ構成テーブル
-- **コンポーネント追加・モーダル追加時** → `docs/pages-and-features.md`
+- **コンポーネント追加・モーダル追加時** → `docs/pages-and-features.md`（情報表示シートの場合は標準仕様セクションの対象一覧も更新）
 - **サービス・Hook・ユーティリティ変更時** → `docs/services-hooks-utils.md`
 - **技術スタック・依存関係変更時** → `docs/architecture.md`, CLAUDE.md の技術スタック
 - **ディレクトリ構成変更時** → `docs/architecture.md`, CLAUDE.md のディレクトリ構成
