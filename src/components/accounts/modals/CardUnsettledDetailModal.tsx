@@ -1,4 +1,4 @@
-import { Pencil } from 'lucide-react';
+import { Pencil, X } from 'lucide-react';
 import { formatCurrency } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { categoryService, accountService, paymentMethodService } from '../../../services/storage';
@@ -33,14 +33,22 @@ export const CardUnsettledDetailModal = ({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[1000]" onClick={onClose}>
       <div
-        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        className="bg-white w-full max-w-md sm:rounded-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
-          <div className="mb-4">
-            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">明細詳細</h3>
-          </div>
+        {/* ヘッダー */}
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">明細詳細</h3>
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+        </div>
 
+        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <div className="space-y-4 sm:space-y-5">
             {/* カテゴリ */}
             <div>
@@ -112,14 +120,8 @@ export const CardUnsettledDetailModal = ({
         </div>
 
         {/* フッター */}
-        <div className="flex gap-2 p-3 sm:p-4 bg-white dark:bg-gray-800">
-          <button
-            onClick={onClose}
-            className="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium py-2 rounded-lg transition-colors text-sm sm:text-base"
-          >
-            閉じる
-          </button>
-          {onEdit && transaction && (
+        {onEdit && transaction && (
+          <div className="flex gap-2 p-3 sm:p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
             <button
               onClick={() => {
                 onEdit(transaction);
@@ -130,8 +132,8 @@ export const CardUnsettledDetailModal = ({
               <Pencil size={16} />
               編集
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

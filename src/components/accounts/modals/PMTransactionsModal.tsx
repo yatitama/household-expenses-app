@@ -86,7 +86,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
       <div
-        className="bg-white w-full sm:max-w-2xl md:max-w-4xl sm:rounded-xl rounded-t-xl max-h-[85vh] overflow-hidden flex flex-col"
+        className="bg-white w-full sm:max-w-2xl md:max-w-4xl sm:rounded-xl max-h-[85vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-4 dark:border-gray-700">
@@ -111,7 +111,7 @@ export const PMTransactionsModal = ({ paymentMethod, onClose, showOnlyUnsettled:
         </div>
 
         {/* フィルタボタン */}
-        <div className="px-4 py-2 dark:border-gray-700 bg-gray-50/50 flex gap-2 items-center">
+        <div className="px-4 py-2 border-b dark:border-gray-700 bg-gray-50/50 flex gap-2 items-center">
           <button
             onClick={handleToggleUnsettledFilter}
             className={`px-3 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors ${

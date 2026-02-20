@@ -67,7 +67,7 @@ export const CardUnsettledListModal = ({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[1000]" onClick={onClose}>
       <div
-        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
+        className="bg-white w-full max-w-md sm:rounded-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 flex flex-col">
@@ -173,21 +173,15 @@ export const CardUnsettledListModal = ({
         {/* フッター */}
         <div className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
           {/* 合計金額 */}
-          <div className="p-3 sm:p-4 border-b dark:border-gray-700 text-right">
+          <div className="p-3 sm:p-4 text-right">
             <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">合計</p>
             <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
               {formatCurrency(total)}
             </p>
           </div>
           {/* ボタン */}
-          <div className="p-3 sm:p-4 flex gap-2">
-            <button
-              onClick={onClose}
-              className="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium py-2 px-4 rounded-lg transition-colors text-sm sm:text-base"
-            >
-              閉じる
-            </button>
-            {onEdit && (
+          {onEdit && (
+            <div className="px-3 pb-3 sm:px-4 sm:pb-4 flex gap-2">
               <button
                 onClick={() => {
                   onEdit(paymentMethod);
@@ -198,8 +192,8 @@ export const CardUnsettledListModal = ({
                 <Pencil size={16} />
                 編集
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
