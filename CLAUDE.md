@@ -52,6 +52,7 @@
 
 - 上辺の角丸あり（`rounded-t-xl`）。デスクトップでは `sm:rounded-xl`
 - **`useBodyScrollLock(true)` をコンポーネント内で必ず呼ぶ**（親ページへの依存禁止）
+- **シート外タッチで閉じる**: バックドロップ `div` に `onClick={onClose}`、シート本体に `onClick={(e) => e.stopPropagation()}`
 - ヘッダー: `border-b` 必須、右端に ✕ ボタン（`X` `size={18}`）、削除アイコンはタイトル右横のみ
 - **フッターは保存ボタン（`w-full`）のみ**。キャンセルボタン・削除ボタン禁止
 - 入力欄: `bg-gray-50 dark:bg-slate-700` 背景、`focus:ring-2 focus:ring-primary-600`
