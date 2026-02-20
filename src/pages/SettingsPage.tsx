@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, CreditCard, RefreshCw, PiggyBank } from 'lucide-react';
+import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, CreditCard, RefreshCw, PiggyBank, X, Check } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService, cardBillingService, linkedPaymentMethodService, savingsGoalService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
@@ -807,22 +807,44 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
       <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
+            {member && !member.isDefault && onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(member); onClose(); }}
+                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                aria-label="削除"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+        </div>
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
-          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{member ? 'メンバーを編集' : 'メンバーを追加'}</h3>
           <div className="space-y-3 sm:space-y-4">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">名前</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 太郎"
-                className="w-full dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">色</label>
               <div className="flex gap-2 flex-wrap">
                 {COLORS.map((c) => (
                   <button
@@ -830,7 +852,7 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
                     type="button"
                     onClick={() => setColor(c)}
                     className={`w-8 h-8 rounded-full transition-transform ${
-                      color === c ? 'ring-2 ring-offset-2 ring-primary-500 scale-110 dark:ring-offset-slate-800' : ''
+                      color === c ? 'ring-2 ring-offset-2 ring-primary-600 scale-110 dark:ring-offset-slate-800' : ''
                     }`}
                     style={{ backgroundColor: c }}
                   />
@@ -839,24 +861,10 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
             </div>
           </div>
         </div>
-        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
-          {member && !member.isDefault && onDelete && (
-            <button
-              type="button"
-              onClick={() => { onDelete(member); onClose(); }}
-              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
-            >
-              削除
-            </button>
-          )}
-          <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100">
-              キャンセル
-            </button>
-            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors" style={{ backgroundColor: 'var(--theme-primary)' }}>
-              保存
-            </button>
-          </div>
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4">
+          <button type="submit" className="w-full py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>
+            保存
+          </button>
         </div>
       </form>
     </div>
@@ -885,22 +893,44 @@ const CategoryModal = ({ category, type, onSave, onClose, onDelete }: CategoryMo
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
       <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
+            {category && onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(category.id); onClose(); }}
+                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                aria-label="削除"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+        </div>
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
-          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{category ? 'カテゴリを編集' : 'カテゴリを追加'}</h3>
           <div className="space-y-3 sm:space-y-4">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">名前</label>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">名前</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 食費"
-                className="w-full dark:border-gray-600 bg-white text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">色</label>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">色</label>
               <div className="flex gap-2 flex-wrap">
                 {COLORS.map((c) => (
                   <button
@@ -908,7 +938,7 @@ const CategoryModal = ({ category, type, onSave, onClose, onDelete }: CategoryMo
                     type="button"
                     onClick={() => setColor(c)}
                     className={`w-8 h-8 rounded-full transition-transform ${
-                      color === c ? 'ring-2 ring-offset-2 ring-primary-500 scale-110 dark:ring-offset-slate-800' : ''
+                      color === c ? 'ring-2 ring-offset-2 ring-primary-600 scale-110 dark:ring-offset-slate-800' : ''
                     }`}
                     style={{ backgroundColor: c }}
                   />
@@ -916,7 +946,7 @@ const CategoryModal = ({ category, type, onSave, onClose, onDelete }: CategoryMo
               </div>
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">アイコン</label>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">アイコン</label>
               <div className="grid grid-cols-6 gap-2">
                 {ICON_NAMES.map((i) => {
                   const IconComponent = ICON_COMPONENTS[i];
@@ -925,13 +955,18 @@ const CategoryModal = ({ category, type, onSave, onClose, onDelete }: CategoryMo
                       key={i}
                       type="button"
                       onClick={() => setIcon(i)}
-                      className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-colors ${
+                      className={`relative w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-colors ${
                         icon === i
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
-                          : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                          ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                          : 'text-gray-600 dark:text-gray-400'
                       }`}
                     >
                       <IconComponent size={16} className="sm:w-5 sm:h-5" />
+                      {icon === i && (
+                        <div className="absolute -top-1 -right-1">
+                          <Check size={12} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                        </div>
+                      )}
                     </button>
                   );
                 })}
@@ -939,24 +974,10 @@ const CategoryModal = ({ category, type, onSave, onClose, onDelete }: CategoryMo
             </div>
           </div>
         </div>
-        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
-          {category && onDelete && (
-            <button
-              type="button"
-              onClick={() => { onDelete(category.id); onClose(); }}
-              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
-            >
-              削除
-            </button>
-          )}
-          <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100">
-              キャンセル
-            </button>
-            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors" style={{ backgroundColor: 'var(--theme-primary)' }}>
-              保存
-            </button>
-          </div>
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4">
+          <button type="submit" className="w-full py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>
+            保存
+          </button>
         </div>
       </form>
     </div>
@@ -1006,49 +1027,71 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
       <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{goal ? '貯金目標を編集' : '貯金目標を追加'}</h3>
+            {goal && onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(goal.id); onClose(); }}
+                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                aria-label="削除"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+        </div>
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
-          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{goal ? '貯金目標を編集' : '貯金目標を追加'}</h3>
           <div className="space-y-3 sm:space-y-4">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">貯金名</label>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">貯金名</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: 夏休み旅行貯金"
-                className="w-full dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">目標金額 (円)</label>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">目標金額 (円)</label>
               <input
                 type="number"
                 value={targetAmount}
                 onChange={(e) => setTargetAmount(e.target.value)}
                 placeholder="例: 100000"
                 min="1"
-                className="w-full dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">いつから</label>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">いつから</label>
               <input
                 type="month"
                 value={startMonth}
                 onChange={(e) => setStartMonth(e.target.value)}
-                className="w-full dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">いつまで</label>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">いつまで</label>
               <input
                 type="month"
                 value={targetDate}
                 onChange={(e) => setTargetDate(e.target.value)}
-                className="w-full dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus-visible:ring-primary-500"
+                className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
@@ -1056,30 +1099,16 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
         </div>
         <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
           {previewMonthly !== null && (
-            <div className="flex justify-end">
+            <div className="flex justify-end mb-2">
               <div className="text-right">
                 <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">毎月の貯金額</p>
                 <p className="text-lg font-bold" style={{ color: 'var(--theme-primary)' }}>¥{previewMonthly.toLocaleString()}</p>
               </div>
             </div>
           )}
-          {goal && onDelete && (
-            <button
-              type="button"
-              onClick={() => { onDelete(goal.id); onClose(); }}
-              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors"
-            >
-              削除
-            </button>
-          )}
-          <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 text-gray-900 dark:text-gray-200 font-medium text-sm hover:bg-gray-100">
-              キャンセル
-            </button>
-            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors" style={{ backgroundColor: 'var(--theme-primary)' }}>
-              保存
-            </button>
-          </div>
+          <button type="submit" className="w-full py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>
+            保存
+          </button>
         </div>
       </form>
     </div>

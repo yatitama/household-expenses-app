@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Info } from 'lucide-react';
+import { X, Trash2, Check, Info } from 'lucide-react';
 import { PM_TYPE_LABELS, BILLING_TYPE_LABELS, COLORS } from '../constants';
 import { PM_TYPE_ICONS } from '../AccountIcons';
 import { COMMON_MEMBER_ID } from '../../../types';
@@ -42,9 +42,32 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60">
-      <form onSubmit={handleSubmit} className="bg-white w-full sm:max-w-md md:max-w-lg sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 w-full sm:max-w-md md:max-w-lg sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{paymentMethod ? '支払い手段を編集' : '支払い手段を追加'}</h3>
+            {paymentMethod && onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(paymentMethod.id); onClose(); }}
+                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                aria-label="削除"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
-          <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{paymentMethod ? '支払い手段を編集' : '支払い手段を追加'}</h3>
           <div className="space-y-4 sm:space-y-5">
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">名前</label>
@@ -53,28 +76,39 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 夫クレジットカード"
-              className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
+              className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-primary-600 focus:border-primary-600"
               required
             />
           </div>
 
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">所有者</label>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {members.map((member) => (
                 <button
                   key={member.id}
                   type="button"
                   onClick={() => setMemberId(member.id)}
-                  className={`flex items-center gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+                  className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                     memberId === member.id
-                      ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
+                      ? 'bg-gray-100 dark:bg-gray-700'
+                      : ''
                   }`}
-                  style={memberId === member.id ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
-                  {member.name}
+                  <div
+                    className="w-7 h-7 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `${member.color}30` }}
+                  >
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
+                  </div>
+                  <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                    {member.name}
+                  </span>
+                  {memberId === member.id && (
+                    <div className="absolute -top-1 -right-1">
+                      <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
@@ -92,15 +126,23 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     if (value === 'credit_card') setBillingType('monthly');
                     if (value === 'debit_card') setBillingType('immediate');
                   }}
-                  className={`flex items-center gap-1 sm:gap-2 py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+                  className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                     pmType === value
-                      ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
+                      ? 'bg-gray-100 dark:bg-gray-700'
+                      : ''
                   }`}
-                  style={pmType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
-                  {PM_TYPE_ICONS[value]}
-                  {label}
+                  <div className="text-gray-600 dark:text-gray-400">
+                    {PM_TYPE_ICONS[value]}
+                  </div>
+                  <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                    {label}
+                  </span>
+                  {pmType === value && (
+                    <div className="absolute -top-1 -right-1">
+                      <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
@@ -119,15 +161,15 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     onClick={() => setLinkedAccountId(acct.id)}
                     className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
                       linkedAccountId === acct.id
-                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                        ? 'bg-gray-100 dark:bg-gray-700'
+                        : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
                       <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{acct.name}</span>
                     </div>
-                    {linkedAccountId === acct.id && <Check size={14} className="sm:w-4 sm:h-4 text-primary-500" />}
+                    {linkedAccountId === acct.id && <Check size={14} className="sm:w-4 sm:h-4 text-gray-600 dark:text-gray-300" />}
                   </button>
                 ))}
               </div>
@@ -142,14 +184,18 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                   key={value}
                   type="button"
                   onClick={() => setBillingType(value)}
-                  className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+                  className={`relative py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                     billingType === value
-                      ? 'text-white border-transparent'
-                      : 'bg-white text-gray-900 dark:text-gray-200 dark:border-gray-600 hover:border-gray-400'
+                      ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                      : 'text-gray-900 dark:text-gray-200'
                   }`}
-                  style={billingType === value ? { backgroundColor: 'var(--theme-primary)' } : {}}
                 >
                   {label}
+                  {billingType === value && (
+                    <div className="absolute -top-1 -right-1">
+                      <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
@@ -166,7 +212,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
             const nextDayMonth = nextDay.getMonth() + 1;
             const nextDayDate = nextDay.getDate();
             return (
-              <div className="bg-gray-50 rounded-lg p-3 space-y-3">
+              <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-3 space-y-3">
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">締め日</label>
                   <div className="flex items-center gap-2">
@@ -177,7 +223,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                       max="31"
                       value={closingDay}
                       onChange={(e) => setClosingDay(e.target.value)}
-                      className="w-16 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
+                      className="w-16 bg-white dark:bg-slate-600 dark:border-gray-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
                     />
                     <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">日</span>
                   </div>
@@ -188,7 +234,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     <select
                       value={paymentMonthOffset}
                       onChange={(e) => setPaymentMonthOffset(e.target.value)}
-                      className="border dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
+                      className="bg-white dark:bg-slate-600 dark:border-gray-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                     >
                       <option value="0">当月</option>
                       <option value="1">翌月</option>
@@ -200,12 +246,12 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                       max="31"
                       value={paymentDay}
                       onChange={(e) => setPaymentDay(e.target.value)}
-                      className="w-16 dark:border-gray-600 dark:bg-slate-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
+                      className="w-16 bg-white dark:bg-slate-600 dark:border-gray-600 dark:text-gray-100 rounded-lg px-2 py-1 text-xs sm:text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-600"
                     />
                     <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">日</span>
                   </div>
                 </div>
-                <div className="bg-gray-100 rounded-lg p-2 sm:p-2.5 mt-2">
+                <div className="bg-gray-100 dark:bg-slate-600 rounded-lg p-2 sm:p-2.5 mt-2">
                   <div className="flex items-start gap-1.5">
                     <Info size={12} className="sm:w-3.5 sm:h-3.5 text-gray-600 flex-shrink-0 mt-0.5" />
                     <div className="text-xs sm:text-sm text-gray-800 dark:text-gray-400 space-y-1">
@@ -238,24 +284,10 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
 
           </div>
         </div>
-        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
-          {paymentMethod && onDelete && (
-            <button
-              type="button"
-              onClick={() => { onDelete(paymentMethod.id); onClose(); }}
-              className="w-full py-2 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
-            >
-              削除
-            </button>
-          )}
-          <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
-              キャンセル
-            </button>
-            <button type="submit" className="flex-1 py-2 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>
-              保存
-            </button>
-          </div>
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4">
+          <button type="submit" className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg text-white font-medium text-sm transition-colors hover:opacity-90" style={{ backgroundColor: 'var(--theme-primary)' }}>
+            保存
+          </button>
         </div>
       </form>
     </div>

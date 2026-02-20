@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Check, Wallet, CreditCard } from 'lucide-react';
+import { Check, Wallet, CreditCard, X, Trash2 } from 'lucide-react';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import type { Account, PaymentMethod, Transaction, TransactionType, TransactionInput } from '../../../types';
 
@@ -49,11 +49,34 @@ export const EditTransactionModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[60]" onClick={onClose} role="dialog" aria-modal="true" aria-label="取引を編集">
       <form
         onSubmit={handleSubmit}
-        className="bg-white w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[85vh]"
+        className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">取引を編集</h3>
+            {onDelete && (
+              <button
+                type="button"
+                onClick={() => { onDelete(transaction.id); onClose(); }}
+                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                aria-label="削除"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
         <div className="overflow-y-auto flex-1 p-3 sm:p-4">
-          <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">取引を編集</h3>
           <div className="space-y-4 sm:space-y-5">
           <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
             <button
@@ -84,7 +107,8 @@ export const EditTransactionModal = ({
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                placeholder="0"
+                className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
             </div>
@@ -93,30 +117,33 @@ export const EditTransactionModal = ({
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
             <div className="grid grid-cols-4 gap-2">
-              {filteredCategories.map((category) => {
-                return (
-                  <button
-                    key={category.id}
-                    type="button"
-                    onClick={() => setCategoryId(category.id)}
-                    className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
-                      categoryId === category.id
-                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                    }`}
+              {filteredCategories.map((category) => (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => setCategoryId(category.id)}
+                  className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                    categoryId === category.id
+                      ? 'bg-gray-100 dark:bg-gray-700'
+                      : ''
+                  }`}
+                >
+                  <div
+                    className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `${category.color}20`, color: category.color }}
                   >
-                    <div
-                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: `${category.color}20`, color: category.color }}
-                    >
-                      {getCategoryIcon(category.icon, 14)}
+                    {getCategoryIcon(category.icon, 14)}
+                  </div>
+                  <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                    {category.name}
+                  </span>
+                  {categoryId === category.id && (
+                    <div className="absolute -top-1 -right-1">
+                      <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                     </div>
-                    <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
-                      {category.name}
-                    </span>
-                  </button>
-                );
-              })}
+                  )}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -132,7 +159,7 @@ export const EditTransactionModal = ({
                   onClick={() => setSelectedSourceId(acct.id)}
                   className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                     selectedSourceId === acct.id
-                      ? 'bg-primary-50 dark:bg-primary-900/30'
+                      ? 'bg-gray-100 dark:bg-gray-700'
                       : ''
                   }`}
                 >
@@ -147,7 +174,7 @@ export const EditTransactionModal = ({
                   </span>
                   {selectedSourceId === acct.id && (
                     <div className="absolute -top-1 -right-1">
-                      <Check size={16} className="text-primary-500" strokeWidth={2} />
+                      <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                     </div>
                   )}
                 </button>
@@ -160,7 +187,7 @@ export const EditTransactionModal = ({
                   onClick={() => setSelectedSourceId(pm.id)}
                   className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                     selectedSourceId === pm.id
-                      ? 'bg-primary-50 dark:bg-primary-900/30'
+                      ? 'bg-gray-100 dark:bg-gray-700'
                       : ''
                   }`}
                 >
@@ -175,7 +202,7 @@ export const EditTransactionModal = ({
                   </span>
                   {selectedSourceId === pm.id && (
                     <div className="absolute -top-1 -right-1">
-                      <Check size={16} className="text-primary-500" strokeWidth={2} />
+                      <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                     </div>
                   )}
                 </button>
@@ -189,7 +216,7 @@ export const EditTransactionModal = ({
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+              className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
               style={{ minWidth: 0, maxWidth: '100%' }}
             />
           </div>
@@ -201,34 +228,20 @@ export const EditTransactionModal = ({
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder="任意"
-              className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+              className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
             />
           </div>
 
           </div>
         </div>
-        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
-          {onDelete && (
-            <button
-              type="button"
-              onClick={() => { onDelete(transaction.id); onClose(); }}
-              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
-            >
-              削除
-            </button>
-          )}
-          <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
-              キャンセル
-            </button>
-            <button
-              type="submit"
-              disabled={!amount || !categoryId || !selectedSourceId}
-              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary text-white font-medium text-sm disabled:opacity-50 hover:bg-primary-dark transition-colors"
-            >
-              保存
-            </button>
-          </div>
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4">
+          <button
+            type="submit"
+            disabled={!amount || !categoryId || !selectedSourceId}
+            className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary text-white font-medium text-sm disabled:opacity-50 hover:bg-primary-dark transition-colors"
+          >
+            保存
+          </button>
         </div>
       </form>
     </div>

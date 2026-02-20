@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Wallet, CreditCard, Check } from 'lucide-react';
+import { X, Trash2, Wallet, CreditCard, Check } from 'lucide-react';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { QuickAddTemplate, QuickAddTemplateInput, Category, Account, PaymentMethod } from '../../types';
 
@@ -43,7 +43,6 @@ export const QuickAddTemplateModal = ({
       return;
     }
 
-    // Determine if selected source is account or payment method
     const account = accounts.find((a) => a.id === selectedSourceId);
     const paymentMethod = paymentMethods.find((p) => p.id === selectedSourceId);
 
@@ -70,16 +69,33 @@ export const QuickAddTemplateModal = ({
         className="bg-white dark:bg-slate-800 w-full max-w-md sm:rounded-xl rounded-t-xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
-          <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+          <div className="flex items-center gap-2">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
               {template ? 'クイック入力を編集' : 'クイック入力を作成'}
             </h3>
-            <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 rounded-lg" aria-label="閉じる">
-              <X size={18} className="sm:w-5 sm:h-5" />
-            </button>
+            {template && onDelete && (
+              <button
+                type="button"
+                onClick={onDelete}
+                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                aria-label="削除"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
           </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+        </div>
 
+        <div className="overflow-y-auto flex-1 p-3 sm:p-4">
           <div className="space-y-4 sm:space-y-5">
             {/* Type */}
             <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
@@ -111,7 +127,7 @@ export const QuickAddTemplateModal = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例: コンビニ"
-                className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
               />
             </div>
 
@@ -125,7 +141,7 @@ export const QuickAddTemplateModal = ({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  className="w-full text-lg sm:text-xl font-bold pl-8 pr-3 py-2 bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                 />
               </div>
             </div>
@@ -134,35 +150,33 @@ export const QuickAddTemplateModal = ({
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
               <div className="grid grid-cols-4 gap-2">
-                {filteredCategories.map((category) => {
-                  return (
-                    <button
-                      key={category.id}
-                      type="button"
-                      onClick={() => setCategoryId(categoryId === category.id ? '' : category.id)}
-                      className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
-                        categoryId === category.id
-                          ? 'bg-primary-50 dark:bg-primary-900/30'
-                          : ''
-                      }`}
+                {filteredCategories.map((category) => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => setCategoryId(categoryId === category.id ? '' : category.id)}
+                    className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                      categoryId === category.id
+                        ? 'bg-gray-100 dark:bg-gray-700'
+                        : ''
+                    }`}
+                  >
+                    <div
+                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${category.color}20`, color: category.color }}
                     >
-                      <div
-                        className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: `${category.color}20`, color: category.color }}
-                      >
-                        {getCategoryIcon(category.icon, 14)}
+                      {getCategoryIcon(category.icon, 14)}
+                    </div>
+                    <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                      {category.name}
+                    </span>
+                    {categoryId === category.id && (
+                      <div className="absolute -top-1 -right-1">
+                        <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                       </div>
-                      <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
-                        {category.name}
-                      </span>
-                      {categoryId === category.id && (
-                        <div className="absolute -top-1 -right-1">
-                          <Check size={16} className="text-primary-500" strokeWidth={2} />
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -179,8 +193,8 @@ export const QuickAddTemplateModal = ({
                     onClick={() => setSelectedSourceId(selectedSourceId === acct.id ? '' : acct.id)}
                     className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                       selectedSourceId === acct.id
-                        ? 'bg-primary-50 dark:bg-primary-900/30'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'bg-gray-100 dark:bg-gray-700'
+                        : ''
                     }`}
                   >
                     <div
@@ -194,7 +208,7 @@ export const QuickAddTemplateModal = ({
                     </span>
                     {selectedSourceId === acct.id && (
                       <div className="absolute -top-1 -right-1">
-                        <Check size={16} className="text-primary-500" strokeWidth={2} />
+                        <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                       </div>
                     )}
                   </button>
@@ -207,8 +221,8 @@ export const QuickAddTemplateModal = ({
                     onClick={() => setSelectedSourceId(selectedSourceId === pm.id ? '' : pm.id)}
                     className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
                       selectedSourceId === pm.id
-                        ? 'bg-primary-50 dark:bg-primary-900/30'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'bg-gray-100 dark:bg-gray-700'
+                        : ''
                     }`}
                   >
                     <div
@@ -222,7 +236,7 @@ export const QuickAddTemplateModal = ({
                     </span>
                     {selectedSourceId === pm.id && (
                       <div className="absolute -top-1 -right-1">
-                        <Check size={16} className="text-primary-500" strokeWidth={2} />
+                        <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                       </div>
                     )}
                   </button>
@@ -238,7 +252,7 @@ export const QuickAddTemplateModal = ({
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
+                  className="w-full bg-gray-50 dark:bg-slate-700 rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
                   aria-label="日付"
                 />
                 {date && (
@@ -262,35 +276,20 @@ export const QuickAddTemplateModal = ({
                 value={memo}
                 onChange={(e) => setMemo(e.target.value)}
                 placeholder="任意"
-                className="w-full dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
               />
             </div>
           </div>
         </div>
 
-        {/* Footer Buttons */}
-        <div className="border-t dark:border-gray-700 p-3 sm:p-4 space-y-2">
-          {template && onDelete && (
-            <button
-              type="button"
-              onClick={onDelete}
-              className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors"
-            >
-              削除
-            </button>
-          )}
-          <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg dark:border-gray-600 bg-gray-100 text-gray-900 dark:text-gray-100 font-medium text-sm hover:bg-gray-200 dark:hover:bg-slate-600">
-              キャンセル
-            </button>
-            <button
-              type="submit"
-              disabled={!name}
-              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary hover:bg-slate-800 text-white font-medium text-sm disabled:opacity-50 transition-colors"
-            >
-              保存
-            </button>
-          </div>
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4">
+          <button
+            type="submit"
+            disabled={!name}
+            className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary hover:bg-slate-800 text-white font-medium text-sm disabled:opacity-50 transition-colors"
+          >
+            保存
+          </button>
         </div>
       </form>
     </div>
