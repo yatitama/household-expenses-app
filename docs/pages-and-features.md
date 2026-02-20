@@ -180,3 +180,78 @@
 | `RecurringListModal` | 定期取引一覧 |
 | `LinkedPaymentMethodModal` | カードと口座の紐付け管理 |
 | `GradientPickerModal` | グラデーション色選択 |
+
+---
+
+## 情報表示シートの標準仕様
+
+編集・追加以外の「情報を見るだけ」のシート（ボトムシート/モーダル）に適用するUIルール。
+
+### 対象コンポーネント
+
+| コンポーネント | 概要 |
+|---|---|
+| `AccountDetailModal` | 口座詳細 |
+| `CardUnsettledDetailModal` | カード未精算取引の詳細 |
+| `RecurringPaymentDetailModal` | 定期取引の詳細 |
+| `CategoryTransactionsModal` | カテゴリ内取引一覧 |
+| `CardUnsettledListModal` | カード未精算取引一覧 |
+| `AccountTransactionsModal` | 口座の取引一覧 |
+| `PMTransactionsModal` | 支払い手段の取引一覧 |
+
+### UIルール
+
+#### シートの形状
+- **上辺の角丸なし**: モバイルでも `rounded-t-*` を付けない。上辺はフラット。
+- **デスクトップでは角丸あり**: `sm:rounded-xl` のみ（デスクトップ中央表示時）。
+
+#### 閉じ方
+- **シート外タッチ（バックドロップクリック）** のみ、または **右上のバツ（✕）ボタン** のみで閉じる。
+- ボトムに「閉じる」ボタンは配置しない。
+
+#### ヘッダー
+- シート右上に **✕ ボタン**（`X` アイコン、`size={18}`）を必ず配置する。
+- ヘッダー下辺に **`border-b`** を付ける（コンテンツとの境界線）。
+- **編集・削除アクション**がある場合は、フッターにボタンを置かず、シート名のすぐ右にアイコンのみ（Pencil など）を配置する。
+
+  ```
+  [シート名] [✏ アイコン（任意）] [🗑 アイコン（任意）] ......... [✕]
+  ```
+
+  アイコン押下で即座に対応するアクション（編集シートを開くなど）が実行される。
+
+#### フッター（合計表示など）
+- 情報表示のみのフッター（合計金額など）は **`border-t`** を上辺に付ける。
+- フッター下辺にはボーダーを付けない（`border-b` 不可）。
+- フッター内にボタンは置かない（「閉じる」「編集」いずれも不可）。
+
+#### 実装パターン
+
+```tsx
+{/* バックドロップ（クリックで閉じる） */}
+<div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[1000]" onClick={onClose}>
+  {/* シート本体（上辺フラット、デスクトップのみ角丸） */}
+  <div className="bg-white dark:bg-gray-800 w-full max-w-md sm:rounded-xl flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+
+    {/* ヘッダー */}
+    <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
+      <div className="flex items-center gap-2">
+        <h3>シート名</h3>
+        {onEdit && <button onClick={onEdit}><Pencil size={16} /></button>}
+      </div>
+      <button onClick={onClose}><X size={18} /></button>
+    </div>
+
+    {/* コンテンツ（スクロール可能） */}
+    <div className="overflow-y-auto flex-1 p-3 sm:p-4">
+      ...
+    </div>
+
+    {/* フッター（合計など、必要な場合のみ） */}
+    <div className="border-t dark:border-gray-700 p-3 sm:p-4">
+      ...
+    </div>
+
+  </div>
+</div>
+```
