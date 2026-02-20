@@ -72,10 +72,10 @@ export const AccountTransactionsModal = ({ account, onClose }: AccountTransactio
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>
       <div
-        className="bg-white w-full sm:max-w-2xl md:max-w-4xl sm:rounded-xl rounded-t-xl max-h-[85vh] overflow-hidden flex flex-col"
+        className="bg-white w-full sm:max-w-2xl md:max-w-4xl sm:rounded-xl max-h-[85vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 dark:border-gray-700 flex justify-between items-center">
+        <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: account.color }}>
               {ACCOUNT_TYPE_ICONS[account.type]}
