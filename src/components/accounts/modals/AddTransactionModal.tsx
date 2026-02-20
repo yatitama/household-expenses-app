@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useBodyScrollLock } from '../../../hooks/useBodyScrollLock';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { X, Check, Wallet, CreditCard } from 'lucide-react';
@@ -27,6 +28,7 @@ export const AddTransactionModal = ({ template, onSaved, onClose }: AddTransacti
   const [selectedSourceId, setSelectedSourceId] = useState(() => template?.accountId || template?.paymentMethodId || '');
   const [date, setDate] = useState(() => template?.date || format(new Date(), 'yyyy-MM-dd'));
   const [memo, setMemo] = useState(() => template?.memo || '');
+  useBodyScrollLock(true);
 
   const filteredCategories = categories.filter((c) => c.type === type);
 

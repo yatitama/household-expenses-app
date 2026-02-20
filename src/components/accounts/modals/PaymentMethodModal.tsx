@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useBodyScrollLock } from '../../../hooks/useBodyScrollLock';
 import { X, Trash2, Check, Info } from 'lucide-react';
 import { PM_TYPE_LABELS, BILLING_TYPE_LABELS, COLORS } from '../constants';
 import { PM_TYPE_ICONS } from '../AccountIcons';
@@ -24,6 +25,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
   const [paymentDay, setPaymentDay] = useState(paymentMethod?.paymentDay?.toString() || '10');
   const [paymentMonthOffset, setPaymentMonthOffset] = useState(paymentMethod?.paymentMonthOffset?.toString() || '1');
   const [color, setColor] = useState(paymentMethod?.color || COLORS[5]);
+  useBodyScrollLock(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,23 +155,32 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
             {accounts.length === 0 ? (
               <p className="text-sm text-gray-500 dark:text-gray-400">先に口座を登録してください</p>
             ) : (
-              <div className="space-y-1">
+              <div className="grid grid-cols-4 gap-2">
                 {accounts.map((acct) => (
                   <button
                     key={acct.id}
                     type="button"
                     onClick={() => setLinkedAccountId(acct.id)}
-                    className={`w-full flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-colors ${
+                    className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
                       linkedAccountId === acct.id
                         ? 'bg-gray-100 dark:bg-gray-700'
-                        : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                        : ''
                     }`}
                   >
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full" style={{ backgroundColor: acct.color }} />
-                      <span className="font-medium text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{acct.name}</span>
+                    <div
+                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full"
+                      style={{ backgroundColor: `${acct.color}30` }}
+                    >
+                      <div className="w-full h-full rounded-full" style={{ backgroundColor: `${acct.color}50` }} />
                     </div>
-                    {linkedAccountId === acct.id && <Check size={14} className="sm:w-4 sm:h-4 text-gray-600 dark:text-gray-300" />}
+                    <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                      {acct.name}
+                    </span>
+                    {linkedAccountId === acct.id && (
+                      <div className="absolute -top-1 -right-1">
+                        <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>

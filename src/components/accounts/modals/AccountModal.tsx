@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useBodyScrollLock } from '../../../hooks/useBodyScrollLock';
 import { X, Trash2, Check } from 'lucide-react';
 import { ACCOUNT_TYPE_LABELS, COLORS } from '../constants';
 import { ACCOUNT_TYPE_ICONS } from '../AccountIcons';
@@ -19,6 +20,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
   const [accountType, setAccountType] = useState<AccountType>(account?.type || 'bank');
   const [balance, setBalance] = useState(account?.balance.toString() || '0');
   const [color, setColor] = useState(account?.color || COLORS[0]);
+  useBodyScrollLock(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

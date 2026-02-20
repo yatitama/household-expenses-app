@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useBodyScrollLock } from '../../../hooks/useBodyScrollLock';
 import { X, Wallet } from 'lucide-react';
 
 const GRADIENT_PRESETS: { from: string; to: string; label: string }[] = [
@@ -23,6 +24,7 @@ interface GradientPickerModalProps {
 export const GradientPickerModal = ({ currentFrom, currentTo, onSave, onClose }: GradientPickerModalProps) => {
   const [selectedFrom, setSelectedFrom] = useState(currentFrom);
   const [selectedTo, setSelectedTo] = useState(currentTo);
+  useBodyScrollLock(true);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose}>

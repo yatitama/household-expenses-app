@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useBodyScrollLock } from '../../../hooks/useBodyScrollLock';
 import toast from 'react-hot-toast';
 import { X, Trash2, Check, Wallet, CreditCard } from 'lucide-react';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
@@ -39,6 +40,7 @@ export const RecurringPaymentModal = ({
     if (recurringPayment?.accountId) return recurringPayment.accountId;
     return '';
   });
+  useBodyScrollLock(true);
 
   const filteredCategories = allCategories.filter((c) => c.type === type);
 
