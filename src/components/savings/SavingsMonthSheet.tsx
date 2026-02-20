@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import { X, PiggyBank, RotateCcw } from 'lucide-react';
 import { calculateMonthlyAmount, getEffectiveMonthlyAmount, isMonthExcluded } from '../../utils/savingsUtils';
 import type { SavingsGoal } from '../../types';
@@ -23,6 +24,7 @@ export const SavingsMonthSheet = ({ goal, month, onSave, onClose }: SavingsMonth
 
   const [excluded, setExcluded] = useState(initialExcluded);
   const [amountStr, setAmountStr] = useState(String(effectiveAmount));
+  useBodyScrollLock(true);
 
   useEffect(() => {
     if (!excluded) {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useBodyScrollLock } from '../../../hooks/useBodyScrollLock';
 import toast from 'react-hot-toast';
 import { Check, Wallet, CreditCard, X, Trash2 } from 'lucide-react';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
@@ -23,6 +24,7 @@ export const EditTransactionModal = ({
   const [selectedSourceId, setSelectedSourceId] = useState(transaction.paymentMethodId || transaction.accountId);
   const [date, setDate] = useState(transaction.date);
   const [memo, setMemo] = useState(transaction.memo || '');
+  useBodyScrollLock(true);
 
   const filteredCategories = categories.filter((c) => c.type === type);
 

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useBodyScrollLock } from '../../../hooks/useBodyScrollLock';
 import toast from 'react-hot-toast';
 import { X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { memberService, linkedPaymentMethodService } from '../../../services/storage';
@@ -27,6 +28,7 @@ export const LinkedPaymentMethodModal = ({
   const [paymentMethodId, setPaymentMethodId] = useState(linkedPaymentMethod?.paymentMethodId || '');
   const [accountId, setAccountId] = useState(linkedPaymentMethod?.accountId || defaultAccountId || '');
   const [isActive, setIsActive] = useState(linkedPaymentMethod?.isActive ?? true);
+  useBodyScrollLock(true);
 
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
