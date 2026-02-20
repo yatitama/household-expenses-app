@@ -74,13 +74,25 @@ export const CardUnsettledListModal = ({
           {/* 固定ヘッダー */}
           <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 p-3 sm:p-4 border-b dark:border-gray-700">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
-                {paymentMethod.name}
-                <span className="text-xs sm:text-sm font-normal text-gray-600 dark:text-gray-400"> - {linkedAccount?.name || 'その他'}</span>
-              </h3>
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 truncate">
+                  {paymentMethod.name}
+                  <span className="text-xs sm:text-sm font-normal text-gray-600 dark:text-gray-400"> - {linkedAccount?.name || 'その他'}</span>
+                </h3>
+                {onEdit && (
+                  <button
+                    onClick={() => { onEdit(paymentMethod); onClose(); }}
+                    className="flex-shrink-0 p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-500 dark:text-gray-400"
+                    aria-label="編集"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                )}
+              </div>
               <button
                 onClick={onClose}
-                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
+                className="flex-shrink-0 p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
+                aria-label="閉じる"
               >
                 <X size={18} />
               </button>
@@ -179,21 +191,6 @@ export const CardUnsettledListModal = ({
               {formatCurrency(total)}
             </p>
           </div>
-          {/* ボタン */}
-          {onEdit && (
-            <div className="px-3 pb-3 sm:px-4 sm:pb-4 flex gap-2">
-              <button
-                onClick={() => {
-                  onEdit(paymentMethod);
-                  onClose();
-                }}
-                className="flex-1 bg-gray-900 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
-              >
-                <Pencil size={16} />
-                編集
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>

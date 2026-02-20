@@ -35,7 +35,18 @@ export const RecurringPaymentDetailModal = ({
       >
         {/* ヘッダー */}
         <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
-          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">定期取引詳細</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">定期取引詳細</h3>
+            {onEdit && recurringPayment && (
+              <button
+                onClick={() => { onEdit(recurringPayment); onClose(); }}
+                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-500 dark:text-gray-400"
+                aria-label="編集"
+              >
+                <Pencil size={16} />
+              </button>
+            )}
+          </div>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
@@ -106,21 +117,6 @@ export const RecurringPaymentDetailModal = ({
           </div>
         </div>
 
-        {/* フッター */}
-        {onEdit && recurringPayment && (
-          <div className="flex gap-2 p-3 sm:p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
-            <button
-              onClick={() => {
-                onEdit(recurringPayment);
-                onClose();
-              }}
-              className="flex-1 bg-gray-900 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
-            >
-              <Pencil size={16} />
-              編集
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
