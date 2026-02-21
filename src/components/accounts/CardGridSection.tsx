@@ -157,9 +157,18 @@ export const CardGridSection = ({
   const unassignedPaymentRecurring = recurringPayments.filter((rp) => !rp.paymentMethodId && !rp.accountId);
   const unassignedMemberRecurring = recurringPayments.filter((rp) => !rp.accountId);
 
-  const uncategorizedTotal = uncategorizedRecurring.reduce((sum, rp) => sum + rp.amount, 0);
-  const unassignedPaymentTotal = unassignedPaymentRecurring.reduce((sum, rp) => sum + rp.amount, 0);
-  const unassignedMemberTotal = unassignedMemberRecurring.reduce((sum, rp) => sum + rp.amount, 0);
+  const uncategorizedTotal = uncategorizedRecurring.reduce((sum, rp) => {
+    const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
+    return sum + (rp.type === 'expense' ? effectiveAmount : -effectiveAmount);
+  }, 0);
+  const unassignedPaymentTotal = unassignedPaymentRecurring.reduce((sum, rp) => {
+    const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
+    return sum + (rp.type === 'expense' ? effectiveAmount : -effectiveAmount);
+  }, 0);
+  const unassignedMemberTotal = unassignedMemberRecurring.reduce((sum, rp) => {
+    const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
+    return sum + (rp.type === 'expense' ? effectiveAmount : -effectiveAmount);
+  }, 0);
 
   const showRecurringTileCategory = uncategorizedRecurring.length > 0;
   const showRecurringTilePayment = unassignedPaymentRecurring.length > 0;
