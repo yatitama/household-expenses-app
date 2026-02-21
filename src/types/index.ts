@@ -72,6 +72,7 @@ export interface Category {
   type: TransactionType;
   color: string;
   icon: string;
+  order?: number;
 }
 
 // 月別予算

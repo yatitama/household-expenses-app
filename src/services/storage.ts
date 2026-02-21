@@ -394,7 +394,15 @@ export const transactionService = {
 // Category 操作
 export const categoryService = {
   getAll: (): Category[] => {
-    return getItems<Category>(STORAGE_KEYS.CATEGORIES);
+    const categories = getItems<Category>(STORAGE_KEYS.CATEGORIES);
+    return categories.sort((a, b) => {
+      if (a.order !== undefined && b.order !== undefined) {
+        return a.order - b.order;
+      }
+      if (a.order !== undefined) return -1;
+      if (b.order !== undefined) return 1;
+      return 0;
+    });
   },
 
   getById: (id: string): Category | undefined => {
@@ -410,10 +418,14 @@ export const categoryService = {
   },
 
   create: (input: CategoryInput): Category => {
-    const categories = categoryService.getAll();
+    const categories = getItems<Category>(STORAGE_KEYS.CATEGORIES);
+    const maxOrder = categories
+      .filter((c) => c.type === input.type)
+      .reduce((max, c) => Math.max(max, c.order ?? -1), -1);
     const newCategory: Category = {
       ...input,
       id: generateId(),
+      order: maxOrder + 1,
     };
     categories.push(newCategory);
     setItems(STORAGE_KEYS.CATEGORIES, categories);
@@ -432,6 +444,21 @@ export const categoryService = {
     categories[index] = updated;
     setItems(STORAGE_KEYS.CATEGORIES, categories);
     return updated;
+  },
+
+  updateOrders: (orders: { id: string; order: number }[]): void => {
+    const categories = getItems<Category>(STORAGE_KEYS.CATEGORIES);
+    const orderMap = new Map(orders.map((o) => [o.id, o.order]));
+
+    const updated = categories.map((category) => {
+      const newOrder = orderMap.get(category.id);
+      if (newOrder !== undefined) {
+        return { ...category, order: newOrder };
+      }
+      return category;
+    });
+
+    setItems(STORAGE_KEYS.CATEGORIES, updated);
   },
 
   delete: (id: string): boolean => {
