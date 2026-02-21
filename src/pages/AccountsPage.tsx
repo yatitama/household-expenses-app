@@ -141,8 +141,15 @@ export const AccountsPage = () => {
   };
 
   const handleTransactionClick = (transaction: Transaction) => {
-    setIsCategoryModalOpen(false);
     setEditingTransaction(transaction);
+  };
+
+  const handleCloseEditingTransaction = () => {
+    setEditingTransaction(null);
+    // 明細一覧シートを再度開く
+    if (selectedCategoryForModal) {
+      setIsCategoryModalOpen(true);
+    }
   };
 
   return (
@@ -386,14 +393,12 @@ export const AccountsPage = () => {
           categories={categories}
           onSave={(input) => {
             transactionService.update(editingTransaction.id, input);
-            setEditingTransaction(null);
+            handleCloseEditingTransaction();
           }}
-          onClose={() => {
-            setEditingTransaction(null);
-          }}
+          onClose={handleCloseEditingTransaction}
           onDelete={(id) => {
             transactionService.delete(id);
-            setEditingTransaction(null);
+            handleCloseEditingTransaction();
           }}
         />
       )}
