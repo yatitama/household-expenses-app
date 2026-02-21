@@ -146,13 +146,18 @@ export const AccountsPage = () => {
 
   const handleCloseEditingTransaction = () => {
     setEditingTransaction(null);
-    // 明細一覧シートを再度開く場合、データを再取得
+    // 明細一覧シートが開いていた場合、データを再取得してから再度開く
     if (selectedCategoryForModal) {
       // カテゴリに基づいて取引を再度フィルタリング
       const filtered = allMonthExpenses.filter((t) => t.categoryId === selectedCategoryForModal.id)
         .concat(allMonthIncomes.filter((t) => t.categoryId === selectedCategoryForModal.id));
-      setCategoryModalTransactions(filtered);
-      setIsCategoryModalOpen(true);
+      // 強制的にシートを閉じてから、更新されたデータで再度開く
+      setIsCategoryModalOpen(false);
+      // バッチ更新で確実にデータを更新してから再度開く
+      setTimeout(() => {
+        setCategoryModalTransactions(filtered);
+        setIsCategoryModalOpen(true);
+      }, 0);
     }
   };
 
