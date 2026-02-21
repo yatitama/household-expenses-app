@@ -7,7 +7,6 @@ import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { getRecurringPaymentsForMonth } from '../utils/billingUtils';
 import { CardGridSection, type CardGridViewMode } from '../components/accounts/CardGridSection';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
-import { RecurringPaymentDetailModal } from '../components/accounts/modals/RecurringPaymentDetailModal';
 import { RecurringPaymentMonthSheet } from '../components/accounts/modals/RecurringPaymentMonthSheet';
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { CategoryTransactionsModal } from '../components/accounts/modals/CategoryTransactionsModal';
@@ -28,7 +27,7 @@ export const AccountsPage = () => {
     confirmDialog, closeConfirmDialog,
   } = useAccountOperations();
 
-  const { activeModal, openModal, closeModal } = useModalManager();
+  const { activeModal, closeModal } = useModalManager();
 
   const now = new Date();
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
@@ -52,8 +51,6 @@ export const AccountsPage = () => {
     }
   };
 
-  const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
-  const [isRecurringDetailModalOpen, setIsRecurringDetailModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isTransactionDetailOpen, setIsTransactionDetailOpen] = useState(false);
   const [selectedCategoryForModal, setSelectedCategoryForModal] = useState<Category | undefined>(undefined);
@@ -69,7 +66,6 @@ export const AccountsPage = () => {
 
   useBodyScrollLock(
     !!activeModal ||
-    isRecurringDetailModalOpen ||
     isTransactionDetailOpen ||
     isCategoryModalOpen ||
     isRecurringExpenseListOpen ||
@@ -134,13 +130,8 @@ export const AccountsPage = () => {
     setSelectedRecurringForMonthSheet(null);
   };
 
-  const handleEditRecurring = (rp: RecurringPayment) => {
-    openModal({ type: 'recurring', data: { editing: rp, target: null } });
-  };
-
   const handleRecurringItemClick = (rp: RecurringPayment) => {
-    setSelectedRecurring(rp);
-    setIsRecurringDetailModalOpen(true);
+    setSelectedRecurringForMonthSheet(rp);
   };
 
   const handleCategoryClick = (category: Category | undefined, transactions: Transaction[], recurring: RecurringPayment[]) => {
@@ -370,21 +361,6 @@ export const AccountsPage = () => {
           onDelete={handleDeleteRecurring}
         />
       )}
-
-      <RecurringPaymentDetailModal
-        recurringPayment={selectedRecurring}
-        isOpen={isRecurringDetailModalOpen}
-        onClose={() => {
-          setIsRecurringDetailModalOpen(false);
-          setSelectedRecurring(null);
-        }}
-        onEdit={handleEditRecurring}
-        onAdjustMonth={(rp) => {
-          setIsRecurringDetailModalOpen(false);
-          setSelectedRecurring(null);
-          setSelectedRecurringForMonthSheet(rp);
-        }}
-      />
 
       <CategoryTransactionsModal
         category={selectedCategoryForModal}
