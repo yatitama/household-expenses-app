@@ -100,6 +100,7 @@ export interface RecurringPayment {
   categoryId?: string;
   accountId?: string;
   paymentMethodId?: string;
+  monthlyOverrides?: Record<string, number>; // 月別金額上書き (yyyy-MM → 金額)
   createdAt: string;
   updatedAt: string;
 }
