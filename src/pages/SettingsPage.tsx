@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, CreditCard, RefreshCw, PiggyBank, X, Check } from 'lucide-react';
+import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, CreditCard, RefreshCw, PiggyBank, X, Check, GripVertical } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService, cardBillingService, linkedPaymentMethodService, savingsGoalService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
@@ -55,6 +55,10 @@ export const SettingsPage = () => {
     message: string;
     onConfirm: () => void;
   }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+
+  // Drag and drop state for categories
+  const [draggedCategoryId, setDraggedCategoryId] = useState<string | null>(null);
+  const [dragOverCategoryId, setDragOverCategoryId] = useState<string | null>(null);
 
   useBodyScrollLock(isMemberModalOpen || isCategoryModalOpen || isCardModalOpen || isRecurringModalOpen || isSavingsModalOpen);
 
@@ -132,6 +136,59 @@ export const SettingsPage = () => {
     refreshCategories(); setIsCategoryModalOpen(false);
   };
 
+  // Category drag and drop handlers
+  const handleCategoryDragStart = (categoryId: string) => {
+    setDraggedCategoryId(categoryId);
+  };
+
+  const handleCategoryDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleCategoryDragEnter = (categoryId: string) => {
+    setDragOverCategoryId(categoryId);
+  };
+
+  const handleCategoryDragLeave = () => {
+    setDragOverCategoryId(null);
+  };
+
+  const handleCategoryDrop = (targetCategoryId: string) => {
+    if (!draggedCategoryId || draggedCategoryId === targetCategoryId) {
+      setDraggedCategoryId(null);
+      setDragOverCategoryId(null);
+      return;
+    }
+
+    const filtered = filteredCategories;
+    const draggedIndex = filtered.findIndex((c) => c.id === draggedCategoryId);
+    const targetIndex = filtered.findIndex((c) => c.id === targetCategoryId);
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      setDraggedCategoryId(null);
+      setDragOverCategoryId(null);
+      return;
+    }
+
+    // Create new array with reordered items
+    const reordered = [...filtered];
+    const [draggedItem] = reordered.splice(draggedIndex, 1);
+    reordered.splice(targetIndex, 0, draggedItem);
+
+    // Update orders: assign new order based on position in reordered array
+    const orders = reordered.map((cat, index) => ({
+      id: cat.id,
+      order: index,
+    }));
+
+    categoryService.updateOrders(orders);
+    refreshCategories();
+
+    setDraggedCategoryId(null);
+    setDragOverCategoryId(null);
+    toast.success('カテゴリの順序を変更しました');
+  };
 
   // Card handlers
   const handleAddCard = () => { setEditingCard(null); setIsCardModalOpen(true); };
@@ -426,22 +483,39 @@ export const SettingsPage = () => {
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredCategories.map((category) => {
+                  const isDragged = draggedCategoryId === category.id;
+                  const isDragOver = dragOverCategoryId === category.id;
                   return (
-                    <button
+                    <div
                       key={category.id}
-                      onClick={() => handleEditCategory(category)}
-                      className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
+                      draggable
+                      onDragStart={() => handleCategoryDragStart(category.id)}
+                      onDragOver={handleCategoryDragOver}
+                      onDragEnter={() => handleCategoryDragEnter(category.id)}
+                      onDragLeave={handleCategoryDragLeave}
+                      onDrop={() => handleCategoryDrop(category.id)}
+                      className={`w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 transition-colors ${
+                        isDragged ? 'opacity-50' : ''
+                      } ${isDragOver ? 'bg-primary-50 dark:bg-primary-900/20' : 'hover:bg-gray-50 dark:hover:bg-slate-700'}`}
                     >
-                      <div
-                        className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                      <button
+                        onClick={() => handleEditCategory(category)}
+                        className="flex-1 flex items-center gap-2.5 sm:gap-3 text-left"
                       >
-                        {getCategoryIcon(category.icon, 16)}
+                        <div
+                          className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                        >
+                          {getCategoryIcon(category.icon, 16)}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
+                        </div>
+                      </button>
+                      <div className="cursor-grab active:cursor-grabbing p-1 text-gray-400 flex-shrink-0">
+                        <GripVertical size={16} />
                       </div>
-                      <div className="flex-1">
-                        <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
-                      </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
