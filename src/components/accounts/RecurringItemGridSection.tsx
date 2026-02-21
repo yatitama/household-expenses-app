@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
+import { getEffectiveRecurringAmount } from '../../utils/savingsUtils';
 import type { RecurringPayment } from '../../types';
 
 interface RecurringItemGridSectionProps {
@@ -21,6 +22,9 @@ export const RecurringItemGridSection = ({
     return null;
   }
 
+  // 現在月を取得（yyyy-MM形式）
+  const currentMonth = new Date().toISOString().slice(0, 7);
+
   return (
     <div className="bg-white rounded-lg p-3 md:p-4">
       <h3 className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">
@@ -28,6 +32,8 @@ export const RecurringItemGridSection = ({
       </h3>
       <div className="grid grid-cols-2 gap-2 md:gap-3">
         {items.map((item) => {
+          const effectiveAmount = getEffectiveRecurringAmount(item, currentMonth);
+          const hasOverride = (item.monthlyOverrides ?? {})[currentMonth] !== undefined;
           return (
             <button
               key={item.id}
@@ -37,9 +43,16 @@ export const RecurringItemGridSection = ({
               <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                 {item.name}
               </p>
-              <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                {formatCurrency(item.amount)}
-              </p>
+              <div className="text-right flex flex-col items-end">
+                <p className="text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+                  {formatCurrency(effectiveAmount)}
+                </p>
+                {hasOverride && (
+                  <p className="text-xs text-gray-400 line-through">
+                    {formatCurrency(item.amount)}
+                  </p>
+                )}
+              </div>
             </button>
           );
         })}

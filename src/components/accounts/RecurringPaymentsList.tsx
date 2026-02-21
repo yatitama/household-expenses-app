@@ -1,6 +1,7 @@
 import { Plus, RefreshCw, ToggleLeft, ToggleRight, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { formatCurrency } from '../../utils/formatters';
+import { getEffectiveRecurringAmount } from '../../utils/savingsUtils';
 import type { RecurringPayment } from '../../types';
 
 interface RecurringPaymentsListProps {
@@ -12,6 +13,9 @@ interface RecurringPaymentsListProps {
 
 export const RecurringPaymentsList = ({ items, onAdd, onEdit, onToggle }: RecurringPaymentsListProps) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // 現在月を取得（yyyy-MM形式）
+  const currentMonth = new Date().toISOString().slice(0, 7);
 
   return (
     <div className="mt-3 pt-3 dark:border-gray-700">
@@ -38,6 +42,8 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onToggle }: Recurr
                 const periodLabel = rp.periodType === 'months'
                   ? (rp.periodValue === 1 ? '毎月' : `${rp.periodValue}ヶ月ごと`)
                   : (rp.periodValue === 1 ? '毎日' : `${rp.periodValue}日ごと`);
+                const effectiveAmount = getEffectiveRecurringAmount(rp, currentMonth);
+                const hasOverride = (rp.monthlyOverrides ?? {})[currentMonth] !== undefined;
                 return (
                   <div key={rp.id} className={`flex items-center justify-between text-sm ${rp.isActive ? '' : 'opacity-40'}`}>
                     <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -52,10 +58,15 @@ export const RecurringPaymentsList = ({ items, onAdd, onEdit, onToggle }: Recurr
                         <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-sm">{periodLabel}</span>
                       </button>
                     </div>
-                    <div className="flex justify-end w-28 ml-2">
+                    <div className="flex justify-end w-28 ml-2 flex-col items-end">
                       <span className={`font-medium font-mono ${rp.type === 'expense' ? 'text-gray-900 dark:text-gray-700' : 'text-gray-700 dark:text-gray-600'}`}>
-                        {formatCurrency(rp.amount)}
+                        {formatCurrency(effectiveAmount)}
                       </span>
+                      {hasOverride && (
+                        <span className="text-xs text-gray-400 line-through font-mono">
+                          {formatCurrency(rp.amount)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 );
