@@ -159,15 +159,15 @@ export const CardGridSection = ({
 
   const uncategorizedTotal = uncategorizedRecurring.reduce((sum, rp) => {
     const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
-    return sum + (rp.type === 'expense' ? effectiveAmount : -effectiveAmount);
+    return sum + effectiveAmount;
   }, 0);
   const unassignedPaymentTotal = unassignedPaymentRecurring.reduce((sum, rp) => {
     const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
-    return sum + (rp.type === 'expense' ? effectiveAmount : -effectiveAmount);
+    return sum + effectiveAmount;
   }, 0);
   const unassignedMemberTotal = unassignedMemberRecurring.reduce((sum, rp) => {
     const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
-    return sum + (rp.type === 'expense' ? effectiveAmount : -effectiveAmount);
+    return sum + effectiveAmount;
   }, 0);
 
   const showRecurringTileCategory = uncategorizedRecurring.length > 0;
