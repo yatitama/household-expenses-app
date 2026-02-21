@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, CreditCard, RefreshCw, PiggyBank, X, Check, GripVertical } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService, cardBillingService, linkedPaymentMethodService, savingsGoalService } from '../services/storage';
@@ -60,6 +60,8 @@ export const SettingsPage = () => {
   const [draggedCategoryId, setDraggedCategoryId] = useState<string | null>(null);
   const [dragOverCategoryId, setDragOverCategoryId] = useState<string | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const categoryListRef = useRef<HTMLDivElement>(null);
+  const autoScrollIntervalRef = useRef<number | null>(null);
 
   useBodyScrollLock(isMemberModalOpen || isCategoryModalOpen || isCardModalOpen || isRecurringModalOpen || isSavingsModalOpen);
 
@@ -152,6 +154,35 @@ export const SettingsPage = () => {
     const filtered = filteredCategories;
     const draggedIndex = filtered.findIndex((c) => c.id === draggedCategoryId);
 
+    // Auto-scroll logic
+    const scrollThreshold = 80;
+    const maxScrollSpeed = 8;
+    const viewport = window.innerHeight;
+
+    if (currentY < scrollThreshold) {
+      // Scroll up
+      const distance = scrollThreshold - currentY;
+      const scrollSpeed = Math.min(maxScrollSpeed, (distance / scrollThreshold) * maxScrollSpeed);
+      if (autoScrollIntervalRef.current) clearInterval(autoScrollIntervalRef.current);
+      autoScrollIntervalRef.current = setInterval(() => {
+        window.scrollBy(0, -scrollSpeed);
+      }, 16);
+    } else if (currentY > viewport - scrollThreshold) {
+      // Scroll down
+      const distance = currentY - (viewport - scrollThreshold);
+      const scrollSpeed = Math.min(maxScrollSpeed, (distance / scrollThreshold) * maxScrollSpeed);
+      if (autoScrollIntervalRef.current) clearInterval(autoScrollIntervalRef.current);
+      autoScrollIntervalRef.current = setInterval(() => {
+        window.scrollBy(0, scrollSpeed);
+      }, 16);
+    } else {
+      // Stop auto-scroll
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+        autoScrollIntervalRef.current = null;
+      }
+    }
+
     // Find target category based on touch position
     const elements = Array.from(document.querySelectorAll('[data-category-id]')) as HTMLElement[];
     let targetIndex = draggedIndex;
@@ -171,6 +202,11 @@ export const SettingsPage = () => {
   };
 
   const handleCategoryTouchEnd = () => {
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current);
+      autoScrollIntervalRef.current = null;
+    }
+
     if (!draggedCategoryId || !dragOverCategoryId || draggedCategoryId === dragOverCategoryId) {
       setDraggedCategoryId(null);
       setDragOverCategoryId(null);
@@ -554,7 +590,7 @@ export const SettingsPage = () => {
             {filteredCategories.length === 0 ? (
               <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">カテゴリがありません</p>
             ) : (
-              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+              <div ref={categoryListRef} className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredCategories.map((category) => {
                   const isDragged = draggedCategoryId === category.id;
                   const isDragOver = dragOverCategoryId === category.id;
