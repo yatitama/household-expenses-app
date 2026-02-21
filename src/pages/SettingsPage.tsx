@@ -59,6 +59,7 @@ export const SettingsPage = () => {
   // Drag and drop state for categories
   const [draggedCategoryId, setDraggedCategoryId] = useState<string | null>(null);
   const [dragOverCategoryId, setDragOverCategoryId] = useState<string | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
 
   useBodyScrollLock(isMemberModalOpen || isCategoryModalOpen || isCardModalOpen || isRecurringModalOpen || isSavingsModalOpen);
 
@@ -136,7 +137,77 @@ export const SettingsPage = () => {
     refreshCategories(); setIsCategoryModalOpen(false);
   };
 
-  // Category drag and drop handlers
+  // Category reorder handlers (touch and mouse compatible)
+  const handleCategoryTouchStart = (categoryId: string, e: React.TouchEvent) => {
+    setDraggedCategoryId(categoryId);
+    setTouchStartY(e.touches[0].clientY);
+  };
+
+  const handleCategoryTouchMove = (_categoryId: string, e: React.TouchEvent) => {
+    if (!draggedCategoryId || !touchStartY) return;
+
+    const currentY = e.touches[0].clientY;
+    const filtered = filteredCategories;
+    const draggedIndex = filtered.findIndex((c) => c.id === draggedCategoryId);
+
+    // Find target category based on touch position
+    const elements = Array.from(document.querySelectorAll('[data-category-id]')) as HTMLElement[];
+    let targetIndex = draggedIndex;
+
+    for (let i = 0; i < elements.length; i++) {
+      const rect = elements[i].getBoundingClientRect();
+      if (currentY >= rect.top && currentY <= rect.bottom) {
+        const targetId = elements[i].getAttribute('data-category-id');
+        targetIndex = filtered.findIndex((c) => c.id === targetId);
+        break;
+      }
+    }
+
+    if (targetIndex !== -1) {
+      setDragOverCategoryId(filtered[targetIndex].id);
+    }
+  };
+
+  const handleCategoryTouchEnd = () => {
+    if (!draggedCategoryId || !dragOverCategoryId || draggedCategoryId === dragOverCategoryId) {
+      setDraggedCategoryId(null);
+      setDragOverCategoryId(null);
+      setTouchStartY(null);
+      return;
+    }
+
+    const filtered = filteredCategories;
+    const draggedIndex = filtered.findIndex((c) => c.id === draggedCategoryId);
+    const targetIndex = filtered.findIndex((c) => c.id === dragOverCategoryId);
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      setDraggedCategoryId(null);
+      setDragOverCategoryId(null);
+      setTouchStartY(null);
+      return;
+    }
+
+    // Create new array with reordered items
+    const reordered = [...filtered];
+    const [draggedItem] = reordered.splice(draggedIndex, 1);
+    reordered.splice(targetIndex, 0, draggedItem);
+
+    // Update orders: assign new order based on position in reordered array
+    const orders = reordered.map((cat, index) => ({
+      id: cat.id,
+      order: index,
+    }));
+
+    categoryService.updateOrders(orders);
+    refreshCategories();
+
+    setDraggedCategoryId(null);
+    setDragOverCategoryId(null);
+    setTouchStartY(null);
+    toast.success('カテゴリの順序を変更しました');
+  };
+
+  // Desktop drag and drop handlers (fallback)
   const handleCategoryDragStart = (categoryId: string) => {
     setDraggedCategoryId(categoryId);
   };
@@ -488,13 +559,17 @@ export const SettingsPage = () => {
                   return (
                     <div
                       key={category.id}
+                      data-category-id={category.id}
                       draggable
                       onDragStart={() => handleCategoryDragStart(category.id)}
                       onDragOver={handleCategoryDragOver}
                       onDragEnter={() => handleCategoryDragEnter(category.id)}
                       onDragLeave={handleCategoryDragLeave}
                       onDrop={() => handleCategoryDrop(category.id)}
-                      className={`w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 transition-colors ${
+                      onTouchStart={(e) => handleCategoryTouchStart(category.id, e)}
+                      onTouchMove={(e) => handleCategoryTouchMove(category.id, e)}
+                      onTouchEnd={handleCategoryTouchEnd}
+                      className={`w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 transition-colors select-none ${
                         isDragged ? 'opacity-50' : ''
                       } ${isDragOver ? 'bg-primary-50 dark:bg-primary-900/20' : 'hover:bg-gray-50 dark:hover:bg-slate-700'}`}
                     >
@@ -512,7 +587,7 @@ export const SettingsPage = () => {
                           <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
                         </div>
                       </button>
-                      <div className="cursor-grab active:cursor-grabbing p-1 text-gray-400 flex-shrink-0">
+                      <div className="cursor-grab active:cursor-grabbing p-1 text-gray-400 flex-shrink-0 touch-none">
                         <GripVertical size={16} />
                       </div>
                     </div>
