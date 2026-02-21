@@ -16,6 +16,7 @@ import { revertTransactionBalance, applyTransactionBalance } from '../components
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { getRecurringOccurrencesInRange, type RecurringOccurrence } from '../utils/recurringOccurrences';
+import { getEffectiveRecurringAmount } from '../utils/savingsUtils';
 import type { Transaction, TransactionInput, RecurringPayment } from '../types';
 
 export type GroupByType = 'date' | 'category' | 'account' | 'payment';
@@ -296,10 +297,18 @@ export const TransactionsPage = () => {
       .reduce((sum, t) => sum + t.amount, 0);
     const recurringIncome = recurringOccurrences
       .filter((occ) => occ.payment.type === 'income')
-      .reduce((sum, occ) => sum + occ.payment.amount, 0);
+      .reduce((sum, occ) => {
+        const month = occ.date.slice(0, 7); // yyyy-MM形式で抽出
+        const effectiveAmount = getEffectiveRecurringAmount(occ.payment, month);
+        return sum + effectiveAmount;
+      }, 0);
     const recurringExpense = recurringOccurrences
       .filter((occ) => occ.payment.type === 'expense')
-      .reduce((sum, occ) => sum + occ.payment.amount, 0);
+      .reduce((sum, occ) => {
+        const month = occ.date.slice(0, 7); // yyyy-MM形式で抽出
+        const effectiveAmount = getEffectiveRecurringAmount(occ.payment, month);
+        return sum + effectiveAmount;
+      }, 0);
     return income - expense + recurringIncome - recurringExpense;
   }, [filteredTransactions, recurringOccurrences]);
 
@@ -323,7 +332,9 @@ export const TransactionsPage = () => {
                 if (item.kind === 'transaction') {
                   return sum + (item.data.type === 'income' ? item.data.amount : -item.data.amount);
                 } else {
-                  return sum + (item.data.payment.type === 'income' ? item.data.payment.amount : -item.data.payment.amount);
+                  const month = item.data.date.slice(0, 7); // yyyy-MM形式で抽出
+                  const effectiveAmount = getEffectiveRecurringAmount(item.data.payment, month);
+                  return sum + (item.data.payment.type === 'income' ? effectiveAmount : -effectiveAmount);
                 }
               }, 0);
 
@@ -383,6 +394,9 @@ export const TransactionsPage = () => {
                             const occ = item.data;
                             const p = occ.payment;
                             const color = p.categoryId ? getCategoryColor(p.categoryId) : '#9ca3af';
+                            const month = occ.date.slice(0, 7); // yyyy-MM形式で抽出
+                            const effectiveAmount = getEffectiveRecurringAmount(p, month);
+                            const hasOverride = (p.monthlyOverrides ?? {})[month] !== undefined;
                             return (
                               <button
                                 key={`recurring-${p.id}-${occ.date}-${idx}`}
@@ -412,11 +426,18 @@ export const TransactionsPage = () => {
                                     </p>
                                   </div>
                                 </div>
-                                <span className={`font-semibold flex-shrink-0 ${
+                                <div className={`font-semibold flex-shrink-0 flex flex-col items-end ${
                                   p.type === 'income' ? 'text-green-600' : 'text-red-600'
                                 }`}>
-                                  {p.type === 'income' ? '+' : '-'}{formatCurrency(p.amount)}
-                                </span>
+                                  <span>
+                                    {p.type === 'income' ? '+' : '-'}{formatCurrency(effectiveAmount)}
+                                  </span>
+                                  {hasOverride && (
+                                    <span className="text-xs text-gray-400 line-through">
+                                      {p.type === 'income' ? '+' : '-'}{formatCurrency(p.amount)}
+                                    </span>
+                                  )}
+                                </div>
                               </button>
                             );
                           }

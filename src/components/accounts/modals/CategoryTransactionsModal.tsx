@@ -2,6 +2,7 @@ import { X, RefreshCw } from 'lucide-react';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { paymentMethodService } from '../../../services/storage';
+import { getEffectiveRecurringAmount } from '../../../utils/savingsUtils';
 import type { Category, Transaction, RecurringPayment } from '../../../types';
 
 interface CategoryTransactionsModalProps {
@@ -39,12 +40,16 @@ export const CategoryTransactionsModal = ({
 
   const sorted = [...transactions].sort((a, b) => b.date.localeCompare(a.date));
 
+  // 現在月を取得（yyyy-MM形式）
+  const currentMonth = new Date().toISOString().slice(0, 7);
+
   const transactionTotal = transactions.reduce((sum, t) => {
     return sum + (t.type === 'expense' ? t.amount : -t.amount);
   }, 0);
 
   const recurringTotal = recurringPayments.reduce((sum, rp) => {
-    return sum + (rp.type === 'expense' ? rp.amount : -rp.amount);
+    const effectiveAmount = getEffectiveRecurringAmount(rp, currentMonth);
+    return sum + (rp.type === 'expense' ? effectiveAmount : -effectiveAmount);
   }, 0);
 
   const total = transactionTotal + recurringTotal;
@@ -118,24 +123,35 @@ export const CategoryTransactionsModal = ({
                     );
                   })}
 
-                  {recurringPayments.map((rp) => (
-                    <button
-                      key={rp.id}
-                      onClick={() => onRecurringClick?.(rp)}
-                      className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                          <RefreshCw size={10} />
-                          {getPeriodLabel(rp)}
-                        </p>
-                      </div>
-                      <span className="text-gray-900 dark:text-gray-100 font-semibold flex-shrink-0">
-                        {formatCurrency(rp.amount)}
-                      </span>
-                    </button>
-                  ))}
+                  {recurringPayments.map((rp) => {
+                    const effectiveAmount = getEffectiveRecurringAmount(rp, currentMonth);
+                    const hasOverride = (rp.monthlyOverrides ?? {})[currentMonth] !== undefined;
+                    return (
+                      <button
+                        key={rp.id}
+                        onClick={() => onRecurringClick?.(rp)}
+                        className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-gray-900 dark:text-gray-100">{rp.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <RefreshCw size={10} />
+                            {getPeriodLabel(rp)}
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end flex-shrink-0">
+                          <span className="text-gray-900 dark:text-gray-100 font-semibold">
+                            {formatCurrency(effectiveAmount)}
+                          </span>
+                          {hasOverride && (
+                            <span className="text-xs text-gray-400 line-through">
+                              {formatCurrency(rp.amount)}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </>
               )}
             </div>

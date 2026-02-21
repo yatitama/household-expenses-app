@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, CreditCard, Calendar, ArrowRight, ToggleLeft, ToggleRight } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
+import { getEffectiveRecurringAmount } from '../../utils/savingsUtils';
 import type { Transaction, RecurringPayment, PaymentMethod } from '../../types';
 
 interface CardUnsettledInfo {
@@ -29,6 +30,9 @@ export const ScheduleSection = ({
   onToggleRecurring,
 }: ScheduleSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // 現在月を取得（yyyy-MM形式）
+  const currentMonth = new Date().toISOString().slice(0, 7);
 
   return (
     <div className="bg-white rounded-lg p-3 md:p-4 dark:border-gray-800/30">
@@ -102,6 +106,8 @@ export const ScheduleSection = ({
                 const periodLabel = rp.periodType === 'months'
                   ? (rp.periodValue === 1 ? '毎月' : `${rp.periodValue}ヶ月ごと`)
                   : (rp.periodValue === 1 ? '毎日' : `${rp.periodValue}日ごと`);
+                const effectiveAmount = getEffectiveRecurringAmount(rp, currentMonth);
+                const hasOverride = (rp.monthlyOverrides ?? {})[currentMonth] !== undefined;
 
                 return (
                   <div
@@ -126,10 +132,15 @@ export const ScheduleSection = ({
                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{periodLabel}</p>
                       </button>
                     </div>
-                    <div className="flex justify-end w-28">
+                    <div className="flex justify-end w-28 flex-col items-end">
                       <span className="text-gray-900 dark:text-gray-700 font-semibold font-mono">
-                        {formatCurrency(rp.amount)}
+                        {formatCurrency(effectiveAmount)}
                       </span>
+                      {hasOverride && (
+                        <span className="text-xs text-gray-400 line-through font-mono">
+                          {formatCurrency(rp.amount)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 );
