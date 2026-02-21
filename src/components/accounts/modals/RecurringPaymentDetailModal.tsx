@@ -1,4 +1,4 @@
-import { Pencil, X } from 'lucide-react';
+import { Pencil, X, Calendar } from 'lucide-react';
 import { formatCurrency } from '../../../utils/formatters';
 import type { RecurringPayment } from '../../../types';
 
@@ -7,6 +7,7 @@ interface RecurringPaymentDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onEdit?: (recurringPayment: RecurringPayment) => void;
+  onAdjustMonth?: (recurringPayment: RecurringPayment) => void;
 }
 
 export const RecurringPaymentDetailModal = ({
@@ -14,6 +15,7 @@ export const RecurringPaymentDetailModal = ({
   isOpen,
   onClose,
   onEdit,
+  onAdjustMonth,
 }: RecurringPaymentDetailModalProps) => {
   if (!isOpen || !recurringPayment) return null;
 
@@ -37,6 +39,16 @@ export const RecurringPaymentDetailModal = ({
         <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
           <div className="flex items-center gap-2">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">定期取引詳細</h3>
+            {onAdjustMonth && recurringPayment && (
+              <button
+                onClick={() => { onAdjustMonth(recurringPayment); }}
+                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-500 dark:text-gray-400"
+                aria-label="この月の金額を調整"
+                title="この月の金額を調整"
+              >
+                <Calendar size={16} />
+              </button>
+            )}
             {onEdit && recurringPayment && (
               <button
                 onClick={() => { onEdit(recurringPayment); onClose(); }}

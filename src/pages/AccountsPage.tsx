@@ -8,12 +8,13 @@ import { getRecurringPaymentsForMonth } from '../utils/billingUtils';
 import { CardGridSection, type CardGridViewMode } from '../components/accounts/CardGridSection';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { RecurringPaymentDetailModal } from '../components/accounts/modals/RecurringPaymentDetailModal';
+import { RecurringPaymentMonthSheet } from '../components/accounts/modals/RecurringPaymentMonthSheet';
 import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
 import { CategoryTransactionsModal } from '../components/accounts/modals/CategoryTransactionsModal';
 import { RecurringListModal } from '../components/accounts/modals/RecurringListModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import { categoryService, transactionService, paymentMethodService, memberService, accountService, savingsGoalService } from '../services/storage';
+import { categoryService, transactionService, paymentMethodService, memberService, accountService, savingsGoalService, recurringPaymentService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
 import { calculateMonthlyAmount, getEffectiveMonthlyAmount, isMonthExcluded } from '../utils/savingsUtils';
 import { SavingsMonthSheet } from '../components/savings/SavingsMonthSheet';
@@ -64,6 +65,7 @@ export const AccountsPage = () => {
   const [expenseViewMode, setExpenseViewMode] = useState<CardGridViewMode>('category');
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => savingsGoalService.getAll());
   const [selectedGoalForSheet, setSelectedGoalForSheet] = useState<SavingsGoal | null>(null);
+  const [selectedRecurringForMonthSheet, setSelectedRecurringForMonthSheet] = useState<RecurringPayment | null>(null);
 
   useBodyScrollLock(
     !!activeModal ||
@@ -72,7 +74,8 @@ export const AccountsPage = () => {
     isCategoryModalOpen ||
     isRecurringExpenseListOpen ||
     isRecurringIncomeListOpen ||
-    !!selectedGoalForSheet
+    !!selectedGoalForSheet ||
+    !!selectedRecurringForMonthSheet
   );
 
   const allMonthExpenses = transactionService.getAll().filter((t) => {
@@ -124,6 +127,11 @@ export const AccountsPage = () => {
     savingsGoalService.setMonthlyOverride(goalId, viewMonth, overrideAmount);
     setSavingsGoals(savingsGoalService.getAll());
     setSelectedGoalForSheet(null);
+  };
+
+  const handleSaveRecurringMonth = (rpId: string, overrideAmount: number | null) => {
+    recurringPaymentService.setMonthlyOverride(rpId, viewMonth, overrideAmount);
+    setSelectedRecurringForMonthSheet(null);
   };
 
   const handleEditRecurring = (rp: RecurringPayment) => {
@@ -369,6 +377,11 @@ export const AccountsPage = () => {
           setSelectedRecurring(null);
         }}
         onEdit={handleEditRecurring}
+        onAdjustMonth={(rp) => {
+          setIsRecurringDetailModalOpen(false);
+          setSelectedRecurring(null);
+          setSelectedRecurringForMonthSheet(rp);
+        }}
       />
 
       <CategoryTransactionsModal
@@ -431,6 +444,15 @@ export const AccountsPage = () => {
         confirmText="削除"
         confirmVariant="danger"
       />
+
+      {selectedRecurringForMonthSheet && (
+        <RecurringPaymentMonthSheet
+          payment={selectedRecurringForMonthSheet}
+          month={viewMonth}
+          onSave={(overrideAmount) => handleSaveRecurringMonth(selectedRecurringForMonthSheet.id, overrideAmount)}
+          onClose={() => setSelectedRecurringForMonthSheet(null)}
+        />
+      )}
 
       {selectedGoalForSheet && (
         <SavingsMonthSheet

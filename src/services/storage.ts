@@ -604,6 +604,30 @@ export const recurringPaymentService = {
     setItems(STORAGE_KEYS.RECURRING_PAYMENTS, filtered);
     return true;
   },
+
+  // 指定月の金額上書きをセット (amount=null で上書き削除)
+  setMonthlyOverride: (id: string, month: string, amount: number | null): RecurringPayment | undefined => {
+    const items = recurringPaymentService.getAll();
+    const index = items.findIndex((rp) => rp.id === id);
+    if (index === -1) return undefined;
+
+    const rp = items[index];
+    const monthlyOverrides = { ...(rp.monthlyOverrides ?? {}) };
+    if (amount === null) {
+      delete monthlyOverrides[month];
+    } else {
+      monthlyOverrides[month] = amount;
+    }
+
+    const updated: RecurringPayment = {
+      ...rp,
+      monthlyOverrides,
+      updatedAt: getTimestamp(),
+    };
+    items[index] = updated;
+    setItems(STORAGE_KEYS.RECURRING_PAYMENTS, items);
+    return updated;
+  },
 };
 
 // LinkedPaymentMethod 操作
