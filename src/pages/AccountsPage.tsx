@@ -16,7 +16,7 @@ import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { categoryService, transactionService, paymentMethodService, memberService, accountService, savingsGoalService, recurringPaymentService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
-import { calculateMonthlyAmount, getEffectiveMonthlyAmount, isMonthExcluded } from '../utils/savingsUtils';
+import { calculateMonthlyAmount, getEffectiveMonthlyAmount, isMonthExcluded, getEffectiveRecurringAmount } from '../utils/savingsUtils';
 import { SavingsMonthSheet } from '../components/savings/SavingsMonthSheet';
 import type { RecurringPayment, Transaction, Category, SavingsGoal } from '../types';
 
@@ -103,8 +103,8 @@ export const AccountsPage = () => {
 
   const totalExpenses = allMonthExpenses.reduce((sum, t) => sum + t.amount, 0);
   const totalIncomes = allMonthIncomes.reduce((sum, t) => sum + t.amount, 0);
-  const totalRecurringExpense = allUpcomingExpense.reduce((sum, rp) => sum + rp.amount, 0);
-  const totalRecurringIncome = allUpcomingIncome.reduce((sum, rp) => sum + rp.amount, 0);
+  const totalRecurringExpense = allUpcomingExpense.reduce((sum, rp) => sum + getEffectiveRecurringAmount(rp, viewMonth), 0);
+  const totalRecurringIncome = allUpcomingIncome.reduce((sum, rp) => sum + getEffectiveRecurringAmount(rp, viewMonth), 0);
 
   // 貯金: 表示中の月が除外されていなければ月額を計上 (月別上書きがあればその金額)
   const totalSavings = savingsGoals.reduce((sum, goal) => {
@@ -224,6 +224,7 @@ export const AccountsPage = () => {
                   recurringLabel="定期支出"
                   onRecurringClick={() => setIsRecurringExpenseListOpen(true)}
                   emptyMessage="支出なし"
+                  month={viewMonth}
                 />
               </div>
             </div>
@@ -250,6 +251,7 @@ export const AccountsPage = () => {
                   recurringLabel="定期収入"
                   onRecurringClick={() => setIsRecurringIncomeListOpen(true)}
                   emptyMessage="収入なし"
+                  month={viewMonth}
                 />
               </div>
             </div>
@@ -415,6 +417,7 @@ export const AccountsPage = () => {
         title="定期支出"
         items={allUpcomingExpense}
         total={totalRecurringExpense}
+        month={viewMonth}
         isOpen={isRecurringExpenseListOpen}
         onClose={() => setIsRecurringExpenseListOpen(false)}
         onItemClick={(item) => {
@@ -427,6 +430,7 @@ export const AccountsPage = () => {
         title="定期収入"
         items={allUpcomingIncome}
         total={totalRecurringIncome}
+        month={viewMonth}
         isOpen={isRecurringIncomeListOpen}
         onClose={() => setIsRecurringIncomeListOpen(false)}
         onItemClick={(item) => {

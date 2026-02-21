@@ -1,11 +1,13 @@
 import { X } from 'lucide-react';
 import { formatCurrency } from '../../../utils/formatters';
+import { getEffectiveRecurringAmount } from '../../../utils/savingsUtils';
 import type { RecurringPayment } from '../../../types';
 
 interface RecurringListModalProps {
   title: string;
   items: RecurringPayment[];
   total: number;
+  month: string; // yyyy-MM
   isOpen: boolean;
   onClose: () => void;
   onItemClick: (item: RecurringPayment) => void;
@@ -15,6 +17,7 @@ export const RecurringListModal = ({
   title,
   items,
   total,
+  month,
   isOpen,
   onClose,
   onItemClick,
@@ -58,21 +61,30 @@ export const RecurringListModal = ({
               {items.length === 0 ? (
                 <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">明細なし</p>
               ) : (
-                items.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => onItemClick(item)}
-                    className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-gray-900 dark:text-gray-100">{item.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{getPeriodLabel(item)}</p>
-                    </div>
-                    <span className="text-gray-900 dark:text-gray-100 font-semibold flex-shrink-0">
-                      {formatCurrency(item.amount)}
-                    </span>
-                  </button>
-                ))
+                items.map((item) => {
+                  const effectiveAmount = getEffectiveRecurringAmount(item, month);
+                  const hasOverride = (item.monthlyOverrides ?? {})[month] !== undefined;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => onItemClick(item)}
+                      className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors text-left"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-gray-900 dark:text-gray-100">{item.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{getPeriodLabel(item)}</p>
+                      </div>
+                      <div className="text-gray-900 dark:text-gray-100 font-semibold flex-shrink-0">
+                        <p>{formatCurrency(effectiveAmount)}</p>
+                        {hasOverride && (
+                          <p className="text-xs text-gray-400 dark:text-gray-500 line-through">
+                            {formatCurrency(item.amount)}
+                          </p>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })
               )}
             </div>
           </div>

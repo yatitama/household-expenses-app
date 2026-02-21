@@ -2,6 +2,7 @@ import { RefreshCw, CreditCard, User } from 'lucide-react';
 import { ACCOUNT_TYPE_ICONS_XS } from './AccountIcons';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
+import { getEffectiveRecurringAmount } from '../../utils/savingsUtils';
 import type { Transaction, Category, PaymentMethod, Member, Account, RecurringPayment } from '../../types';
 
 export type CardGridViewMode = 'category' | 'payment' | 'member';
@@ -18,6 +19,7 @@ interface CardGridSectionProps {
   recurringLabel?: string;
   onRecurringClick?: () => void;
   emptyMessage?: string;
+  month?: string; // yyyy-MM
 }
 
 export const CardGridSection = ({
@@ -32,6 +34,7 @@ export const CardGridSection = ({
   recurringLabel = '定期',
   onRecurringClick,
   emptyMessage = '利用なし',
+  month = '',
 }: CardGridSectionProps) => {
   // カテゴリ別グルーピング（取引 + 定期）
   const categoryGrouped = transactions.reduce(
@@ -54,7 +57,8 @@ export const CardGridSection = ({
     if (!categoryGrouped[rp.categoryId]) {
       categoryGrouped[rp.categoryId] = { category: cat, amount: 0, transactions: [] };
     }
-    categoryGrouped[rp.categoryId].amount += rp.amount;
+    const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
+    categoryGrouped[rp.categoryId].amount += effectiveAmount;
   }
 
   // 支払い元別グルーピング（取引 + 定期）
@@ -76,20 +80,21 @@ export const CardGridSection = ({
   );
   // 支払い元が設定された定期支払いをマージ（カードまたは口座で振り分け）
   for (const rp of recurringPayments) {
+    const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
     if (rp.paymentMethodId) {
       const pm = paymentMethods.find((p) => p.id === rp.paymentMethodId);
       const linkedAccount = pm ? accounts.find((a) => a.id === pm.linkedAccountId) : undefined;
       if (!paymentGrouped[rp.paymentMethodId]) {
         paymentGrouped[rp.paymentMethodId] = { paymentMethod: pm, account: linkedAccount, name: pm?.name ?? '現金', amount: 0, transactions: [] };
       }
-      paymentGrouped[rp.paymentMethodId].amount += rp.amount;
+      paymentGrouped[rp.paymentMethodId].amount += effectiveAmount;
     } else if (rp.accountId) {
       const acc = accounts.find((a) => a.id === rp.accountId);
       const key = `__account__${rp.accountId}`;
       if (!paymentGrouped[key]) {
         paymentGrouped[key] = { paymentMethod: undefined, account: acc, name: acc?.name ?? '口座', amount: 0, transactions: [] };
       }
-      paymentGrouped[key].amount += rp.amount;
+      paymentGrouped[key].amount += effectiveAmount;
     }
   }
 
@@ -117,7 +122,8 @@ export const CardGridSection = ({
     if (!memberGrouped[memberId]) {
       memberGrouped[memberId] = { member, name: member?.name ?? '不明', amount: 0, transactions: [] };
     }
-    memberGrouped[memberId].amount += rp.amount;
+    const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
+    memberGrouped[memberId].amount += effectiveAmount;
   }
 
   const sortedCategoryEntries = Object.entries(categoryGrouped).sort((a, b) => {
