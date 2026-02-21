@@ -146,8 +146,12 @@ export const AccountsPage = () => {
 
   const handleCloseEditingTransaction = () => {
     setEditingTransaction(null);
-    // 明細一覧シートを再度開く
+    // 明細一覧シートを再度開く場合、データを再取得
     if (selectedCategoryForModal) {
+      // カテゴリに基づいて取引を再度フィルタリング
+      const filtered = allMonthExpenses.filter((t) => t.categoryId === selectedCategoryForModal.id)
+        .concat(allMonthIncomes.filter((t) => t.categoryId === selectedCategoryForModal.id));
+      setCategoryModalTransactions(filtered);
       setIsCategoryModalOpen(true);
     }
   };
