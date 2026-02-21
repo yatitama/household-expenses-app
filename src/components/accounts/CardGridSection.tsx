@@ -58,7 +58,7 @@ export const CardGridSection = ({
       categoryGrouped[rp.categoryId] = { category: cat, amount: 0, transactions: [] };
     }
     const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
-    categoryGrouped[rp.categoryId].amount += effectiveAmount;
+    categoryGrouped[rp.categoryId].amount += rp.type === 'expense' ? effectiveAmount : -effectiveAmount;
   }
 
   // 支払い元別グルーピング（取引 + 定期）
@@ -81,20 +81,21 @@ export const CardGridSection = ({
   // 支払い元が設定された定期支払いをマージ（カードまたは口座で振り分け）
   for (const rp of recurringPayments) {
     const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
+    const signedAmount = rp.type === 'expense' ? effectiveAmount : -effectiveAmount;
     if (rp.paymentMethodId) {
       const pm = paymentMethods.find((p) => p.id === rp.paymentMethodId);
       const linkedAccount = pm ? accounts.find((a) => a.id === pm.linkedAccountId) : undefined;
       if (!paymentGrouped[rp.paymentMethodId]) {
         paymentGrouped[rp.paymentMethodId] = { paymentMethod: pm, account: linkedAccount, name: pm?.name ?? '現金', amount: 0, transactions: [] };
       }
-      paymentGrouped[rp.paymentMethodId].amount += effectiveAmount;
+      paymentGrouped[rp.paymentMethodId].amount += signedAmount;
     } else if (rp.accountId) {
       const acc = accounts.find((a) => a.id === rp.accountId);
       const key = `__account__${rp.accountId}`;
       if (!paymentGrouped[key]) {
         paymentGrouped[key] = { paymentMethod: undefined, account: acc, name: acc?.name ?? '口座', amount: 0, transactions: [] };
       }
-      paymentGrouped[key].amount += effectiveAmount;
+      paymentGrouped[key].amount += signedAmount;
     }
   }
 
@@ -123,7 +124,7 @@ export const CardGridSection = ({
       memberGrouped[memberId] = { member, name: member?.name ?? '不明', amount: 0, transactions: [] };
     }
     const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
-    memberGrouped[memberId].amount += effectiveAmount;
+    memberGrouped[memberId].amount += rp.type === 'expense' ? effectiveAmount : -effectiveAmount;
   }
 
   const sortedCategoryEntries = Object.entries(categoryGrouped).sort((a, b) => {
