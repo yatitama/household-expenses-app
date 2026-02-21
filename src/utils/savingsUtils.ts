@@ -1,4 +1,4 @@
-import type { SavingsGoal } from '../types';
+import type { SavingsGoal, RecurringPayment } from '../types';
 
 // yyyy-MM 形式の月文字列を生成
 export const toYearMonth = (date: Date): string => {
@@ -91,4 +91,10 @@ export const getRemainingMonthsCount = (goal: SavingsGoal, currentRealMonth: str
   if (compareMonths(currentRealMonth, targetMonth) > 0) return 0;
   const allMonths = getMonthsInRange(currentRealMonth, targetMonth);
   return allMonths.filter((m) => !goal.excludedMonths.includes(m)).length;
+};
+
+// 定期取引の指定月の有効金額を取得 (月別上書きがあれば、その金額を返す)
+export const getEffectiveRecurringAmount = (rp: RecurringPayment, month: string): number => {
+  const overrides = rp.monthlyOverrides ?? {};
+  return overrides[month] ?? rp.amount;
 };
