@@ -8,7 +8,7 @@ import { getRecurringPaymentsForMonth } from '../utils/billingUtils';
 import { CardGridSection, type CardGridViewMode } from '../components/accounts/CardGridSection';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { RecurringPaymentMonthSheet } from '../components/accounts/modals/RecurringPaymentMonthSheet';
-import { CardUnsettledDetailModal } from '../components/accounts/modals/CardUnsettledDetailModal';
+import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
 import { CategoryTransactionsModal } from '../components/accounts/modals/CategoryTransactionsModal';
 import { RecurringListModal } from '../components/accounts/modals/RecurringListModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
@@ -51,8 +51,7 @@ export const AccountsPage = () => {
     }
   };
 
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [isTransactionDetailOpen, setIsTransactionDetailOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [selectedCategoryForModal, setSelectedCategoryForModal] = useState<Category | undefined>(undefined);
   const [categoryModalTransactions, setCategoryModalTransactions] = useState<Transaction[]>([]);
   const [categoryModalRecurringItems, setCategoryModalRecurringItems] = useState<RecurringPayment[]>([]);
@@ -66,7 +65,7 @@ export const AccountsPage = () => {
 
   useBodyScrollLock(
     !!activeModal ||
-    isTransactionDetailOpen ||
+    !!editingTransaction ||
     isCategoryModalOpen ||
     isRecurringExpenseListOpen ||
     isRecurringIncomeListOpen ||
@@ -143,8 +142,7 @@ export const AccountsPage = () => {
 
   const handleTransactionClick = (transaction: Transaction) => {
     setIsCategoryModalOpen(false);
-    setSelectedTransaction(transaction);
-    setIsTransactionDetailOpen(true);
+    setEditingTransaction(transaction);
   };
 
   return (
@@ -380,14 +378,25 @@ export const AccountsPage = () => {
         }}
       />
 
-      <CardUnsettledDetailModal
-        transaction={selectedTransaction}
-        isOpen={isTransactionDetailOpen}
-        onClose={() => {
-          setIsTransactionDetailOpen(false);
-          setSelectedTransaction(null);
-        }}
-      />
+      {editingTransaction && (
+        <EditTransactionModal
+          transaction={editingTransaction}
+          accounts={allAccounts}
+          paymentMethods={paymentMethods}
+          categories={categories}
+          onSave={(input) => {
+            transactionService.update(editingTransaction.id, input);
+            setEditingTransaction(null);
+          }}
+          onClose={() => {
+            setEditingTransaction(null);
+          }}
+          onDelete={(id) => {
+            transactionService.delete(id);
+            setEditingTransaction(null);
+          }}
+        />
+      )}
 
       <RecurringListModal
         title="定期支出"
