@@ -146,11 +146,22 @@ export const AccountsPage = () => {
 
   const handleCloseEditingTransaction = () => {
     setEditingTransaction(null);
-    // 明細一覧シートが開いていた場合、データを再取得してから再度開く
+    // 明細一覧シートが開いていた場合、最新データを再取得してから再度開く
     if (selectedCategoryForModal) {
+      // transactionService から最新データを直接取得（コンポーネント再レンダリング前でも最新）
+      const latestExpenses = transactionService.getAll().filter((t) => {
+        if (t.type !== 'expense') return false;
+        const [y, m] = t.date.split('-').map(Number);
+        return y === selectedYear && m === selectedMonth;
+      });
+      const latestIncomes = transactionService.getAll().filter((t) => {
+        if (t.type !== 'income') return false;
+        const [y, m] = t.date.split('-').map(Number);
+        return y === selectedYear && m === selectedMonth;
+      });
       // カテゴリに基づいて取引を再度フィルタリング
-      const filtered = allMonthExpenses.filter((t) => t.categoryId === selectedCategoryForModal.id)
-        .concat(allMonthIncomes.filter((t) => t.categoryId === selectedCategoryForModal.id));
+      const filtered = latestExpenses.filter((t) => t.categoryId === selectedCategoryForModal.id)
+        .concat(latestIncomes.filter((t) => t.categoryId === selectedCategoryForModal.id));
       // 強制的にシートを閉じてから、更新されたデータで再度開く
       setIsCategoryModalOpen(false);
       // バッチ更新で確実にデータを更新してから再度開く
