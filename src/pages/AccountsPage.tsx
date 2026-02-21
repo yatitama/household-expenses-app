@@ -127,6 +127,23 @@ export const AccountsPage = () => {
   const handleSaveRecurringMonth = (rpId: string, overrideAmount: number | null) => {
     recurringPaymentService.setMonthlyOverride(rpId, viewMonth, overrideAmount);
     setSelectedRecurringForMonthSheet(null);
+
+    // 定期取引一覧シートが開いていた場合、最新データで再度開く
+    const editedRecurring = selectedRecurringForMonthSheet;
+    if (editedRecurring) {
+      // 定期取引一覧シートを強制的に一度閉じてから再度開く
+      const isExpense = editedRecurring.type === 'expense';
+      const isOpen = isExpense ? isRecurringExpenseListOpen : isRecurringIncomeListOpen;
+
+      if (isOpen) {
+        const setIsOpen = isExpense ? setIsRecurringExpenseListOpen : setIsRecurringIncomeListOpen;
+        setIsOpen(false);
+
+        setTimeout(() => {
+          setIsOpen(true);
+        }, 0);
+      }
+    }
   };
 
   const handleRecurringItemClick = (rp: RecurringPayment) => {
