@@ -139,6 +139,7 @@ export const SettingsPage = () => {
 
   // Category reorder handlers (touch and mouse compatible)
   const handleCategoryTouchStart = (categoryId: string, e: React.TouchEvent) => {
+    e.preventDefault();
     setDraggedCategoryId(categoryId);
     setTouchStartY(e.touches[0].clientY);
   };
@@ -146,6 +147,7 @@ export const SettingsPage = () => {
   const handleCategoryTouchMove = (_categoryId: string, e: React.TouchEvent) => {
     if (!draggedCategoryId || !touchStartY) return;
 
+    e.preventDefault();
     const currentY = e.touches[0].clientY;
     const filtered = filteredCategories;
     const draggedIndex = filtered.findIndex((c) => c.id === draggedCategoryId);
