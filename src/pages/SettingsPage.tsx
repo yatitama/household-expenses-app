@@ -604,9 +604,6 @@ export const SettingsPage = () => {
                       onDragEnter={() => handleCategoryDragEnter(category.id)}
                       onDragLeave={handleCategoryDragLeave}
                       onDrop={() => handleCategoryDrop(category.id)}
-                      onTouchStart={(e) => handleCategoryTouchStart(category.id, e)}
-                      onTouchMove={(e) => handleCategoryTouchMove(category.id, e)}
-                      onTouchEnd={handleCategoryTouchEnd}
                       className={`w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 transition-colors select-none ${
                         isDragged ? 'opacity-50' : ''
                       } ${isDragOver ? 'bg-primary-50 dark:bg-primary-900/20' : 'hover:bg-gray-50 dark:hover:bg-slate-700'}`}
@@ -625,7 +622,12 @@ export const SettingsPage = () => {
                           <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
                         </div>
                       </button>
-                      <div className="cursor-grab active:cursor-grabbing p-1 text-gray-400 flex-shrink-0 touch-none">
+                      <div
+                        className="cursor-grab active:cursor-grabbing p-1 text-gray-400 flex-shrink-0 touch-none"
+                        onTouchStart={(e) => handleCategoryTouchStart(category.id, e)}
+                        onTouchMove={(e) => handleCategoryTouchMove(category.id, e)}
+                        onTouchEnd={handleCategoryTouchEnd}
+                      >
                         <GripVertical size={16} />
                       </div>
                     </div>
