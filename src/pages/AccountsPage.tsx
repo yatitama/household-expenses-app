@@ -146,6 +146,30 @@ export const AccountsPage = () => {
     }
   };
 
+  const handleCloseRecurringMonthSheet = () => {
+    const editedRecurring = selectedRecurringForMonthSheet;
+    setSelectedRecurringForMonthSheet(null);
+
+    // 定期取引一覧シートが開いていた場合、最新データで再度開く
+    if (editedRecurring) {
+      const isExpense = editedRecurring.type === 'expense';
+      const isOpen = isExpense ? isRecurringExpenseListOpen : isRecurringIncomeListOpen;
+
+      if (isOpen) {
+        const setIsOpen = isExpense ? setIsRecurringExpenseListOpen : setIsRecurringIncomeListOpen;
+        setIsOpen(false);
+
+        setTimeout(() => {
+          setIsOpen(true);
+        }, 0);
+      }
+    }
+  };
+
+  const handleCloseSavingsMonthSheet = () => {
+    setSelectedGoalForSheet(null);
+  };
+
   const handleRecurringItemClick = (rp: RecurringPayment) => {
     setSelectedRecurringForMonthSheet(rp);
   };
@@ -481,7 +505,7 @@ export const AccountsPage = () => {
           payment={selectedRecurringForMonthSheet}
           month={viewMonth}
           onSave={(overrideAmount) => handleSaveRecurringMonth(selectedRecurringForMonthSheet.id, overrideAmount)}
-          onClose={() => setSelectedRecurringForMonthSheet(null)}
+          onClose={handleCloseRecurringMonthSheet}
         />
       )}
 
@@ -490,7 +514,7 @@ export const AccountsPage = () => {
           goal={selectedGoalForSheet}
           month={viewMonth}
           onSave={(excluded, overrideAmount) => handleSaveSavingsMonth(selectedGoalForSheet.id, excluded, overrideAmount)}
-          onClose={() => setSelectedGoalForSheet(null)}
+          onClose={handleCloseSavingsMonthSheet}
         />
       )}
     </div>
