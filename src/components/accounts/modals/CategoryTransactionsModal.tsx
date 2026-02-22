@@ -1,4 +1,4 @@
-import { X, RefreshCw } from 'lucide-react';
+import { X, RefreshCw, User, CreditCard } from 'lucide-react';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { paymentMethodService } from '../../../services/storage';
@@ -15,6 +15,8 @@ interface CategoryTransactionsModalProps {
   onRecurringClick?: (payment: RecurringPayment) => void;
   paymentMethodName?: string;
   memberName?: string;
+  displayColor?: string;
+  displayIconType?: 'account' | 'user';
 }
 
 const getPeriodLabel = (payment: RecurringPayment): string => {
@@ -37,6 +39,8 @@ export const CategoryTransactionsModal = ({
   onRecurringClick,
   paymentMethodName,
   memberName,
+  displayColor,
+  displayIconType,
 }: CategoryTransactionsModalProps) => {
   if (!isOpen) return null;
 
@@ -75,11 +79,17 @@ export const CategoryTransactionsModal = ({
                 <div
                   className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
-                    backgroundColor: `${category?.color || '#6b7280'}20`,
-                    color: category?.color || '#6b7280',
+                    backgroundColor: `${displayColor || category?.color || '#6b7280'}20`,
+                    color: displayColor || category?.color || '#6b7280',
                   }}
                 >
-                  {getCategoryIcon(category?.icon || '', 14)}
+                  {displayIconType === 'user' ? (
+                    <User size={14} />
+                  ) : displayIconType === 'account' ? (
+                    <CreditCard size={14} />
+                  ) : (
+                    getCategoryIcon(category?.icon || '', 14)
+                  )}
                 </div>
                 <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
                   {memberName || paymentMethodName || category?.name || 'その他'}
