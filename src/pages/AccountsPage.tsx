@@ -179,6 +179,7 @@ export const AccountsPage = () => {
   };
 
   const handleCloseRecurringMonthSheet = () => {
+    const editedRecurring = selectedRecurringForMonthSheet;
     setSelectedRecurringForMonthSheet(null);
 
     // 明細一覧シートから開かれた場合、最新データを再取得してから明細一覧シートを再度開く
@@ -212,6 +213,20 @@ export const AccountsPage = () => {
         setCategoryModalRecurringItems(latestRecurring);
         setIsCategoryModalOpen(true);
       }, 0);
+    }
+    // 定期取引一覧シートから開かれた場合、定期取引一覧シートを再度開く
+    else if (editedRecurring) {
+      const isExpense = editedRecurring.type === 'expense';
+      const isOpen = isExpense ? isRecurringExpenseListOpen : isRecurringIncomeListOpen;
+
+      if (isOpen) {
+        const setIsOpen = isExpense ? setIsRecurringExpenseListOpen : setIsRecurringIncomeListOpen;
+        setIsOpen(false);
+
+        setTimeout(() => {
+          setIsOpen(true);
+        }, 0);
+      }
     }
   };
 
