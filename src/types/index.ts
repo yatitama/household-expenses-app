@@ -73,6 +73,7 @@ export interface Category {
   color: string;
   icon: string;
   order?: number;
+  budget?: number; // Optional budget for expense categories
 }
 
 // 月別予算
