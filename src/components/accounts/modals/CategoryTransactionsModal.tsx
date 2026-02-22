@@ -13,6 +13,8 @@ interface CategoryTransactionsModalProps {
   onClose: () => void;
   onTransactionClick?: (transaction: Transaction) => void;
   onRecurringClick?: (payment: RecurringPayment) => void;
+  paymentMethodName?: string;
+  memberName?: string;
 }
 
 const getPeriodLabel = (payment: RecurringPayment): string => {
@@ -33,6 +35,8 @@ export const CategoryTransactionsModal = ({
   onClose,
   onTransactionClick,
   onRecurringClick,
+  paymentMethodName,
+  memberName,
 }: CategoryTransactionsModalProps) => {
   if (!isOpen) return null;
 
@@ -78,7 +82,7 @@ export const CategoryTransactionsModal = ({
                   {getCategoryIcon(category?.icon || '', 14)}
                 </div>
                 <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
-                  {category?.name || 'その他'}
+                  {memberName || paymentMethodName || category?.name || 'その他'}
                 </h3>
               </div>
               <button
