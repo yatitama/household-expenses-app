@@ -195,12 +195,12 @@ export const CardGridSection = ({
         {viewMode === 'category'
           ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => {
               const catRecurring = recurringPayments.filter((rp) => rp.categoryId === category?.id);
-              const variance = category?.budget ? category.budget - amount : undefined;
+              const progress = category?.budget ? Math.min(100, (amount / category.budget) * 100) : 0;
               return (
               <button
                 key={category?.id ?? '__none__'}
                 onClick={() => onCategoryClick?.(category, catTransactions, catRecurring)}
-                className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
+                className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-28 md:h-32 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
               >
                 <div className="flex items-center gap-1.5">
                   <div
@@ -216,21 +216,25 @@ export const CardGridSection = ({
                     {category?.name || 'その他'}
                   </p>
                 </div>
-                <div className="text-right space-y-0.5">
-                  <p className="text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+                {category?.budget ? (
+                  <div className="space-y-1.5">
+                    <p className="text-right text-xs md:text-sm font-bold text-gray-900 dark:text-gray-100">
+                      {formatCurrency(amount)} / {formatCurrency(category.budget)}
+                    </p>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className={`h-1.5 rounded-full transition-all ${
+                          progress <= 100 ? 'bg-black dark:bg-white' : 'bg-red-500 dark:bg-red-400'
+                        }`}
+                        style={{ width: `${Math.min(progress, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                     {formatCurrency(amount)}
                   </p>
-                  {category?.budget && (
-                    <div className="text-xs space-y-0.5">
-                      <p className="text-gray-500 dark:text-gray-400">
-                        予: {formatCurrency(category.budget)}
-                      </p>
-                      <p className={`font-medium ${variance! >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                        {variance! >= 0 ? '+' : ''}{formatCurrency(variance!)}
-                      </p>
-                    </div>
-                  )}
-                </div>
+                )}
               </button>
             );})
           : viewMode === 'payment'
