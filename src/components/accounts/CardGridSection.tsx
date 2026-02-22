@@ -191,7 +191,7 @@ export const CardGridSection = ({
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
-      <div className="grid grid-cols-2 gap-2 md:gap-3">
+      <div className="grid grid-cols-1 gap-2 md:gap-2.5">
         {viewMode === 'category'
           ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => {
               const catRecurring = recurringPayments.filter((rp) => rp.categoryId === category?.id);
@@ -200,9 +200,9 @@ export const CardGridSection = ({
               <button
                 key={category?.id ?? '__none__'}
                 onClick={() => onCategoryClick?.(category, catTransactions, catRecurring)}
-                className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-28 md:h-32 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
+                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-opacity text-left"
               >
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <div
                     className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
                     style={{
@@ -212,28 +212,28 @@ export const CardGridSection = ({
                   >
                     {getCategoryIcon(category?.icon || '', 12)}
                   </div>
-                  <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                  <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate flex-1">
                     {category?.name || 'その他'}
                   </p>
                 </div>
                 {category?.budget ? (
-                  <div className="space-y-1.5">
-                    <p className="text-right text-xs md:text-sm font-bold text-gray-900 dark:text-gray-100">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 h-6 md:h-7 flex items-center justify-center relative overflow-hidden">
+                    <div
+                      className={`absolute inset-y-0 left-0 transition-all ${
+                        progress <= 100 ? 'bg-black dark:bg-white' : 'bg-red-500 dark:bg-red-400'
+                      }`}
+                      style={{ width: `${Math.min(progress, 100)}%` }}
+                    />
+                    <p className="text-xs md:text-xs font-bold text-gray-900 dark:text-gray-100 relative z-10">
                       {formatCurrency(amount)} / {formatCurrency(category.budget)}
                     </p>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
-                      <div
-                        className={`h-1.5 rounded-full transition-all ${
-                          progress <= 100 ? 'bg-black dark:bg-white' : 'bg-red-500 dark:bg-red-400'
-                        }`}
-                        style={{ width: `${Math.min(progress, 100)}%` }}
-                      />
-                    </div>
                   </div>
                 ) : (
-                  <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                    {formatCurrency(amount)}
-                  </p>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 h-6 md:h-7 flex items-center justify-center">
+                    <p className="text-xs md:text-xs font-bold text-gray-900 dark:text-gray-100">
+                      {formatCurrency(amount)}
+                    </p>
+                  </div>
                 )}
               </button>
             );})
