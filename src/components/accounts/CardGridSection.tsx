@@ -217,7 +217,7 @@ export const CardGridSection = ({
                   </p>
                 </div>
                 {category?.budget ? (
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 h-6 md:h-7 flex items-center justify-center relative overflow-hidden">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 h-6 md:h-7 flex items-center justify-between px-2 relative overflow-hidden">
                     <div
                       className={`absolute inset-y-0 left-0 transition-all ${
                         progress <= 100 ? 'bg-black dark:bg-white' : 'bg-red-500 dark:bg-red-400'
@@ -225,7 +225,10 @@ export const CardGridSection = ({
                       style={{ width: `${Math.min(progress, 100)}%` }}
                     />
                     <p className="text-xs md:text-xs font-bold text-gray-900 dark:text-gray-100 relative z-10">
-                      {formatCurrency(amount)} / {formatCurrency(category.budget)}
+                      {formatCurrency(amount)}
+                    </p>
+                    <p className="text-xs md:text-xs font-bold text-gray-900 dark:text-gray-100 relative z-10">
+                      {formatCurrency(category.budget)}
                     </p>
                   </div>
                 ) : (
