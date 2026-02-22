@@ -28,12 +28,17 @@ export const SettingsPage = () => {
   const [savingsOpen, setSavingsOpen] = useState(false);
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => savingsGoalService.getAll());
 
-  // Budget management state
-  const [budgetsOpen, setBudgetsOpen] = useState(false);
+  // Category budget management
   const now = new Date();
+  const [categoryBudgetYear, setCategoryBudgetYear] = useState(now.getFullYear());
+  const [categoryBudgetMonth, setCategoryBudgetMonth] = useState(now.getMonth() + 1);
+  const [budgets, setBudgets] = useState<Budget[]>(() => budgetService.getAll());
+  const [categoryBudgetInputs, setCategoryBudgetInputs] = useState<Record<string, number>>({});
+
+  // Budget management state (for separate section)
+  const [budgetsOpen, setBudgetsOpen] = useState(false);
   const [budgetYear, setBudgetYear] = useState(now.getFullYear());
   const [budgetMonth, setBudgetMonth] = useState(now.getMonth() + 1);
-  const [budgets, setBudgets] = useState<Budget[]>(() => budgetService.getAll());
   const [budgetInputs, setBudgetInputs] = useState<Record<string, number>>({});
 
   // Savings modal state
@@ -93,7 +98,18 @@ export const SettingsPage = () => {
     }
   }, [refreshRecurringPayments]);
 
-  // Initialize budget inputs when month changes
+  // Initialize category budget inputs when month changes
+  useEffect(() => {
+    const month = `${categoryBudgetYear}-${String(categoryBudgetMonth).padStart(2, '0')}`;
+    const monthBudgets = budgets.filter((b) => b.month === month);
+    const inputs: Record<string, number> = {};
+    monthBudgets.forEach((b) => {
+      inputs[b.categoryId] = b.amount;
+    });
+    setCategoryBudgetInputs(inputs);
+  }, [categoryBudgetYear, categoryBudgetMonth, budgets]);
+
+  // Initialize budget inputs when month changes (for separate section)
   useEffect(() => {
     const month = `${budgetYear}-${String(budgetMonth).padStart(2, '0')}`;
     const monthBudgets = budgets.filter((b) => b.month === month);
@@ -319,7 +335,45 @@ export const SettingsPage = () => {
     toast.success('カテゴリの順序を変更しました');
   };
 
-  // Budget handlers
+  // Category budget handlers
+  const handlePrevCategoryBudgetMonth = () => {
+    if (categoryBudgetMonth === 1) {
+      setCategoryBudgetYear((y) => y - 1);
+      setCategoryBudgetMonth(12);
+    } else {
+      setCategoryBudgetMonth((m) => m - 1);
+    }
+  };
+
+  const handleNextCategoryBudgetMonth = () => {
+    if (categoryBudgetMonth === 12) {
+      setCategoryBudgetYear((y) => y + 1);
+      setCategoryBudgetMonth(1);
+    } else {
+      setCategoryBudgetMonth((m) => m + 1);
+    }
+  };
+
+  const handleSaveCategoryBudget = (categoryId: string, amount: number) => {
+    const month = `${categoryBudgetYear}-${String(categoryBudgetMonth).padStart(2, '0')}`;
+    const existing = budgets.find((b) => b.categoryId === categoryId && b.month === month);
+
+    if (amount <= 0) {
+      if (existing) {
+        budgetService.delete(existing.id);
+        refreshBudgets();
+      }
+    } else {
+      if (existing) {
+        budgetService.update(existing.id, { amount });
+      } else {
+        budgetService.create({ categoryId, month, amount });
+      }
+      refreshBudgets();
+    }
+  };
+
+  // Budget handlers (for separate section)
   const handlePrevBudgetMonth = () => {
     if (budgetMonth === 1) {
       setBudgetYear((y) => y - 1);
@@ -647,6 +701,34 @@ export const SettingsPage = () => {
               カテゴリを追加
             </button>
 
+            {/* Budget section - only show for expense categories */}
+            {categoryFilterType === 'expense' && (
+              <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-2.5 sm:p-3 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">月別予算</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={handlePrevCategoryBudgetMonth}
+                      className="p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-500 dark:text-gray-400"
+                      title="前月"
+                    >
+                      <ChevronLeft size={14} />
+                    </button>
+                    <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 min-w-[4rem] text-center">
+                      {categoryBudgetYear}年{categoryBudgetMonth}月
+                    </span>
+                    <button
+                      onClick={handleNextCategoryBudgetMonth}
+                      className="p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-500 dark:text-gray-400"
+                      title="次月"
+                    >
+                      <ChevronRight size={14} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {filteredCategories.length === 0 ? (
               <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">カテゴリがありません</p>
             ) : (
@@ -654,6 +736,7 @@ export const SettingsPage = () => {
                 {filteredCategories.map((category) => {
                   const isDragged = draggedCategoryId === category.id;
                   const isDragOver = dragOverCategoryId === category.id;
+                  const currentBudget = categoryFilterType === 'expense' ? (categoryBudgetInputs[category.id] || 0) : 0;
                   return (
                     <div
                       key={category.id}
@@ -682,6 +765,27 @@ export const SettingsPage = () => {
                           <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{category.name}</p>
                         </div>
                       </button>
+                      {categoryFilterType === 'expense' && (
+                        <input
+                          type="number"
+                          min="0"
+                          value={currentBudget > 0 ? currentBudget : ''}
+                          onChange={(e) => {
+                            const val = e.target.value === '' ? 0 : Number(e.target.value);
+                            setCategoryBudgetInputs((prev) => ({
+                              ...prev,
+                              [category.id]: val,
+                            }));
+                          }}
+                          onBlur={() => {
+                            const amount = categoryBudgetInputs[category.id] || 0;
+                            handleSaveCategoryBudget(category.id, amount);
+                          }}
+                          placeholder="予算"
+                          className="w-16 sm:w-20 px-2 py-1 text-xs sm:text-sm bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                          title="予算額を入力"
+                        />
+                      )}
                       <div
                         className="cursor-grab active:cursor-grabbing p-1 text-gray-400 flex-shrink-0 touch-none"
                         onTouchStart={(e) => handleCategoryTouchStart(category.id, e)}
