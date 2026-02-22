@@ -62,6 +62,7 @@ export const AccountsPage = () => {
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => savingsGoalService.getAll());
   const [selectedGoalForSheet, setSelectedGoalForSheet] = useState<SavingsGoal | null>(null);
   const [selectedRecurringForMonthSheet, setSelectedRecurringForMonthSheet] = useState<RecurringPayment | null>(null);
+  const [isRecurringMonthSheetFromCategory, setIsRecurringMonthSheetFromCategory] = useState(false);
 
   useBodyScrollLock(
     !!activeModal ||
@@ -147,22 +148,16 @@ export const AccountsPage = () => {
   };
 
   const handleCloseRecurringMonthSheet = () => {
-    const editedRecurring = selectedRecurringForMonthSheet;
     setSelectedRecurringForMonthSheet(null);
 
-    // 定期取引一覧シートが開いていた場合、最新データで再度開く
-    if (editedRecurring) {
-      const isExpense = editedRecurring.type === 'expense';
-      const isOpen = isExpense ? isRecurringExpenseListOpen : isRecurringIncomeListOpen;
+    // 明細一覧シートから開かれた場合、明細一覧シートを再度開く
+    if (isRecurringMonthSheetFromCategory && selectedCategoryForModal !== undefined) {
+      setIsRecurringMonthSheetFromCategory(false);
+      setIsCategoryModalOpen(false);
 
-      if (isOpen) {
-        const setIsOpen = isExpense ? setIsRecurringExpenseListOpen : setIsRecurringIncomeListOpen;
-        setIsOpen(false);
-
-        setTimeout(() => {
-          setIsOpen(true);
-        }, 0);
-      }
+      setTimeout(() => {
+        setIsCategoryModalOpen(true);
+      }, 0);
     }
   };
 
@@ -442,6 +437,7 @@ export const AccountsPage = () => {
         onTransactionClick={handleTransactionClick}
         onRecurringClick={(rp) => {
           setIsCategoryModalOpen(false);
+          setIsRecurringMonthSheetFromCategory(true);
           handleRecurringItemClick(rp);
         }}
       />
@@ -473,6 +469,7 @@ export const AccountsPage = () => {
         onClose={() => setIsRecurringExpenseListOpen(false)}
         onItemClick={(item) => {
           setIsRecurringExpenseListOpen(false);
+          setIsRecurringMonthSheetFromCategory(false);
           handleRecurringItemClick(item);
         }}
       />
@@ -486,6 +483,7 @@ export const AccountsPage = () => {
         onClose={() => setIsRecurringIncomeListOpen(false)}
         onItemClick={(item) => {
           setIsRecurringIncomeListOpen(false);
+          setIsRecurringMonthSheetFromCategory(false);
           handleRecurringItemClick(item);
         }}
       />
