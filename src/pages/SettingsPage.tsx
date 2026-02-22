@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, Plus, CreditCard, RefreshCw, PiggyBank, X, Check, GripVertical } from 'lucide-react';
+import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Plus, CreditCard, RefreshCw, PiggyBank, X, Check, GripVertical } from 'lucide-react';
 import { accountService, transactionService, categoryService, budgetService, memberService, paymentMethodService, recurringPaymentService, cardBillingService, linkedPaymentMethodService, savingsGoalService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
@@ -9,7 +9,7 @@ import { COLORS } from '../components/accounts/constants';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { calculateMonthlyAmount, toYearMonth, getMonthsInRange, getTargetMonth } from '../utils/savingsUtils';
-import type { Member, MemberInput, Category, CategoryInput, TransactionType, PaymentMethod, PaymentMethodInput, RecurringPayment, RecurringPaymentInput, Account, SavingsGoal, SavingsGoalInput } from '../types';
+import type { Member, MemberInput, Category, CategoryInput, TransactionType, PaymentMethod, PaymentMethodInput, RecurringPayment, RecurringPaymentInput, Account, SavingsGoal, SavingsGoalInput, Budget } from '../types';
 
 export const SettingsPage = () => {
   // デフォルトで全セクション折りたたみ（モバイルファースト）
@@ -27,6 +27,14 @@ export const SettingsPage = () => {
   const [recurringFilterType, setRecurringFilterType] = useState<TransactionType>('expense');
   const [savingsOpen, setSavingsOpen] = useState(false);
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => savingsGoalService.getAll());
+
+  // Budget management state
+  const [budgetsOpen, setBudgetsOpen] = useState(false);
+  const now = new Date();
+  const [budgetYear, setBudgetYear] = useState(now.getFullYear());
+  const [budgetMonth, setBudgetMonth] = useState(now.getMonth() + 1);
+  const [budgets, setBudgets] = useState<Budget[]>(() => budgetService.getAll());
+  const [budgetInputs, setBudgetInputs] = useState<Record<string, number>>({});
 
   // Savings modal state
   const [isSavingsModalOpen, setIsSavingsModalOpen] = useState(false);
@@ -70,6 +78,7 @@ export const SettingsPage = () => {
   const refreshPaymentMethods = useCallback(() => setPaymentMethods(paymentMethodService.getAll()), []);
   const refreshRecurringPayments = useCallback(() => setRecurringPayments(recurringPaymentService.getAll()), []);
   const refreshSavingsGoals = useCallback(() => setSavingsGoals(savingsGoalService.getAll()), []);
+  const refreshBudgets = useCallback(() => setBudgets(budgetService.getAll()), []);
 
   // 必須フィールドが欠けている古い形式の定期取引を自動削除
   useEffect(() => {
@@ -83,6 +92,17 @@ export const SettingsPage = () => {
       toast.success(`古い形式の定期取引 ${invalid.length}件を削除しました`);
     }
   }, [refreshRecurringPayments]);
+
+  // Initialize budget inputs when month changes
+  useEffect(() => {
+    const month = `${budgetYear}-${String(budgetMonth).padStart(2, '0')}`;
+    const monthBudgets = budgets.filter((b) => b.month === month);
+    const inputs: Record<string, number> = {};
+    monthBudgets.forEach((b) => {
+      inputs[b.categoryId] = b.amount;
+    });
+    setBudgetInputs(inputs);
+  }, [budgetYear, budgetMonth, budgets]);
 
   const filteredCategories = categories.filter((c) => c.type === categoryFilterType);
 
@@ -297,6 +317,46 @@ export const SettingsPage = () => {
     setDraggedCategoryId(null);
     setDragOverCategoryId(null);
     toast.success('カテゴリの順序を変更しました');
+  };
+
+  // Budget handlers
+  const handlePrevBudgetMonth = () => {
+    if (budgetMonth === 1) {
+      setBudgetYear((y) => y - 1);
+      setBudgetMonth(12);
+    } else {
+      setBudgetMonth((m) => m - 1);
+    }
+  };
+
+  const handleNextBudgetMonth = () => {
+    if (budgetMonth === 12) {
+      setBudgetYear((y) => y + 1);
+      setBudgetMonth(1);
+    } else {
+      setBudgetMonth((m) => m + 1);
+    }
+  };
+
+  const handleSaveBudget = (categoryId: string, amount: number) => {
+    const month = `${budgetYear}-${String(budgetMonth).padStart(2, '0')}`;
+    const existing = budgets.find((b) => b.categoryId === categoryId && b.month === month);
+
+    if (amount <= 0) {
+      if (existing) {
+        budgetService.delete(existing.id);
+        refreshBudgets();
+        toast.success('予算を削除しました');
+      }
+    } else {
+      if (existing) {
+        budgetService.update(existing.id, { amount });
+      } else {
+        budgetService.create({ categoryId, month, amount });
+      }
+      refreshBudgets();
+      toast.success('予算を保存しました');
+    }
   };
 
   // Card handlers
@@ -639,6 +699,95 @@ export const SettingsPage = () => {
         )}
       </div>
 
+      {/* 予算管理 */}
+      <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
+        <button
+          aria-label={budgetsOpen ? "予算管理を折りたたむ" : "予算管理を展開"}
+          onClick={() => setBudgetsOpen(!budgetsOpen)}
+          className="w-full flex items-center justify-between p-3 sm:p-3.5 md:p-4 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 dark:focus-visible:outline-primary-400 rounded-lg"
+          aria-expanded={budgetsOpen}
+        >
+          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
+            <Tag size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-700 dark:text-gray-600" />
+            <div className="text-left">
+              <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 dark:text-gray-100">予算管理</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">支出カテゴリの月別予算を設定</p>
+            </div>
+          </div>
+          {budgetsOpen ? <ChevronUp size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" /> : <ChevronDown size={16} className="sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-gray-400" />}
+        </button>
+
+        {budgetsOpen && (
+          <div className="border-t dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-3 sm:space-y-4">
+            {/* Month selector */}
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handlePrevBudgetMonth}
+                className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[5rem] text-center">
+                {budgetYear}年{budgetMonth}月
+              </span>
+              <button
+                onClick={handleNextBudgetMonth}
+                className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+
+            {/* Budget inputs for expense categories */}
+            {categories.filter((c) => c.type === 'expense').length === 0 ? (
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">支出カテゴリがありません</p>
+            ) : (
+              <div className="space-y-2.5 sm:space-y-3">
+                {categories
+                  .filter((c) => c.type === 'expense')
+                  .map((category) => {
+                    const currentAmount = budgetInputs[category.id] || 0;
+                    return (
+                      <div key={category.id} className="flex items-center gap-2.5 sm:gap-3">
+                        <div
+                          className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                        >
+                          {getCategoryIcon(category.icon, 14)}
+                        </div>
+                        <label className="flex-1 flex items-center gap-2">
+                          <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 w-20">
+                            {category.name}
+                          </span>
+                          <input
+                            type="number"
+                            min="0"
+                            value={currentAmount > 0 ? currentAmount : ''}
+                            onChange={(e) => {
+                              const val = e.target.value === '' ? 0 : Number(e.target.value);
+                              setBudgetInputs((prev) => ({
+                                ...prev,
+                                [category.id]: val,
+                              }));
+                            }}
+                            onBlur={() => {
+                              const amount = budgetInputs[category.id] || 0;
+                              handleSaveBudget(category.id, amount);
+                            }}
+                            placeholder="予算額"
+                            className="flex-1 px-2 py-1.5 text-xs sm:text-sm bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                          />
+                          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 w-8 text-right">円</span>
+                        </label>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+            <p className="text-xs text-gray-400 dark:text-gray-500">タップして金額入力、クリックまたはフォーカス外れで自動保存</p>
+          </div>
+        )}
+      </div>
 
       {/* カード管理 */}
       <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden">
