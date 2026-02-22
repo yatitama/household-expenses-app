@@ -14,7 +14,7 @@ interface CardGridSectionProps {
   members?: Member[];
   accounts?: Account[];
   viewMode?: CardGridViewMode;
-  onCategoryClick?: (category: Category | undefined, transactions: Transaction[], recurringPayments: RecurringPayment[]) => void;
+  onCategoryClick?: (category: Category | undefined, transactions: Transaction[], recurringPayments: RecurringPayment[], displayName?: string) => void;
   recurringPayments?: RecurringPayment[];
   recurringLabel?: string;
   onRecurringClick?: () => void;
@@ -230,7 +230,7 @@ export const CardGridSection = ({
               return (
                 <button
                   key={key}
-                  onClick={() => onCategoryClick?.(undefined, pmTransactions, pmRecurring)}
+                  onClick={() => onCategoryClick?.(undefined, pmTransactions, pmRecurring, name)}
                   className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
                 >
                   <div className="flex items-center gap-1.5">
@@ -261,7 +261,7 @@ export const CardGridSection = ({
               return (
               <button
                 key={key}
-                onClick={() => onCategoryClick?.(undefined, memberTransactions, memberRecurring)}
+                onClick={() => onCategoryClick?.(undefined, memberTransactions, memberRecurring, name)}
                 className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
               >
                 <div className="flex items-center gap-1.5">

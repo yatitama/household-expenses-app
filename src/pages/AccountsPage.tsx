@@ -56,6 +56,7 @@ export const AccountsPage = () => {
   const [categoryModalTransactions, setCategoryModalTransactions] = useState<Transaction[]>([]);
   const [categoryModalRecurringItems, setCategoryModalRecurringItems] = useState<RecurringPayment[]>([]);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [selectedDisplayName, setSelectedDisplayName] = useState<string | undefined>(undefined);
   const [isRecurringExpenseListOpen, setIsRecurringExpenseListOpen] = useState(false);
   const [isRecurringIncomeListOpen, setIsRecurringIncomeListOpen] = useState(false);
   const [expenseViewMode, setExpenseViewMode] = useState<CardGridViewMode>('category');
@@ -186,10 +187,11 @@ export const AccountsPage = () => {
     setSelectedRecurringForMonthSheet(rp);
   };
 
-  const handleCategoryClick = (category: Category | undefined, transactions: Transaction[], recurring: RecurringPayment[]) => {
+  const handleCategoryClick = (category: Category | undefined, transactions: Transaction[], recurring: RecurringPayment[], displayName?: string) => {
     setSelectedCategoryForModal(category);
     setCategoryModalTransactions(transactions);
     setCategoryModalRecurringItems(recurring);
+    setSelectedDisplayName(displayName);
     setIsCategoryModalOpen(true);
   };
 
@@ -452,6 +454,7 @@ export const AccountsPage = () => {
           setSelectedCategoryForModal(undefined);
           setCategoryModalTransactions([]);
           setCategoryModalRecurringItems([]);
+          setSelectedDisplayName(undefined);
         }}
         onTransactionClick={handleTransactionClick}
         onRecurringClick={(rp) => {
@@ -459,6 +462,8 @@ export const AccountsPage = () => {
           setRecurringMonthSheetSource('categoryModal');
           handleRecurringItemClick(rp);
         }}
+        paymentMethodName={expenseViewMode === 'payment' ? selectedDisplayName : undefined}
+        memberName={expenseViewMode === 'member' ? selectedDisplayName : undefined}
       />
 
       {editingTransaction && (
