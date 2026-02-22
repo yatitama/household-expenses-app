@@ -216,28 +216,17 @@ export const CardGridSection = ({
                     {category?.name || 'その他'}
                   </p>
                 </div>
-                {category?.budget ? (
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 h-6 md:h-7 flex items-center justify-between px-2 relative overflow-hidden">
-                    <div
-                      className={`absolute inset-y-0 left-0 transition-all ${
-                        progress <= 100 ? 'bg-black dark:bg-white' : 'bg-red-500 dark:bg-red-400'
-                      }`}
-                      style={{ width: `${Math.min(progress, 100)}%` }}
-                    />
-                    <p className="text-xs md:text-xs font-bold text-gray-900 dark:text-gray-100 relative z-10">
-                      {formatCurrency(amount)}
-                    </p>
-                    <p className="text-xs md:text-xs font-bold text-gray-900 dark:text-gray-100 relative z-10">
-                      {formatCurrency(category.budget)}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 h-6 md:h-7 flex items-center justify-center">
-                    <p className="text-xs md:text-xs font-bold text-gray-900 dark:text-gray-100">
-                      {formatCurrency(amount)}
-                    </p>
-                  </div>
-                )}
+                <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+                  {formatCurrency(amount)}{category?.budget ? ` / ${formatCurrency(category.budget)}` : ''}
+                </p>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5">
+                  <div
+                    className={`h-1.5 transition-all ${
+                      progress <= 100 ? 'bg-black dark:bg-white' : 'bg-red-500 dark:bg-red-400'
+                    }`}
+                    style={{ width: `${Math.min(progress, 100)}%` }}
+                  />
+                </div>
               </button>
             );})
           : viewMode === 'payment'
