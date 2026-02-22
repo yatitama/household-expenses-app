@@ -195,7 +195,7 @@ export const CardGridSection = ({
         {viewMode === 'category'
           ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => {
               const catRecurring = recurringPayments.filter((rp) => rp.categoryId === category?.id);
-              const progress = category?.budget ? Math.min(100, (amount / category.budget) * 100) : 0;
+              const progress = category?.budget ? Math.min(100, (amount / category.budget) * 100) : 100;
               return (
               <button
                 key={category?.id ?? '__none__'}
