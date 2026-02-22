@@ -3,7 +3,7 @@ import { ACCOUNT_TYPE_ICONS_XS } from './AccountIcons';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { getEffectiveRecurringAmount } from '../../utils/savingsUtils';
-import type { Transaction, Category, PaymentMethod, Member, Account, RecurringPayment, Budget } from '../../types';
+import type { Transaction, Category, PaymentMethod, Member, Account, RecurringPayment } from '../../types';
 
 export type CardGridViewMode = 'category' | 'payment' | 'member';
 
@@ -20,7 +20,6 @@ interface CardGridSectionProps {
   onRecurringClick?: () => void;
   emptyMessage?: string;
   month?: string; // yyyy-MM
-  budgets?: Budget[];
 }
 
 export const CardGridSection = ({
@@ -36,7 +35,6 @@ export const CardGridSection = ({
   onRecurringClick,
   emptyMessage = '利用なし',
   month = '',
-  budgets = [],
 }: CardGridSectionProps) => {
   // カテゴリ別グルーピング（取引 + 定期）
   const categoryGrouped = transactions.reduce(
@@ -197,8 +195,7 @@ export const CardGridSection = ({
         {viewMode === 'category'
           ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => {
               const catRecurring = recurringPayments.filter((rp) => rp.categoryId === category?.id);
-              const budget = budgets.find((b) => b.categoryId === category?.id && b.month === month);
-              const variance = budget ? budget.amount - amount : undefined;
+              const variance = category?.budget ? category.budget - amount : undefined;
               return (
               <button
                 key={category?.id ?? '__none__'}
@@ -223,10 +220,10 @@ export const CardGridSection = ({
                   <p className="text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                     {formatCurrency(amount)}
                   </p>
-                  {budget && (
+                  {category?.budget && (
                     <div className="text-xs space-y-0.5">
                       <p className="text-gray-500 dark:text-gray-400">
-                        予: {formatCurrency(budget.amount)}
+                        予: {formatCurrency(category.budget)}
                       </p>
                       <p className={`font-medium ${variance! >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                         {variance! >= 0 ? '+' : ''}{formatCurrency(variance!)}

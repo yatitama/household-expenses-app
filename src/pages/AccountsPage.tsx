@@ -13,7 +13,7 @@ import { CategoryTransactionsModal } from '../components/accounts/modals/Categor
 import { RecurringListModal } from '../components/accounts/modals/RecurringListModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
-import { categoryService, transactionService, paymentMethodService, memberService, accountService, savingsGoalService, recurringPaymentService, budgetService } from '../services/storage';
+import { categoryService, transactionService, paymentMethodService, memberService, accountService, savingsGoalService, recurringPaymentService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
 import { calculateMonthlyAmount, getEffectiveMonthlyAmount, isMonthExcluded, getEffectiveRecurringAmount } from '../utils/savingsUtils';
 import { SavingsMonthSheet } from '../components/savings/SavingsMonthSheet';
@@ -99,7 +99,6 @@ export const AccountsPage = () => {
   const allAccounts = accountService.getAll();
 
   const viewMonth = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}`;
-  const monthBudgets = budgetService.getByMonth(viewMonth);
 
   const totalExpenses = allMonthExpenses.reduce((sum, t) => sum + t.amount, 0);
   const totalIncomes = allMonthIncomes.reduce((sum, t) => sum + t.amount, 0);
@@ -303,7 +302,6 @@ export const AccountsPage = () => {
                   onRecurringClick={() => setIsRecurringExpenseListOpen(true)}
                   emptyMessage="支出なし"
                   month={viewMonth}
-                  budgets={monthBudgets}
                 />
               </div>
             </div>
