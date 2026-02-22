@@ -62,7 +62,7 @@ export const AccountsPage = () => {
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => savingsGoalService.getAll());
   const [selectedGoalForSheet, setSelectedGoalForSheet] = useState<SavingsGoal | null>(null);
   const [selectedRecurringForMonthSheet, setSelectedRecurringForMonthSheet] = useState<RecurringPayment | null>(null);
-  const [isRecurringMonthSheetFromCategory, setIsRecurringMonthSheetFromCategory] = useState(false);
+  const [recurringMonthSheetSource, setRecurringMonthSheetSource] = useState<'categoryModal' | 'expenseList' | 'incomeList' | null>(null);
 
   useBodyScrollLock(
     !!activeModal ||
@@ -125,109 +125,57 @@ export const AccountsPage = () => {
     setSelectedGoalForSheet(null);
   };
 
-  const handleSaveRecurringMonth = (rpId: string, overrideAmount: number | null) => {
-    const editedRecurring = selectedRecurringForMonthSheet;
-    recurringPaymentService.setMonthlyOverride(rpId, viewMonth, overrideAmount);
-    setSelectedRecurringForMonthSheet(null);
-
-    // 明細一覧シートから開かれた場合、最新データを再取得してから明細一覧シートを再度開く
-    if (isRecurringMonthSheetFromCategory && selectedCategoryForModal !== undefined) {
-      setIsRecurringMonthSheetFromCategory(false);
-
-      // transactionService と recurringPaymentService から最新データを直接取得
-      const latestExpenses = transactionService.getAll().filter((t) => {
-        if (t.type !== 'expense') return false;
-        const [y, m] = t.date.split('-').map(Number);
-        return y === selectedYear && m === selectedMonth;
-      });
-      const latestIncomes = transactionService.getAll().filter((t) => {
-        if (t.type !== 'income') return false;
-        const [y, m] = t.date.split('-').map(Number);
-        return y === selectedYear && m === selectedMonth;
-      });
-      // カテゴリに基づいて取引を再度フィルタリング
-      const filteredTransactions = latestExpenses.filter((t) => t.categoryId === selectedCategoryForModal.id)
-        .concat(latestIncomes.filter((t) => t.categoryId === selectedCategoryForModal.id));
-
-      // 定期取引も最新データを再取得
-      const latestRecurring = getRecurringPaymentsForMonth(selectedYear, selectedMonth).filter(
-        (rp) => rp.categoryId === selectedCategoryForModal.id
-      );
-
-      // 強制的にシートを閉じてから、更新されたデータで再度開く
-      setIsCategoryModalOpen(false);
-      setTimeout(() => {
-        setCategoryModalTransactions(filteredTransactions);
-        setCategoryModalRecurringItems(latestRecurring);
-        setIsCategoryModalOpen(true);
-      }, 0);
-    }
-    // 定期取引一覧シートから開かれた場合、定期取引一覧シートを再度開く
-    else if (editedRecurring) {
-      const isExpense = editedRecurring.type === 'expense';
-      const isOpen = isExpense ? isRecurringExpenseListOpen : isRecurringIncomeListOpen;
-
-      if (isOpen) {
-        const setIsOpen = isExpense ? setIsRecurringExpenseListOpen : setIsRecurringIncomeListOpen;
-        setIsOpen(false);
-
+  // 定期支払い月別シートを閉じた後、元の親シートを再表示する共通ヘルパー
+  const handleReopenAfterRecurringMonthSheet = (source: 'categoryModal' | 'expenseList' | 'incomeList' | null) => {
+    if (source === 'categoryModal') {
+      const latestAllRecurring = getRecurringPaymentsForMonth(selectedYear, selectedMonth);
+      if (selectedCategoryForModal !== undefined) {
+        // カテゴリビュー: categoryIdでフィルタリングして再表示
+        const allTransactions = transactionService.getAll();
+        const filteredTransactions = allTransactions.filter((t) => {
+          const [y, m] = t.date.split('-').map(Number);
+          return y === selectedYear && m === selectedMonth && t.categoryId === selectedCategoryForModal.id;
+        });
+        const latestRecurring = latestAllRecurring.filter((rp) => rp.categoryId === selectedCategoryForModal.id);
+        setIsCategoryModalOpen(false);
         setTimeout(() => {
-          setIsOpen(true);
+          setCategoryModalTransactions(filteredTransactions);
+          setCategoryModalRecurringItems(latestRecurring);
+          setIsCategoryModalOpen(true);
+        }, 0);
+      } else {
+        // 支払い元/メンバービュー: IDで定期支払いを更新して再表示
+        const updatedRecurring = categoryModalRecurringItems
+          .map((rp) => latestAllRecurring.find((lrp) => lrp.id === rp.id))
+          .filter((rp): rp is RecurringPayment => rp !== undefined);
+        setIsCategoryModalOpen(false);
+        setTimeout(() => {
+          setCategoryModalRecurringItems(updatedRecurring);
+          setIsCategoryModalOpen(true);
         }, 0);
       }
+    } else if (source === 'expenseList') {
+      setIsRecurringExpenseListOpen(false);
+      setTimeout(() => setIsRecurringExpenseListOpen(true), 0);
+    } else if (source === 'incomeList') {
+      setIsRecurringIncomeListOpen(false);
+      setTimeout(() => setIsRecurringIncomeListOpen(true), 0);
     }
   };
 
-  const handleCloseRecurringMonthSheet = () => {
-    const editedRecurring = selectedRecurringForMonthSheet;
+  const handleSaveRecurringMonth = (rpId: string, overrideAmount: number | null) => {
+    const source = recurringMonthSheetSource;
+    recurringPaymentService.setMonthlyOverride(rpId, viewMonth, overrideAmount);
     setSelectedRecurringForMonthSheet(null);
+    setRecurringMonthSheetSource(null);
+    handleReopenAfterRecurringMonthSheet(source);
+  };
 
-    // 明細一覧シートから開かれた場合、最新データを再取得してから明細一覧シートを再度開く
-    if (isRecurringMonthSheetFromCategory && selectedCategoryForModal !== undefined) {
-      setIsRecurringMonthSheetFromCategory(false);
-
-      // transactionService と recurringPaymentService から最新データを直接取得
-      const latestExpenses = transactionService.getAll().filter((t) => {
-        if (t.type !== 'expense') return false;
-        const [y, m] = t.date.split('-').map(Number);
-        return y === selectedYear && m === selectedMonth;
-      });
-      const latestIncomes = transactionService.getAll().filter((t) => {
-        if (t.type !== 'income') return false;
-        const [y, m] = t.date.split('-').map(Number);
-        return y === selectedYear && m === selectedMonth;
-      });
-      // カテゴリに基づいて取引を再度フィルタリング
-      const filteredTransactions = latestExpenses.filter((t) => t.categoryId === selectedCategoryForModal.id)
-        .concat(latestIncomes.filter((t) => t.categoryId === selectedCategoryForModal.id));
-
-      // 定期取引も最新データを再取得
-      const latestRecurring = getRecurringPaymentsForMonth(selectedYear, selectedMonth).filter(
-        (rp) => rp.categoryId === selectedCategoryForModal.id
-      );
-
-      // 強制的にシートを閉じてから、更新されたデータで再度開く
-      setIsCategoryModalOpen(false);
-      setTimeout(() => {
-        setCategoryModalTransactions(filteredTransactions);
-        setCategoryModalRecurringItems(latestRecurring);
-        setIsCategoryModalOpen(true);
-      }, 0);
-    }
-    // 定期取引一覧シートから開かれた場合、定期取引一覧シートを再度開く
-    else if (editedRecurring) {
-      const isExpense = editedRecurring.type === 'expense';
-      const isOpen = isExpense ? isRecurringExpenseListOpen : isRecurringIncomeListOpen;
-
-      if (isOpen) {
-        const setIsOpen = isExpense ? setIsRecurringExpenseListOpen : setIsRecurringIncomeListOpen;
-        setIsOpen(false);
-
-        setTimeout(() => {
-          setIsOpen(true);
-        }, 0);
-      }
-    }
+  const handleCloseRecurringMonthSheet = () => {
+    const source = recurringMonthSheetSource;
+    setSelectedRecurringForMonthSheet(null);
+    setRecurringMonthSheetSource(null);
+    handleReopenAfterRecurringMonthSheet(source);
   };
 
   const handleCloseSavingsMonthSheet = () => {
@@ -252,28 +200,30 @@ export const AccountsPage = () => {
   const handleCloseEditingTransaction = () => {
     setEditingTransaction(null);
     // 明細一覧シートが開いていた場合、最新データを再取得してから再度開く
-    if (selectedCategoryForModal) {
-      // transactionService から最新データを直接取得（コンポーネント再レンダリング前でも最新）
-      const latestExpenses = transactionService.getAll().filter((t) => {
-        if (t.type !== 'expense') return false;
-        const [y, m] = t.date.split('-').map(Number);
-        return y === selectedYear && m === selectedMonth;
-      });
-      const latestIncomes = transactionService.getAll().filter((t) => {
-        if (t.type !== 'income') return false;
-        const [y, m] = t.date.split('-').map(Number);
-        return y === selectedYear && m === selectedMonth;
-      });
-      // カテゴリに基づいて取引を再度フィルタリング
-      const filtered = latestExpenses.filter((t) => t.categoryId === selectedCategoryForModal.id)
-        .concat(latestIncomes.filter((t) => t.categoryId === selectedCategoryForModal.id));
-      // 強制的にシートを閉じてから、更新されたデータで再度開く
-      setIsCategoryModalOpen(false);
-      // バッチ更新で確実にデータを更新してから再度開く
-      setTimeout(() => {
-        setCategoryModalTransactions(filtered);
-        setIsCategoryModalOpen(true);
-      }, 0);
+    if (isCategoryModalOpen) {
+      const allTransactions = transactionService.getAll();
+      if (selectedCategoryForModal !== undefined) {
+        // カテゴリビュー: categoryIdでフィルタリング
+        const filtered = allTransactions.filter((t) => {
+          const [y, m] = t.date.split('-').map(Number);
+          return y === selectedYear && m === selectedMonth && t.categoryId === selectedCategoryForModal.id;
+        });
+        setIsCategoryModalOpen(false);
+        setTimeout(() => {
+          setCategoryModalTransactions(filtered);
+          setIsCategoryModalOpen(true);
+        }, 0);
+      } else {
+        // 支払い元/メンバービュー: IDで更新（編集・削除を反映）
+        const updatedTransactions = categoryModalTransactions
+          .map((t) => allTransactions.find((at) => at.id === t.id))
+          .filter((t): t is Transaction => t !== undefined);
+        setIsCategoryModalOpen(false);
+        setTimeout(() => {
+          setCategoryModalTransactions(updatedTransactions);
+          setIsCategoryModalOpen(true);
+        }, 0);
+      }
     }
   };
 
@@ -506,7 +456,7 @@ export const AccountsPage = () => {
         onTransactionClick={handleTransactionClick}
         onRecurringClick={(rp) => {
           setIsCategoryModalOpen(false);
-          setIsRecurringMonthSheetFromCategory(true);
+          setRecurringMonthSheetSource('categoryModal');
           handleRecurringItemClick(rp);
         }}
       />
@@ -538,7 +488,7 @@ export const AccountsPage = () => {
         onClose={() => setIsRecurringExpenseListOpen(false)}
         onItemClick={(item) => {
           setIsRecurringExpenseListOpen(false);
-          setIsRecurringMonthSheetFromCategory(false);
+          setRecurringMonthSheetSource('expenseList');
           handleRecurringItemClick(item);
         }}
       />
@@ -552,7 +502,7 @@ export const AccountsPage = () => {
         onClose={() => setIsRecurringIncomeListOpen(false)}
         onItemClick={(item) => {
           setIsRecurringIncomeListOpen(false);
-          setIsRecurringMonthSheetFromCategory(false);
+          setRecurringMonthSheetSource('incomeList');
           handleRecurringItemClick(item);
         }}
       />
