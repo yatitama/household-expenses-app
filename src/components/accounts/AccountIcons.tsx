@@ -19,6 +19,12 @@ export const ACCOUNT_TYPE_ICONS_XS: Record<AccountType, React.ReactNode> = {
   emoney: <Smartphone size={12} />,
 };
 
+export const ACCOUNT_TYPE_ICONS_LG: Record<AccountType, React.ReactNode> = {
+  cash: <Banknote size={80} />,
+  bank: <Building2 size={80} />,
+  emoney: <Smartphone size={80} />,
+};
+
 export const PM_TYPE_ICONS: Record<PaymentMethodType, React.ReactNode> = {
   credit_card: <CreditCard size={20} />,
   debit_card: <CreditCard size={20} />,
