@@ -351,7 +351,7 @@ export const AccountsPage = () => {
                   </div>
                 </div>
                 <div className="pt-2 pb-3 md:pb-4 px-1">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-1 gap-2">
                     {savingsGoals.map((goal) => {
                       const targetMonth = goal.targetDate.substring(0, 7);
                       const isOutOfRange = viewMonth < goal.startMonth || viewMonth > targetMonth;
