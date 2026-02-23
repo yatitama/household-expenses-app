@@ -130,9 +130,9 @@ export const MoneyPage = () => {
       <div className="flex-1 overflow-clip pb-20">
         <div className="px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6">
           {/* 口座セクション */}
-          <div data-section-name="口座">
+          <div data-section-name="口座" className="relative">
             <div
-              className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+              className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
               style={{ top: 'max(0px, env(safe-area-inset-top))' }}
             >
               <div className="flex items-center justify-between">
@@ -168,9 +168,9 @@ export const MoneyPage = () => {
 
           {/* 貯金セクション */}
           {savingsGoals.length > 0 && (
-            <div data-section-name="貯金">
+            <div data-section-name="貯金" className="relative">
               <div
-                className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+                className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
                 style={{ top: 'max(0px, env(safe-area-inset-top))' }}
               >
                 <div className="flex items-center justify-between">
@@ -220,9 +220,9 @@ export const MoneyPage = () => {
 
           {/* 紐付未設定のカード */}
           {unlinkedPMs.length > 0 && (
-            <div data-section-name="紐付未設定のカード">
+            <div data-section-name="紐付未設定のカード" className="relative">
               <div
-                className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+                className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
                 style={{ top: 'max(0px, env(safe-area-inset-top))' }}
               >
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">紐付未設定のカード ({unlinkedPMs.length}件)</h3>

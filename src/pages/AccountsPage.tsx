@@ -251,9 +251,9 @@ export const AccountsPage = () => {
         ) : (
           <div className="px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6">
             {/* 支出セクション */}
-            <div data-section-name="支出">
+            <div data-section-name="支出" className="relative">
               <div
-                className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+                className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
                 style={{ top: 'max(0px, env(safe-area-inset-top))' }}
               >
                 <div className="flex items-center justify-between">
@@ -307,9 +307,9 @@ export const AccountsPage = () => {
             </div>
 
             {/* 収入セクション */}
-            <div data-section-name="収入">
+            <div data-section-name="収入" className="relative">
               <div
-                className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+                className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
                 style={{ top: 'max(0px, env(safe-area-inset-top))' }}
               >
                 <div className="flex items-center justify-between">
@@ -335,9 +335,9 @@ export const AccountsPage = () => {
 
             {/* 貯金セクション */}
             {savingsGoals.length > 0 && (
-              <div data-section-name="貯金">
+              <div data-section-name="貯金" className="relative">
                 <div
-                  className="sticky bg-white dark:bg-slate-900 z-10 p-2 border-b dark:border-gray-700"
+                  className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
                   style={{ top: 'max(0px, env(safe-area-inset-top))' }}
                 >
                   <div className="flex items-center justify-between">
