@@ -265,6 +265,7 @@ PaymentMethodと口座の追加紐付け。`PaymentMethod.linkedAccountId` と�
 | startMonth | string | 開始月 (`yyyy-MM`) |
 | excludedMonths | string[] | 除外月リスト (`yyyy-MM` 形式) |
 | monthlyOverrides? | Record<string, number> | 月別金額上書き（`yyyy-MM` → 金額） |
+| icon? | string | アイコン名 |
 | createdAt | string | 作成日時 |
 | updatedAt | string | 更新日時 |
 

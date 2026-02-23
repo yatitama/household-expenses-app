@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, PiggyBank, Landmark } from 'lucide-react';
+import { Wallet, Landmark } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { getPendingAmountByPaymentMethod } from '../utils/billingUtils';
+import { getCategoryIcon } from '../utils/categoryIcons';
 import { AccountGridSection } from '../components/accounts/AccountGridSection';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
@@ -175,7 +176,7 @@ export const MoneyPage = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <PiggyBank size={14} className="text-emerald-600 dark:text-emerald-400" />
+                    {getCategoryIcon('PiggyBank', 14)}
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">貯金</h3>
                   </div>
                   <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
@@ -193,7 +194,7 @@ export const MoneyPage = () => {
                         <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 relative overflow-hidden">
                           {/* Background Icon */}
                           <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-emerald-600 dark:text-emerald-400">
-                            <PiggyBank size={80} />
+                            {getCategoryIcon(goal.icon || 'PiggyBank', 80)}
                           </div>
 
                           {/* Content */}
