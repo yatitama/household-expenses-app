@@ -195,9 +195,9 @@ export const CardGridSection = ({
         {viewMode === 'category'
           ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => {
               const catRecurring = recurringPayments.filter((rp) => rp.categoryId === category?.id);
-              const progress = category?.budget ? Math.min(100, (amount / category.budget) * 100) : 100;
+              const progress = category?.budget ? Math.min(100, (amount / category.budget) * 100) : 0;
               const isDark = document.documentElement.classList.contains('dark');
-              const gaugeColor = isDark ? '#374151' : '#e5e7eb';
+              const gaugeColor = isDark ? '#1e293b' : '#f3f4f6';
               const bgColor = isDark ? '#0f172a' : '#ffffff';
               return (
               <button
