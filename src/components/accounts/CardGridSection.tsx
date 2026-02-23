@@ -196,11 +196,17 @@ export const CardGridSection = ({
           ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => {
               const catRecurring = recurringPayments.filter((rp) => rp.categoryId === category?.id);
               const progress = category?.budget ? Math.min(100, (amount / category.budget) * 100) : 100;
+              const isDark = document.documentElement.classList.contains('dark');
+              const gaugeColor = isDark ? '#374151' : '#e5e7eb';
+              const bgColor = isDark ? '#0f172a' : '#ffffff';
               return (
               <button
                 key={category?.id ?? '__none__'}
                 onClick={() => onCategoryClick?.(category, catTransactions, catRecurring)}
-                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-opacity text-left"
+                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left"
+                style={{
+                  background: `linear-gradient(90deg, ${gaugeColor} 0%, ${gaugeColor} ${progress}%, ${bgColor} ${progress}%, ${bgColor} 100%)`
+                }}
               >
                 <div className="flex items-center gap-2">
                   <div
@@ -219,14 +225,6 @@ export const CardGridSection = ({
                 <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                   {formatCurrency(amount)}{category?.budget ? ` / ${formatCurrency(category.budget)}` : ''}
                 </p>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5">
-                  <div
-                    className={`h-1.5 transition-all ${
-                      progress <= 100 ? 'bg-gray-400 dark:bg-gray-300' : 'bg-red-300 dark:bg-red-300'
-                    }`}
-                    style={{ width: `${Math.min(progress, 100)}%` }}
-                  />
-                </div>
               </button>
             );})
           : viewMode === 'payment'
