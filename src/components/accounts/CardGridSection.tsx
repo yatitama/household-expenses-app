@@ -206,7 +206,7 @@ export const CardGridSection = ({
               >
                 {/* Background Icon */}
                 <div
-                  className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm"
+                  className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
                   style={{ color: gaugeColor }}
                 >
                   {getCategoryIcon(category?.icon || '', 80)}
@@ -244,7 +244,7 @@ export const CardGridSection = ({
                 >
                   {/* Background Icon */}
                   <div
-                    className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm"
+                    className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
                     style={{ color: cardColor }}
                   >
                     {entryAccount ? ACCOUNT_TYPE_ICONS_LG[entryAccount.type] : <CreditCard size={80} />}
@@ -283,7 +283,7 @@ export const CardGridSection = ({
               >
                 {/* Background Icon */}
                 <div
-                  className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm"
+                  className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
                   style={{ color: memberColor }}
                 >
                   <User size={80} />

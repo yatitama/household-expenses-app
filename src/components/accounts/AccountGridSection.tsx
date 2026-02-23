@@ -27,7 +27,7 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
           >
             {/* Background Icon */}
             <div
-              className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm"
+              className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
               style={{
                 color: account.color,
               }}
