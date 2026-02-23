@@ -21,6 +21,7 @@ interface CardGridSectionProps {
   onRecurringClick?: () => void;
   emptyMessage?: string;
   month?: string; // yyyy-MM
+  displayAbsoluteAmount?: boolean;
 }
 
 export const CardGridSection = ({
@@ -36,6 +37,7 @@ export const CardGridSection = ({
   onRecurringClick,
   emptyMessage = '利用なし',
   month = '',
+  displayAbsoluteAmount = false,
 }: CardGridSectionProps) => {
   // カテゴリ別グルーピング（取引 + 定期）
   const categoryGrouped = transactions.reduce(
@@ -224,7 +226,7 @@ export const CardGridSection = ({
                   ) : null}
                 </div>
                 <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                  {formatCurrency(amount)}{category?.budget ? ` / ${formatCurrency(category.budget)}` : ''}
+                  {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{category?.budget ? ` / ${formatCurrency(category.budget)}` : ''}
                 </p>
               </button>
             );})
@@ -262,7 +264,7 @@ export const CardGridSection = ({
                     ) : null}
                   </div>
                   <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                    {formatCurrency(amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
+                    {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                   </p>
                 </button>
               );
@@ -301,7 +303,7 @@ export const CardGridSection = ({
                   ) : null}
                 </div>
                 <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                  {formatCurrency(amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
+                  {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                 </p>
               </button>
             );})}
@@ -324,7 +326,7 @@ export const CardGridSection = ({
               </p>
             </div>
             <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-              {formatCurrency(uncategorizedTotal)}
+              {formatCurrency(displayAbsoluteAmount ? Math.abs(uncategorizedTotal) : uncategorizedTotal)}
             </p>
           </button>
         )}
@@ -345,7 +347,7 @@ export const CardGridSection = ({
               </p>
             </div>
             <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-              {formatCurrency(unassignedPaymentTotal)}
+              {formatCurrency(displayAbsoluteAmount ? Math.abs(unassignedPaymentTotal) : unassignedPaymentTotal)}
             </p>
           </button>
         )}
@@ -366,7 +368,7 @@ export const CardGridSection = ({
               </p>
             </div>
             <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-              {formatCurrency(unassignedMemberTotal)}
+              {formatCurrency(displayAbsoluteAmount ? Math.abs(unassignedMemberTotal) : unassignedMemberTotal)}
             </p>
           </button>
         )}

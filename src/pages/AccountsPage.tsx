@@ -330,6 +330,7 @@ export const AccountsPage = () => {
                   onRecurringClick={() => setIsRecurringIncomeListOpen(true)}
                   emptyMessage="収入なし"
                   month={viewMonth}
+                  displayAbsoluteAmount={true}
                 />
               </div>
             </div>
