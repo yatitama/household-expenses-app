@@ -365,7 +365,7 @@ export const AccountsPage = () => {
                             key={goal.id}
                             onClick={() => { if (!isOutOfRange) setSelectedGoalForSheet(goal); }}
                             disabled={isOutOfRange}
-                            className={`p-3 md:p-4 text-left transition-all flex flex-col gap-2 relative overflow-hidden ${
+                            className={`p-1.5 md:p-2 text-left transition-all flex flex-col gap-2 relative overflow-hidden ${
                               isOutOfRange
                                 ? 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 opacity-40 cursor-default'
                                 : excluded
@@ -374,12 +374,12 @@ export const AccountsPage = () => {
                             }`}
                           >
                             {/* Background Icon */}
-                            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm text-emerald-600 dark:text-emerald-400">
+                            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-emerald-600 dark:text-emerald-400">
                               <PiggyBank size={80} />
                             </div>
 
                             {/* Content */}
-                            <div className="relative z-10 flex items-center gap-1.5">
+                            <div className="relative z-10 flex items-center gap-1.5 bg-white dark:bg-slate-800 px-1 py-0.5">
                               <span className="text-xs md:text-sm font-medium truncate text-gray-900 dark:text-gray-100">
                                 {goal.name}
                               </span>

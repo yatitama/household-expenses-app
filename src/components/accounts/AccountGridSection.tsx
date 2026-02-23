@@ -23,11 +23,11 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
           <button
             key={account.id}
             onClick={() => onAccountClick?.(account)}
-            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 text-left flex flex-col gap-2 hover:opacity-80 transition-all relative overflow-hidden"
+            className="border border-gray-200 dark:border-gray-700 p-1.5 md:p-2 text-left flex flex-col gap-2 hover:opacity-80 transition-all relative overflow-hidden"
           >
             {/* Background Icon */}
             <div
-              className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm"
+              className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
               style={{
                 color: account.color,
               }}
@@ -36,7 +36,7 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
             </div>
 
             {/* Content */}
-            <div className="relative z-10 flex items-center gap-1.5">
+            <div className="relative z-10 flex items-center gap-1.5 bg-white dark:bg-slate-900 px-1 py-0.5">
               <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                 {account.name}
               </p>
@@ -49,7 +49,7 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
         {onAddClick && (
           <button
             onClick={onAddClick}
-            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex items-center justify-center hover:opacity-80 dark:hover:opacity-80 transition-all"
+            className="border border-gray-200 dark:border-gray-700 p-1.5 md:p-2 flex items-center justify-center hover:opacity-80 dark:hover:opacity-80 transition-all"
           >
             <Plus size={24} className="text-gray-400 dark:text-gray-500" />
           </button>
