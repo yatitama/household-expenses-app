@@ -23,7 +23,7 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
           <button
             key={account.id}
             onClick={() => onAccountClick?.(account)}
-            className="border border-gray-200 dark:border-gray-700 p-1.5 md:p-2 text-left flex flex-col gap-2 hover:opacity-80 transition-all relative overflow-hidden"
+            className="border border-gray-200 dark:border-gray-700 p-1 md:p-1.5 text-left flex flex-col gap-2 hover:opacity-80 transition-all relative overflow-hidden"
           >
             {/* Background Icon */}
             <div
@@ -36,8 +36,8 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
             </div>
 
             {/* Content */}
-            <div className="relative z-10 flex items-center gap-1.5 bg-white dark:bg-slate-900 px-1 py-0.5">
-              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+            <div className="relative z-10 flex items-center gap-1.5 px-1 py-0.5">
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white dark:bg-slate-900 px-1 rounded">
                 {account.name}
               </p>
             </div>
