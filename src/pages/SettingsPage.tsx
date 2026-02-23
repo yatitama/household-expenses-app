@@ -4,6 +4,7 @@ import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp,
 import { accountService, transactionService, categoryService, memberService, paymentMethodService, recurringPaymentService, cardBillingService, linkedPaymentMethodService, savingsGoalService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
+import { SAVINGS_GOAL_ICONS, SAVINGS_GOAL_ICON_NAMES, SAVINGS_GOAL_ICON_LABELS } from '../utils/savingsGoalIcons';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { COLORS } from '../components/accounts/constants';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
@@ -827,8 +828,14 @@ export const SettingsPage = () => {
                       onClick={() => handleEditSavingsGoal(goal)}
                       className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
                     >
-                      <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
-                        {getCategoryIcon(goal.icon || 'PiggyBank', 16)}
+                      <div
+                        className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${goal.color || '#059669'}20`, color: goal.color || '#059669' }}
+                      >
+                        {(() => {
+                          const IconComponent = SAVINGS_GOAL_ICONS[goal.icon as keyof typeof SAVINGS_GOAL_ICONS] || SAVINGS_GOAL_ICONS.PiggyBank;
+                          return <IconComponent size={16} />;
+                        })()}
                       </div>
                       <div className="flex-1">
                         <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{goal.name}</p>
@@ -1242,6 +1249,7 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
   const [targetDate, setTargetDate] = useState(goal?.targetDate?.substring(0, 7) || '');
   const [startMonth, setStartMonth] = useState(goal?.startMonth ?? todayYM);
   const [icon, setIcon] = useState(goal?.icon || 'PiggyBank');
+  const [color, setColor] = useState(goal?.color || '#059669');
 
   // プレビュー: 毎月の貯金額を計算
   const previewMonthly = (() => {
@@ -1266,6 +1274,7 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
       startMonth,
       excludedMonths: goal?.excludedMonths ?? [],
       icon,
+      color,
     });
   };
 
@@ -1341,27 +1350,47 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
               />
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">アイコン</label>
-              <div className="grid grid-cols-8 gap-2">
-                {ICON_NAMES.map((iconName) => (
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">色</label>
+              <div className="flex gap-2 flex-wrap">
+                {COLORS.map((c) => (
                   <button
-                    key={iconName}
+                    key={c}
                     type="button"
-                    onClick={() => setIcon(iconName)}
-                    className={`relative w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-all ${
-                      icon === iconName
-                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
-                        : 'text-gray-600 dark:text-gray-400'
+                    onClick={() => setColor(c)}
+                    className={`w-8 h-8 rounded-full transition-transform ${
+                      color === c ? 'ring-2 ring-offset-2 ring-primary-600 scale-110 dark:ring-offset-slate-800' : ''
                     }`}
-                  >
-                    {getCategoryIcon(iconName, 16)}
-                    {icon === iconName && (
-                      <div className="absolute -top-1 -right-1">
-                        <Check size={12} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
-                      </div>
-                    )}
-                  </button>
+                    style={{ backgroundColor: c }}
+                  />
                 ))}
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">アイコン</label>
+              <div className="grid grid-cols-4 gap-2">
+                {SAVINGS_GOAL_ICON_NAMES.map((iconName) => {
+                  const IconComponent = SAVINGS_GOAL_ICONS[iconName];
+                  return (
+                    <button
+                      key={iconName}
+                      type="button"
+                      onClick={() => setIcon(iconName)}
+                      className={`relative w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex flex-col items-center justify-center transition-all ${
+                        icon === iconName
+                          ? 'bg-gray-100 dark:bg-gray-700'
+                          : 'bg-gray-50 dark:bg-gray-800'
+                      }`}
+                    >
+                      <IconComponent size={20} style={{ color: color }} />
+                      <p className="text-xs mt-0.5 text-gray-600 dark:text-gray-400 truncate">{SAVINGS_GOAL_ICON_LABELS[iconName]}</p>
+                      {icon === iconName && (
+                        <div className="absolute -top-1 -right-1">
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
