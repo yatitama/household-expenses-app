@@ -193,7 +193,7 @@ export const MoneyPage = () => {
                         <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-3 md:p-4 flex flex-col gap-2 relative overflow-hidden">
                           {/* Background Icon */}
                           <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-emerald-600 dark:text-emerald-400">
-                            <PiggyBank size={80} />
+                            <PiggyBank size={60} />
                           </div>
 
                           {/* Content */}
