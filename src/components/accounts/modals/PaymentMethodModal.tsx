@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useBodyScrollLock } from '../../../hooks/useBodyScrollLock';
-import { X, Trash2, Check, Info } from 'lucide-react';
+import { X, Trash2, Check, Info, User } from 'lucide-react';
 import { PM_TYPE_LABELS, BILLING_TYPE_LABELS, COLORS } from '../constants';
-import { PM_TYPE_ICONS } from '../AccountIcons';
+import { PM_TYPE_ICONS, ACCOUNT_TYPE_ICONS_SM } from '../AccountIcons';
 import { COMMON_MEMBER_ID } from '../../../types';
 import type { Account, PaymentMethod, PaymentMethodType, PaymentMethodInput, BillingType, Member } from '../../../types';
 
@@ -104,7 +104,7 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     className="w-7 h-7 rounded-full flex items-center justify-center"
                     style={{ backgroundColor: `${member.color}30` }}
                   >
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
+                    <User size={16} style={{ color: member.color }} />
                   </div>
                   <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                     {member.name}
@@ -171,10 +171,12 @@ export const PaymentMethodModal = ({ paymentMethod, members, accounts, onSave, o
                     }`}
                   >
                     <div
-                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full"
+                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
                       style={{ backgroundColor: `${acct.color}30` }}
                     >
-                      <div className="w-full h-full rounded-full" style={{ backgroundColor: `${acct.color}50` }} />
+                      <div className="flex items-center justify-center" style={{ color: acct.color }}>
+                        {ACCOUNT_TYPE_ICONS_SM[acct.type]}
+                      </div>
                     </div>
                     <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                       {acct.name}

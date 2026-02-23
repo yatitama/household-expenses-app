@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useBodyScrollLock } from '../../../hooks/useBodyScrollLock';
-import { X, Trash2, Check } from 'lucide-react';
+import { X, Trash2, Check, User } from 'lucide-react';
 import { ACCOUNT_TYPE_LABELS, COLORS } from '../constants';
 import { ACCOUNT_TYPE_ICONS } from '../AccountIcons';
 import { COMMON_MEMBER_ID } from '../../../types';
@@ -92,7 +92,7 @@ export const AccountModal = ({ account, members, onSave, onClose, onDelete }: Ac
                     className="w-7 h-7 rounded-full flex items-center justify-center"
                     style={{ backgroundColor: `${member.color}30` }}
                   >
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: member.color }} />
+                    <User size={16} style={{ color: member.color }} />
                   </div>
                   <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                     {member.name}
