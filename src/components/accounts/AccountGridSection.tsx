@@ -18,7 +18,7 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
-      <div className="grid grid-cols-1 gap-2 md:gap-2.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {accounts.map((account) => (
           <button
             key={account.id}
@@ -27,7 +27,7 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
           >
             {/* Background Icon */}
             <div
-              className="absolute -right-2 -bottom-2 opacity-5 dark:opacity-10 pointer-events-none"
+              className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
               style={{
                 color: account.color,
               }}

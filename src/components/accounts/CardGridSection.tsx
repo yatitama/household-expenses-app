@@ -192,7 +192,7 @@ export const CardGridSection = ({
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
-      <div className="grid grid-cols-1 gap-2 md:gap-2.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {viewMode === 'category'
           ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => {
               const catRecurring = recurringPayments.filter((rp) => rp.categoryId === category?.id);
@@ -206,7 +206,7 @@ export const CardGridSection = ({
               >
                 {/* Background Icon */}
                 <div
-                  className="absolute -right-2 -bottom-2 opacity-5 dark:opacity-10 pointer-events-none"
+                  className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
                   style={{ color: gaugeColor }}
                 >
                   {getCategoryIcon(category?.icon || '', 80)}
@@ -244,7 +244,7 @@ export const CardGridSection = ({
                 >
                   {/* Background Icon */}
                   <div
-                    className="absolute -right-2 -bottom-2 opacity-5 dark:opacity-10 pointer-events-none"
+                    className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
                     style={{ color: cardColor }}
                   >
                     {entryAccount ? ACCOUNT_TYPE_ICONS_LG[entryAccount.type] : <CreditCard size={80} />}
@@ -283,7 +283,7 @@ export const CardGridSection = ({
               >
                 {/* Background Icon */}
                 <div
-                  className="absolute -right-2 -bottom-2 opacity-5 dark:opacity-10 pointer-events-none"
+                  className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
                   style={{ color: memberColor }}
                 >
                   <User size={80} />
@@ -313,7 +313,7 @@ export const CardGridSection = ({
             className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
           >
             {/* Background Icon */}
-            <div className="absolute -right-2 -bottom-2 opacity-5 dark:opacity-10 pointer-events-none text-gray-400">
+            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-gray-400">
               <RefreshCw size={80} />
             </div>
 
@@ -334,7 +334,7 @@ export const CardGridSection = ({
             className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
           >
             {/* Background Icon */}
-            <div className="absolute -right-2 -bottom-2 opacity-5 dark:opacity-10 pointer-events-none text-gray-400">
+            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-gray-400">
               <RefreshCw size={80} />
             </div>
 
@@ -355,7 +355,7 @@ export const CardGridSection = ({
             className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
           >
             {/* Background Icon */}
-            <div className="absolute -right-2 -bottom-2 opacity-5 dark:opacity-10 pointer-events-none text-gray-400">
+            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-gray-400">
               <RefreshCw size={80} />
             </div>
 
