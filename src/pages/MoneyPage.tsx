@@ -145,7 +145,7 @@ export const MoneyPage = () => {
                 </p>
               </div>
             </div>
-            <div className="pt-2 pb-3 md:pb-4">
+            <div className="pt-2 pb-3 md:pb-4 px-1">
               {accounts.length === 0 ? (
                 <EmptyState
                   icon={<Wallet size={32} className="text-gray-500 dark:text-gray-400" />}
@@ -220,7 +220,7 @@ export const MoneyPage = () => {
               >
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">紐付未設定のカード ({unlinkedPMs.length}件)</h3>
               </div>
-              <div className="pt-2 pb-3 md:pb-4">
+              <div className="pt-2 pb-3 md:pb-4 px-1">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {unlinkedPMs.map((pm) => {
                     return (

@@ -288,7 +288,7 @@ export const AccountsPage = () => {
                   </p>
                 </div>
               </div>
-              <div className="pt-2 pb-3 md:pb-4">
+              <div className="pt-2 pb-3 md:pb-4 px-1">
                 <CardGridSection
                   transactions={allMonthExpenses}
                   categories={categories}
@@ -319,7 +319,7 @@ export const AccountsPage = () => {
                   </p>
                 </div>
               </div>
-              <div className="pt-2 pb-3 md:pb-4">
+              <div className="pt-2 pb-3 md:pb-4 px-1">
                 <CardGridSection
                   transactions={allMonthIncomes}
                   categories={categories}
