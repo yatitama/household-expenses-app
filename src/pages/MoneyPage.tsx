@@ -184,33 +184,35 @@ export const MoneyPage = () => {
                 </div>
               </div>
               <div className="pt-2 pb-3 md:pb-4 px-1">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {savingsGoals.map((goal) => {
-                    const accumulated = calculateAccumulatedAmount(goal, currentRealMonth);
-                    const progress = Math.min(100, goal.targetAmount > 0 ? (accumulated / goal.targetAmount) * 100 : 0);
-                    return (
-                      <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-3 md:p-4 flex flex-col gap-2 relative overflow-hidden">
-                        {/* Background Icon */}
-                        <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-emerald-600 dark:text-emerald-400">
-                          <PiggyBank size={80} />
-                        </div>
+                <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {savingsGoals.map((goal) => {
+                      const accumulated = calculateAccumulatedAmount(goal, currentRealMonth);
+                      const progress = Math.min(100, goal.targetAmount > 0 ? (accumulated / goal.targetAmount) * 100 : 0);
+                      return (
+                        <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-3 md:p-4 flex flex-col gap-2 relative overflow-hidden">
+                          {/* Background Icon */}
+                          <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-emerald-600 dark:text-emerald-400">
+                            <PiggyBank size={80} />
+                          </div>
 
-                        {/* Content */}
-                        <div className="relative z-10 flex items-center gap-1.5">
-                          <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{goal.name}</p>
+                          {/* Content */}
+                          <div className="relative z-10 flex items-center gap-1.5">
+                            <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{goal.name}</p>
+                          </div>
+                          <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+                            ¥{accumulated.toLocaleString()} / ¥{goal.targetAmount.toLocaleString()}
+                          </p>
+                          <div className="relative z-10 w-full bg-gray-200 dark:bg-gray-700 h-1.5">
+                            <div
+                              className="bg-black dark:bg-white h-1.5"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
                         </div>
-                        <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                          ¥{accumulated.toLocaleString()} / ¥{goal.targetAmount.toLocaleString()}
-                        </p>
-                        <div className="relative z-10 w-full bg-gray-200 dark:bg-gray-700 h-1.5">
-                          <div
-                            className="bg-black dark:bg-white h-1.5"
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
@@ -226,22 +228,24 @@ export const MoneyPage = () => {
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">紐付未設定のカード ({unlinkedPMs.length}件)</h3>
               </div>
               <div className="pt-2 pb-3 md:pb-4 px-1">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {unlinkedPMs.map((pm) => {
-                    return (
-                      <PaymentMethodCard
-                        key={pm.id}
-                        paymentMethod={pm}
-                        linkedAccountName={undefined}
-                        pendingAmount={pendingByPM[pm.id] || 0}
-                        recurringPayments={[]}
-                        onView={() => navigate('/transactions', { state: { filterType: 'payment', paymentMethodIds: [pm.id] } })}
-                        onAddRecurring={() => handleAddRecurring({ })}
-                        onEditRecurring={handleEditRecurring}
-                        onToggleRecurring={handleToggleRecurring}
-                      />
-                    );
-                  })}
+                <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {unlinkedPMs.map((pm) => {
+                      return (
+                        <PaymentMethodCard
+                          key={pm.id}
+                          paymentMethod={pm}
+                          linkedAccountName={undefined}
+                          pendingAmount={pendingByPM[pm.id] || 0}
+                          recurringPayments={[]}
+                          onView={() => navigate('/transactions', { state: { filterType: 'payment', paymentMethodIds: [pm.id] } })}
+                          onAddRecurring={() => handleAddRecurring({ })}
+                          onEditRecurring={handleEditRecurring}
+                          onToggleRecurring={handleToggleRecurring}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
