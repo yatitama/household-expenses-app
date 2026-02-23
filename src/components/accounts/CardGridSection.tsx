@@ -288,7 +288,7 @@ export const CardGridSection = ({
                   className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
                   style={{ color: memberColor }}
                 >
-                  <User size={80} />
+                  {member?.icon ? getCategoryIcon(member.icon, 80) : <User size={80} />}
                 </div>
 
                 {/* Content */}
