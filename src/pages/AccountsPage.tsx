@@ -365,7 +365,7 @@ export const AccountsPage = () => {
                             key={goal.id}
                             onClick={() => { if (!isOutOfRange) setSelectedGoalForSheet(goal); }}
                             disabled={isOutOfRange}
-                            className={`px-0 py-1.5 md:py-2 text-left transition-all flex flex-col gap-2 relative overflow-hidden ${
+                            className={`p-2.5 md:p-3 text-left transition-all flex flex-col gap-2 relative overflow-hidden ${
                               isOutOfRange
                                 ? 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 opacity-40 cursor-default'
                                 : excluded
@@ -380,7 +380,7 @@ export const AccountsPage = () => {
 
                             {/* Content */}
                             <div className="relative z-10 flex items-center gap-1.5 px-1 py-0.5">
-                              <span className="text-xs md:text-sm font-medium truncate text-gray-900 dark:text-gray-100 bg-white/80 dark:bg-slate-800/80 px-1 rounded">
+                              <span className="text-xs md:text-sm font-medium truncate text-gray-900 dark:text-gray-100 bg-white/50 dark:bg-slate-800/50 px-1 rounded">
                                 {goal.name}
                               </span>
                             </div>
