@@ -184,14 +184,14 @@ export const CardGridSection = ({
 
   if (!hasContent) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
+      <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
         <p className="text-xs text-gray-500 dark:text-gray-400 text-center py-2">{emptyMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
+    <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {viewMode === 'category'
           ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => {
@@ -202,7 +202,7 @@ export const CardGridSection = ({
               <button
                 key={category?.id ?? '__none__'}
                 onClick={() => onCategoryClick?.(category, catTransactions, catRecurring)}
-                className="border border-gray-200 dark:border-gray-700 p-1 md:p-1.5 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+                className="border border-gray-200 dark:border-gray-700 px-0 py-1.5 md:py-2 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
               >
                 {/* Background Icon */}
                 <div
@@ -215,7 +215,7 @@ export const CardGridSection = ({
                 {/* Content */}
                 <div className="relative z-10 flex items-center gap-2 justify-between px-1 py-0.5">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white dark:bg-slate-900 px-1 rounded">
+                    <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white/80 dark:bg-slate-900/80 px-1 rounded">
                       {category?.name || 'その他'}
                     </p>
                   </div>
@@ -240,7 +240,7 @@ export const CardGridSection = ({
                 <button
                   key={key}
                   onClick={() => onCategoryClick?.(undefined, pmTransactions, pmRecurring, name, cardColor, 'account')}
-                  className="border border-gray-200 dark:border-gray-700 p-1 md:p-1.5 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+                  className="border border-gray-200 dark:border-gray-700 px-0 py-1.5 md:py-2 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
                 >
                   {/* Background Icon */}
                   <div
@@ -253,7 +253,7 @@ export const CardGridSection = ({
                   {/* Content */}
                   <div className="relative z-10 flex items-center gap-1.5 justify-between px-1 py-0.5">
                     <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                      <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white dark:bg-slate-900 px-1 rounded">
+                      <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white/80 dark:bg-slate-900/80 px-1 rounded">
                         {name}
                       </p>
                     </div>
@@ -279,7 +279,7 @@ export const CardGridSection = ({
               <button
                 key={key}
                 onClick={() => onCategoryClick?.(undefined, memberTransactions, memberRecurring, name, memberColor, 'user')}
-                className="border border-gray-200 dark:border-gray-700 p-1 md:p-1.5 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+                className="border border-gray-200 dark:border-gray-700 px-0 py-1.5 md:py-2 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
               >
                 {/* Background Icon */}
                 <div
@@ -292,7 +292,7 @@ export const CardGridSection = ({
                 {/* Content */}
                 <div className="relative z-10 flex items-center gap-1.5 justify-between px-1 py-0.5">
                   <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                    <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white dark:bg-slate-900 px-1 rounded">
+                    <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white/80 dark:bg-slate-900/80 px-1 rounded">
                       {name}
                     </p>
                   </div>
@@ -310,7 +310,7 @@ export const CardGridSection = ({
         {viewMode === 'category' && showRecurringTileCategory && (
           <button
             onClick={onRecurringClick}
-            className="border border-gray-200 dark:border-gray-700 p-1.5 md:p-2 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+            className="border border-gray-200 dark:border-gray-700 px-0 py-1.5 md:py-2 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
           >
             {/* Background Icon */}
             <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm text-gray-400">
@@ -319,7 +319,7 @@ export const CardGridSection = ({
 
             {/* Content */}
             <div className="relative z-10 flex items-center gap-1.5 px-1 py-0.5">
-              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white dark:bg-slate-900 px-1 rounded">
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white/80 dark:bg-slate-900/80 px-1 rounded">
                 {recurringLabel}
               </p>
             </div>
@@ -331,7 +331,7 @@ export const CardGridSection = ({
         {viewMode === 'payment' && showRecurringTilePayment && (
           <button
             onClick={onRecurringClick}
-            className="border border-gray-200 dark:border-gray-700 p-1 md:p-1.5 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+            className="border border-gray-200 dark:border-gray-700 px-0 py-1.5 md:py-2 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
           >
             {/* Background Icon */}
             <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-gray-400">
@@ -340,7 +340,7 @@ export const CardGridSection = ({
 
             {/* Content */}
             <div className="relative z-10 flex items-center gap-1.5">
-              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white dark:bg-slate-900 px-1 rounded">
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white/80 dark:bg-slate-900/80 px-1 rounded">
                 {recurringLabel}
               </p>
             </div>
@@ -352,7 +352,7 @@ export const CardGridSection = ({
         {viewMode === 'member' && showRecurringTileMember && (
           <button
             onClick={onRecurringClick}
-            className="border border-gray-200 dark:border-gray-700 p-1 md:p-1.5 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+            className="border border-gray-200 dark:border-gray-700 px-0 py-1.5 md:py-2 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
           >
             {/* Background Icon */}
             <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-gray-400">
@@ -361,7 +361,7 @@ export const CardGridSection = ({
 
             {/* Content */}
             <div className="relative z-10 flex items-center gap-1.5">
-              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white dark:bg-slate-900 px-1 rounded">
+              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white/80 dark:bg-slate-900/80 px-1 rounded">
                 {recurringLabel}
               </p>
             </div>

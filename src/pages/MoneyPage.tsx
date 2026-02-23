@@ -184,13 +184,13 @@ export const MoneyPage = () => {
                 </div>
               </div>
               <div className="pt-2 pb-3 md:pb-4">
-                <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
+                <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {savingsGoals.map((goal) => {
                       const accumulated = calculateAccumulatedAmount(goal, currentRealMonth);
                       const progress = Math.min(100, goal.targetAmount > 0 ? (accumulated / goal.targetAmount) * 100 : 0);
                       return (
-                        <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-1 md:p-1.5 flex flex-col gap-2 relative overflow-hidden">
+                        <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 px-0 py-1.5 md:py-2 flex flex-col gap-2 relative overflow-hidden">
                           {/* Background Icon */}
                           <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-emerald-600 dark:text-emerald-400">
                             <PiggyBank size={80} />
@@ -198,7 +198,7 @@ export const MoneyPage = () => {
 
                           {/* Content */}
                           <div className="relative z-10 flex items-center gap-1.5 px-1 py-0.5">
-                            <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white dark:bg-slate-800 px-1 rounded">{goal.name}</p>
+                            <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white/80 dark:bg-slate-800/80 px-1 rounded">{goal.name}</p>
                           </div>
                           <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                             ¥{accumulated.toLocaleString()} / ¥{goal.targetAmount.toLocaleString()}
@@ -228,7 +228,7 @@ export const MoneyPage = () => {
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">紐付未設定のカード ({unlinkedPMs.length}件)</h3>
               </div>
               <div className="pt-2 pb-3 md:pb-4">
-                <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
+                <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {unlinkedPMs.map((pm) => {
                       return (

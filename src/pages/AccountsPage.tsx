@@ -351,7 +351,7 @@ export const AccountsPage = () => {
                   </div>
                 </div>
                 <div className="pt-2 pb-3 md:pb-4">
-                  <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
+                  <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {savingsGoals.map((goal) => {
                         const targetMonth = goal.targetDate.substring(0, 7);
@@ -365,7 +365,7 @@ export const AccountsPage = () => {
                             key={goal.id}
                             onClick={() => { if (!isOutOfRange) setSelectedGoalForSheet(goal); }}
                             disabled={isOutOfRange}
-                            className={`p-1 md:p-1.5 text-left transition-all flex flex-col gap-2 relative overflow-hidden ${
+                            className={`px-0 py-1.5 md:py-2 text-left transition-all flex flex-col gap-2 relative overflow-hidden ${
                               isOutOfRange
                                 ? 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 opacity-40 cursor-default'
                                 : excluded
@@ -380,7 +380,7 @@ export const AccountsPage = () => {
 
                             {/* Content */}
                             <div className="relative z-10 flex items-center gap-1.5 px-1 py-0.5">
-                              <span className="text-xs md:text-sm font-medium truncate text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800 px-1 rounded">
+                              <span className="text-xs md:text-sm font-medium truncate text-gray-900 dark:text-gray-100 bg-white/80 dark:bg-slate-800/80 px-1 rounded">
                                 {goal.name}
                               </span>
                             </div>
