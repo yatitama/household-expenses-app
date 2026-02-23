@@ -828,7 +828,7 @@ export const SettingsPage = () => {
                       className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
                     >
                       <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
-                        <PiggyBank size={16} />
+                        {getCategoryIcon(goal.icon || 'PiggyBank', 16)}
                       </div>
                       <div className="flex-1">
                         <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{goal.name}</p>
@@ -1215,6 +1215,7 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
   const [targetAmount, setTargetAmount] = useState(goal ? String(goal.targetAmount) : '');
   const [targetDate, setTargetDate] = useState(goal?.targetDate?.substring(0, 7) || '');
   const [startMonth, setStartMonth] = useState(goal?.startMonth ?? todayYM);
+  const [icon, setIcon] = useState(goal?.icon || 'PiggyBank');
 
   // プレビュー: 毎月の貯金額を計算
   const previewMonthly = (() => {
@@ -1238,6 +1239,7 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
       targetDate,
       startMonth,
       excludedMonths: goal?.excludedMonths ?? [],
+      icon,
     });
   };
 
@@ -1311,6 +1313,30 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
                 className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
                 required
               />
+            </div>
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">アイコン</label>
+              <div className="grid grid-cols-8 gap-2">
+                {ICON_NAMES.map((iconName) => (
+                  <button
+                    key={iconName}
+                    type="button"
+                    onClick={() => setIcon(iconName)}
+                    className={`relative w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-all ${
+                      icon === iconName
+                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    {getCategoryIcon(iconName, 16)}
+                    {icon === iconName && (
+                      <div className="absolute -top-1 -right-1">
+                        <Check size={12} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

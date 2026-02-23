@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
-import { X, PiggyBank, RotateCcw } from 'lucide-react';
+import { X, RotateCcw } from 'lucide-react';
 import { calculateMonthlyAmount, getEffectiveMonthlyAmount, isMonthExcluded } from '../../utils/savingsUtils';
+import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { SavingsGoal } from '../../types';
 
 interface SavingsMonthSheetProps {
@@ -56,7 +57,7 @@ export const SavingsMonthSheet = ({ goal, month, onSave, onClose }: SavingsMonth
         {/* ヘッダー */}
         <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
           <div className="flex items-center gap-2">
-            <PiggyBank size={16} className="text-emerald-600 dark:text-emerald-400" />
+            {getCategoryIcon(goal.icon || 'PiggyBank', 16)}
             <div>
               <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{goal.name}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">{formatMonthLabel(month)}</p>
