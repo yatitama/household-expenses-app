@@ -5,7 +5,7 @@ import { ArrowLeft, Plus, Edit2, Trash2, Users, X, Check } from 'lucide-react';
 import { memberService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
-import { ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
+import { MEMBER_ICON_NAMES, getMemberIcon } from '../utils/memberIcons';
 import type { Member, MemberInput } from '../types';
 import { COLORS } from '../components/accounts/constants';
 
@@ -99,7 +99,7 @@ export const MembersPage = () => {
                   className="w-8 sm:w-10 h-8 sm:h-10 rounded-full flex items-center justify-center text-white text-xs sm:text-base"
                   style={{ backgroundColor: member.color }}
                 >
-                  {member.icon ? getCategoryIcon(member.icon, 14) : member.name.charAt(0)}
+                  {member.icon ? getMemberIcon(member.icon, 14) : member.name.charAt(0)}
                 </div>
                 <div>
                   <p className="text-xs sm:text-sm font-medium text-gray-900">{member.name}</p>
@@ -154,14 +154,14 @@ interface MemberModalProps {
 const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
   const [name, setName] = useState(member?.name || '');
   const [color, setColor] = useState(member?.color || COLORS[0]);
-  const [icon, setIcon] = useState(member?.icon || 'Users');
+  const [icon, setIcon] = useState(member?.icon || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
       name,
       color,
-      icon,
+      icon: icon || undefined,
       isDefault: member?.isDefault,
     });
   };
@@ -199,7 +199,24 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">アイコン</label>
             <div className="grid grid-cols-8 gap-2">
-              {ICON_NAMES.map((iconName) => (
+              {/* 頭文字（デフォルト）*/}
+              <button
+                type="button"
+                onClick={() => setIcon('')}
+                className={`relative w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-all font-bold text-xs ${
+                  icon === ''
+                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                    : 'text-gray-600 dark:text-gray-400'
+                }`}
+              >
+                Aa
+                {icon === '' && (
+                  <div className="absolute -top-1 -right-1">
+                    <Check size={12} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                  </div>
+                )}
+              </button>
+              {MEMBER_ICON_NAMES.map((iconName) => (
                 <button
                   key={iconName}
                   type="button"
@@ -210,7 +227,7 @@ const MemberModal = ({ member, onSave, onClose }: MemberModalProps) => {
                       : 'text-gray-600 dark:text-gray-400'
                   }`}
                 >
-                  {getCategoryIcon(iconName, 16)}
+                  {getMemberIcon(iconName, 16)}
                   {icon === iconName && (
                     <div className="absolute -top-1 -right-1">
                       <Check size={12} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
