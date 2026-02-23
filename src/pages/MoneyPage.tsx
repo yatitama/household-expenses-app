@@ -184,7 +184,7 @@ export const MoneyPage = () => {
                 </div>
               </div>
               <div className="pt-2 pb-3 md:pb-4">
-                <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
+                <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {savingsGoals.map((goal) => {
                       const accumulated = calculateAccumulatedAmount(goal, currentRealMonth);
@@ -228,7 +228,7 @@ export const MoneyPage = () => {
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">紐付未設定のカード ({unlinkedPMs.length}件)</h3>
               </div>
               <div className="pt-2 pb-3 md:pb-4">
-                <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
+                <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {unlinkedPMs.map((pm) => {
                       return (
