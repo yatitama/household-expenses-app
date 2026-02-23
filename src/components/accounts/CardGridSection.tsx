@@ -206,7 +206,7 @@ export const CardGridSection = ({
               >
                 {/* Background Icon */}
                 <div
-                  className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
+                  className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm"
                   style={{ color: gaugeColor }}
                 >
                   {getCategoryIcon(category?.icon || '', 80)}

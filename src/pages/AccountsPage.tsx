@@ -374,7 +374,7 @@ export const AccountsPage = () => {
                             }`}
                           >
                             {/* Background Icon */}
-                            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-emerald-600 dark:text-emerald-400">
+                            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm text-emerald-600 dark:text-emerald-400">
                               <PiggyBank size={80} />
                             </div>
 
