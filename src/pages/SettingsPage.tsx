@@ -4,7 +4,7 @@ import { Database, Download, Upload, Trash2, Users, Tag, ChevronDown, ChevronUp,
 import { accountService, transactionService, categoryService, memberService, paymentMethodService, recurringPaymentService, cardBillingService, linkedPaymentMethodService, savingsGoalService } from '../services/storage';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { ICON_COMPONENTS, ICON_NAMES, getCategoryIcon } from '../utils/categoryIcons';
-import { SAVINGS_GOAL_ICONS, SAVINGS_GOAL_ICON_NAMES, SAVINGS_GOAL_ICON_LABELS } from '../utils/savingsGoalIcons';
+import { SAVINGS_GOAL_ICONS, SAVINGS_GOAL_ICON_NAMES } from '../utils/savingsGoalIcons';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { COLORS } from '../components/accounts/constants';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
@@ -1367,7 +1367,7 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
             </div>
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">アイコン</label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-6 gap-2">
                 {SAVINGS_GOAL_ICON_NAMES.map((iconName) => {
                   const IconComponent = SAVINGS_GOAL_ICONS[iconName];
                   return (
@@ -1375,17 +1375,16 @@ const SavingsGoalModal = ({ goal, onSave, onClose, onDelete }: SavingsGoalModalP
                       key={iconName}
                       type="button"
                       onClick={() => setIcon(iconName)}
-                      className={`relative w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex flex-col items-center justify-center transition-all ${
+                      className={`relative w-8 sm:w-10 h-8 sm:h-10 rounded-lg flex items-center justify-center transition-colors ${
                         icon === iconName
-                          ? 'bg-gray-100 dark:bg-gray-700'
-                          : 'bg-gray-50 dark:bg-gray-800'
+                          ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                          : 'text-gray-600 dark:text-gray-400'
                       }`}
                     >
-                      <IconComponent size={20} style={{ color: color }} />
-                      <p className="text-xs mt-0.5 text-gray-600 dark:text-gray-400 truncate">{SAVINGS_GOAL_ICON_LABELS[iconName]}</p>
+                      <IconComponent size={16} className="sm:w-5 sm:h-5" />
                       {icon === iconName && (
                         <div className="absolute -top-1 -right-1">
-                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                          <Check size={12} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                         </div>
                       )}
                     </button>
