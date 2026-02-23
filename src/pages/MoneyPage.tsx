@@ -190,15 +190,15 @@ export const MoneyPage = () => {
                       const accumulated = calculateAccumulatedAmount(goal, currentRealMonth);
                       const progress = Math.min(100, goal.targetAmount > 0 ? (accumulated / goal.targetAmount) * 100 : 0);
                       return (
-                        <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-1.5 md:p-2 flex flex-col gap-2 relative overflow-hidden">
+                        <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-1 md:p-1.5 flex flex-col gap-2 relative overflow-hidden">
                           {/* Background Icon */}
                           <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-emerald-600 dark:text-emerald-400">
                             <PiggyBank size={80} />
                           </div>
 
                           {/* Content */}
-                          <div className="relative z-10 flex items-center gap-1.5 bg-white dark:bg-slate-800 px-1 py-0.5">
-                            <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{goal.name}</p>
+                          <div className="relative z-10 flex items-center gap-1.5 px-1 py-0.5">
+                            <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white dark:bg-slate-800 px-1 rounded">{goal.name}</p>
                           </div>
                           <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                             ¥{accumulated.toLocaleString()} / ¥{goal.targetAmount.toLocaleString()}
