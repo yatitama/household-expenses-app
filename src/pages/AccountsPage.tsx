@@ -16,6 +16,7 @@ import { EmptyState } from '../components/feedback/EmptyState';
 import { categoryService, transactionService, paymentMethodService, memberService, accountService, savingsGoalService, recurringPaymentService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
 import { calculateMonthlyAmount, getEffectiveMonthlyAmount, isMonthExcluded, getEffectiveRecurringAmount } from '../utils/savingsUtils';
+import { getCategoryIcon } from '../utils/categoryIcons';
 import { SavingsMonthSheet } from '../components/savings/SavingsMonthSheet';
 import type { RecurringPayment, Transaction, Category, SavingsGoal } from '../types';
 
@@ -374,8 +375,8 @@ export const AccountsPage = () => {
                             }`}
                           >
                             {/* Background Icon */}
-                            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-emerald-600 dark:text-emerald-400">
-                              <PiggyBank size={80} />
+                            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none" style={{ color: goal.color || '#10b981' }}>
+                              {getCategoryIcon(goal.icon || 'PiggyBank', 80)}
                             </div>
 
                             {/* Content */}
