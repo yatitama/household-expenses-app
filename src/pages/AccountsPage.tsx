@@ -343,7 +343,7 @@ export const AccountsPage = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
-                      <PiggyBank size={14} className="text-emerald-600 dark:text-emerald-400" />
+                      <PiggyBank size={14} />
                       <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">貯金</h3>
                     </div>
                     <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
