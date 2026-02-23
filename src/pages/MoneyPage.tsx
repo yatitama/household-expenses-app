@@ -8,6 +8,7 @@ import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { getPendingAmountByPaymentMethod } from '../utils/billingUtils';
 import { getCategoryIcon } from '../utils/categoryIcons';
+import { SAVINGS_GOAL_ICONS } from '../utils/savingsGoalIcons';
 import { AccountGridSection } from '../components/accounts/AccountGridSection';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
@@ -190,11 +191,13 @@ export const MoneyPage = () => {
                     {savingsGoals.map((goal) => {
                       const accumulated = calculateAccumulatedAmount(goal, currentRealMonth);
                       const progress = Math.min(100, goal.targetAmount > 0 ? (accumulated / goal.targetAmount) * 100 : 0);
+                      const goalColor = goal.color || '#059669';
+                      const IconComponent = SAVINGS_GOAL_ICONS[goal.icon as keyof typeof SAVINGS_GOAL_ICONS] || SAVINGS_GOAL_ICONS.PiggyBank;
                       return (
                         <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 relative overflow-hidden">
                           {/* Background Icon */}
-                          <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-emerald-600 dark:text-emerald-400">
-                            {getCategoryIcon(goal.icon || 'PiggyBank', 80)}
+                          <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none" style={{ color: goalColor }}>
+                            <IconComponent size={80} />
                           </div>
 
                           {/* Content */}
@@ -206,8 +209,8 @@ export const MoneyPage = () => {
                           </p>
                           <div className="relative z-10 w-full bg-gray-200 dark:bg-gray-700 h-1.5">
                             <div
-                              className="bg-black dark:bg-white h-1.5"
-                              style={{ width: `${progress}%` }}
+                              className="h-1.5"
+                              style={{ width: `${progress}%`, backgroundColor: goalColor }}
                             />
                           </div>
                         </div>

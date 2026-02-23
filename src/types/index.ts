@@ -177,7 +177,8 @@ export interface SavingsGoal {
   startMonth: string;     // 開始月 (yyyy-MM, 作成月)
   excludedMonths: string[]; // 除外した月 (yyyy-MM形式)
   monthlyOverrides?: Record<string, number>; // 月別金額上書き (yyyy-MM → 金額)
-  icon?: string;          // アイコン名
+  icon?: string;          // アイコン名（貯金目標専用）
+  color?: string;         // 色
   createdAt: string;
   updatedAt: string;
 }
