@@ -145,7 +145,7 @@ export const MoneyPage = () => {
                 </p>
               </div>
             </div>
-            <div className="pt-2 pb-3 md:pb-4 px-1">
+            <div className="pt-2 pb-3 md:pb-4">
               {accounts.length === 0 ? (
                 <EmptyState
                   icon={<Wallet size={32} className="text-gray-500 dark:text-gray-400" />}
@@ -183,7 +183,7 @@ export const MoneyPage = () => {
                   </p>
                 </div>
               </div>
-              <div className="pt-2 pb-3 md:pb-4 px-1">
+              <div className="pt-2 pb-3 md:pb-4">
                 <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {savingsGoals.map((goal) => {
@@ -192,8 +192,8 @@ export const MoneyPage = () => {
                       return (
                         <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-3 md:p-4 flex flex-col gap-2 relative overflow-hidden">
                           {/* Background Icon */}
-                          <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-emerald-600 dark:text-emerald-400">
-                            <PiggyBank size={60} />
+                          <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm text-emerald-600 dark:text-emerald-400">
+                            <PiggyBank size={80} />
                           </div>
 
                           {/* Content */}
@@ -227,7 +227,7 @@ export const MoneyPage = () => {
               >
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">紐付未設定のカード ({unlinkedPMs.length}件)</h3>
               </div>
-              <div className="pt-2 pb-3 md:pb-4 px-1">
+              <div className="pt-2 pb-3 md:pb-4">
                 <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {unlinkedPMs.map((pm) => {

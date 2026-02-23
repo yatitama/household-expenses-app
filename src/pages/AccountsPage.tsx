@@ -288,7 +288,7 @@ export const AccountsPage = () => {
                   </p>
                 </div>
               </div>
-              <div className="pt-2 pb-3 md:pb-4 px-1">
+              <div className="pt-2 pb-3 md:pb-4">
                 <CardGridSection
                   transactions={allMonthExpenses}
                   categories={categories}
@@ -319,7 +319,7 @@ export const AccountsPage = () => {
                   </p>
                 </div>
               </div>
-              <div className="pt-2 pb-3 md:pb-4 px-1">
+              <div className="pt-2 pb-3 md:pb-4">
                 <CardGridSection
                   transactions={allMonthIncomes}
                   categories={categories}
@@ -350,7 +350,7 @@ export const AccountsPage = () => {
                     </p>
                   </div>
                 </div>
-                <div className="pt-2 pb-3 md:pb-4 px-1">
+                <div className="pt-2 pb-3 md:pb-4">
                   <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {savingsGoals.map((goal) => {
@@ -360,13 +360,12 @@ export const AccountsPage = () => {
                         const effective = getEffectiveMonthlyAmount(goal, viewMonth);
                         const standard = calculateMonthlyAmount(goal);
                         const hasOverride = !excluded && !isOutOfRange && (goal.monthlyOverrides ?? {})[viewMonth] !== undefined;
-                        const isActive = !isOutOfRange && !excluded;
                         return (
                           <button
                             key={goal.id}
                             onClick={() => { if (!isOutOfRange) setSelectedGoalForSheet(goal); }}
                             disabled={isOutOfRange}
-                            className={`p-3 text-left transition-all h-24 md:h-28 flex flex-col justify-between ${
+                            className={`p-3 md:p-4 text-left transition-all flex flex-col gap-2 relative overflow-hidden ${
                               isOutOfRange
                                 ? 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 opacity-40 cursor-default'
                                 : excluded
@@ -374,19 +373,24 @@ export const AccountsPage = () => {
                                 : 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700'
                             }`}
                           >
-                            <div className="flex items-center gap-1.5">
-                              <PiggyBank size={12} className={isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400'} />
-                              <span className="text-xs font-medium truncate text-gray-900 dark:text-gray-100">
+                            {/* Background Icon */}
+                            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm text-emerald-600 dark:text-emerald-400">
+                              <PiggyBank size={80} />
+                            </div>
+
+                            {/* Content */}
+                            <div className="relative z-10 flex items-center gap-1.5">
+                              <span className="text-xs md:text-sm font-medium truncate text-gray-900 dark:text-gray-100">
                                 {goal.name}
                               </span>
                             </div>
                             {excluded && !isOutOfRange ? (
-                              <p className="text-right text-xs text-gray-400 dark:text-gray-500">除外中</p>
+                              <p className="relative z-10 text-right text-xs text-gray-400 dark:text-gray-500">除外中</p>
                             ) : isOutOfRange ? (
-                              <p className="text-right text-xs text-gray-400 dark:text-gray-500">対象外</p>
+                              <p className="relative z-10 text-right text-xs text-gray-400 dark:text-gray-500">対象外</p>
                             ) : (
-                              <div className="text-right">
-                                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                              <div className="relative z-10 text-right">
+                                <p className="text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                                   ¥{effective.toLocaleString()}
                                 </p>
                                 {hasOverride && (
@@ -400,7 +404,7 @@ export const AccountsPage = () => {
                         );
                       })}
                     </div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 px-1">タップで金額調整・除外設定</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">タップで金額調整・除外設定</p>
                   </div>
                 </div>
               </div>
