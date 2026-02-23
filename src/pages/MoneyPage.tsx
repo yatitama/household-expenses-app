@@ -189,15 +189,20 @@ export const MoneyPage = () => {
                     const accumulated = calculateAccumulatedAmount(goal, currentRealMonth);
                     const progress = Math.min(100, goal.targetAmount > 0 ? (accumulated / goal.targetAmount) * 100 : 0);
                     return (
-                      <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-3 md:p-4 flex flex-col gap-2">
-                        <div className="flex items-center gap-1.5">
-                          <PiggyBank size={12} className="text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                      <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-3 md:p-4 flex flex-col gap-2 relative overflow-hidden">
+                        {/* Background Icon */}
+                        <div className="absolute -right-2 -bottom-2 opacity-5 dark:opacity-10 pointer-events-none text-emerald-600 dark:text-emerald-400">
+                          <PiggyBank size={80} />
+                        </div>
+
+                        {/* Content */}
+                        <div className="relative z-10 flex items-center gap-1.5">
                           <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{goal.name}</p>
                         </div>
-                        <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+                        <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                           ¥{accumulated.toLocaleString()} / ¥{goal.targetAmount.toLocaleString()}
                         </p>
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5">
+                        <div className="relative z-10 w-full bg-gray-200 dark:bg-gray-700 h-1.5">
                           <div
                             className="bg-black dark:bg-white h-1.5"
                             style={{ width: `${progress}%` }}
