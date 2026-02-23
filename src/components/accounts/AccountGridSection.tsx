@@ -17,13 +17,13 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
   }
 
   return (
-    <div className="bg-white rounded-lg p-3 md:p-4">
-      <div className="grid grid-cols-2 gap-2 md:gap-3">
+    <div className="bg-white dark:bg-slate-900 rounded-lg p-3 md:p-4">
+      <div className="grid grid-cols-1 gap-2 md:gap-2.5">
         {accounts.map((account) => (
           <button
             key={account.id}
             onClick={() => onAccountClick?.(account)}
-            className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 text-left h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity"
+            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 text-left flex flex-col gap-2 hover:opacity-80 transition-all"
           >
             <div className="flex items-center gap-1.5">
               <div
@@ -47,7 +47,7 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
         {onAddClick && (
           <button
             onClick={onAddClick}
-            className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex items-center justify-center hover:opacity-80 dark:hover:opacity-80 transition-all"
           >
             <Plus size={24} className="text-gray-400 dark:text-gray-500" />
           </button>
