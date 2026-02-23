@@ -985,10 +985,12 @@ interface MemberModalProps {
 const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) => {
   const [name, setName] = useState(member?.name || '');
   const [color, setColor] = useState(member?.color || COLORS[0]);
+  const [budget, setBudget] = useState(member?.budget?.toString() || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ name, color, isDefault: member?.isDefault });
+    const budgetValue = budget ? Number(budget) : undefined;
+    onSave({ name, color, isDefault: member?.isDefault, ...(budgetValue !== undefined && { budget: budgetValue }) });
   };
 
   return (
@@ -1045,6 +1047,18 @@ const MemberModal = ({ member, onSave, onClose, onDelete }: MemberModalProps) =>
                   />
                 ))}
               </div>
+            </div>
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">月予算額</label>
+              <input
+                type="number"
+                min="0"
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                placeholder="予算を設定（オプション）"
+                className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-600"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">このメンバーの月予算を設定できます。空欄の場合は予算なしになります。</p>
             </div>
           </div>
         </div>
