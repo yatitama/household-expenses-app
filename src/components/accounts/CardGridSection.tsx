@@ -202,7 +202,7 @@ export const CardGridSection = ({
               <button
                 key={category?.id ?? '__none__'}
                 onClick={() => onCategoryClick?.(category, catTransactions, catRecurring)}
-                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+                className="border border-gray-200 dark:border-gray-700 p-1.5 md:p-2 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
               >
                 {/* Background Icon */}
                 <div
@@ -213,7 +213,7 @@ export const CardGridSection = ({
                 </div>
 
                 {/* Content */}
-                <div className="relative z-10 flex items-center gap-2 justify-between">
+                <div className="relative z-10 flex items-center gap-2 justify-between bg-white dark:bg-slate-900 px-1 py-0.5">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
                     <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                       {category?.name || 'その他'}
@@ -240,18 +240,18 @@ export const CardGridSection = ({
                 <button
                   key={key}
                   onClick={() => onCategoryClick?.(undefined, pmTransactions, pmRecurring, name, cardColor, 'account')}
-                  className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+                  className="border border-gray-200 dark:border-gray-700 p-1.5 md:p-2 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
                 >
                   {/* Background Icon */}
                   <div
-                    className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
+                    className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm"
                     style={{ color: cardColor }}
                   >
                     {entryAccount ? ACCOUNT_TYPE_ICONS_LG[entryAccount.type] : <CreditCard size={80} />}
                   </div>
 
                   {/* Content */}
-                  <div className="relative z-10 flex items-center gap-1.5 justify-between">
+                  <div className="relative z-10 flex items-center gap-1.5 justify-between bg-white dark:bg-slate-900 px-1 py-0.5">
                     <div className="flex items-center gap-1.5 flex-1 min-w-0">
                       <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                         {name}
@@ -279,18 +279,18 @@ export const CardGridSection = ({
               <button
                 key={key}
                 onClick={() => onCategoryClick?.(undefined, memberTransactions, memberRecurring, name, memberColor, 'user')}
-                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+                className="border border-gray-200 dark:border-gray-700 p-1.5 md:p-2 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
               >
                 {/* Background Icon */}
                 <div
-                  className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
+                  className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm"
                   style={{ color: memberColor }}
                 >
                   <User size={80} />
                 </div>
 
                 {/* Content */}
-                <div className="relative z-10 flex items-center gap-1.5 justify-between">
+                <div className="relative z-10 flex items-center gap-1.5 justify-between bg-white dark:bg-slate-900 px-1 py-0.5">
                   <div className="flex items-center gap-1.5 flex-1 min-w-0">
                     <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                       {name}
@@ -310,15 +310,15 @@ export const CardGridSection = ({
         {viewMode === 'category' && showRecurringTileCategory && (
           <button
             onClick={onRecurringClick}
-            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+            className="border border-gray-200 dark:border-gray-700 p-1.5 md:p-2 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
           >
             {/* Background Icon */}
-            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-gray-400">
+            <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm text-gray-400">
               <RefreshCw size={80} />
             </div>
 
             {/* Content */}
-            <div className="relative z-10 flex items-center gap-1.5">
+            <div className="relative z-10 flex items-center gap-1.5 bg-white dark:bg-slate-900 px-1 py-0.5">
               <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                 {recurringLabel}
               </p>
