@@ -222,7 +222,7 @@ export const CardGridSection = ({
                 <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5">
                   <div
                     className={`h-1.5 transition-all ${
-                      progress <= 100 ? 'bg-black dark:bg-white' : 'bg-red-500 dark:bg-red-400'
+                      progress <= 100 ? 'bg-gray-400 dark:bg-gray-300' : 'bg-red-300 dark:bg-red-300'
                     }`}
                     style={{ width: `${Math.min(progress, 100)}%` }}
                   />
