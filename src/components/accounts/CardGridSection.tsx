@@ -228,17 +228,25 @@ export const CardGridSection = ({
               </button>
             );})
           : viewMode === 'payment'
-          ? sortedPaymentEntries.map(([key, { account: entryAccount, name, amount, transactions: pmTransactions }]) => {
+          ? sortedPaymentEntries.map(([key, { paymentMethod, account: entryAccount, name, amount, transactions: pmTransactions }]) => {
               const cardColor = entryAccount?.color || '#6b7280';
               const cardIcon = entryAccount ? ACCOUNT_TYPE_ICONS_XS[entryAccount.type] : <CreditCard size={12} />;
               const pmRecurring = key.startsWith('__account__')
                 ? recurringPayments.filter((rp) => !rp.paymentMethodId && rp.accountId === key.slice('__account__'.length))
                 : recurringPayments.filter((rp) => rp.paymentMethodId === key);
+              const budget = paymentMethod?.budget;
+              const progress = budget ? Math.min(100, (amount / budget) * 100) : 0;
+              const isDark = document.documentElement.classList.contains('dark');
+              const gaugeColor = isDark ? '#1e293b' : '#f9fafb';
+              const bgColor = isDark ? '#0f172a' : '#ffffff';
               return (
                 <button
                   key={key}
                   onClick={() => onCategoryClick?.(undefined, pmTransactions, pmRecurring, name, cardColor, 'account')}
                   className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
+                  style={budget ? {
+                    background: `linear-gradient(90deg, ${gaugeColor} 0%, ${gaugeColor} ${progress}%, ${bgColor} ${progress}%, ${bgColor} 100%)`
+                  } : undefined}
                 >
                   <div className="flex items-center gap-1.5">
                     <div
@@ -255,7 +263,7 @@ export const CardGridSection = ({
                     </p>
                   </div>
                   <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                    {formatCurrency(amount)}
+                    {formatCurrency(amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                   </p>
                 </button>
               );
@@ -266,11 +274,19 @@ export const CardGridSection = ({
                 return (acct?.memberId || '__unknown__') === key;
               });
               const memberColor = member?.color || '#6b7280';
+              const budget = member?.budget;
+              const progress = budget ? Math.min(100, (amount / budget) * 100) : 0;
+              const isDark = document.documentElement.classList.contains('dark');
+              const gaugeColor = isDark ? '#1e293b' : '#f9fafb';
+              const bgColor = isDark ? '#0f172a' : '#ffffff';
               return (
               <button
                 key={key}
                 onClick={() => onCategoryClick?.(undefined, memberTransactions, memberRecurring, name, memberColor, 'user')}
                 className="border border-gray-200 dark:border-gray-700 p-3 md:p-4 h-24 md:h-28 flex flex-col justify-between hover:opacity-80 transition-opacity text-left"
+                style={budget ? {
+                  background: `linear-gradient(90deg, ${gaugeColor} 0%, ${gaugeColor} ${progress}%, ${bgColor} ${progress}%, ${bgColor} 100%)`
+                } : undefined}
               >
                 <div className="flex items-center gap-1.5">
                   <div
@@ -287,7 +303,7 @@ export const CardGridSection = ({
                   </p>
                 </div>
                 <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                  {formatCurrency(amount)}
+                  {formatCurrency(amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                 </p>
               </button>
             );})}

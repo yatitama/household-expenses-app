@@ -5,6 +5,7 @@ export interface Member {
   color: string;
   icon?: string;
   isDefault?: boolean;
+  budget?: number; // Optional monthly budget for member
 }
 
 // 口座タイプ（資産）
@@ -43,6 +44,7 @@ export interface PaymentMethod {
   paymentMonthOffset?: number;
   color: string;
   icon?: string;
+  budget?: number; // Optional monthly budget for payment method
   createdAt: string;
   updatedAt: string;
 }

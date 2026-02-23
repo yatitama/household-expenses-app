@@ -48,6 +48,7 @@ Account (1) ──── (N) LinkedPaymentMethod.accountId
 | color | string | 表示色（hex） |
 | icon? | string | アイコン名 |
 | isDefault? | boolean | デフォルトメンバーフラグ（`true`の場合削除不可） |
+| budget? | number | 月予算額（オプション）。メンバー別予算表示に使用 |
 
 定数: `COMMON_MEMBER_ID = 'common'`
 
@@ -99,6 +100,7 @@ AccountType:
 | paymentMonthOffset? | number | 引き落とし月オフセット（0=当月, 1=翌月, 2=翌々月） |
 | color | string | 表示色 |
 | icon? | string | アイコン名 |
+| budget? | number | 月予算額（オプション）。カード別予算表示に使用 |
 | createdAt | string | 作成日時 |
 | updatedAt | string | 更新日時 |
 
