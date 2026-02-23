@@ -1,5 +1,6 @@
 import { RefreshCw, CreditCard, User } from 'lucide-react';
 import { ACCOUNT_TYPE_ICONS_XS } from './AccountIcons';
+import { CircularGauge } from './CircularGauge';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { getEffectiveRecurringAmount } from '../../utils/savingsUtils';
@@ -196,31 +197,31 @@ export const CardGridSection = ({
           ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => {
               const catRecurring = recurringPayments.filter((rp) => rp.categoryId === category?.id);
               const progress = category?.budget ? Math.min(100, (amount / category.budget) * 100) : 0;
-              const isDark = document.documentElement.classList.contains('dark');
-              const gaugeColor = isDark ? '#1e293b' : '#f9fafb';
-              const bgColor = isDark ? '#0f172a' : '#ffffff';
+              const gaugeColor = category?.color || '#6b7280';
               return (
               <button
                 key={category?.id ?? '__none__'}
                 onClick={() => onCategoryClick?.(category, catTransactions, catRecurring)}
                 className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left"
-                style={{
-                  background: `linear-gradient(90deg, ${gaugeColor} 0%, ${gaugeColor} ${progress}%, ${bgColor} ${progress}%, ${bgColor} 100%)`
-                }}
               >
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{
-                      backgroundColor: `${category?.color || '#6b7280'}20`,
-                      color: category?.color || '#6b7280',
-                    }}
-                  >
-                    {getCategoryIcon(category?.icon || '', 12)}
+                <div className="flex items-center gap-2 justify-between">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{
+                        backgroundColor: `${gaugeColor}20`,
+                        color: gaugeColor,
+                      }}
+                    >
+                      {getCategoryIcon(category?.icon || '', 12)}
+                    </div>
+                    <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                      {category?.name || 'その他'}
+                    </p>
                   </div>
-                  <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate flex-1">
-                    {category?.name || 'その他'}
-                  </p>
+                  {category?.budget ? (
+                    <CircularGauge progress={progress} color={gaugeColor} size={24} />
+                  ) : null}
                 </div>
                 <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                   {formatCurrency(amount)}{category?.budget ? ` / ${formatCurrency(category.budget)}` : ''}
@@ -236,31 +237,30 @@ export const CardGridSection = ({
                 : recurringPayments.filter((rp) => rp.paymentMethodId === key);
               const budget = paymentMethod?.budget;
               const progress = budget ? Math.min(100, (amount / budget) * 100) : 0;
-              const isDark = document.documentElement.classList.contains('dark');
-              const gaugeColor = isDark ? '#1e293b' : '#f9fafb';
-              const bgColor = isDark ? '#0f172a' : '#ffffff';
               return (
                 <button
                   key={key}
                   onClick={() => onCategoryClick?.(undefined, pmTransactions, pmRecurring, name, cardColor, 'account')}
                   className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left"
-                  style={budget ? {
-                    background: `linear-gradient(90deg, ${gaugeColor} 0%, ${gaugeColor} ${progress}%, ${bgColor} ${progress}%, ${bgColor} 100%)`
-                  } : undefined}
                 >
-                  <div className="flex items-center gap-1.5">
-                    <div
-                      className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{
-                        backgroundColor: `${cardColor}20`,
-                        color: cardColor,
-                      }}
-                    >
-                      {cardIcon}
+                  <div className="flex items-center gap-1.5 justify-between">
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <div
+                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{
+                          backgroundColor: `${cardColor}20`,
+                          color: cardColor,
+                        }}
+                      >
+                        {cardIcon}
+                      </div>
+                      <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                        {name}
+                      </p>
                     </div>
-                    <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                      {name}
-                    </p>
+                    {budget ? (
+                      <CircularGauge progress={progress} color={cardColor} size={24} />
+                    ) : null}
                   </div>
                   <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                     {formatCurrency(amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
@@ -276,31 +276,30 @@ export const CardGridSection = ({
               const memberColor = member?.color || '#6b7280';
               const budget = member?.budget;
               const progress = budget ? Math.min(100, (amount / budget) * 100) : 0;
-              const isDark = document.documentElement.classList.contains('dark');
-              const gaugeColor = isDark ? '#1e293b' : '#f9fafb';
-              const bgColor = isDark ? '#0f172a' : '#ffffff';
               return (
               <button
                 key={key}
                 onClick={() => onCategoryClick?.(undefined, memberTransactions, memberRecurring, name, memberColor, 'user')}
                 className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left"
-                style={budget ? {
-                  background: `linear-gradient(90deg, ${gaugeColor} 0%, ${gaugeColor} ${progress}%, ${bgColor} ${progress}%, ${bgColor} 100%)`
-                } : undefined}
               >
-                <div className="flex items-center gap-1.5">
-                  <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{
-                      backgroundColor: `${member?.color || '#6b7280'}20`,
-                      color: member?.color || '#6b7280',
-                    }}
-                  >
-                    <User size={12} />
+                <div className="flex items-center gap-1.5 justify-between">
+                  <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{
+                        backgroundColor: `${memberColor}20`,
+                        color: memberColor,
+                      }}
+                    >
+                      <User size={12} />
+                    </div>
+                    <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                      {name}
+                    </p>
                   </div>
-                  <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                    {name}
-                  </p>
+                  {budget ? (
+                    <CircularGauge progress={progress} color={memberColor} size={24} />
+                  ) : null}
                 </div>
                 <p className="text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                   {formatCurrency(amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
