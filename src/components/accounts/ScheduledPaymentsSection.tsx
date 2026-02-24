@@ -19,7 +19,13 @@ import type { PaymentMethod, RecurringPayment, Transaction } from '../../types';
 interface RecurringItem {
   rp: RecurringPayment;
   amount: number;
-  paymentDate?: Date | null;
+}
+
+interface RecurringDateGroup {
+  key: string; // 'yyyy-MM-dd' or 'no-date'
+  date: Date | null;
+  items: RecurringItem[];
+  total: number;
 }
 
 interface CardMonthEntry {
@@ -45,7 +51,7 @@ interface AccountScheduleGroup {
   accountName: string;
   accountColor: string;
   cardMonthGroups: CardMonthGroup[];
-  recurringItems: RecurringItem[];
+  recurringDateGroups: RecurringDateGroup[];
   recurringTotal: number;
   total: number;
 }
@@ -197,9 +203,9 @@ export const ScheduledPaymentsSection = () => {
         });
 
       // 口座直結の定期支出（monthlyカード経由でないもの）
-      // 前月末日を基準に calculateNextRecurringDate で当月の発生日を求める
+      // 前月末日を基準に calculateNextRecurringDate で当月の発生日を求め、日付ごとにグループ化
       const prevMonthLastDay = new Date(thisYear, thisMonth - 1, 0);
-      const recurringItems: RecurringItem[] = [];
+      const recurringWithDates: Array<{ rp: RecurringPayment; amount: number; paymentDate: Date | null }> = [];
       for (const rp of thisMonthRecurring) {
         if (rp.accountId !== account.id) continue;
         if (rp.paymentMethodId) {
@@ -208,28 +214,39 @@ export const ScheduledPaymentsSection = () => {
         }
         const amount = getEffectiveRecurringAmount(rp, thisMonthStr);
         const paymentDate = calculateNextRecurringDate(rp, prevMonthLastDay);
-        recurringItems.push({ rp, amount, paymentDate });
+        recurringWithDates.push({ rp, amount, paymentDate });
       }
       // 発生日順にソート（日付なしは末尾）
-      recurringItems.sort((a, b) => {
+      recurringWithDates.sort((a, b) => {
         if (!a.paymentDate && !b.paymentDate) return 0;
         if (!a.paymentDate) return 1;
         if (!b.paymentDate) return -1;
         return a.paymentDate.getTime() - b.paymentDate.getTime();
       });
-      const recurringTotal = recurringItems.reduce((sum, item) => sum + item.amount, 0);
+      // 同じ発生日をグループ化
+      const recurringDateGroupMap: Record<string, RecurringDateGroup> = {};
+      for (const { rp, amount, paymentDate } of recurringWithDates) {
+        const key = paymentDate ? format(paymentDate, 'yyyy-MM-dd') : 'no-date';
+        if (!recurringDateGroupMap[key]) {
+          recurringDateGroupMap[key] = { key, date: paymentDate, items: [], total: 0 };
+        }
+        recurringDateGroupMap[key].items.push({ rp, amount });
+        recurringDateGroupMap[key].total += amount;
+      }
+      const recurringDateGroups = Object.values(recurringDateGroupMap);
+      const recurringTotal = recurringDateGroups.reduce((sum, g) => sum + g.total, 0);
 
       const cardTotal = cardMonthGroups.reduce((sum, g) => sum + g.monthTotal, 0);
       const total = cardTotal + recurringTotal;
 
-      if (cardMonthGroups.length === 0 && recurringItems.length === 0) continue;
+      if (cardMonthGroups.length === 0 && recurringDateGroups.length === 0) continue;
 
       result.push({
         accountId: account.id,
         accountName: account.name,
         accountColor: account.color,
         cardMonthGroups,
-        recurringItems,
+        recurringDateGroups,
         recurringTotal,
         total,
       });
@@ -334,32 +351,32 @@ export const ScheduledPaymentsSection = () => {
                   </div>
                 ))}
 
-                {/* 定期支出（口座直結） */}
-                {group.recurringItems.length > 0 && (
-                  <div className="relative z-10 space-y-0.5 px-1">
-                    {group.cardMonthGroups.length > 0 && (
-                      <div className="border-t dark:border-gray-700 mb-1" />
+                {/* 定期支出（口座直結）- カードと同じフォーマットで日付グループ表示 */}
+                {group.recurringDateGroups.map((dateGroup) => (
+                  <div key={dateGroup.key} className="relative z-10">
+                    {dateGroup.date && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 px-1 mb-1">
+                        {format(dateGroup.date, 'M月d日')}引き落とし
+                      </p>
                     )}
-                    {group.recurringItems.map(({ rp, amount, paymentDate }) => (
-                      <div key={rp.id} className="flex items-center justify-between text-xs">
-                        <span className="text-gray-600 dark:text-gray-400 truncate flex items-center gap-1">
-                          <RefreshCw size={9} className="flex-shrink-0" />
-                          {rp.name}
-                        </span>
-                        <div className="flex items-center gap-1.5 ml-2 flex-shrink-0">
-                          {paymentDate && (
-                            <span className="text-gray-400 dark:text-gray-500">
-                              {format(paymentDate, 'M/d')}
-                            </span>
-                          )}
-                          <span className="text-gray-700 dark:text-gray-300 font-medium">
+                    <div className="space-y-0.5">
+                      {dateGroup.items.map(({ rp, amount }) => (
+                        <div
+                          key={rp.id}
+                          className="w-full flex items-center justify-between text-xs px-1 py-1"
+                        >
+                          <span className="flex items-center gap-1 min-w-0">
+                            <RefreshCw size={10} className="flex-shrink-0 text-gray-400 dark:text-gray-500" />
+                            <span className="text-gray-700 dark:text-gray-300 truncate">{rp.name}</span>
+                          </span>
+                          <span className="text-gray-700 dark:text-gray-300 font-medium ml-2 flex-shrink-0">
                             {formatCurrency(amount)}
                           </span>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                )}
+                ))}
 
                 {/* 合計 */}
                 <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100 mt-auto">
