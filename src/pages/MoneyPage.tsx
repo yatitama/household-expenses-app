@@ -69,6 +69,11 @@ export const MoneyPage = () => {
     [accountScheduleGroups]
   );
 
+  const selectedAccountSchedule = useMemo(
+    () => accountScheduleGroups.find((g) => g.accountId === selectedAccount?.id) ?? null,
+    [accountScheduleGroups, selectedAccount]
+  );
+
   useBodyScrollLock(!!activeModal || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen);
 
   const handleAddRecurring = (_target?: { accountId?: string; paymentMethodId?: string }) => {
@@ -320,6 +325,7 @@ export const MoneyPage = () => {
       <AccountDetailModal
         account={selectedAccount}
         isOpen={isAccountDetailModalOpen}
+        scheduleGroup={selectedAccountSchedule}
         onClose={() => {
           setIsAccountDetailModalOpen(false);
           setSelectedAccount(null);
