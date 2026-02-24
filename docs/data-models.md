@@ -10,6 +10,7 @@
 | Account | 口座・資産 | `household_accounts` |
 | PaymentMethod | 支払い手段（カード） | `household_payment_methods` |
 | Transaction | 取引記録 | `household_transactions` |
+| Transfer | 振込記録（口座間送金） | `household_transfers` |
 | Category | カテゴリ | `household_categories` |
 | Budget | 月別予算 | `household_budgets` |
 | RecurringPayment | 定期取引 | `household_recurring_payments` |
@@ -149,6 +150,29 @@ AccountType:
 3. `billingType = 'immediate'` → 口座残高を即時更新、`settledAt` を設定
 4. `billingType = 'monthly'` → 口座残高は変更しない、`settledAt` は未設定（ペンディング）
 5. 引き落とし日が到来すると自動精算される（`settleOverdueTransactions()`）
+
+---
+
+## Transfer（振込）
+
+口座間の送金記録。カテゴリを持たず、送金元と送金先の残高を直接更新する。
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| id | string | 一意ID |
+| date | string | 振込日 (`yyyy-MM-dd`) |
+| amount | number | 金額 |
+| fromAccountId | string | 送金元口座ID |
+| toAccountId | string | 送金先口座ID |
+| memo? | string | メモ |
+| createdAt | string | 作成日時 |
+| updatedAt | string | 更新日時 |
+
+### 振込フロー
+
+1. `fromAccountId` の口座残高から `amount` を減算
+2. `toAccountId` の口座残高に `amount` を加算
+3. `Transfer` レコードとして保存（`Transaction` には記録されない）
 
 ---
 

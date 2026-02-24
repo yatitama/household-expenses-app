@@ -5,12 +5,14 @@ import { Wallet, CreditCard, Check, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   accountService, transactionService, categoryService,
-  paymentMethodService, quickAddTemplateService,
+  paymentMethodService, quickAddTemplateService, transferService,
 } from '../services/storage';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { QuickAddTemplateGridSection } from '../components/quickAdd/QuickAddTemplateGridSection';
 import { QuickAddTemplateModal } from '../components/quickAdd/QuickAddTemplateModal';
 import type { TransactionType, TransactionInput, QuickAddTemplate, QuickAddTemplateInput } from '../types';
+
+type TabType = TransactionType | 'transfer';
 
 export const AddTransactionPage = () => {
   const location = useLocation();
@@ -20,12 +22,15 @@ export const AddTransactionPage = () => {
   const allPaymentMethods = paymentMethodService.getAll();
   const categories = categoryService.getAll();
 
-  const [type, setType] = useState<TransactionType>(() => template?.type || 'expense');
+  const [tab, setTab] = useState<TabType>(() => template?.type || 'expense');
   const [amount, setAmount] = useState(() => template?.amount ? String(template.amount) : '');
   const [categoryId, setCategoryId] = useState(() => template?.categoryId || '');
   const [selectedSourceId, setSelectedSourceId] = useState(() => template?.accountId || template?.paymentMethodId || '');
   const [date, setDate] = useState(() => template?.date || format(new Date(), 'yyyy-MM-dd'));
   const [memo, setMemo] = useState(() => template?.memo || '');
+
+  // 振込用: 入金元口座ID
+  const [transferFromAccountId, setTransferFromAccountId] = useState('');
 
   const [quickAddTemplates, setQuickAddTemplates] = useState<QuickAddTemplate[]>(() =>
     quickAddTemplateService.getAll()
@@ -33,10 +38,50 @@ export const AddTransactionPage = () => {
   const [editingQuickAddTemplate, setEditingQuickAddTemplate] = useState<QuickAddTemplate | null>(null);
   const [isQuickAddTemplateModalOpen, setIsQuickAddTemplateModalOpen] = useState(false);
 
+  // 収支タブ用
+  const type: TransactionType = tab === 'transfer' ? 'income' : tab;
   const filteredCategories = categories.filter((c) => c.type === type);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (tab === 'transfer') {
+      if (!amount || !transferFromAccountId || !selectedSourceId) {
+        toast.error('金額、入金元、入金先を入力してください');
+        return;
+      }
+      if (transferFromAccountId === selectedSourceId) {
+        toast.error('入金元と入金先は別の口座を選択してください');
+        return;
+      }
+
+      const parsedAmount = parseInt(amount, 10);
+
+      const fromAccount = accountService.getById(transferFromAccountId);
+      const toAccount = accountService.getById(selectedSourceId);
+
+      if (!fromAccount || !toAccount) {
+        toast.error('口座が見つかりません');
+        return;
+      }
+
+      transferService.create({
+        date,
+        amount: parsedAmount,
+        fromAccountId: transferFromAccountId,
+        toAccountId: selectedSourceId,
+        memo: memo || undefined,
+      });
+
+      accountService.update(transferFromAccountId, { balance: fromAccount.balance - parsedAmount });
+      accountService.update(selectedSourceId, { balance: toAccount.balance + parsedAmount });
+
+      toast.success('振込を登録しました');
+      resetForm();
+      window.scrollTo(0, 0);
+      return;
+    }
+
     if (!amount || !categoryId || !selectedSourceId) {
       toast.error('金額、カテゴリ、支払い元を入力してください');
       return;
@@ -84,7 +129,7 @@ export const AddTransactionPage = () => {
   };
 
   const handleQuickAddTemplateClick = (tpl: QuickAddTemplate) => {
-    setType(tpl.type);
+    setTab(tpl.type);
     setAmount(tpl.amount ? String(tpl.amount) : '');
     setCategoryId(tpl.categoryId || '');
     setSelectedSourceId(tpl.accountId || tpl.paymentMethodId || '');
@@ -122,11 +167,15 @@ export const AddTransactionPage = () => {
   };
 
   const resetForm = () => {
-    setType('expense');
+    setTab('expense');
     setAmount('');
+    setTransferFromAccountId('');
     // categoryId, selectedSourceId, dateはリセットしない
     setMemo('');
   };
+
+  const isTransferSubmitDisabled = !amount || !transferFromAccountId || !selectedSourceId || transferFromAccountId === selectedSourceId;
+  const isTransactionSubmitDisabled = !amount || !categoryId || !selectedSourceId;
 
   return (
     <div className="bg-white dark:bg-slate-900 pb-32 md:pb-20">
@@ -145,25 +194,34 @@ export const AddTransactionPage = () => {
               <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
                 <button
                   type="button"
-                  onClick={() => { setType('expense'); setCategoryId(''); }}
+                  onClick={() => { setTab('expense'); setCategoryId(''); }}
                   className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                    type === 'expense' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
+                    tab === 'expense' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                   }`}
                 >
                   支出
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setType('income'); setCategoryId(''); }}
+                  onClick={() => { setTab('income'); setCategoryId(''); }}
                   className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
-                    type === 'income' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
+                    tab === 'income' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                   }`}
                 >
                   収入
                 </button>
+                <button
+                  type="button"
+                  onClick={() => { setTab('transfer'); setCategoryId(''); }}
+                  className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
+                    tab === 'transfer' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
+                  }`}
+                >
+                  振込
+                </button>
               </div>
 
-              {allAccounts.length > 0 && (
+              {tab !== 'transfer' && allAccounts.length > 0 && (
                 <QuickAddTemplateGridSection
                   templates={quickAddTemplates.filter((t) => t.type === type)}
                   onTemplateClick={handleQuickAddTemplateClick}
@@ -193,44 +251,81 @@ export const AddTransactionPage = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {filteredCategories.map((category) => {
-                    return (
+              {tab !== 'transfer' && (
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {filteredCategories.map((category) => {
+                      return (
+                        <button
+                          key={category.id}
+                          type="button"
+                          onClick={() => setCategoryId(category.id)}
+                          className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                            categoryId === category.id
+                              ? 'bg-gray-100 dark:bg-gray-700'
+                              : ''
+                          }`}
+                        >
+                          <div
+                            className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                          >
+                            {getCategoryIcon(category.icon, 14)}
+                          </div>
+                          <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                            {category.name}
+                          </span>
+                          {categoryId === category.id && (
+                            <div className="absolute -top-1 -right-1">
+                              <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {tab === 'transfer' && (
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">入金元</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {allAccounts.map((acct) => (
                       <button
-                        key={category.id}
+                        key={acct.id}
                         type="button"
-                        onClick={() => setCategoryId(category.id)}
-                        className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
-                          categoryId === category.id
+                        onClick={() => setTransferFromAccountId(acct.id)}
+                        className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                          transferFromAccountId === acct.id
                             ? 'bg-gray-100 dark:bg-gray-700'
                             : ''
                         }`}
                       >
                         <div
-                          className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                          className="w-6 h-6 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
                         >
-                          {getCategoryIcon(category.icon, 14)}
+                          <Wallet size={16} />
                         </div>
                         <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
-                          {category.name}
+                          {acct.name}
                         </span>
-                        {categoryId === category.id && (
+                        {transferFromAccountId === acct.id && (
                           <div className="absolute -top-1 -right-1">
                             <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                           </div>
                         )}
                       </button>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div>
                 <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
-                  {type === 'expense' ? '支払い元' : '入金先'}
+                  {tab === 'expense' ? '支払い元' : '入金先'}
                 </label>
                 <div className="grid grid-cols-4 gap-2">
                   {allAccounts.map((acct) => (
@@ -261,7 +356,7 @@ export const AddTransactionPage = () => {
                     </button>
                   ))}
 
-                  {type === 'expense' && allPaymentMethods.map((pm) => (
+                  {tab === 'expense' && allPaymentMethods.map((pm) => (
                     <button
                       key={pm.id}
                       type="button"
@@ -317,7 +412,7 @@ export const AddTransactionPage = () => {
           <div className="max-w-md mx-auto p-3 sm:p-4">
             <button
               type="submit"
-              disabled={!amount || !categoryId || !selectedSourceId}
+              disabled={tab === 'transfer' ? isTransferSubmitDisabled : isTransactionSubmitDisabled}
               className="w-full py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg btn-primary text-white font-medium text-sm disabled:opacity-50 transition-colors"
             >
               登録

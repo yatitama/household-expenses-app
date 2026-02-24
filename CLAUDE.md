@@ -96,6 +96,7 @@ src/
 | Account | 口座（cash/bank/emoney）— 残高を持つ資産 |
 | PaymentMethod | 支払い手段（credit_card/debit_card）— 口座に紐づく |
 | Transaction | 取引記録（収入/支出） |
+| Transfer | 振込記録（口座間送金） |
 | Category | カテゴリ（支出11種+収入4種がデフォルト） |
 | Budget | 月別予算 |
 | RecurringPayment | 定期取引（発生日はオンデマンド計算） |

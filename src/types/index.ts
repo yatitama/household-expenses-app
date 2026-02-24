@@ -52,6 +52,20 @@ export interface PaymentMethod {
 // 取引タイプ
 export type TransactionType = 'income' | 'expense';
 
+// 振込記録
+export interface Transfer {
+  id: string;
+  date: string;
+  amount: number;
+  fromAccountId: string;
+  toAccountId: string;
+  memo?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type TransferInput = Omit<Transfer, 'id' | 'createdAt' | 'updatedAt'>;
+
 // 取引記録
 export interface Transaction {
   id: string;
@@ -139,6 +153,7 @@ export type BudgetInput = Omit<Budget, 'id'>;
 export type CardBillingInput = Omit<CardBilling, 'id'>;
 export type RecurringPaymentInput = Omit<RecurringPayment, 'id' | 'createdAt' | 'updatedAt'>;
 export type LinkedPaymentMethodInput = Omit<LinkedPaymentMethod, 'id' | 'createdAt' | 'updatedAt'>;
+
 
 // 共通メンバーID（削除不可）
 export const COMMON_MEMBER_ID = 'common';

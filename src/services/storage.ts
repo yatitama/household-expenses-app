@@ -8,6 +8,8 @@ import type {
   PaymentMethodInput,
   Transaction,
   TransactionInput,
+  Transfer,
+  TransferInput,
   Category,
   CategoryInput,
   Budget,
@@ -29,6 +31,7 @@ const STORAGE_KEYS = {
   ACCOUNTS: 'household_accounts',
   PAYMENT_METHODS: 'household_payment_methods',
   TRANSACTIONS: 'household_transactions',
+  TRANSFERS: 'household_transfers',
   CATEGORIES: 'household_categories',
   BUDGETS: 'household_budgets',
   CARD_BILLINGS: 'household_card_billings',
@@ -760,6 +763,58 @@ export const quickAddTemplateService = {
     const filtered = templates.filter((t) => t.id !== id);
     if (filtered.length === templates.length) return false;
     setItems(STORAGE_KEYS.QUICK_ADD_TEMPLATES, filtered);
+    return true;
+  },
+};
+
+// Transfer 操作
+export const transferService = {
+  getAll: (): Transfer[] => {
+    return getItems<Transfer>(STORAGE_KEYS.TRANSFERS);
+  },
+
+  getById: (id: string): Transfer | undefined => {
+    return transferService.getAll().find((t) => t.id === id);
+  },
+
+  getByMonth: (month: string): Transfer[] => {
+    return transferService.getAll().filter((t) => t.date.startsWith(month));
+  },
+
+  create: (input: TransferInput): Transfer => {
+    const transfers = transferService.getAll();
+    const now = getTimestamp();
+    const newTransfer: Transfer = {
+      ...input,
+      id: generateId(),
+      createdAt: now,
+      updatedAt: now,
+    };
+    transfers.push(newTransfer);
+    setItems(STORAGE_KEYS.TRANSFERS, transfers);
+    return newTransfer;
+  },
+
+  update: (id: string, input: Partial<TransferInput>): Transfer | undefined => {
+    const transfers = transferService.getAll();
+    const index = transfers.findIndex((t) => t.id === id);
+    if (index === -1) return undefined;
+
+    const updated: Transfer = {
+      ...transfers[index],
+      ...input,
+      updatedAt: getTimestamp(),
+    };
+    transfers[index] = updated;
+    setItems(STORAGE_KEYS.TRANSFERS, transfers);
+    return updated;
+  },
+
+  delete: (id: string): boolean => {
+    const transfers = transferService.getAll();
+    const filtered = transfers.filter((t) => t.id !== id);
+    if (filtered.length === transfers.length) return false;
+    setItems(STORAGE_KEYS.TRANSFERS, filtered);
     return true;
   },
 };
