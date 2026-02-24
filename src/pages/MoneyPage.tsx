@@ -9,9 +9,9 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { getPendingAmountByPaymentMethod } from '../utils/billingUtils';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { SAVINGS_GOAL_ICONS } from '../utils/savingsGoalIcons';
+import { getAccountScheduleGroups } from '../utils/scheduledPaymentsUtils';
 import { AccountGridSection } from '../components/accounts/AccountGridSection';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
-import { ScheduledPaymentsSection } from '../components/accounts/ScheduledPaymentsSection';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { AccountModal } from '../components/accounts/modals/AccountModal';
@@ -50,6 +50,24 @@ export const MoneyPage = () => {
   const totalAccumulatedSavings = savingsGoals.reduce((sum, goal) => {
     return sum + calculateAccumulatedAmount(goal, currentRealMonth);
   }, 0);
+
+  const accountScheduleGroups = useMemo(
+    () => getAccountScheduleGroups(accounts, paymentMethods),
+    [accounts, paymentMethods]
+  );
+
+  const scheduledAmounts = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const g of accountScheduleGroups) {
+      map[g.accountId] = g.total;
+    }
+    return map;
+  }, [accountScheduleGroups]);
+
+  const selectedAccountSchedule = useMemo(
+    () => accountScheduleGroups.find((g) => g.accountId === selectedAccount?.id) ?? null,
+    [accountScheduleGroups, selectedAccount]
+  );
 
   useBodyScrollLock(!!activeModal || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen);
 
@@ -162,6 +180,7 @@ export const MoneyPage = () => {
               ) : (
                 <AccountGridSection
                   accounts={accounts}
+                  scheduledAmounts={scheduledAmounts}
                   onAccountClick={handleAccountClick}
                   onAddClick={() => { setEditingAccount(null); setIsAccountModalOpen(true); }}
                 />
@@ -222,9 +241,6 @@ export const MoneyPage = () => {
               </div>
             </div>
           )}
-
-          {/* 引き落とし予定セクション */}
-          <ScheduledPaymentsSection />
 
           {/* 紐付未設定のカード */}
           {unlinkedPMs.length > 0 && (
@@ -294,6 +310,7 @@ export const MoneyPage = () => {
       <AccountDetailModal
         account={selectedAccount}
         isOpen={isAccountDetailModalOpen}
+        scheduleGroup={selectedAccountSchedule}
         onClose={() => {
           setIsAccountDetailModalOpen(false);
           setSelectedAccount(null);
