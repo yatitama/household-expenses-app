@@ -5,11 +5,12 @@ import type { Account } from '../../types';
 
 interface AccountGridSectionProps {
   accounts: Account[];
+  scheduledAmounts?: Record<string, number>;
   onAddClick?: () => void;
   onAccountClick?: (account: Account) => void;
 }
 
-export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: AccountGridSectionProps) => {
+export const AccountGridSection = ({ accounts, scheduledAmounts, onAddClick, onAccountClick }: AccountGridSectionProps) => {
   const shouldShowGrid = accounts.length > 0 || onAddClick;
 
   if (!shouldShowGrid) {
@@ -44,6 +45,11 @@ export const AccountGridSection = ({ accounts, onAddClick, onAccountClick }: Acc
             <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
               {formatCurrency(account.balance)}
             </p>
+            {scheduledAmounts && (scheduledAmounts[account.id] ?? 0) > 0 && (
+              <p className="relative z-10 text-right text-xs text-gray-500 dark:text-gray-400">
+                引き落とし予定 -{formatCurrency(scheduledAmounts[account.id])}
+              </p>
+            )}
           </button>
         ))}
         {onAddClick && (
