@@ -64,6 +64,11 @@ export const MoneyPage = () => {
     return map;
   }, [accountScheduleGroups]);
 
+  const totalScheduledAmount = useMemo(
+    () => accountScheduleGroups.reduce((sum, g) => sum + g.total, 0),
+    [accountScheduleGroups]
+  );
+
   const selectedAccountSchedule = useMemo(
     () => accountScheduleGroups.find((g) => g.accountId === selectedAccount?.id) ?? null,
     [accountScheduleGroups, selectedAccount]
@@ -161,9 +166,16 @@ export const MoneyPage = () => {
                   <Landmark size={14} className="text-gray-900 dark:text-gray-100" />
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
                 </div>
-                <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
-                  {formatCurrency(totalBalance)}
-                </p>
+                <div className="text-right">
+                  <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
+                    {formatCurrency(totalBalance)}
+                  </p>
+                  {totalScheduledAmount > 0 && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      引き落とし予定 -{formatCurrency(totalScheduledAmount)}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
             <div className="pt-2 pb-3 md:pb-4">
@@ -281,9 +293,12 @@ export const MoneyPage = () => {
       <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5">
         <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-end">
           <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0">
-            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">合計</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">手元残高</p>
             <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
-              {totalBalance >= 0 ? '+' : ''}{formatCurrency(totalBalance)}
+              {(() => {
+                const net = totalBalance - totalScheduledAmount - totalAccumulatedSavings;
+                return `${net >= 0 ? '+' : ''}${formatCurrency(net)}`;
+              })()}
             </p>
           </div>
         </div>
