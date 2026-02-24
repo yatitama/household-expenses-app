@@ -4,6 +4,7 @@ import { format, addMonths } from 'date-fns';
 import { formatCurrency } from '../../utils/formatters';
 import {
   calculatePaymentDate,
+  calculateNextRecurringDate,
   getUnsettledTransactions,
   getRecurringPaymentsForMonth,
   getActualPaymentDate,
@@ -18,6 +19,7 @@ import type { PaymentMethod, RecurringPayment, Transaction } from '../../types';
 interface RecurringItem {
   rp: RecurringPayment;
   amount: number;
+  paymentDate?: Date | null;
 }
 
 interface CardMonthEntry {
@@ -195,6 +197,8 @@ export const ScheduledPaymentsSection = () => {
         });
 
       // 口座直結の定期支出（monthlyカード経由でないもの）
+      // 前月末日を基準に calculateNextRecurringDate で当月の発生日を求める
+      const prevMonthLastDay = new Date(thisYear, thisMonth - 1, 0);
       const recurringItems: RecurringItem[] = [];
       for (const rp of thisMonthRecurring) {
         if (rp.accountId !== account.id) continue;
@@ -203,8 +207,16 @@ export const ScheduledPaymentsSection = () => {
           if (pm && pm.billingType === 'monthly') continue;
         }
         const amount = getEffectiveRecurringAmount(rp, thisMonthStr);
-        recurringItems.push({ rp, amount });
+        const paymentDate = calculateNextRecurringDate(rp, prevMonthLastDay);
+        recurringItems.push({ rp, amount, paymentDate });
       }
+      // 発生日順にソート（日付なしは末尾）
+      recurringItems.sort((a, b) => {
+        if (!a.paymentDate && !b.paymentDate) return 0;
+        if (!a.paymentDate) return 1;
+        if (!b.paymentDate) return -1;
+        return a.paymentDate.getTime() - b.paymentDate.getTime();
+      });
       const recurringTotal = recurringItems.reduce((sum, item) => sum + item.amount, 0);
 
       const cardTotal = cardMonthGroups.reduce((sum, g) => sum + g.monthTotal, 0);
@@ -328,15 +340,22 @@ export const ScheduledPaymentsSection = () => {
                     {group.cardMonthGroups.length > 0 && (
                       <div className="border-t dark:border-gray-700 mb-1" />
                     )}
-                    {group.recurringItems.map(({ rp, amount }) => (
+                    {group.recurringItems.map(({ rp, amount, paymentDate }) => (
                       <div key={rp.id} className="flex items-center justify-between text-xs">
                         <span className="text-gray-600 dark:text-gray-400 truncate flex items-center gap-1">
                           <RefreshCw size={9} className="flex-shrink-0" />
                           {rp.name}
                         </span>
-                        <span className="text-gray-700 dark:text-gray-300 font-medium ml-2 flex-shrink-0">
-                          {formatCurrency(amount)}
-                        </span>
+                        <div className="flex items-center gap-1.5 ml-2 flex-shrink-0">
+                          {paymentDate && (
+                            <span className="text-gray-400 dark:text-gray-500">
+                              {format(paymentDate, 'M/d')}
+                            </span>
+                          )}
+                          <span className="text-gray-700 dark:text-gray-300 font-medium">
+                            {formatCurrency(amount)}
+                          </span>
+                        </div>
                       </div>
                     ))}
                   </div>
