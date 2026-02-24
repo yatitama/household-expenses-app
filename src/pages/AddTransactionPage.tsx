@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { Wallet, CreditCard, Check, X } from 'lucide-react';
@@ -17,6 +17,7 @@ type TabType = TransactionType | 'transfer';
 export const AddTransactionPage = () => {
   const location = useLocation();
   const template = (location.state as { template?: QuickAddTemplate })?.template;
+  const amountInputRef = useRef<HTMLInputElement>(null);
 
   const allAccounts = accountService.getAll();
   const allPaymentMethods = paymentMethodService.getAll();
@@ -154,6 +155,13 @@ export const AddTransactionPage = () => {
     setMemo(tpl.memo || '');
     toast.success(`「${tpl.name}」を反映しました`);
     window.scrollTo(0, 0);
+
+    // 金額が指定されていない場合、金額入力欄にフォーカスを当てる
+    if (!tpl.amount && amountInputRef.current) {
+      setTimeout(() => {
+        amountInputRef.current?.focus();
+      }, 0);
+    }
   };
 
   const handleSaveQuickAddTemplate = (input: QuickAddTemplateInput) => {
@@ -263,7 +271,9 @@ export const AddTransactionPage = () => {
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
                   <input
+                    ref={amountInputRef}
                     type="number"
+                    inputMode="decimal"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="0"
@@ -427,6 +437,7 @@ export const AddTransactionPage = () => {
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
                     <input
                       type="number"
+                      inputMode="decimal"
                       value={transferFee}
                       onChange={(e) => setTransferFee(e.target.value)}
                       placeholder="0（任意）"
