@@ -29,8 +29,9 @@ export const AddTransactionPage = () => {
   const [date, setDate] = useState(() => template?.date || format(new Date(), 'yyyy-MM-dd'));
   const [memo, setMemo] = useState(() => template?.memo || '');
 
-  // 振込用: 入金元口座ID
-  const [transferFromAccountId, setTransferFromAccountId] = useState('');
+  // 振替用
+  const [transferFromAccountId, setTransferFromAccountId] = useState(() => template?.fromAccountId || '');
+  const [transferFee, setTransferFee] = useState(() => template?.fee ? String(template.fee) : '');
 
   const [quickAddTemplates, setQuickAddTemplates] = useState<QuickAddTemplate[]>(() =>
     quickAddTemplateService.getAll()
@@ -56,6 +57,7 @@ export const AddTransactionPage = () => {
       }
 
       const parsedAmount = parseInt(amount, 10);
+      const parsedFee = transferFee ? parseInt(transferFee, 10) : 0;
 
       const fromAccount = accountService.getById(transferFromAccountId);
       const toAccount = accountService.getById(selectedSourceId);
@@ -65,10 +67,27 @@ export const AddTransactionPage = () => {
         return;
       }
 
-      accountService.update(transferFromAccountId, { balance: fromAccount.balance - parsedAmount });
+      // 振替: 入金元から振替額＋手数料を引き、入金先に振替額を加える
+      accountService.update(transferFromAccountId, { balance: fromAccount.balance - parsedAmount - parsedFee });
       accountService.update(selectedSourceId, { balance: toAccount.balance + parsedAmount });
 
-      toast.success('振込を登録しました');
+      // 手数料を支出Transactionとして記録
+      if (parsedFee > 0) {
+        const expenseCategories = categories.filter((c) => c.type === 'expense');
+        const feeCategory = expenseCategories.find((c) => c.name === 'その他') ?? expenseCategories[0];
+        if (feeCategory) {
+          transactionService.create({
+            type: 'expense',
+            amount: parsedFee,
+            categoryId: feeCategory.id,
+            accountId: transferFromAccountId,
+            date: format(new Date(), 'yyyy-MM-dd'),
+            memo: '振替手数料',
+          });
+        }
+      }
+
+      toast.success('振替を登録しました');
       resetForm('transfer');
       window.scrollTo(0, 0);
       return;
@@ -123,9 +142,15 @@ export const AddTransactionPage = () => {
   const handleQuickAddTemplateClick = (tpl: QuickAddTemplate) => {
     setTab(tpl.type);
     setAmount(tpl.amount ? String(tpl.amount) : '');
-    setCategoryId(tpl.categoryId || '');
-    setSelectedSourceId(tpl.accountId || tpl.paymentMethodId || '');
-    setDate(tpl.date || format(new Date(), 'yyyy-MM-dd'));
+    if (tpl.type === 'transfer') {
+      setTransferFromAccountId(tpl.fromAccountId || '');
+      setSelectedSourceId(tpl.accountId || '');
+      setTransferFee(tpl.fee ? String(tpl.fee) : '');
+    } else {
+      setCategoryId(tpl.categoryId || '');
+      setSelectedSourceId(tpl.accountId || tpl.paymentMethodId || '');
+      setDate(tpl.date || format(new Date(), 'yyyy-MM-dd'));
+    }
     setMemo(tpl.memo || '');
     toast.success(`「${tpl.name}」を反映しました`);
     window.scrollTo(0, 0);
@@ -163,8 +188,10 @@ export const AddTransactionPage = () => {
     setAmount('');
     if (currentTab === 'transfer') {
       setSelectedSourceId('');  // 入金先をリセット、入金元は維持
+      setTransferFee('');
     } else {
       setTransferFromAccountId('');
+      setTransferFee('');
     }
     setMemo('');
   };
@@ -212,13 +239,13 @@ export const AddTransactionPage = () => {
                     tab === 'transfer' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
                   }`}
                 >
-                  振込
+                  振替
                 </button>
               </div>
 
-              {tab !== 'transfer' && allAccounts.length > 0 && (
+              {allAccounts.length > 0 && (
                 <QuickAddTemplateGridSection
-                  templates={quickAddTemplates.filter((t) => t.type === type)}
+                  templates={quickAddTemplates.filter((t) => t.type === tab)}
                   onTemplateClick={handleQuickAddTemplateClick}
                   onEditClick={(tpl) => {
                     setEditingQuickAddTemplate(tpl);
@@ -393,6 +420,22 @@ export const AddTransactionPage = () => {
                 </div>
               </div>
 
+              {tab === 'transfer' && (
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">振替手数料</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
+                    <input
+                      type="number"
+                      value={transferFee}
+                      onChange={(e) => setTransferFee(e.target.value)}
+                      placeholder="0（任意）"
+                      className="w-full pl-8 pr-3 py-2 bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                    />
+                  </div>
+                </div>
+              )}
+
               {tab !== 'transfer' && (
                 <div>
                   <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">日付</label>
@@ -434,6 +477,7 @@ export const AddTransactionPage = () => {
       {isQuickAddTemplateModalOpen && (
         <QuickAddTemplateModal
           template={editingQuickAddTemplate}
+          defaultType={tab}
           categories={categories}
           accounts={allAccounts}
           paymentMethods={allPaymentMethods}

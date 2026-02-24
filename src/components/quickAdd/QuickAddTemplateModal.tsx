@@ -6,6 +6,7 @@ import type { QuickAddTemplate, QuickAddTemplateInput, Category, Account, Paymen
 
 interface QuickAddTemplateModalProps {
   template?: QuickAddTemplate | null;
+  defaultType?: 'expense' | 'income' | 'transfer';
   categories: Category[];
   accounts: Account[];
   paymentMethods: PaymentMethod[];
@@ -17,6 +18,7 @@ interface QuickAddTemplateModalProps {
 
 export const QuickAddTemplateModal = ({
   template,
+  defaultType = 'expense',
   categories,
   accounts,
   paymentMethods,
@@ -26,38 +28,49 @@ export const QuickAddTemplateModal = ({
   onDelete,
 }: QuickAddTemplateModalProps) => {
   const [name, setName] = useState(() => template?.name || '');
-  const [type, setType] = useState<'expense' | 'income'>(() => template?.type || 'expense');
+  const [type, setType] = useState<'expense' | 'income' | 'transfer'>(() => template?.type || defaultType);
   const [categoryId, setCategoryId] = useState(() => template?.categoryId || '');
   const [amount, setAmount] = useState(() => template?.amount?.toString() || '');
   const [selectedSourceId, setSelectedSourceId] = useState<string>(() => template?.accountId || template?.paymentMethodId || '');
+  const [fromAccountId, setFromAccountId] = useState(() => template?.fromAccountId || '');
+  const [fee, setFee] = useState(() => template?.fee?.toString() || '');
   const [date, setDate] = useState(() => template?.date || '');
   const [memo, setMemo] = useState(() => template?.memo || '');
   useBodyScrollLock(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name) {
-      return;
+    if (!name) return;
+
+    if (type === 'transfer') {
+      onSave({
+        name,
+        type,
+        fromAccountId: fromAccountId || undefined,
+        accountId: selectedSourceId || undefined,
+        fee: fee ? parseInt(fee, 10) : undefined,
+        amount: amount ? parseInt(amount, 10) : undefined,
+        memo: memo || undefined,
+      });
+    } else {
+      const account = accounts.find((a) => a.id === selectedSourceId);
+      const paymentMethod = paymentMethods.find((p) => p.id === selectedSourceId);
+      onSave({
+        name,
+        type,
+        categoryId: categoryId || undefined,
+        amount: amount ? parseInt(amount, 10) : undefined,
+        accountId: account?.id,
+        paymentMethodId: paymentMethod?.id,
+        date: date || undefined,
+        memo: memo || undefined,
+      });
     }
-
-    const account = accounts.find((a) => a.id === selectedSourceId);
-    const paymentMethod = paymentMethods.find((p) => p.id === selectedSourceId);
-
-    onSave({
-      name,
-      type,
-      categoryId: categoryId || undefined,
-      amount: amount ? parseInt(amount, 10) : undefined,
-      accountId: account?.id,
-      paymentMethodId: paymentMethod?.id,
-      date: date || undefined,
-      memo: memo || undefined,
-    });
   };
 
   if (!isOpen) return null;
 
-  const filteredCategories = categories.filter((c) => c.type === type);
+  const filteredCategories = categories.filter((c) => c.type === (type === 'transfer' ? 'expense' : type));
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-60" onClick={onClose} role="dialog" aria-modal="true" aria-label={template ? 'クイック入力を編集' : 'クイック入力を作成'}>
@@ -114,6 +127,15 @@ export const QuickAddTemplateModal = ({
               >
                 収入
               </button>
+              <button
+                type="button"
+                onClick={() => { setType('transfer'); setCategoryId(''); }}
+                className={`flex-1 py-2 sm:py-2.5 font-medium text-sm transition-colors ${
+                  type === 'transfer' ? 'btn-primary text-white' : 'bg-gray-100 text-gray-900 dark:text-gray-200'
+                }`}
+              >
+                振替
+              </button>
             </div>
 
             {/* Name */}
@@ -143,44 +165,82 @@ export const QuickAddTemplateModal = ({
               </div>
             </div>
 
-            {/* Category */}
-            <div>
-              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
-              <div className="grid grid-cols-4 gap-2">
-                {filteredCategories.map((category) => (
-                  <button
-                    key={category.id}
-                    type="button"
-                    onClick={() => setCategoryId(categoryId === category.id ? '' : category.id)}
-                    className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
-                      categoryId === category.id
-                        ? 'bg-gray-100 dark:bg-gray-700'
-                        : ''
-                    }`}
-                  >
-                    <div
-                      className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: `${category.color}20`, color: category.color }}
+            {/* Category (expense/income only) */}
+            {type !== 'transfer' && (
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {filteredCategories.map((category) => (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() => setCategoryId(categoryId === category.id ? '' : category.id)}
+                      className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                        categoryId === category.id
+                          ? 'bg-gray-100 dark:bg-gray-700'
+                          : ''
+                      }`}
                     >
-                      {getCategoryIcon(category.icon, 14)}
-                    </div>
-                    <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
-                      {category.name}
-                    </span>
-                    {categoryId === category.id && (
-                      <div className="absolute -top-1 -right-1">
-                        <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                      <div
+                        className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                      >
+                        {getCategoryIcon(category.icon, 14)}
                       </div>
-                    )}
-                  </button>
-                ))}
+                      <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                        {category.name}
+                      </span>
+                      {categoryId === category.id && (
+                        <div className="absolute -top-1 -right-1">
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Account and Payment Methods */}
+            {/* Transfer: 入金元 */}
+            {type === 'transfer' && (
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">入金元</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {accounts.map((acct) => (
+                    <button
+                      key={acct.id}
+                      type="button"
+                      onClick={() => setFromAccountId(fromAccountId === acct.id ? '' : acct.id)}
+                      className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                        fromAccountId === acct.id
+                          ? 'bg-gray-100 dark:bg-gray-700'
+                          : ''
+                      }`}
+                    >
+                      <div
+                        className="w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
+                      >
+                        <Wallet size={16} />
+                      </div>
+                      <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                        {acct.name}
+                      </span>
+                      {fromAccountId === acct.id && (
+                        <div className="absolute -top-1 -right-1">
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Account / Payment Methods (expense/income) or 入金先 (transfer) */}
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
-                {type === 'expense' ? '支払い元' : '入金先'}
+                {type === 'expense' ? '支払い元' : type === 'transfer' ? '入金先' : '入金先'}
               </label>
               <div className="grid grid-cols-4 gap-2">
                 {accounts.map((acct) => (
@@ -241,29 +301,48 @@ export const QuickAddTemplateModal = ({
               </div>
             </div>
 
-            {/* Date */}
-            <div>
-              <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">日付</label>
-              <div className="relative">
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-gray-50 dark:bg-slate-700 rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
-                  aria-label="日付"
-                />
-                {date && (
-                  <button
-                    type="button"
-                    onClick={() => setDate('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors text-gray-500 dark:text-gray-400"
-                    aria-label="日付をクリア"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
+            {/* Transfer: 振替手数料 */}
+            {type === 'transfer' && (
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">振替手数料</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
+                  <input
+                    type="number"
+                    value={fee}
+                    onChange={(e) => setFee(e.target.value)}
+                    placeholder="0（任意）"
+                    className="w-full pl-8 pr-3 py-2 bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  />
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Date (expense/income only) */}
+            {type !== 'transfer' && (
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">日付</label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="w-full bg-gray-50 dark:bg-slate-700 rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
+                    aria-label="日付"
+                  />
+                  {date && (
+                    <button
+                      type="button"
+                      onClick={() => setDate('')}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors text-gray-500 dark:text-gray-400"
+                      aria-label="日付をクリア"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Memo */}
             <div>

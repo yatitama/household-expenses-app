@@ -48,7 +48,7 @@ export const QuickAddTemplateDetailModal = ({
 
     onSave({
       date,
-      type: template!.type,
+      type: template!.type === 'transfer' ? 'expense' : template!.type,
       amount,
       categoryId,
       accountId: account?.id || paymentMethod?.linkedAccountId || '',
