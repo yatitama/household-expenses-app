@@ -11,6 +11,7 @@ import { getCategoryIcon } from '../utils/categoryIcons';
 import { SAVINGS_GOAL_ICONS } from '../utils/savingsGoalIcons';
 import { AccountGridSection } from '../components/accounts/AccountGridSection';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
+import { ScheduledPaymentsSection } from '../components/accounts/ScheduledPaymentsSection';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { AccountModal } from '../components/accounts/modals/AccountModal';
@@ -221,6 +222,9 @@ export const MoneyPage = () => {
               </div>
             </div>
           )}
+
+          {/* 引き落とし予定セクション */}
+          <ScheduledPaymentsSection />
 
           {/* 紐付未設定のカード */}
           {unlinkedPMs.length > 0 && (
