@@ -5,7 +5,7 @@ import { Wallet, CreditCard, Check, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   accountService, transactionService, categoryService,
-  paymentMethodService, quickAddTemplateService, transferService,
+  paymentMethodService, quickAddTemplateService,
 } from '../services/storage';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { QuickAddTemplateGridSection } from '../components/quickAdd/QuickAddTemplateGridSection';
@@ -64,13 +64,6 @@ export const AddTransactionPage = () => {
         toast.error('口座が見つかりません');
         return;
       }
-
-      transferService.create({
-        date: format(new Date(), 'yyyy-MM-dd'),
-        amount: parsedAmount,
-        fromAccountId: transferFromAccountId,
-        toAccountId: selectedSourceId,
-      });
 
       accountService.update(transferFromAccountId, { balance: fromAccount.balance - parsedAmount });
       accountService.update(selectedSourceId, { balance: toAccount.balance + parsedAmount });
