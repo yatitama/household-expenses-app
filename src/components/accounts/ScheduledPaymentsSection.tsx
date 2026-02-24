@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { CalendarClock, CreditCard, RefreshCw, Landmark } from 'lucide-react';
 import { format, addMonths } from 'date-fns';
-import { formatCurrency, formatMonth } from '../../utils/formatters';
+import { formatCurrency } from '../../utils/formatters';
 import {
   calculatePaymentDate,
   getUnsettledTransactions,
@@ -20,30 +20,31 @@ interface RecurringItem {
   amount: number;
 }
 
-interface CardPaymentGroup {
-  month: string; // yyyy-MM (引き落とし月)
+interface CardMonthEntry {
   pm: PaymentMethod;
   transactions: Transaction[];
   transactionTotal: number;
   recurringItems: RecurringItem[];
   recurringTotal: number;
   total: number;
-  paymentDate: Date | null;
   billingStart: Date | null;
   billingEnd: Date | null;
 }
 
-interface MonthlyCardPaymentGroups {
-  month: string;
-  groups: CardPaymentGroup[];
+interface CardMonthGroup {
+  month: string; // yyyy-MM（引き落とし月）
+  paymentDate: Date | null;
+  cards: CardMonthEntry[];
   monthTotal: number;
 }
 
-interface AccountPaymentGroup {
+interface AccountScheduleGroup {
   accountId: string;
   accountName: string;
   accountColor: string;
+  cardMonthGroups: CardMonthGroup[];
   recurringItems: RecurringItem[];
+  recurringTotal: number;
   total: number;
 }
 
@@ -70,7 +71,7 @@ export const ScheduledPaymentsSection = () => {
     [thisYear, thisMonth]
   );
 
-  // カードごとの定期支出（今月分）: カードと紐づく支払い手段がmonthlyの場合
+  // monthlyカードごとの定期支出（今月分）
   const cardRecurringMap = useMemo((): Record<string, RecurringItem[]> => {
     const map: Record<string, RecurringItem[]> = {};
     for (const rp of thisMonthRecurring) {
@@ -83,132 +84,154 @@ export const ScheduledPaymentsSection = () => {
     return map;
   }, [thisMonthRecurring, paymentMethods, thisMonthStr]);
 
-  // 1. 未精算カード取引 + カード紐づき定期支出 を引き落とし月×支払い手段でグループ化
-  const cardPaymentGroups = useMemo((): MonthlyCardPaymentGroups[] => {
-    const unsettled = getUnsettledTransactions();
-    // payment month × pm id のマップ
-    const monthMap: Record<string, Record<string, CardPaymentGroup>> = {};
-
-    // 未精算取引を追加
-    for (const t of unsettled) {
-      const pm = paymentMethods.find((p) => p.id === t.paymentMethodId);
-      if (!pm || pm.billingType !== 'monthly') continue;
-      const paymentDate = calculatePaymentDate(t.date, pm);
-      if (!paymentDate) continue;
-      const paymentMonth = format(paymentDate, 'yyyy-MM');
-
-      if (!monthMap[paymentMonth]) monthMap[paymentMonth] = {};
-      if (!monthMap[paymentMonth][pm.id]) {
-        const billingPeriod = getBillingPeriod(paymentMonth, pm);
-        monthMap[paymentMonth][pm.id] = {
-          month: paymentMonth,
-          pm,
-          transactions: [],
-          transactionTotal: 0,
-          recurringItems: [],
-          recurringTotal: 0,
-          total: 0,
-          paymentDate: getActualPaymentDate(paymentMonth, pm),
-          billingStart: billingPeriod?.start ?? null,
-          billingEnd: billingPeriod?.end ?? null,
-        };
-      }
-      monthMap[paymentMonth][pm.id].transactions.push(t);
-      monthMap[paymentMonth][pm.id].transactionTotal += t.type === 'expense' ? t.amount : -t.amount;
-    }
-
-    // 今月分のカード紐づき定期支出を追加
-    for (const [pmId, items] of Object.entries(cardRecurringMap)) {
-      const pm = paymentMethods.find((p) => p.id === pmId);
-      if (!pm || pm.paymentMonthOffset === undefined) continue;
-      // 今月1日を起点に引き落とし月を算出
-      const paymentMonth = format(
-        addMonths(new Date(thisYear, thisMonth - 1, 1), pm.paymentMonthOffset),
-        'yyyy-MM'
-      );
-      if (!monthMap[paymentMonth]) monthMap[paymentMonth] = {};
-      if (!monthMap[paymentMonth][pm.id]) {
-        const billingPeriod = getBillingPeriod(paymentMonth, pm);
-        monthMap[paymentMonth][pm.id] = {
-          month: paymentMonth,
-          pm,
-          transactions: [],
-          transactionTotal: 0,
-          recurringItems: [],
-          recurringTotal: 0,
-          total: 0,
-          paymentDate: getActualPaymentDate(paymentMonth, pm),
-          billingStart: billingPeriod?.start ?? null,
-          billingEnd: billingPeriod?.end ?? null,
-        };
-      }
-      for (const item of items) {
-        monthMap[paymentMonth][pm.id].recurringItems.push(item);
-        monthMap[paymentMonth][pm.id].recurringTotal += item.amount;
-      }
-    }
-
-    // total を計算してソート
-    return Object.entries(monthMap)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([month, pmMap]) => {
-        const groups = Object.values(pmMap).map((g) => ({
-          ...g,
-          total: g.transactionTotal + g.recurringTotal,
-        }));
-        const monthTotal = groups.reduce((sum, g) => sum + g.total, 0);
-        return { month, groups, monthTotal };
-      });
-  }, [paymentMethods, cardRecurringMap, thisYear, thisMonth]);
-
-  // 2. 口座紐づきの定期支出（カード経由でない or 即時カード経由）を口座ごとにグループ化
-  const accountPaymentGroups = useMemo((): AccountPaymentGroup[] => {
+  // 口座ごとの引き落とし予定グループ（カード月次 + 直結定期支出）
+  const accountScheduleGroups = useMemo((): AccountScheduleGroup[] => {
     const accounts = accountService.getAll();
-    const map: Record<string, AccountPaymentGroup> = {};
+    const unsettled = getUnsettledTransactions();
+    const result: AccountScheduleGroup[] = [];
 
-    for (const rp of thisMonthRecurring) {
-      // monthlyカード紐づきはカードセクションで表示済み → スキップ
-      if (rp.paymentMethodId) {
-        const pm = paymentMethods.find((p) => p.id === rp.paymentMethodId);
-        if (pm && pm.billingType === 'monthly') continue;
+    for (const account of accounts) {
+      // この口座に紐づくmonthlyカード
+      const linkedMonthlyCards = paymentMethods.filter(
+        (pm) => pm.linkedAccountId === account.id && pm.billingType === 'monthly'
+      );
+
+      // 引き落とし月 × カードのマップ
+      const monthMap: Record<
+        string,
+        {
+          paymentDate: Date | null;
+          cardMap: Record<
+            string,
+            {
+              pm: PaymentMethod;
+              transactions: Transaction[];
+              transactionTotal: number;
+              recurringItems: RecurringItem[];
+              recurringTotal: number;
+              billingStart: Date | null;
+              billingEnd: Date | null;
+            }
+          >;
+        }
+      > = {};
+
+      // 未精算取引を追加
+      for (const t of unsettled) {
+        const pm = linkedMonthlyCards.find((p) => p.id === t.paymentMethodId);
+        if (!pm) continue;
+        const paymentDate = calculatePaymentDate(t.date, pm);
+        if (!paymentDate) continue;
+        const paymentMonth = format(paymentDate, 'yyyy-MM');
+
+        if (!monthMap[paymentMonth]) {
+          monthMap[paymentMonth] = {
+            paymentDate: getActualPaymentDate(paymentMonth, pm),
+            cardMap: {},
+          };
+        }
+        if (!monthMap[paymentMonth].cardMap[pm.id]) {
+          const billingPeriod = getBillingPeriod(paymentMonth, pm);
+          monthMap[paymentMonth].cardMap[pm.id] = {
+            pm,
+            transactions: [],
+            transactionTotal: 0,
+            recurringItems: [],
+            recurringTotal: 0,
+            billingStart: billingPeriod?.start ?? null,
+            billingEnd: billingPeriod?.end ?? null,
+          };
+        }
+        monthMap[paymentMonth].cardMap[pm.id].transactions.push(t);
+        monthMap[paymentMonth].cardMap[pm.id].transactionTotal +=
+          t.type === 'expense' ? t.amount : -t.amount;
       }
-      // accountId がなければスキップ
-      if (!rp.accountId) continue;
 
-      const account = accounts.find((a) => a.id === rp.accountId);
-      if (!account) continue;
+      // 今月のカード紐づき定期支出を追加
+      for (const pm of linkedMonthlyCards) {
+        const items = cardRecurringMap[pm.id];
+        if (!items || items.length === 0) continue;
+        if (pm.paymentMonthOffset === undefined) continue;
 
-      if (!map[account.id]) {
-        map[account.id] = {
-          accountId: account.id,
-          accountName: account.name,
-          accountColor: account.color,
-          recurringItems: [],
-          total: 0,
-        };
+        const paymentMonth = format(
+          addMonths(new Date(thisYear, thisMonth - 1, 1), pm.paymentMonthOffset),
+          'yyyy-MM'
+        );
+
+        if (!monthMap[paymentMonth]) {
+          monthMap[paymentMonth] = {
+            paymentDate: getActualPaymentDate(paymentMonth, pm),
+            cardMap: {},
+          };
+        }
+        if (!monthMap[paymentMonth].cardMap[pm.id]) {
+          const billingPeriod = getBillingPeriod(paymentMonth, pm);
+          monthMap[paymentMonth].cardMap[pm.id] = {
+            pm,
+            transactions: [],
+            transactionTotal: 0,
+            recurringItems: [],
+            recurringTotal: 0,
+            billingStart: billingPeriod?.start ?? null,
+            billingEnd: billingPeriod?.end ?? null,
+          };
+        }
+        for (const item of items) {
+          monthMap[paymentMonth].cardMap[pm.id].recurringItems.push(item);
+          monthMap[paymentMonth].cardMap[pm.id].recurringTotal += item.amount;
+        }
       }
-      const amount = getEffectiveRecurringAmount(rp, thisMonthStr);
-      map[account.id].recurringItems.push({ rp, amount });
-      map[account.id].total += amount;
+
+      // カード月グループをソートして配列化
+      const cardMonthGroups: CardMonthGroup[] = Object.entries(monthMap)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([month, data]) => {
+          const cards: CardMonthEntry[] = Object.values(data.cardMap).map((c) => ({
+            ...c,
+            total: c.transactionTotal + c.recurringTotal,
+          }));
+          const monthTotal = cards.reduce((sum, c) => sum + c.total, 0);
+          return { month, paymentDate: data.paymentDate, cards, monthTotal };
+        });
+
+      // 口座直結の定期支出（monthlyカード経由でないもの）
+      const recurringItems: RecurringItem[] = [];
+      for (const rp of thisMonthRecurring) {
+        if (rp.accountId !== account.id) continue;
+        if (rp.paymentMethodId) {
+          const pm = paymentMethods.find((p) => p.id === rp.paymentMethodId);
+          if (pm && pm.billingType === 'monthly') continue;
+        }
+        const amount = getEffectiveRecurringAmount(rp, thisMonthStr);
+        recurringItems.push({ rp, amount });
+      }
+      const recurringTotal = recurringItems.reduce((sum, item) => sum + item.amount, 0);
+
+      const cardTotal = cardMonthGroups.reduce((sum, g) => sum + g.monthTotal, 0);
+      const total = cardTotal + recurringTotal;
+
+      if (cardMonthGroups.length === 0 && recurringItems.length === 0) continue;
+
+      result.push({
+        accountId: account.id,
+        accountName: account.name,
+        accountColor: account.color,
+        cardMonthGroups,
+        recurringItems,
+        recurringTotal,
+        total,
+      });
     }
 
-    return Object.values(map);
-  }, [thisMonthRecurring, paymentMethods, thisMonthStr]);
+    return result;
+  }, [paymentMethods, cardRecurringMap, thisMonthRecurring, thisYear, thisMonth, thisMonthStr]);
 
-  // グランドトータル
-  const cardTotal = useMemo(
-    () => cardPaymentGroups.reduce((sum, m) => sum + m.monthTotal, 0),
-    [cardPaymentGroups]
+  const grandTotal = useMemo(
+    () => accountScheduleGroups.reduce((sum, g) => sum + g.total, 0),
+    [accountScheduleGroups]
   );
-  const accountTotal = useMemo(
-    () => accountPaymentGroups.reduce((sum, g) => sum + g.total, 0),
-    [accountPaymentGroups]
-  );
-  const grandTotal = cardTotal + accountTotal;
 
-  const hasContent = cardPaymentGroups.length > 0 || accountPaymentGroups.length > 0;
-
-  if (!hasContent) return null;
+  if (accountScheduleGroups.length === 0) return null;
 
   return (
     <div data-section-name="引き落とし予定" className="relative">
@@ -230,94 +253,81 @@ export const ScheduledPaymentsSection = () => {
         </div>
       </div>
 
-      <div className="pt-2 pb-3 md:pb-4 space-y-4">
-        {/* カード引き落とし（月毎グリッド） */}
-        {cardPaymentGroups.map(({ month, groups }) => (
-          <div key={month} className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
-            {groups.length > 0 && groups[0].paymentDate && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 px-1 mb-2">
-                {format(groups[0].paymentDate, 'yyyy年M月d日')} 引き落とし
-                {groups[0].billingStart && groups[0].billingEnd && (
-                  <span> ({format(groups[0].billingStart, 'M月d日')}〜{format(groups[0].billingEnd, 'M月d日')} 利用分)</span>
-                )}
-              </p>
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {groups.map((group) => (
-                <button
-                  key={group.pm.id}
-                  onClick={() =>
-                    setUnsettledCardModal({
-                      pm: group.pm,
-                      paymentMonth: month,
-                      transactions: group.transactions,
-                      recurringItems: group.recurringItems,
-                      total: group.total,
-                    })
-                  }
-                  className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 text-left flex flex-col gap-1.5 hover:opacity-80 transition-all relative overflow-hidden"
-                >
-                  {/* 背景アイコン */}
-                  <div
-                    className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
-                    style={{ color: group.pm.color }}
-                  >
-                    <CreditCard size={80} />
-                  </div>
-                  {/* カード名 */}
-                  <div className="relative z-10 flex items-center gap-1.5 px-1 py-0.5">
-                    <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white/50 dark:bg-slate-900/50 px-1 rounded">
-                      {group.pm.name}
-                    </p>
-                  </div>
-                  {/* 金額 */}
-                  <div className="relative z-10 flex items-end justify-end mt-auto">
-                    <p className="text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                      {formatCurrency(group.total)}
-                    </p>
-                  </div>
-                  {/* 定期支出バッジ */}
-                  {group.recurringItems.length > 0 && (
-                    <div className="relative z-10 flex items-center gap-1 px-1">
-                      <RefreshCw size={10} className="text-gray-400 dark:text-gray-500" />
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
-                        定期{group.recurringItems.length}件含む
-                      </p>
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-
-        {/* 口座ごとの定期支出（今月分） */}
-        {accountPaymentGroups.length > 0 && (
-          <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
-            <p className="text-xs text-gray-500 dark:text-gray-400 px-1 mb-2">
-              {formatMonth(thisMonthStr)} 定期支出（口座引き落とし）
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {accountPaymentGroups.map((group) => (
+      <div className="pt-2 pb-3 md:pb-4">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {accountScheduleGroups.map((group) => (
+              <div
+                key={group.accountId}
+                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 relative overflow-hidden"
+              >
+                {/* 背景アイコン */}
                 <div
-                  key={group.accountId}
-                  className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-1.5 relative overflow-hidden"
+                  className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
+                  style={{ color: group.accountColor }}
                 >
-                  {/* 背景アイコン */}
-                  <div
-                    className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none"
-                    style={{ color: group.accountColor }}
-                  >
-                    <Landmark size={80} />
+                  <Landmark size={80} />
+                </div>
+
+                {/* 口座名 */}
+                <div className="relative z-10 flex items-center gap-1.5 px-1 py-0.5">
+                  <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white/50 dark:bg-slate-900/50 px-1 rounded">
+                    {group.accountName}
+                  </p>
+                </div>
+
+                {/* カード引き落とし（月毎） */}
+                {group.cardMonthGroups.map((monthGroup) => (
+                  <div key={monthGroup.month} className="relative z-10">
+                    {/* 引き落とし月ヘッダー */}
+                    {monthGroup.paymentDate && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 px-1 mb-1">
+                        {format(monthGroup.paymentDate, 'M月d日')}引き落とし
+                      </p>
+                    )}
+                    <div className="space-y-0.5">
+                      {monthGroup.cards.map((cardEntry) => (
+                        <button
+                          key={cardEntry.pm.id}
+                          onClick={() =>
+                            setUnsettledCardModal({
+                              pm: cardEntry.pm,
+                              paymentMonth: monthGroup.month,
+                              transactions: cardEntry.transactions,
+                              recurringItems: cardEntry.recurringItems,
+                              total: cardEntry.total,
+                            })
+                          }
+                          className="w-full flex items-center justify-between text-xs px-1 py-1 hover:bg-gray-50 dark:hover:bg-slate-800 rounded transition-colors"
+                        >
+                          <span className="flex items-center gap-1 min-w-0">
+                            <CreditCard
+                              size={10}
+                              className="flex-shrink-0"
+                              style={{ color: cardEntry.pm.color }}
+                            />
+                            <span className="text-gray-700 dark:text-gray-300 truncate">
+                              {cardEntry.pm.name}
+                            </span>
+                            {cardEntry.recurringItems.length > 0 && (
+                              <RefreshCw size={9} className="flex-shrink-0 text-gray-400 dark:text-gray-500" />
+                            )}
+                          </span>
+                          <span className="text-gray-700 dark:text-gray-300 font-medium ml-2 flex-shrink-0">
+                            {formatCurrency(cardEntry.total)}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  {/* 口座名 */}
-                  <div className="relative z-10 flex items-center gap-1.5 px-1 py-0.5">
-                    <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white/50 dark:bg-slate-900/50 px-1 rounded">
-                      {group.accountName}
-                    </p>
-                  </div>
-                  {/* 明細 */}
+                ))}
+
+                {/* 定期支出（口座直結） */}
+                {group.recurringItems.length > 0 && (
                   <div className="relative z-10 space-y-0.5 px-1">
+                    {group.cardMonthGroups.length > 0 && (
+                      <div className="border-t dark:border-gray-700 mb-1" />
+                    )}
                     {group.recurringItems.map(({ rp, amount }) => (
                       <div key={rp.id} className="flex items-center justify-between text-xs">
                         <span className="text-gray-600 dark:text-gray-400 truncate flex items-center gap-1">
@@ -330,15 +340,16 @@ export const ScheduledPaymentsSection = () => {
                       </div>
                     ))}
                   </div>
-                  {/* 合計 */}
-                  <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100 mt-auto">
-                    {formatCurrency(group.total)}
-                  </p>
-                </div>
-              ))}
-            </div>
+                )}
+
+                {/* 合計 */}
+                <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100 mt-auto">
+                  {formatCurrency(group.total)}
+                </p>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
 
       {/* カード明細モーダル */}
