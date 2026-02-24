@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { Pencil, X, CreditCard, RefreshCw, CalendarClock } from 'lucide-react';
+import { Pencil, X, CreditCard, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatCurrency } from '../../../utils/formatters';
 import { memberService } from '../../../services/storage';
-import { ACCOUNT_TYPE_LABELS } from '../constants';
-import { ACCOUNT_TYPE_ICONS } from '../AccountIcons';
 import { UnsettledCardDetailModal } from './UnsettledCardDetailModal';
 import type { Account, PaymentMethod, RecurringPayment, Transaction } from '../../../types';
 import type { AccountScheduleGroup, RecurringItem } from '../../../utils/scheduledPaymentsUtils';
@@ -49,7 +47,10 @@ export const AccountDetailModal = ({
           {/* ヘッダー */}
           <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
             <div className="flex items-center gap-2">
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">口座詳細</h3>
+              <div className="flex flex-col">
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">{account.name}</h3>
+                <span className="text-xs text-gray-500 dark:text-gray-400">{member?.name || 'その他'}</span>
+              </div>
               {onEdit && account && (
                 <button
                   onClick={() => { onEdit(account); onClose(); }}
@@ -71,37 +72,6 @@ export const AccountDetailModal = ({
 
           <div className="overflow-y-auto flex-1 p-3 sm:p-4">
             <div className="space-y-4 sm:space-y-5">
-              {/* 口座名 */}
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
-                  口座名
-                </label>
-                <div className="w-full bg-gray-50 dark:bg-slate-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
-                  {account.name}
-                </div>
-              </div>
-
-              {/* 口座タイプ */}
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
-                  口座タイプ
-                </label>
-                <div className="w-full bg-gray-50 dark:bg-slate-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                  {ACCOUNT_TYPE_ICONS[account.type]}
-                  {ACCOUNT_TYPE_LABELS[account.type]}
-                </div>
-              </div>
-
-              {/* メンバー */}
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
-                  メンバー
-                </label>
-                <div className="w-full bg-gray-50 dark:bg-slate-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
-                  {member?.name || 'その他'}
-                </div>
-              </div>
-
               {/* 残高 */}
               <div>
                 <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
@@ -112,25 +82,10 @@ export const AccountDetailModal = ({
                 </div>
               </div>
 
-              {/* 色 */}
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
-                  色
-                </label>
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600"
-                    style={{ backgroundColor: account.color }}
-                  />
-                  <span className="text-sm text-gray-900 dark:text-gray-100">{account.color}</span>
-                </div>
-              </div>
-
               {/* 引き落とし予定 */}
               {scheduleGroup && (
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2 flex items-center gap-1.5">
-                    <CalendarClock size={13} />
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                     引き落とし予定
                   </label>
                   <div className="bg-gray-50 dark:bg-slate-700 rounded-lg px-3 py-2 space-y-3">
