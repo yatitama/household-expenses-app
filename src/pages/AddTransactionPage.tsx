@@ -161,8 +161,11 @@ export const AddTransactionPage = () => {
   const resetForm = (currentTab: TabType = 'expense') => {
     setTab(currentTab);
     setAmount('');
-    setTransferFromAccountId('');
-    // categoryId, selectedSourceId, dateはリセットしない
+    if (currentTab === 'transfer') {
+      setSelectedSourceId('');  // 入金先をリセット、入金元は維持
+    } else {
+      setTransferFromAccountId('');
+    }
     setMemo('');
   };
 
