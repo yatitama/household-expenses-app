@@ -22,7 +22,7 @@ export const AddTransactionModal = ({ template, onSaved, onClose }: AddTransacti
   const allPaymentMethods = paymentMethodService.getAll();
   const categories = categoryService.getAll();
 
-  const [type, setType] = useState<TransactionType>(() => template?.type || 'expense');
+  const [type, setType] = useState<TransactionType>(() => (template?.type === 'transfer' ? 'expense' : template?.type) || 'expense');
   const [amount, setAmount] = useState(() => template?.amount ? String(template.amount) : '');
   const [categoryId, setCategoryId] = useState(() => template?.categoryId || '');
   const [selectedSourceId, setSelectedSourceId] = useState(() => template?.accountId || template?.paymentMethodId || '');

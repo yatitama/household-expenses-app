@@ -52,7 +52,7 @@ export interface PaymentMethod {
 // 取引タイプ
 export type TransactionType = 'income' | 'expense';
 
-// 振込記録
+// 振替記録（自分の口座間移動）
 export interface Transfer {
   id: string;
   date: string;
@@ -170,11 +170,13 @@ export interface ThemeSettings {
 export interface QuickAddTemplate {
   id: string;
   name: string;
-  type: TransactionType;
+  type: TransactionType | 'transfer';
   categoryId?: string;
   amount?: number;
   accountId?: string;
   paymentMethodId?: string;
+  fromAccountId?: string; // 振替テンプレート: 入金元口座ID
+  fee?: number;           // 振替テンプレート: 手数料
   date?: string;
   memo?: string;
   createdAt: string;
