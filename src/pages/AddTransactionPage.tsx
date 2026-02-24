@@ -154,20 +154,19 @@ export const AddTransactionPage = () => {
     }
     setMemo(tpl.memo || '');
     toast.success(`「${tpl.name}」を反映しました`);
-    window.scrollTo(0, 0);
 
-    // 金額が指定されていない場合、金額入力欄にフォーカスを当てる（iOS Safari 対応）
-    if (!tpl.amount && amountInputRef.current) {
-      setTimeout(() => {
-        if (amountInputRef.current) {
-          // ビューポート内に入力欄が見えるようにスクロール
-          amountInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // クリックイベントをシミュレートしてキーボード表示を強制
-          amountInputRef.current.click();
-          amountInputRef.current.focus();
-          amountInputRef.current.select();
-        }
-      }, 150);
+    if (!tpl.amount) {
+      // iOS Safari では setTimeout 内の focus() はキーボードを表示しない。
+      // ユーザー操作の同期コールスタック内で直接 focus() を呼ぶことが必須。
+      // window.scrollTo(0, 0) も呼ばない（scrollIntoView と競合するため）。
+      amountInputRef.current?.focus();
+      amountInputRef.current?.select();
+      // React 再レンダリング後にスクロール位置を調整（キーボード表示には影響しない）
+      requestAnimationFrame(() => {
+        amountInputRef.current?.scrollIntoView({ block: 'center' });
+      });
+    } else {
+      window.scrollTo(0, 0);
     }
   };
 
