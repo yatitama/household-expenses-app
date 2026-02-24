@@ -21,7 +21,7 @@ export const QuickAddTemplateGridSection = ({
         <label className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200">クイック入力</label>
         <Tooltip
           label="クイック入力とは"
-          text="よく使う支出・収入をボタンに登録できます。タップするだけで金額・カテゴリが自動入力されます。"
+          text="よく使う支出・収入・振替をボタンに登録できます。タップするだけで金額などが自動入力されます。"
           position="bottom"
         />
       </div>

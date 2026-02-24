@@ -344,7 +344,8 @@ export const QuickAddTemplateModal = ({
               </div>
             )}
 
-            {/* Memo */}
+            {/* Memo (expense/income only) */}
+            {type !== 'transfer' && (
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">メモ</label>
               <input
@@ -355,6 +356,7 @@ export const QuickAddTemplateModal = ({
                 className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
               />
             </div>
+            )}
           </div>
         </div>
 
