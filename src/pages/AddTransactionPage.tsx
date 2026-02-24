@@ -160,10 +160,14 @@ export const AddTransactionPage = () => {
     if (!tpl.amount && amountInputRef.current) {
       setTimeout(() => {
         if (amountInputRef.current) {
+          // ビューポート内に入力欄が見えるようにスクロール
+          amountInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // クリックイベントをシミュレートしてキーボード表示を強制
+          amountInputRef.current.click();
           amountInputRef.current.focus();
           amountInputRef.current.select();
         }
-      }, 100);
+      }, 150);
     }
   };
 
