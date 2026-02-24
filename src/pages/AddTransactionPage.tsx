@@ -156,11 +156,14 @@ export const AddTransactionPage = () => {
     toast.success(`「${tpl.name}」を反映しました`);
     window.scrollTo(0, 0);
 
-    // 金額が指定されていない場合、金額入力欄にフォーカスを当てる
+    // 金額が指定されていない場合、金額入力欄にフォーカスを当てる（iOS Safari 対応）
     if (!tpl.amount && amountInputRef.current) {
       setTimeout(() => {
-        amountInputRef.current?.focus();
-      }, 0);
+        if (amountInputRef.current) {
+          amountInputRef.current.focus();
+          amountInputRef.current.select();
+        }
+      }, 100);
     }
   };
 
