@@ -142,6 +142,50 @@ export const settleOverdueTransactions = (): void => {
 };
 
 /**
+ * 支払い月と支払い手段の設定から引き落とし日（実際の日付）を取得
+ */
+export const getActualPaymentDate = (paymentMonthStr: string, pm: PaymentMethod): Date | null => {
+  if (pm.billingType !== 'monthly' || !pm.paymentDay) return null;
+  const [y, m] = paymentMonthStr.split('-').map(Number);
+  const paymentMonthDate = new Date(y, m - 1, 1);
+  const lastDay = lastDayOfMonth(paymentMonthDate).getDate();
+  const actualPaymentDay = Math.min(pm.paymentDay, lastDay);
+  return startOfDay(new Date(y, m - 1, actualPaymentDay));
+};
+
+/**
+ * 支払い月と支払い手段の設定から利用期間（締め期間）を計算
+ */
+export const getBillingPeriod = (
+  paymentMonthStr: string,
+  pm: PaymentMethod
+): { start: Date; end: Date } | null => {
+  if (pm.billingType !== 'monthly' || !pm.closingDay || pm.paymentMonthOffset === undefined) return null;
+
+  const [y, m] = paymentMonthStr.split('-').map(Number);
+  // 締め月 = 支払い月 - offset
+  const closingMonthDate = addMonths(new Date(y, m - 1, 1), -pm.paymentMonthOffset);
+  const closingYear = closingMonthDate.getFullYear();
+  const closingMonthNum = closingMonthDate.getMonth();
+
+  // 締め期間終了 = 締め月のclosingDay（月末調整あり）
+  const lastDayOfClosing = lastDayOfMonth(closingMonthDate).getDate();
+  const effectiveClosingDay = Math.min(pm.closingDay, lastDayOfClosing);
+  const billingEnd = startOfDay(new Date(closingYear, closingMonthNum, effectiveClosingDay));
+
+  // 締め期間開始 = 前の締め月のclosingDay + 1日
+  const prevClosingMonthDate = addMonths(closingMonthDate, -1);
+  const lastDayOfPrevClosing = lastDayOfMonth(prevClosingMonthDate).getDate();
+  const effectivePrevClosingDay = Math.min(pm.closingDay, lastDayOfPrevClosing);
+  const prevBillingEnd = startOfDay(
+    new Date(prevClosingMonthDate.getFullYear(), prevClosingMonthDate.getMonth(), effectivePrevClosingDay)
+  );
+  const billingStart = addDays(prevBillingEnd, 1);
+
+  return { start: billingStart, end: billingEnd };
+};
+
+/**
  * 定期支払い・収入の次回発生日を計算する
  * startDate（未設定時は createdAt の日付部分）を基準日として periodValue ヶ月 or 日ごとの次回発生日を返す
  * endDate が設定されている場合、その日を過ぎた発生日は null を返す
