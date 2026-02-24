@@ -234,6 +234,14 @@ export const ScheduledPaymentsSection = () => {
         {/* カード引き落とし（月毎グリッド） */}
         {cardPaymentGroups.map(({ month, groups }) => (
           <div key={month} className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
+            {groups.length > 0 && groups[0].paymentDate && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 px-1 mb-2">
+                {format(groups[0].paymentDate, 'yyyy年M月d日')} 引き落とし
+                {groups[0].billingStart && groups[0].billingEnd && (
+                  <span> ({format(groups[0].billingStart, 'M月d日')}〜{format(groups[0].billingEnd, 'M月d日')} 利用分)</span>
+                )}
+              </p>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {groups.map((group) => (
                 <button
@@ -262,20 +270,8 @@ export const ScheduledPaymentsSection = () => {
                       {group.pm.name}
                     </p>
                   </div>
-                  {/* 引き落とし日と利用期間 */}
-                  <div className="relative z-10 flex items-end justify-between gap-1 mt-auto">
-                    <div className="flex flex-col">
-                      {group.paymentDate ? (
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {format(group.paymentDate, 'yyyy年M月d日')} 引き落とし
-                          {group.billingStart && group.billingEnd && (
-                            <span> ({format(group.billingStart, 'M月d日')}〜{format(group.billingEnd, 'M月d日')} 利用分)</span>
-                          )}
-                        </p>
-                      ) : (
-                        <span />
-                      )}
-                    </div>
+                  {/* 金額 */}
+                  <div className="relative z-10 flex items-end justify-end mt-auto">
                     <p className="text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                       {formatCurrency(group.total)}
                     </p>
