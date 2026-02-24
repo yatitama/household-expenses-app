@@ -66,11 +66,10 @@ export const AddTransactionPage = () => {
       }
 
       transferService.create({
-        date,
+        date: format(new Date(), 'yyyy-MM-dd'),
         amount: parsedAmount,
         fromAccountId: transferFromAccountId,
         toAccountId: selectedSourceId,
-        memo: memo || undefined,
       });
 
       accountService.update(transferFromAccountId, { balance: fromAccount.balance - parsedAmount });
@@ -292,13 +291,60 @@ export const AddTransactionPage = () => {
                 <div>
                   <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">入金元</label>
                   <div className="grid grid-cols-4 gap-2">
-                    {allAccounts.map((acct) => (
+                    {allAccounts.map((acct) => {
+                      const isDisabled = acct.id === selectedSourceId;
+                      return (
+                        <button
+                          key={acct.id}
+                          type="button"
+                          onClick={() => setTransferFromAccountId(acct.id)}
+                          disabled={isDisabled}
+                          className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                            isDisabled
+                              ? 'opacity-30 cursor-not-allowed'
+                              : transferFromAccountId === acct.id
+                              ? 'bg-gray-100 dark:bg-gray-700'
+                              : ''
+                          }`}
+                        >
+                          <div
+                            className="w-6 h-6 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
+                          >
+                            <Wallet size={16} />
+                          </div>
+                          <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                            {acct.name}
+                          </span>
+                          {transferFromAccountId === acct.id && (
+                            <div className="absolute -top-1 -right-1">
+                              <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
+                  {tab === 'expense' ? '支払い元' : '入金先'}
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {allAccounts.map((acct) => {
+                    const isDisabled = tab === 'transfer' && acct.id === transferFromAccountId;
+                    return (
                       <button
                         key={acct.id}
                         type="button"
-                        onClick={() => setTransferFromAccountId(acct.id)}
+                        onClick={() => setSelectedSourceId(acct.id)}
+                        disabled={isDisabled}
                         className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
-                          transferFromAccountId === acct.id
+                          isDisabled
+                            ? 'opacity-30 cursor-not-allowed'
+                            : selectedSourceId === acct.id
                             ? 'bg-gray-100 dark:bg-gray-700'
                             : ''
                         }`}
@@ -312,49 +358,14 @@ export const AddTransactionPage = () => {
                         <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                           {acct.name}
                         </span>
-                        {transferFromAccountId === acct.id && (
+                        {selectedSourceId === acct.id && (
                           <div className="absolute -top-1 -right-1">
                             <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                           </div>
                         )}
                       </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
-                  {tab === 'expense' ? '支払い元' : '入金先'}
-                </label>
-                <div className="grid grid-cols-4 gap-2">
-                  {allAccounts.map((acct) => (
-                    <button
-                      key={acct.id}
-                      type="button"
-                      onClick={() => setSelectedSourceId(acct.id)}
-                      className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
-                        selectedSourceId === acct.id
-                          ? 'bg-gray-100 dark:bg-gray-700'
-                          : ''
-                      }`}
-                    >
-                      <div
-                        className="w-6 h-6 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
-                      >
-                        <Wallet size={16} />
-                      </div>
-                      <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
-                        {acct.name}
-                      </span>
-                      {selectedSourceId === acct.id && (
-                        <div className="absolute -top-1 -right-1">
-                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
-                        </div>
-                      )}
-                    </button>
-                  ))}
+                    );
+                  })}
 
                   {tab === 'expense' && allPaymentMethods.map((pm) => (
                     <button
@@ -386,26 +397,30 @@ export const AddTransactionPage = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">日付</label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-gray-50 dark:bg-slate-700 rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
-                />
-              </div>
+              {tab !== 'transfer' && (
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">日付</label>
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="w-full bg-gray-50 dark:bg-slate-700 rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
+                  />
+                </div>
+              )}
 
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">メモ</label>
-                <input
-                  type="text"
-                  value={memo}
-                  onChange={(e) => setMemo(e.target.value)}
-                  placeholder="任意"
-                  className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
-                />
-              </div>
+              {tab !== 'transfer' && (
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">メモ</label>
+                  <input
+                    type="text"
+                    value={memo}
+                    onChange={(e) => setMemo(e.target.value)}
+                    placeholder="任意"
+                    className="w-full bg-gray-50 dark:bg-slate-700 dark:border-gray-600 dark:text-gray-100 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  />
+                </div>
+              )}
             </div>
           </div>
         <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700">
