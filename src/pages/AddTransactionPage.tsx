@@ -69,7 +69,7 @@ export const AddTransactionPage = () => {
       accountService.update(selectedSourceId, { balance: toAccount.balance + parsedAmount });
 
       toast.success('振込を登録しました');
-      resetForm();
+      resetForm('transfer');
       window.scrollTo(0, 0);
       return;
     }
@@ -158,11 +158,14 @@ export const AddTransactionPage = () => {
     }
   };
 
-  const resetForm = () => {
-    setTab('expense');
+  const resetForm = (currentTab: TabType = 'expense') => {
+    setTab(currentTab);
     setAmount('');
-    setTransferFromAccountId('');
-    // categoryId, selectedSourceId, dateはリセットしない
+    if (currentTab === 'transfer') {
+      setSelectedSourceId('');  // 入金先をリセット、入金元は維持
+    } else {
+      setTransferFromAccountId('');
+    }
     setMemo('');
   };
 
