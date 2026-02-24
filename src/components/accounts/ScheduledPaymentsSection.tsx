@@ -46,13 +46,15 @@ interface CardMonthGroup {
   monthTotal: number;
 }
 
+type ScheduleEntry =
+  | { kind: 'card'; monthGroup: CardMonthGroup }
+  | { kind: 'recurring'; dateGroup: RecurringDateGroup };
+
 interface AccountScheduleGroup {
   accountId: string;
   accountName: string;
   accountColor: string;
-  cardMonthGroups: CardMonthGroup[];
-  recurringDateGroups: RecurringDateGroup[];
-  recurringTotal: number;
+  entries: ScheduleEntry[];
   total: number;
 }
 
@@ -239,15 +241,27 @@ export const ScheduledPaymentsSection = () => {
       const cardTotal = cardMonthGroups.reduce((sum, g) => sum + g.monthTotal, 0);
       const total = cardTotal + recurringTotal;
 
-      if (cardMonthGroups.length === 0 && recurringDateGroups.length === 0) continue;
+      // カードと定期支出を引き落とし日昇順で統合
+      const entries: ScheduleEntry[] = [
+        ...cardMonthGroups.map((mg): ScheduleEntry => ({ kind: 'card', monthGroup: mg })),
+        ...recurringDateGroups.map((dg): ScheduleEntry => ({ kind: 'recurring', dateGroup: dg })),
+      ];
+      entries.sort((a, b) => {
+        const da = a.kind === 'card' ? a.monthGroup.paymentDate : a.dateGroup.date;
+        const db = b.kind === 'card' ? b.monthGroup.paymentDate : b.dateGroup.date;
+        if (!da && !db) return 0;
+        if (!da) return 1;
+        if (!db) return -1;
+        return da.getTime() - db.getTime();
+      });
+
+      if (entries.length === 0) continue;
 
       result.push({
         accountId: account.id,
         accountName: account.name,
         accountColor: account.color,
-        cardMonthGroups,
-        recurringDateGroups,
-        recurringTotal,
+        entries,
         total,
       });
     }
@@ -305,78 +319,76 @@ export const ScheduledPaymentsSection = () => {
                   </p>
                 </div>
 
-                {/* カード引き落とし（月毎） */}
-                {group.cardMonthGroups.map((monthGroup) => (
-                  <div key={monthGroup.month} className="relative z-10">
-                    {/* 引き落とし月ヘッダー */}
-                    {monthGroup.paymentDate && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 px-1 mb-1">
-                        {format(monthGroup.paymentDate, 'M月d日')}引き落とし
-                      </p>
-                    )}
-                    <div className="space-y-0.5">
-                      {monthGroup.cards.map((cardEntry) => (
-                        <button
-                          key={cardEntry.pm.id}
-                          onClick={() =>
-                            setUnsettledCardModal({
-                              pm: cardEntry.pm,
-                              paymentMonth: monthGroup.month,
-                              transactions: cardEntry.transactions,
-                              recurringItems: cardEntry.recurringItems,
-                              total: cardEntry.total,
-                            })
-                          }
-                          className="w-full flex items-center justify-between text-xs px-1 py-1 hover:bg-gray-50 dark:hover:bg-slate-800 rounded transition-colors"
-                        >
-                          <span className="flex items-center gap-1 min-w-0">
-                            <CreditCard
-                              size={10}
-                              className="flex-shrink-0"
-                              style={{ color: cardEntry.pm.color }}
-                            />
-                            <span className="text-gray-700 dark:text-gray-300 truncate">
-                              {cardEntry.pm.name}
+                {/* 引き落とし予定エントリ（カード・定期支出を引き落とし日昇順で統合表示） */}
+                {group.entries.map((entry) =>
+                  entry.kind === 'card' ? (
+                    <div key={entry.monthGroup.month} className="relative z-10">
+                      {entry.monthGroup.paymentDate && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 px-1 mb-1">
+                          {format(entry.monthGroup.paymentDate, 'M月d日')}引き落とし
+                        </p>
+                      )}
+                      <div className="space-y-0.5">
+                        {entry.monthGroup.cards.map((cardEntry) => (
+                          <button
+                            key={cardEntry.pm.id}
+                            onClick={() =>
+                              setUnsettledCardModal({
+                                pm: cardEntry.pm,
+                                paymentMonth: entry.monthGroup.month,
+                                transactions: cardEntry.transactions,
+                                recurringItems: cardEntry.recurringItems,
+                                total: cardEntry.total,
+                              })
+                            }
+                            className="w-full flex items-center justify-between text-xs px-1 py-1 hover:bg-gray-50 dark:hover:bg-slate-800 rounded transition-colors"
+                          >
+                            <span className="flex items-center gap-1 min-w-0">
+                              <CreditCard
+                                size={10}
+                                className="flex-shrink-0"
+                                style={{ color: cardEntry.pm.color }}
+                              />
+                              <span className="text-gray-700 dark:text-gray-300 truncate">
+                                {cardEntry.pm.name}
+                              </span>
+                              {cardEntry.recurringItems.length > 0 && (
+                                <RefreshCw size={9} className="flex-shrink-0 text-gray-400 dark:text-gray-500" />
+                              )}
                             </span>
-                            {cardEntry.recurringItems.length > 0 && (
-                              <RefreshCw size={9} className="flex-shrink-0 text-gray-400 dark:text-gray-500" />
-                            )}
-                          </span>
-                          <span className="text-gray-700 dark:text-gray-300 font-medium ml-2 flex-shrink-0">
-                            {formatCurrency(cardEntry.total)}
-                          </span>
-                        </button>
-                      ))}
+                            <span className="text-gray-700 dark:text-gray-300 font-medium ml-2 flex-shrink-0">
+                              {formatCurrency(cardEntry.total)}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-
-                {/* 定期支出（口座直結）- カードと同じフォーマットで日付グループ表示 */}
-                {group.recurringDateGroups.map((dateGroup) => (
-                  <div key={dateGroup.key} className="relative z-10">
-                    {dateGroup.date && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 px-1 mb-1">
-                        {format(dateGroup.date, 'M月d日')}引き落とし
-                      </p>
-                    )}
-                    <div className="space-y-0.5">
-                      {dateGroup.items.map(({ rp, amount }) => (
-                        <div
-                          key={rp.id}
-                          className="w-full flex items-center justify-between text-xs px-1 py-1"
-                        >
-                          <span className="flex items-center gap-1 min-w-0">
-                            <RefreshCw size={10} className="flex-shrink-0 text-gray-400 dark:text-gray-500" />
-                            <span className="text-gray-700 dark:text-gray-300 truncate">{rp.name}</span>
-                          </span>
-                          <span className="text-gray-700 dark:text-gray-300 font-medium ml-2 flex-shrink-0">
-                            {formatCurrency(amount)}
-                          </span>
-                        </div>
-                      ))}
+                  ) : (
+                    <div key={entry.dateGroup.key} className="relative z-10">
+                      {entry.dateGroup.date && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 px-1 mb-1">
+                          {format(entry.dateGroup.date, 'M月d日')}引き落とし
+                        </p>
+                      )}
+                      <div className="space-y-0.5">
+                        {entry.dateGroup.items.map(({ rp, amount }) => (
+                          <div
+                            key={rp.id}
+                            className="w-full flex items-center justify-between text-xs px-1 py-1"
+                          >
+                            <span className="flex items-center gap-1 min-w-0">
+                              <RefreshCw size={10} className="flex-shrink-0 text-gray-400 dark:text-gray-500" />
+                              <span className="text-gray-700 dark:text-gray-300 truncate">{rp.name}</span>
+                            </span>
+                            <span className="text-gray-700 dark:text-gray-300 font-medium ml-2 flex-shrink-0">
+                              {formatCurrency(amount)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                )}
 
                 {/* 合計 */}
                 <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100 mt-auto">
