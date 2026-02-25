@@ -48,7 +48,7 @@ export const AccountGridSection = ({ accounts, scheduledAmounts, onAddClick, onA
             {scheduledAmounts && (scheduledAmounts[account.id] ?? 0) > 0 && (
               <div className="relative z-10 flex items-baseline justify-between gap-1 text-gray-400 dark:text-gray-500">
                 <span className="text-xs shrink-0">引き落とし予定</span>
-                <span className="text-sm md:text-base tabular-nums">
+                <span className="text-sm md:text-base font-bold tabular-nums">
                   -{formatCurrency(scheduledAmounts[account.id])}
                 </span>
               </div>
