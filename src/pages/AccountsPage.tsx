@@ -107,6 +107,51 @@ export const AccountsPage = () => {
 
   const totalNet = (totalIncomes + totalRecurringIncome) - (totalExpenses + totalRecurringExpense + totalSavings);
 
+  // 前月データの計算
+  const getPreviousMonth = (year: number, month: number) => {
+    if (month === 1) {
+      return { year: year - 1, month: 12 };
+    }
+    return { year, month: month - 1 };
+  };
+
+  const prevMonthInfo = getPreviousMonth(selectedYear, selectedMonth);
+  const prevViewMonth = `${prevMonthInfo.year}-${String(prevMonthInfo.month).padStart(2, '0')}`;
+
+  const prevMonthExpenses = transactionService.getAll().filter((t) => {
+    if (t.type !== 'expense') return false;
+    const [y, m] = t.date.split('-').map(Number);
+    return y === prevMonthInfo.year && m === prevMonthInfo.month;
+  });
+
+  const prevMonthIncomes = transactionService.getAll().filter((t) => {
+    if (t.type !== 'income') return false;
+    const [y, m] = t.date.split('-').map(Number);
+    return y === prevMonthInfo.year && m === prevMonthInfo.month;
+  });
+
+  const prevMonthRecurring = getRecurringPaymentsForMonth(prevMonthInfo.year, prevMonthInfo.month);
+  const prevUpcomingExpense = prevMonthRecurring.filter((rp) => rp.type === 'expense');
+  const prevUpcomingIncome = prevMonthRecurring.filter((rp) => rp.type === 'income');
+
+  const prevTotalExpenses = prevMonthExpenses.reduce((sum, t) => sum + t.amount, 0);
+  const prevTotalIncomes = prevMonthIncomes.reduce((sum, t) => sum + t.amount, 0);
+  const prevTotalRecurringExpense = prevUpcomingExpense.reduce((sum, rp) => sum + getEffectiveRecurringAmount(rp, prevViewMonth), 0);
+  const prevTotalRecurringIncome = prevUpcomingIncome.reduce((sum, rp) => sum + getEffectiveRecurringAmount(rp, prevViewMonth), 0);
+
+  const prevTotalSavings = savingsGoals.reduce((sum, goal) => {
+    const targetMonth = goal.targetDate.substring(0, 7);
+    if (prevViewMonth < goal.startMonth || prevViewMonth > targetMonth) return sum;
+    if (isMonthExcluded(goal, prevViewMonth)) return sum;
+    return sum + getEffectiveMonthlyAmount(goal, prevViewMonth);
+  }, 0);
+
+  const prevTotalNet = (prevTotalIncomes + prevTotalRecurringIncome) - (prevTotalExpenses + prevTotalRecurringExpense + prevTotalSavings);
+
+  // 前月比の計算
+  const monthlyChange = totalNet - prevTotalNet;
+  const monthlyChangePercent = prevTotalNet !== 0 ? ((monthlyChange / Math.abs(prevTotalNet)) * 100) : 0;
+
   const handleSaveSavingsMonth = (goalId: string, excluded: boolean, overrideAmount: number | null) => {
     const goal = savingsGoals.find((g) => g.id === goalId);
     if (!goal) return;
@@ -423,6 +468,9 @@ export const AccountsPage = () => {
             <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">合計</p>
             <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
               {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
+            </p>
+            <p className={`text-xs font-medium mt-1 ${monthlyChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              {monthlyChange >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(monthlyChange))} ({Math.abs(monthlyChangePercent).toFixed(1)}%)
             </p>
           </div>
         </div>
