@@ -269,6 +269,42 @@ export const CardGridSection = ({
     prevMemberGrouped[memberId].amount += rp.type === 'expense' ? effectiveAmount : -effectiveAmount;
   }
 
+  // 前月にあるが今月にないカテゴリ
+  const missingPrevCategoryEntries = Object.entries(prevCategoryGrouped)
+    .filter(([key]) => !categoryGrouped[key])
+    .sort((a, b) => {
+      const aIdx = categories.findIndex((c) => c.id === a[1].category?.id);
+      const bIdx = categories.findIndex((c) => c.id === b[1].category?.id);
+      if (aIdx === -1 && bIdx === -1) return 0;
+      if (aIdx === -1) return 1;
+      if (bIdx === -1) return -1;
+      return aIdx - bIdx;
+    });
+
+  // 前月にあるが今月にない支払い元
+  const missingPrevPaymentEntries = Object.entries(prevPaymentGrouped)
+    .filter(([key]) => !paymentGrouped[key])
+    .sort((a, b) => {
+      const aIdx = paymentMethods.findIndex((p) => p.id === a[1].paymentMethod?.id);
+      const bIdx = paymentMethods.findIndex((p) => p.id === b[1].paymentMethod?.id);
+      if (aIdx === -1 && bIdx === -1) return 0;
+      if (aIdx === -1) return 1;
+      if (bIdx === -1) return -1;
+      return aIdx - bIdx;
+    });
+
+  // 前月にあるが今月にないメンバー
+  const missingPrevMemberEntries = Object.entries(prevMemberGrouped)
+    .filter(([key]) => !memberGrouped[key])
+    .sort((a, b) => {
+      const aIdx = members.findIndex((m) => m.id === a[1].member?.id);
+      const bIdx = members.findIndex((m) => m.id === b[1].member?.id);
+      if (aIdx === -1 && bIdx === -1) return 0;
+      if (aIdx === -1) return 1;
+      if (bIdx === -1) return -1;
+      return aIdx - bIdx;
+    });
+
   // 前月比計算関数
   const calculateMonthlyChange = (currentAmount: number, prevAmount: number): { change: number; percent: number } => {
     const change = currentAmount - prevAmount;
@@ -276,12 +312,26 @@ export const CardGridSection = ({
     return { change, percent };
   };
 
+  // 今月のアイテム + 前月にあるが今月にないアイテムを結合
+  const allCategoryEntries = [
+    ...sortedCategoryEntries,
+    ...missingPrevCategoryEntries
+  ];
+  const allPaymentEntries = [
+    ...sortedPaymentEntries,
+    ...missingPrevPaymentEntries
+  ];
+  const allMemberEntries = [
+    ...sortedMemberEntries,
+    ...missingPrevMemberEntries
+  ];
+
   const hasContent =
     viewMode === 'category'
-      ? sortedCategoryEntries.length > 0 || showRecurringTileCategory
+      ? allCategoryEntries.length > 0 || showRecurringTileCategory
       : viewMode === 'payment'
-      ? sortedPaymentEntries.length > 0 || showRecurringTilePayment
-      : sortedMemberEntries.length > 0 || showRecurringTileMember;
+      ? allPaymentEntries.length > 0 || showRecurringTilePayment
+      : allMemberEntries.length > 0 || showRecurringTileMember;
 
   if (!hasContent) {
     return (
@@ -295,17 +345,20 @@ export const CardGridSection = ({
     <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {viewMode === 'category'
-          ? sortedCategoryEntries.map(([key, { category, amount, transactions: catTransactions }]) => {
+          ? allCategoryEntries.map(([key, { category, amount, transactions: catTransactions }]) => {
+              const isMissing = !categoryGrouped[key];
+              const displayAmount = isMissing ? 0 : amount;
               const catRecurring = recurringPayments.filter((rp) => rp.categoryId === category?.id);
-              const progress = category?.budget ? Math.min(100, (amount / category.budget) * 100) : 0;
+              const progress = category?.budget ? Math.min(100, (displayAmount / category.budget) * 100) : 0;
               const gaugeColor = category?.color || '#6b7280';
               const prevAmount = prevCategoryGrouped[key]?.amount ?? 0;
-              const { change, percent } = calculateMonthlyChange(amount, prevAmount);
+              const { change, percent } = calculateMonthlyChange(displayAmount, prevAmount);
               return (
               <button
                 key={category?.id ?? '__none__'}
-                onClick={() => onCategoryClick?.(category, catTransactions, catRecurring)}
-                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col justify-center gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+                onClick={() => !isMissing && onCategoryClick?.(category, catTransactions, catRecurring)}
+                disabled={isMissing}
+                className={`border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col justify-center gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden ${isMissing ? 'opacity-60 cursor-default' : ''}`}
               >
                 {/* Background Icon */}
                 <div
@@ -327,7 +380,7 @@ export const CardGridSection = ({
                   ) : null}
                 </div>
                 <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                  {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{category?.budget ? ` / ${formatCurrency(category.budget)}` : ''}
+                  {formatCurrency(displayAbsoluteAmount ? Math.abs(displayAmount) : displayAmount)}{category?.budget ? ` / ${formatCurrency(category.budget)}` : ''}
                 </p>
                 {prevAmount !== 0 && (
                   <p className={`relative z-10 text-right text-xs font-medium ${percent === 0 ? 'text-gray-400 dark:text-gray-500' : change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
@@ -337,20 +390,23 @@ export const CardGridSection = ({
               </button>
             );})
           : viewMode === 'payment'
-          ? sortedPaymentEntries.map(([key, { paymentMethod, account: entryAccount, name, amount, transactions: pmTransactions }]) => {
+          ? allPaymentEntries.map(([key, { paymentMethod, account: entryAccount, name, amount, transactions: pmTransactions }]) => {
+              const isMissing = !paymentGrouped[key];
+              const displayAmount = isMissing ? 0 : amount;
               const cardColor = entryAccount?.color || '#6b7280';
               const pmRecurring = key.startsWith('__account__')
                 ? recurringPayments.filter((rp) => !rp.paymentMethodId && rp.accountId === key.slice('__account__'.length))
                 : recurringPayments.filter((rp) => rp.paymentMethodId === key);
               const budget = paymentMethod?.budget;
-              const progress = budget ? Math.min(100, (amount / budget) * 100) : 0;
+              const progress = budget ? Math.min(100, (displayAmount / budget) * 100) : 0;
               const prevAmount = prevPaymentGrouped[key]?.amount ?? 0;
-              const { change, percent } = calculateMonthlyChange(amount, prevAmount);
+              const { change, percent } = calculateMonthlyChange(displayAmount, prevAmount);
               return (
                 <button
                   key={key}
-                  onClick={() => onCategoryClick?.(undefined, pmTransactions, pmRecurring, name, cardColor, 'account')}
-                  className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col justify-center gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+                  onClick={() => !isMissing && onCategoryClick?.(undefined, pmTransactions, pmRecurring, name, cardColor, 'account')}
+                  disabled={isMissing}
+                  className={`border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col justify-center gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden ${isMissing ? 'opacity-60 cursor-default' : ''}`}
                 >
                   {/* Background Icon */}
                   <div
@@ -372,7 +428,7 @@ export const CardGridSection = ({
                     ) : null}
                   </div>
                   <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                    {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
+                    {formatCurrency(displayAbsoluteAmount ? Math.abs(displayAmount) : displayAmount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                   </p>
                   {prevAmount !== 0 && (
                     <p className={`relative z-10 text-right text-xs font-medium ${percent === 0 ? 'text-gray-400 dark:text-gray-500' : change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
@@ -382,21 +438,24 @@ export const CardGridSection = ({
                 </button>
               );
             })
-          : sortedMemberEntries.map(([key, { member, name, amount, transactions: memberTransactions }]) => {
+          : allMemberEntries.map(([key, { member, name, amount, transactions: memberTransactions }]) => {
+              const isMissing = !memberGrouped[key];
+              const displayAmount = isMissing ? 0 : amount;
               const memberRecurring = recurringPayments.filter((rp) => {
                 const acct = accounts.find((a) => a.id === rp.accountId);
                 return (acct?.memberId || '__unknown__') === key;
               });
               const memberColor = member?.color || '#6b7280';
               const budget = member?.budget;
-              const progress = budget ? Math.min(100, (amount / budget) * 100) : 0;
+              const progress = budget ? Math.min(100, (displayAmount / budget) * 100) : 0;
               const prevAmount = prevMemberGrouped[key]?.amount ?? 0;
-              const { change, percent } = calculateMonthlyChange(amount, prevAmount);
+              const { change, percent } = calculateMonthlyChange(displayAmount, prevAmount);
               return (
               <button
                 key={key}
-                onClick={() => onCategoryClick?.(undefined, memberTransactions, memberRecurring, name, memberColor, 'user')}
-                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col justify-center gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
+                onClick={() => !isMissing && onCategoryClick?.(undefined, memberTransactions, memberRecurring, name, memberColor, 'user')}
+                disabled={isMissing}
+                className={`border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col justify-center gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden ${isMissing ? 'opacity-60 cursor-default' : ''}`}
               >
                 {/* Background Icon */}
                 <div
@@ -418,7 +477,7 @@ export const CardGridSection = ({
                   ) : null}
                 </div>
                 <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                  {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
+                  {formatCurrency(displayAbsoluteAmount ? Math.abs(displayAmount) : displayAmount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                 </p>
                 {prevAmount !== 0 && (
                   <p className={`relative z-10 text-right text-xs font-medium ${percent === 0 ? 'text-gray-400 dark:text-gray-500' : change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
