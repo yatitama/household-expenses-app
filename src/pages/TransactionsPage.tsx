@@ -317,7 +317,7 @@ export const TransactionsPage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-900">
       {/* Transaction list */}
-      <div className="flex-1 overflow-clip pb-20">
+      <div className="flex-1 overflow-clip pb-32">
         <div className="p-2 md:p-4 lg:p-6">
         {groupedItems.length === 0 ? (
           <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-8 text-center">

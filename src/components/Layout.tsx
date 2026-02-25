@@ -99,12 +99,12 @@ export const Layout = () => {
             ))}
           </div>
 
-          {/* 中央FABボタン（ナビバーより突き出る） */}
+          {/* 中央FABボタン（ナビバー内に収める） */}
           <NavLink
             to="/add-transaction"
             end
             className={({ isActive }) =>
-              `absolute left-1/2 -translate-x-1/2 -top-5 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-colors ${
+              `absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-md transition-colors ${
                 isActive
                   ? 'bg-gray-700 dark:bg-gray-500'
                   : 'btn-primary'
