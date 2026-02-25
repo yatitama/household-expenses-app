@@ -153,12 +153,12 @@ export const AddTransactionPage = () => {
       setDate(tpl.date || format(new Date(), 'yyyy-MM-dd'));
     }
     setMemo(tpl.memo || '');
-    toast.success(`「${tpl.name}」を反映しました`);
-
     if (!tpl.amount) {
       // iOS Safari では setTimeout 内の focus() はキーボードを表示しない。
       // ユーザー操作の同期コールスタック内で直接 focus() を呼ぶことが必須。
       // window.scrollTo(0, 0) も呼ばない（scrollIntoView と競合するため）。
+      // キーボードが即座に開くため、トーストは短め（1200ms）にする。
+      toast.success(`「${tpl.name}」を反映しました`, { duration: 1200 });
       amountInputRef.current?.focus();
       amountInputRef.current?.select();
       // React 再レンダリング後にスクロール位置を調整（キーボード表示には影響しない）
@@ -166,6 +166,7 @@ export const AddTransactionPage = () => {
         amountInputRef.current?.scrollIntoView({ block: 'center' });
       });
     } else {
+      toast.success(`「${tpl.name}」を反映しました`);
       window.scrollTo(0, 0);
     }
   };
