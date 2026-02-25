@@ -167,13 +167,14 @@ export const MoneyPage = () => {
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
+                  <p className="text-xs font-bold tabular-nums text-gray-900 dark:text-gray-100">
                     {formatCurrency(totalBalance)}
                   </p>
                   {totalScheduledAmount > 0 && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      引き落とし予定 -{formatCurrency(totalScheduledAmount)}
-                    </p>
+                    <div className="flex items-baseline justify-end gap-1 text-gray-500 dark:text-gray-400">
+                      <span className="text-xs">引き落とし予定</span>
+                      <span className="text-xs font-bold tabular-nums">-{formatCurrency(totalScheduledAmount)}</span>
+                    </div>
                   )}
                 </div>
               </div>
