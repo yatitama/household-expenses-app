@@ -5,14 +5,8 @@ import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
 import { useSwipeMonth } from '../hooks/useSwipeMonth';
-import { useGrowthMetrics } from '../hooks/useGrowthMetrics';
 import { getRecurringPaymentsForMonth } from '../utils/billingUtils';
 import { CardGridSection, type CardGridViewMode } from '../components/accounts/CardGridSection';
-import { GrowthHeader } from '../components/accounts/GrowthHeader';
-import { TrendChart } from '../components/accounts/TrendChart';
-import { MonthComparisonCards } from '../components/accounts/MonthComparisonCards';
-import { AchievementBadges } from '../components/accounts/AchievementBadges';
-import { SavingsProgressTimeline } from '../components/accounts/SavingsProgressTimeline';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { RecurringPaymentMonthSheet } from '../components/accounts/modals/RecurringPaymentMonthSheet';
 import { EditTransactionModal } from '../components/accounts/modals/EditTransactionModal';
@@ -66,9 +60,6 @@ export const AccountsPage = () => {
   const [selectedGoalForSheet, setSelectedGoalForSheet] = useState<SavingsGoal | null>(null);
   const [selectedRecurringForMonthSheet, setSelectedRecurringForMonthSheet] = useState<RecurringPayment | null>(null);
   const [recurringMonthSheetSource, setRecurringMonthSheetSource] = useState<'categoryModal' | 'expenseList' | 'incomeList' | null>(null);
-  const [trendTimeRange, setTrendTimeRange] = useState<'3m' | '6m' | '12m'>('6m');
-
-  const growthMetrics = useGrowthMetrics(viewMonth, trendTimeRange);
 
   useBodyScrollLock(
     !!activeModal ||
@@ -251,23 +242,6 @@ export const AccountsPage = () => {
           </div>
         ) : (
           <div ref={contentRef} className={`px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6 ${getAnimationClass()}`}>
-            {/* 成長指標セクション */}
-            <div data-section-name="成長指標" className="relative mb-4">
-              <GrowthHeader comparison={growthMetrics.comparison} />
-              <TrendChart
-                data={growthMetrics.trendData}
-                timeRange={trendTimeRange}
-                onTimeRangeChange={setTrendTimeRange}
-              />
-              <MonthComparisonCards
-                currentMonth={viewMonth}
-                previousMonth={growthMetrics.months[growthMetrics.months.length - 2] || viewMonth}
-                currentSummary={growthMetrics.currentMonthSummary}
-                previousSummary={growthMetrics.previousMonthSummary}
-              />
-              <AchievementBadges achievements={growthMetrics.achievements} />
-            </div>
-
             {/* 支出セクション */}
             <div data-section-name="支出" className="relative">
               <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
@@ -349,9 +323,6 @@ export const AccountsPage = () => {
             {/* 貯金セクション */}
             {savingsGoals.length > 0 && (
               <div data-section-name="貯金" className="relative">
-                <SavingsProgressTimeline
-                  currentMonth={viewMonth}
-                />
                 <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">

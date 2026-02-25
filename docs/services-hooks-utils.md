@@ -114,28 +114,6 @@ localStorageのデータバージョンを確認し、必要なマイグレー�
 
 タッチスワイプで月を前後に切り替えるジェスチャーHook。スライドアニメーション付き。
 
-### useGrowthMetrics
-
-**ファイル**: `src/hooks/useGrowthMetrics.ts`
-
-月次の成長指標を計算するカスタムHook。AccountsPageで成長インジケーターを表示するために使用。
-
-**入力**:
-- `viewMonth: string` — 表示中の月（`yyyy-MM`形式）
-- `trendTimeRange: '3m' | '6m' | '12m'` — 推移チャートの時間範囲（デフォルト: `6m`）
-
-**返り値**:
-```typescript
-{
-  currentMonthSummary: MonthSummary;      // 現在月のサマリー
-  previousMonthSummary: MonthSummary;    // 前月のサマリー
-  comparison: GrowthComparison | null;   // 月間比較データ
-  achievements: Achievement[];            // 達成バッジ配列
-  trendData: TrendDataPoint[];            // チャート用データ
-  months: string[];                       // 対象月リスト
-}
-```
-
 ### useKeyboardShortcuts
 
 **ファイル**: `src/hooks/useKeyboardShortcuts.ts`
@@ -188,66 +166,6 @@ IntersectionObserverでセクションヘッダーの固定表示状態を検知
 ---
 
 ## ユーティリティ関数 (`src/utils/`)
-
-### growthMetrics.ts — 成長指標計算
-
-成長インジケーターの表示に必要な計算ロジック。`useGrowthMetrics`フックから使用されます。
-
-| 関数 | 入力 | 出力 | 説明 |
-|---|---|---|---|
-| `calculateMonthSummary` | `(monthStr)` | `MonthSummary` | 月の収支サマリー計算 |
-| `calculateMonthOverMonthChange` | `(current, previous)` | `GrowthComparison` | 先月比較の計算 |
-| `calculateTrendData` | `(months[])` | `TrendDataPoint[]` | チャート用データ配列 |
-| `detectAchievements` | `(month, summaries[])` | `Achievement[]` | 達成バッジの検出 |
-| `getMonthsInRange` | `(start, end)` | `string[]` | 月リスト（両端含む） |
-| `getPreviousMonth` | `(monthStr)` | `string` | 前月（`yyyy-MM`） |
-| `getLastNMonths` | `(fromMonth, count)` | `string[]` | 過去N ヶ月リスト |
-| `formatMonthForChart` | `(monthStr)` | `string` | チャート表示形式（`"2月"`） |
-
-**データ型**:
-
-```typescript
-interface MonthSummary {
-  month: string;            // yyyy-MM
-  totalIncome: number;      // 収入合計
-  totalExpense: number;     // 支出合計
-  totalSavings: number;     // 貯金合計
-  netIncome: number;        // 収入 - 支出 - 貯金
-  totalNetWorth: number;    // 全口座残高合計
-}
-
-interface GrowthComparison {
-  currentMonth: MonthSummary;
-  previousMonth: MonthSummary;
-  amountChange: number;     // 先月との金額差分
-  percentChange: number;    // パーセンテージ変化
-  trend: 'up' | 'down' | 'flat';
-}
-
-interface Achievement {
-  id: string;
-  type: 'savings-goal' | 'spending-reduction' | 'net-income-increase' | 'streak';
-  title: string;
-  description: string;
-  month: string;            // yyyy-MM
-}
-
-interface TrendDataPoint {
-  month: string;            // 表示形式（"2月"）
-  monthKey: string;         // yyyy-MM
-  income: number;
-  expense: number;
-  savings: number;
-  net: number;
-  netWorth: number;
-}
-```
-
-**達成バッジの種類**:
-1. **貯金目標達成** 🎉 — 貯金目標に到達した月
-2. **支出削減** 💪 — 前月比で支出が減少した月
-3. **月の黒字化** 📈 — 収入 > 支出となった月
-4. **黒字連続** ✅ — 3ヶ月以上連続で黒字となった月
 
 ### billingUtils.ts — 請求・精算ロジック
 
