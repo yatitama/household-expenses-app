@@ -10,6 +10,8 @@ import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { COLORS } from '../components/accounts/constants';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
+import { RecurringPaymentGridSection, type RecurringPaymentGridViewMode } from '../components/accounts/RecurringPaymentGridSection';
+import { RecurringGroupingHeader } from '../components/accounts/RecurringGroupingHeader';
 import { calculateMonthlyAmount, toYearMonth, getMonthsInRange, getTargetMonth } from '../utils/savingsUtils';
 import type { Member, MemberInput, Category, CategoryInput, TransactionType, PaymentMethod, PaymentMethodInput, RecurringPayment, RecurringPaymentInput, Account, SavingsGoal, SavingsGoalInput } from '../types';
 
@@ -27,6 +29,7 @@ export const SettingsPage = () => {
   const [accounts, setAccounts] = useState<Account[]>(() => accountService.getAll());
   const [recurringPayments, setRecurringPayments] = useState<RecurringPayment[]>(() => recurringPaymentService.getAll());
   const [recurringFilterType, setRecurringFilterType] = useState<TransactionType>('expense');
+  const [recurringViewMode, setRecurringViewMode] = useState<RecurringPaymentGridViewMode>('category');
   const [savingsOpen, setSavingsOpen] = useState(false);
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => savingsGoalService.getAll());
 
@@ -720,26 +723,38 @@ export const SettingsPage = () => {
 
         {recurringOpen && (
           <div className="border-t dark:border-gray-700 p-3 sm:p-3.5 md:p-4 space-y-2.5 sm:space-y-3">
-            {/* Type toggle */}
-            <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
-              <button
-                onClick={() => setRecurringFilterType('expense')}
-                className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-                  recurringFilterType === 'expense' ? 'text-white' : 'bg-white text-gray-900 dark:text-gray-200'
-                }`}
-                style={recurringFilterType === 'expense' ? { backgroundColor: 'var(--theme-primary)' } : {}}
-              >
-                支出
-              </button>
-              <button
-                onClick={() => setRecurringFilterType('income')}
-                className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
-                  recurringFilterType === 'income' ? 'text-white' : 'bg-white text-gray-900 dark:text-gray-200'
-                }`}
-                style={recurringFilterType === 'income' ? { backgroundColor: 'var(--theme-primary)' } : {}}
-              >
-                収入
-              </button>
+            {/* Type filter and view mode toggles */}
+            <div className="flex flex-col gap-2.5">
+              {/* Type toggle */}
+              <div className="flex rounded-lg overflow-hidden dark:border-gray-600">
+                <button
+                  onClick={() => setRecurringFilterType('expense')}
+                  className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
+                    recurringFilterType === 'expense' ? 'text-white' : 'bg-white text-gray-900 dark:text-gray-200'
+                  }`}
+                  style={recurringFilterType === 'expense' ? { backgroundColor: 'var(--theme-primary)' } : {}}
+                >
+                  支出
+                </button>
+                <button
+                  onClick={() => setRecurringFilterType('income')}
+                  className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
+                    recurringFilterType === 'income' ? 'text-white' : 'bg-white text-gray-900 dark:text-gray-200'
+                  }`}
+                  style={recurringFilterType === 'income' ? { backgroundColor: 'var(--theme-primary)' } : {}}
+                >
+                  収入
+                </button>
+              </div>
+
+              {/* View mode toggles */}
+              <div className="flex items-center justify-between">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">グルーピング:</p>
+                <RecurringGroupingHeader
+                  viewMode={recurringViewMode}
+                  onViewModeChange={setRecurringViewMode}
+                />
+              </div>
             </div>
 
             <button
@@ -751,36 +766,17 @@ export const SettingsPage = () => {
               定期取引を追加
             </button>
 
-            {recurringPayments.filter((rp) => rp.type === recurringFilterType).length === 0 ? (
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center py-4">定期取引がありません</p>
-            ) : (
-              <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                {recurringPayments.filter((rp) => rp.type === recurringFilterType).map((rp) => {
-                  const cat = categories.find((c) => c.id === rp.categoryId);
-                  return (
-                  <button
-                    key={rp.id}
-                    onClick={() => handleEditRecurring(rp)}
-                    className="w-full flex items-center gap-2.5 sm:gap-3 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors text-left"
-                  >
-                    <div
-                      className="w-8 sm:w-9 h-8 sm:h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{
-                        backgroundColor: `${cat?.color || '#6b7280'}20`,
-                        color: cat?.color || '#6b7280',
-                      }}
-                    >
-                      {cat ? getCategoryIcon(cat.icon, 16) : <RefreshCw size={16} />}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{rp.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">¥{rp.amount.toLocaleString()}</p>
-                    </div>
-                  </button>
-                  );
-                })}
-              </div>
-            )}
+            {/* Grid view section */}
+            <RecurringPaymentGridSection
+              recurringPayments={recurringPayments.filter((rp) => rp.type === recurringFilterType)}
+              categories={categories}
+              paymentMethods={paymentMethods}
+              members={members}
+              accounts={accounts}
+              viewMode={recurringViewMode}
+              onItemClick={handleEditRecurring}
+              emptyMessage="定期取引がありません"
+            />
           </div>
         )}
       </div>
