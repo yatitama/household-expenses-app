@@ -56,6 +56,7 @@ export const AccountsPage = () => {
   const [isRecurringExpenseListOpen, setIsRecurringExpenseListOpen] = useState(false);
   const [isRecurringIncomeListOpen, setIsRecurringIncomeListOpen] = useState(false);
   const [expenseViewMode, setExpenseViewMode] = useState<CardGridViewMode>('category');
+  const [incomeViewMode, setIncomeViewMode] = useState<CardGridViewMode>('category');
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => savingsGoalService.getAll());
   const [selectedGoalForSheet, setSelectedGoalForSheet] = useState<SavingsGoal | null>(null);
   const [selectedRecurringForMonthSheet, setSelectedRecurringForMonthSheet] = useState<RecurringPayment | null>(null);
@@ -367,8 +368,33 @@ export const AccountsPage = () => {
             <div data-section-name="収入" className="relative">
               <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
                 <div className="flex items-center justify-between">
-                  {/* 左側：タイトル */}
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingUp size={14} />収入</h3>
+                  {/* 左側：タイトルとビューモードボタン */}
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingUp size={14} />収入</h3>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        onClick={() => setIncomeViewMode('category')}
+                        className={`p-1 rounded transition-colors ${incomeViewMode === 'category' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
+                        title="カテゴリ別"
+                      >
+                        <Tag size={13} />
+                      </button>
+                      <button
+                        onClick={() => setIncomeViewMode('payment')}
+                        className={`p-1 rounded transition-colors ${incomeViewMode === 'payment' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
+                        title="入金先別"
+                      >
+                        <CreditCard size={13} />
+                      </button>
+                      <button
+                        onClick={() => setIncomeViewMode('member')}
+                        className={`p-1 rounded transition-colors ${incomeViewMode === 'member' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
+                        title="メンバー別"
+                      >
+                        <Users size={13} />
+                      </button>
+                    </div>
+                  </div>
                   {/* 右側：金額と前月比 */}
                   <div className="flex flex-col items-end gap-0.5">
                     <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
@@ -386,6 +412,10 @@ export const AccountsPage = () => {
                 <CardGridSection
                   transactions={allMonthIncomes}
                   categories={categories}
+                  paymentMethods={paymentMethods}
+                  members={members}
+                  accounts={allAccounts}
+                  viewMode={incomeViewMode}
                   onCategoryClick={handleCategoryClick}
                   recurringPayments={allUpcomingIncome}
                   recurringLabel="定期収入"
