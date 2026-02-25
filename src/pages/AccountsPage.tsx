@@ -358,6 +358,7 @@ export const AccountsPage = () => {
                   month={viewMonth}
                   prevTransactions={prevMonthExpenses}
                   prevRecurringPayments={prevUpcomingExpense}
+                  transactionType="expense"
                 />
               </div>
             </div>
@@ -394,6 +395,7 @@ export const AccountsPage = () => {
                   displayAbsoluteAmount={true}
                   prevTransactions={prevMonthIncomes}
                   prevRecurringPayments={prevUpcomingIncome}
+                  transactionType="income"
                 />
               </div>
             </div>

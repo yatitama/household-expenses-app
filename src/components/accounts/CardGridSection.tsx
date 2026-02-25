@@ -24,6 +24,7 @@ interface CardGridSectionProps {
   displayAbsoluteAmount?: boolean;
   prevTransactions?: Transaction[];
   prevRecurringPayments?: RecurringPayment[];
+  transactionType?: 'expense' | 'income';
 }
 
 export const CardGridSection = ({
@@ -42,7 +43,25 @@ export const CardGridSection = ({
   displayAbsoluteAmount = false,
   prevTransactions = [],
   prevRecurringPayments = [],
+  transactionType,
 }: CardGridSectionProps) => {
+  // 色判定用のヘルパー関数
+  // 支出: 増加（change >= 0）= 赤（悪い）、減少（change < 0）= 緑（良い）
+  // 収入: 増加（change >= 0）= 緑（良い）、減少（change < 0）= 赤（悪い）
+  const getChangeColor = (change: number, percent: number): string => {
+    if (percent === 0) return 'text-gray-400 dark:text-gray-500';
+
+    const isExpense = transactionType === 'expense';
+    const isPositiveChange = change >= 0;
+
+    // 支出の場合、増加は悪い（赤）、減少は良い（緑）
+    // 収入の場合、増加は良い（緑）、減少は悪い（赤）
+    const isBadChange = isExpense ? isPositiveChange : !isPositiveChange;
+
+    return isBadChange
+      ? 'text-red-600 dark:text-red-400'
+      : 'text-green-600 dark:text-green-400';
+  };
   // カテゴリ別グルーピング（取引 + 定期）
   const categoryGrouped = transactions.reduce(
     (acc, t) => {
@@ -383,7 +402,7 @@ export const CardGridSection = ({
                   {formatCurrency(displayAbsoluteAmount ? Math.abs(displayAmount) : displayAmount)}{category?.budget ? ` / ${formatCurrency(category.budget)}` : ''}
                 </p>
                 {prevAmount !== 0 && (
-                  <p className={`relative z-10 text-right text-xs font-medium ${percent === 0 ? 'text-gray-400 dark:text-gray-500' : change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <p className={`relative z-10 text-right text-xs font-medium ${getChangeColor(change, percent)}`}>
                     {percent === 0 ? '→' : change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
                   </p>
                 )}
@@ -431,7 +450,7 @@ export const CardGridSection = ({
                     {formatCurrency(displayAbsoluteAmount ? Math.abs(displayAmount) : displayAmount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                   </p>
                   {prevAmount !== 0 && (
-                    <p className={`relative z-10 text-right text-xs font-medium ${percent === 0 ? 'text-gray-400 dark:text-gray-500' : change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                    <p className={`relative z-10 text-right text-xs font-medium ${getChangeColor(change, percent)}`}>
                       {percent === 0 ? '→' : change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
                     </p>
                   )}
@@ -480,7 +499,7 @@ export const CardGridSection = ({
                   {formatCurrency(displayAbsoluteAmount ? Math.abs(displayAmount) : displayAmount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                 </p>
                 {prevAmount !== 0 && (
-                  <p className={`relative z-10 text-right text-xs font-medium ${percent === 0 ? 'text-gray-400 dark:text-gray-500' : change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <p className={`relative z-10 text-right text-xs font-medium ${getChangeColor(change, percent)}`}>
                     {percent === 0 ? '→' : change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
                   </p>
                 )}
