@@ -104,7 +104,7 @@ export const Layout = () => {
             to="/add-transaction"
             end
             className={({ isActive }) =>
-              `absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all active:scale-95 ${
+              `absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center transition-all active:scale-95 ${
                 isActive
                   ? 'bg-gray-700 dark:bg-gray-500'
                   : 'btn-primary'
@@ -112,7 +112,7 @@ export const Layout = () => {
             }
             aria-label="取引を追加"
           >
-            <Plus size={26} className="text-white" />
+            <Plus size={20} className="text-white" />
           </NavLink>
         </div>
       </nav>
