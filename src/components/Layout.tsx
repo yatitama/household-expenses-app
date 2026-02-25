@@ -99,12 +99,12 @@ export const Layout = () => {
             ))}
           </div>
 
-          {/* 中央FABボタン（ナビバー上部に浮かせて強調） */}
+          {/* 中央FABボタン（ナビバー内中央） */}
           <NavLink
             to="/add-transaction"
             end
             className={({ isActive }) =>
-              `absolute left-1/2 -translate-x-1/2 top-0 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all active:scale-95 ${
+              `absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all active:scale-95 ${
                 isActive
                   ? 'bg-gray-700 dark:bg-gray-500'
                   : 'btn-primary'
