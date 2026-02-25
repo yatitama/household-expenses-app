@@ -42,13 +42,16 @@ export const AccountGridSection = ({ accounts, scheduledAmounts, onAddClick, onA
                 {account.name}
               </p>
             </div>
-            <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
+            <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100 tabular-nums">
               {formatCurrency(account.balance)}
             </p>
             {scheduledAmounts && (scheduledAmounts[account.id] ?? 0) > 0 && (
-              <p className="relative z-10 text-right text-xs text-gray-500 dark:text-gray-400">
-                引き落とし予定 -{formatCurrency(scheduledAmounts[account.id])}
-              </p>
+              <div className="relative z-10 flex items-baseline justify-between gap-1 text-gray-400 dark:text-gray-500">
+                <span className="text-xs shrink-0">引き落とし予定</span>
+                <span className="text-sm md:text-base tabular-nums">
+                  -{formatCurrency(scheduledAmounts[account.id])}
+                </span>
+              </div>
             )}
           </button>
         ))}
