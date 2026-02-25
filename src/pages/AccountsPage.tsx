@@ -367,7 +367,7 @@ export const AccountsPage = () => {
                             key={goal.id}
                             onClick={() => { if (!isOutOfRange) setSelectedGoalForSheet(goal); }}
                             disabled={isOutOfRange}
-                            className={`p-2.5 md:p-3 text-left transition-all flex flex-col gap-2 relative overflow-hidden ${
+                            className={`p-2.5 md:p-3 text-left transition-all flex flex-col gap-2 relative overflow-hidden rounded-lg ${
                               isOutOfRange
                                 ? 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 opacity-40 cursor-default'
                                 : excluded
