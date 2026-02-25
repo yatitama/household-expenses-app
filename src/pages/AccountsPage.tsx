@@ -152,6 +152,17 @@ export const AccountsPage = () => {
   const monthlyChange = totalNet - prevTotalNet;
   const monthlyChangePercent = prevTotalNet !== 0 ? ((monthlyChange / Math.abs(prevTotalNet)) * 100) : 0;
 
+  // セクション別の前月比計算
+  const totalCurrentExpenses = totalExpenses + totalRecurringExpense;
+  const totalCurrentIncomes = totalIncomes + totalRecurringIncome;
+  const totalPrevExpenses = prevTotalExpenses + prevTotalRecurringExpense;
+  const totalPrevIncomes = prevTotalIncomes + prevTotalRecurringIncome;
+
+  const expenseMonthlyChange = totalCurrentExpenses - totalPrevExpenses;
+  const expenseMonthlyChangePercent = totalPrevExpenses !== 0 ? ((expenseMonthlyChange / totalPrevExpenses) * 100) : 0;
+  const incomeMonthlyChange = totalCurrentIncomes - totalPrevIncomes;
+  const incomeMonthlyChangePercent = totalPrevIncomes !== 0 ? ((incomeMonthlyChange / totalPrevIncomes) * 100) : 0;
+
   const handleSaveSavingsMonth = (goalId: string, excluded: boolean, overrideAmount: number | null) => {
     const goal = savingsGoals.find((g) => g.id === goalId);
     if (!goal) return;
@@ -293,6 +304,11 @@ export const AccountsPage = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingDown size={14} />支出</h3>
+                    {totalPrevExpenses !== 0 && (
+                      <span className={`text-xs font-medium ${expenseMonthlyChangePercent === 0 ? 'text-gray-400 dark:text-gray-500' : expenseMonthlyChangePercent < 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        {expenseMonthlyChangePercent === 0 ? '→' : expenseMonthlyChangePercent < 0 ? '↓' : '↑'} {Math.abs(expenseMonthlyChangePercent).toFixed(1)}%
+                      </span>
+                    )}
                     <div className="flex items-center gap-0.5">
                       <button
                         onClick={() => setExpenseViewMode('category')}
@@ -346,7 +362,14 @@ export const AccountsPage = () => {
             <div data-section-name="収入" className="relative">
               <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingUp size={14} />収入</h3>
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingUp size={14} />収入</h3>
+                    {totalPrevIncomes !== 0 && (
+                      <span className={`text-xs font-medium ${incomeMonthlyChangePercent === 0 ? 'text-gray-400 dark:text-gray-500' : incomeMonthlyChangePercent > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        {incomeMonthlyChangePercent === 0 ? '→' : incomeMonthlyChangePercent > 0 ? '↑' : '↓'} {Math.abs(incomeMonthlyChangePercent).toFixed(1)}%
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
                     +{formatCurrency(totalIncomes + totalRecurringIncome)}
                   </p>

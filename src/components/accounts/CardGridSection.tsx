@@ -330,8 +330,8 @@ export const CardGridSection = ({
                   {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{category?.budget ? ` / ${formatCurrency(category.budget)}` : ''}
                 </p>
                 {prevAmount !== 0 && (
-                  <p className={`relative z-10 text-right text-xs font-medium ${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                    {change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
+                  <p className={`relative z-10 text-right text-xs font-medium ${percent === 0 ? 'text-gray-400 dark:text-gray-500' : change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                    {percent === 0 ? '→' : change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
                   </p>
                 )}
               </button>
@@ -375,8 +375,8 @@ export const CardGridSection = ({
                     {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                   </p>
                   {prevAmount !== 0 && (
-                    <p className={`relative z-10 text-right text-xs font-medium ${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
+                    <p className={`relative z-10 text-right text-xs font-medium ${percent === 0 ? 'text-gray-400 dark:text-gray-500' : change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      {percent === 0 ? '→' : change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
                     </p>
                   )}
                 </button>
@@ -421,8 +421,8 @@ export const CardGridSection = ({
                   {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                 </p>
                 {prevAmount !== 0 && (
-                  <p className={`relative z-10 text-right text-xs font-medium ${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                    {change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
+                  <p className={`relative z-10 text-right text-xs font-medium ${percent === 0 ? 'text-gray-400 dark:text-gray-500' : change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                    {percent === 0 ? '→' : change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
                   </p>
                 )}
               </button>
