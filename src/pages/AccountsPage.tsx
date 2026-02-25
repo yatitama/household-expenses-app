@@ -330,7 +330,7 @@ export const AccountsPage = () => {
                     </div>
                   </div>
                   {/* 右側：金額と前月比 */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-end gap-0.5">
                     <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
                       -{formatCurrency(totalExpenses + totalRecurringExpense)}
                     </p>
@@ -369,7 +369,7 @@ export const AccountsPage = () => {
                   {/* 左側：タイトル */}
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingUp size={14} />収入</h3>
                   {/* 右側：金額と前月比 */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-end gap-0.5">
                     <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
                       +{formatCurrency(totalIncomes + totalRecurringIncome)}
                     </p>
