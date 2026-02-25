@@ -24,7 +24,7 @@ export const AccountGridSection = ({ accounts, scheduledAmounts, onAddClick, onA
           <button
             key={account.id}
             onClick={() => onAccountClick?.(account)}
-            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 text-left flex flex-col gap-2 hover:opacity-80 transition-all relative overflow-hidden rounded-lg"
+            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 text-left flex flex-col gap-2 hover:opacity-80 transition-all relative overflow-hidden"
           >
             {/* Background Icon */}
             <div
@@ -60,7 +60,7 @@ export const AccountGridSection = ({ accounts, scheduledAmounts, onAddClick, onA
         {onAddClick && (
           <button
             onClick={onAddClick}
-            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex items-center justify-center hover:opacity-80 dark:hover:opacity-80 transition-all rounded-lg"
+            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex items-center justify-center hover:opacity-80 dark:hover:opacity-80 transition-all"
           >
             <Plus size={24} className="text-gray-400 dark:text-gray-500" />
           </button>

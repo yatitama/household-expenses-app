@@ -227,7 +227,7 @@ export const MoneyPage = () => {
                       const goalColor = goal.color || '#059669';
                       const IconComponent = SAVINGS_GOAL_ICONS[goal.icon as keyof typeof SAVINGS_GOAL_ICONS] || SAVINGS_GOAL_ICONS.PiggyBank;
                       return (
-                        <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 relative overflow-hidden rounded-lg">
+                        <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 relative overflow-hidden">
                           {/* Background Icon */}
                           <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none" style={{ color: goalColor }}>
                             <IconComponent size={80} />

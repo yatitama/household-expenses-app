@@ -204,7 +204,7 @@ export const CardGridSection = ({
               <button
                 key={category?.id ?? '__none__'}
                 onClick={() => onCategoryClick?.(category, catTransactions, catRecurring)}
-                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden rounded-lg"
+                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
               >
                 {/* Background Icon */}
                 <div
@@ -242,7 +242,7 @@ export const CardGridSection = ({
                 <button
                   key={key}
                   onClick={() => onCategoryClick?.(undefined, pmTransactions, pmRecurring, name, cardColor, 'account')}
-                  className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden rounded-lg"
+                  className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
                 >
                   {/* Background Icon */}
                   <div
@@ -281,7 +281,7 @@ export const CardGridSection = ({
               <button
                 key={key}
                 onClick={() => onCategoryClick?.(undefined, memberTransactions, memberRecurring, name, memberColor, 'user')}
-                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden rounded-lg"
+                className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
               >
                 {/* Background Icon */}
                 <div
@@ -312,7 +312,7 @@ export const CardGridSection = ({
         {viewMode === 'category' && showRecurringTileCategory && (
           <button
             onClick={onRecurringClick}
-            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden rounded-lg"
+            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
           >
             {/* Background Icon */}
             <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none blur-sm text-gray-400">
@@ -333,7 +333,7 @@ export const CardGridSection = ({
         {viewMode === 'payment' && showRecurringTilePayment && (
           <button
             onClick={onRecurringClick}
-            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden rounded-lg"
+            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
           >
             {/* Background Icon */}
             <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-gray-400">
@@ -354,7 +354,7 @@ export const CardGridSection = ({
         {viewMode === 'member' && showRecurringTileMember && (
           <button
             onClick={onRecurringClick}
-            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden rounded-lg"
+            className="border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 hover:opacity-80 transition-all text-left relative overflow-hidden"
           >
             {/* Background Icon */}
             <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none text-gray-400">
