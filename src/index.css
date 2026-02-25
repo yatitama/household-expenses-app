@@ -55,6 +55,17 @@ body {
   border-width: 0;
 }
 
+/* ボトムナビゲーション上部の固定フッター位置（セーフエリア対応） */
+.fixed-above-bottom-nav {
+  bottom: calc(4rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+  .fixed-above-bottom-nav {
+    bottom: 0;
+  }
+}
+
 /* スクロールバーを非表示 */
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */

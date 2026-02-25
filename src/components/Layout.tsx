@@ -52,6 +52,8 @@ const navItems: NavItemProps[] = [
   { to: '/settings', icon: <SettingsIcon size={24} />, label: '設定' },
 ];
 
+// ボトムナビ用：「追加」を除いた4項目
+const bottomNavItems = navItems.filter((item) => item.to !== '/add-transaction');
 
 export const Layout = () => {
   return (
@@ -69,16 +71,49 @@ export const Layout = () => {
       </nav>
 
       {/* メインコンテンツ */}
-      <main className="flex-1 pb-20 md:pb-0 md:ml-64 overflow-clip">
+      <main className="flex-1 md:ml-64 overflow-clip">
         <Outlet />
       </main>
 
-      {/* モバイル: ボトムナビゲーション */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:border-gray-700 h-16 z-50" aria-label="メインナビゲーション">
-        <div className="flex justify-around items-center h-full">
-          {navItems.map((item) => (
-            <BottomNavItem key={item.to} {...item} />
-          ))}
+      {/* モバイル: ボトムナビゲーション（FAB付き） */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t dark:border-gray-700 z-50"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        aria-label="メインナビゲーション"
+      >
+        <div className="relative flex items-center h-16">
+          {/* 左2項目 */}
+          <div className="flex-1 flex justify-around items-center h-full">
+            {bottomNavItems.slice(0, 2).map((item) => (
+              <BottomNavItem key={item.to} {...item} />
+            ))}
+          </div>
+
+          {/* 中央FABのスペース確保 */}
+          <div className="w-16 flex-shrink-0" />
+
+          {/* 右2項目 */}
+          <div className="flex-1 flex justify-around items-center h-full">
+            {bottomNavItems.slice(2).map((item) => (
+              <BottomNavItem key={item.to} {...item} />
+            ))}
+          </div>
+
+          {/* 中央FABボタン（ナビバーより突き出る） */}
+          <NavLink
+            to="/add-transaction"
+            end
+            className={({ isActive }) =>
+              `absolute left-1/2 -translate-x-1/2 -top-5 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-colors ${
+                isActive
+                  ? 'bg-gray-700 dark:bg-gray-500'
+                  : 'btn-primary'
+              }`
+            }
+            aria-label="取引を追加"
+          >
+            <Plus size={24} className="text-white" />
+          </NavLink>
         </div>
       </nav>
     </div>

@@ -205,8 +205,7 @@ export const MoneyPage = () => {
           {savingsGoals.length > 0 && (
             <div data-section-name="貯金" className="relative">
               <div
-                className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
-                style={{ top: 'max(0px, env(safe-area-inset-top))' }}
+                className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
@@ -259,8 +258,7 @@ export const MoneyPage = () => {
           {unlinkedPMs.length > 0 && (
             <div data-section-name="紐付未設定のカード" className="relative">
               <div
-                className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
-                style={{ top: 'max(0px, env(safe-area-inset-top))' }}
+                className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700"
               >
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">紐付未設定のカード ({unlinkedPMs.length}件)</h3>
               </div>
@@ -291,7 +289,7 @@ export const MoneyPage = () => {
       </div>
 
       {/* ボトム固定フッター */}
-      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5">
+      <div className="fixed left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5 fixed-above-bottom-nav">
         <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-end">
           <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0">
             <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">手元残高</p>
