@@ -480,7 +480,7 @@ export const SettingsPage = () => {
   const getMember = (memberId: string) => members.find((m) => m.id === memberId);
 
   return (
-    <div className="p-2 sm:p-3 md:p-4 lg:p-6 space-y-2.5 sm:space-y-3 md:space-y-4">
+    <div className="p-2 sm:p-3 md:p-4 lg:p-6 space-y-2.5 sm:space-y-3 md:space-y-4 pb-20 md:pb-6">
       <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">設定</h2>
 
       {/* メンバー管理 */}

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet, ChevronLeft, ChevronRight, Tag, CreditCard, Users, PiggyBank, TrendingDown, TrendingUp } from 'lucide-react';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
+import { useSwipeMonth } from '../hooks/useSwipeMonth';
 import { getRecurringPaymentsForMonth } from '../utils/billingUtils';
 import { CardGridSection, type CardGridViewMode } from '../components/accounts/CardGridSection';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
@@ -34,23 +35,15 @@ export const AccountsPage = () => {
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
 
-  const handlePrevMonth = () => {
-    if (selectedMonth === 1) {
-      setSelectedYear((y) => y - 1);
-      setSelectedMonth(12);
-    } else {
-      setSelectedMonth((m) => m - 1);
-    }
-  };
+  const viewMonth = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}`;
 
-  const handleNextMonth = () => {
-    if (selectedMonth === 12) {
-      setSelectedYear((y) => y + 1);
-      setSelectedMonth(1);
-    } else {
-      setSelectedMonth((m) => m + 1);
-    }
-  };
+  const setCurrentMonth = useCallback((month: string) => {
+    const [y, m] = month.split('-').map(Number);
+    setSelectedYear(y);
+    setSelectedMonth(m);
+  }, []);
+
+  const { containerRef, contentRef, handlePrevMonth, handleNextMonth, getAnimationClass } = useSwipeMonth(viewMonth, setCurrentMonth);
 
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [selectedCategoryForModal, setSelectedCategoryForModal] = useState<Category | undefined>(undefined);
@@ -98,8 +91,6 @@ export const AccountsPage = () => {
   const paymentMethods = paymentMethodService.getAll();
   const members = memberService.getAll();
   const allAccounts = accountService.getAll();
-
-  const viewMonth = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}`;
 
   const totalExpenses = allMonthExpenses.reduce((sum, t) => sum + t.amount, 0);
   const totalIncomes = allMonthIncomes.reduce((sum, t) => sum + t.amount, 0);
@@ -236,7 +227,7 @@ export const AccountsPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
-      <div className="flex-1 overflow-clip pb-20">
+      <div ref={containerRef} className="flex-1 overflow-clip pb-20">
         {accounts.length === 0 ? (
           <div className="p-4">
             <EmptyState
@@ -250,13 +241,10 @@ export const AccountsPage = () => {
             />
           </div>
         ) : (
-          <div className="px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6">
+          <div ref={contentRef} className={`px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6 ${getAnimationClass()}`}>
             {/* 支出セクション */}
             <div data-section-name="支出" className="relative">
-              <div
-                className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
-                style={{ top: 'max(0px, env(safe-area-inset-top))' }}
-              >
+              <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingDown size={14} />支出</h3>
@@ -309,10 +297,7 @@ export const AccountsPage = () => {
 
             {/* 収入セクション */}
             <div data-section-name="収入" className="relative">
-              <div
-                className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
-                style={{ top: 'max(0px, env(safe-area-inset-top))' }}
-              >
+              <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingUp size={14} />収入</h3>
                   <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
@@ -338,10 +323,7 @@ export const AccountsPage = () => {
             {/* 貯金セクション */}
             {savingsGoals.length > 0 && (
               <div data-section-name="貯金" className="relative">
-                <div
-                  className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
-                  style={{ top: 'max(0px, env(safe-area-inset-top))' }}
-                >
+                <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <PiggyBank size={14} />
@@ -415,8 +397,8 @@ export const AccountsPage = () => {
         )}
       </div>
 
-      {/* ボトム固定フッター */}
-      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5">
+      {/* ボトム固定フッター（セーフエリア対応） */}
+      <div className="fixed left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5 fixed-above-bottom-nav">
         <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-between">
           {/* 月セレクタ */}
           <div className="flex items-center gap-0.5">

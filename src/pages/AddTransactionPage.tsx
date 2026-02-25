@@ -293,7 +293,7 @@ export const AddTransactionPage = () => {
               {tab !== 'transfer' && (
                 <div>
                   <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">カテゴリ</label>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     {filteredCategories.map((category) => {
                       return (
                         <button
@@ -330,7 +330,7 @@ export const AddTransactionPage = () => {
               {tab === 'transfer' && (
                 <div>
                   <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">入金元</label>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     {allAccounts.map((acct) => {
                       const isDisabled = acct.id === selectedSourceId;
                       return (
@@ -372,7 +372,7 @@ export const AddTransactionPage = () => {
                 <label className="block text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-200 mb-2">
                   {tab === 'expense' ? '支払い元' : '入金先'}
                 </label>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {allAccounts.map((acct) => {
                     const isDisabled = tab === 'transfer' && acct.id === transferFromAccountId;
                     return (
@@ -480,7 +480,7 @@ export const AddTransactionPage = () => {
               )}
             </div>
           </div>
-        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700">
+        <div className="fixed left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 fixed-above-bottom-nav">
           <div className="max-w-md mx-auto p-3 sm:p-4">
             <button
               type="submit"
