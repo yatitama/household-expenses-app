@@ -300,19 +300,19 @@ export const AddTransactionPage = () => {
                           key={category.id}
                           type="button"
                           onClick={() => setCategoryId(category.id)}
-                          className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                          className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] ${
                             categoryId === category.id
                               ? 'bg-gray-100 dark:bg-gray-700'
                               : ''
                           }`}
                         >
                           <div
-                            className="w-6 sm:w-7 h-6 sm:h-7 rounded-full flex items-center justify-center"
+                            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                             style={{ backgroundColor: `${category.color}20`, color: category.color }}
                           >
-                            {getCategoryIcon(category.icon, 14)}
+                            {getCategoryIcon(category.icon, 15)}
                           </div>
-                          <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                          <span className="text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                             {category.name}
                           </span>
                           {categoryId === category.id && (
@@ -339,7 +339,7 @@ export const AddTransactionPage = () => {
                           type="button"
                           onClick={() => setTransferFromAccountId(acct.id)}
                           disabled={isDisabled}
-                          className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                          className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] ${
                             isDisabled
                               ? 'opacity-30 cursor-not-allowed'
                               : transferFromAccountId === acct.id
@@ -348,12 +348,12 @@ export const AddTransactionPage = () => {
                           }`}
                         >
                           <div
-                            className="w-6 h-6 rounded-full flex items-center justify-center"
+                            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                             style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
                           >
                             <Wallet size={16} />
                           </div>
-                          <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                          <span className="text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                             {acct.name}
                           </span>
                           {transferFromAccountId === acct.id && (
@@ -381,7 +381,7 @@ export const AddTransactionPage = () => {
                         type="button"
                         onClick={() => setSelectedSourceId(acct.id)}
                         disabled={isDisabled}
-                        className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                        className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] ${
                           isDisabled
                             ? 'opacity-30 cursor-not-allowed'
                             : selectedSourceId === acct.id
@@ -390,12 +390,12 @@ export const AddTransactionPage = () => {
                         }`}
                       >
                         <div
-                          className="w-6 h-6 rounded-full flex items-center justify-center"
+                          className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                           style={{ backgroundColor: `${acct.color || '#9ca3af'}20`, color: acct.color || '#9ca3af' }}
                         >
                           <Wallet size={16} />
                         </div>
-                        <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                        <span className="text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                           {acct.name}
                         </span>
                         {selectedSourceId === acct.id && (
@@ -412,19 +412,19 @@ export const AddTransactionPage = () => {
                       key={pm.id}
                       type="button"
                       onClick={() => setSelectedSourceId(pm.id)}
-                      className={`relative flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                      className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] ${
                         selectedSourceId === pm.id
                           ? 'bg-gray-100 dark:bg-gray-700'
                           : ''
                       }`}
                     >
                       <div
-                        className="w-6 h-6 rounded-full flex items-center justify-center"
+                        className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `${pm.color || '#9ca3af'}20`, color: pm.color || '#9ca3af' }}
                       >
                         <CreditCard size={16} />
                       </div>
-                      <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                      <span className="text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                         {pm.name}
                       </span>
                       {selectedSourceId === pm.id && (
@@ -461,7 +461,7 @@ export const AddTransactionPage = () => {
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-slate-700 rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
+                    className="w-full bg-gray-50 dark:bg-slate-700 rounded-lg px-2 py-2.5 text-sm border border-gray-200 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
                   />
                 </div>
               )}

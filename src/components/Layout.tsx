@@ -13,13 +13,13 @@ const BottomNavItem = ({ to, icon, label }: NavItemProps) => {
       to={to}
       end
       className={({ isActive }) =>
-        `flex flex-col items-center gap-0.5 px-2 py-1.5 text-xs md:text-sm font-medium transition-colors min-w-[48px] min-h-[48px] md:min-w-[56px] md:min-h-[56px] ${
-          isActive ? 'text-primary-700 dark:text-primary-400' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+        `flex flex-col items-center gap-1 px-2 py-1.5 text-xs md:text-sm font-medium transition-colors min-w-[52px] min-h-[52px] md:min-w-[56px] md:min-h-[56px] ${
+          isActive ? 'text-primary-700 dark:text-primary-400' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
         }`
       }
       title={label}
     >
-      <span className="[&>svg]:w-4 [&>svg]:h-4 md:[&>svg]:w-5 md:[&>svg]:h-5">{icon}</span>
+      <span className={`[&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-5 md:[&>svg]:h-5 transition-transform ${''}`}>{icon}</span>
       <span className="text-center text-xs md:text-sm">{label}</span>
     </NavLink>
   );
@@ -81,7 +81,7 @@ export const Layout = () => {
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
         aria-label="メインナビゲーション"
       >
-        <div className="relative flex items-center h-16">
+        <div className="relative flex items-center h-16 overflow-visible">
           {/* 左2項目 */}
           <div className="flex-1 flex justify-around items-center h-full">
             {bottomNavItems.slice(0, 2).map((item) => (
@@ -99,12 +99,12 @@ export const Layout = () => {
             ))}
           </div>
 
-          {/* 中央FABボタン（ナビバー内に収める） */}
+          {/* 中央FABボタン（ナビバー上部に浮かせて強調） */}
           <NavLink
             to="/add-transaction"
             end
             className={({ isActive }) =>
-              `absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-md transition-colors ${
+              `absolute left-1/2 -translate-x-1/2 top-0 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all active:scale-95 ${
                 isActive
                   ? 'bg-gray-700 dark:bg-gray-500'
                   : 'btn-primary'
@@ -112,7 +112,7 @@ export const Layout = () => {
             }
             aria-label="取引を追加"
           >
-            <Plus size={24} className="text-white" />
+            <Plus size={26} className="text-white" />
           </NavLink>
         </div>
       </nav>
