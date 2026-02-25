@@ -153,7 +153,7 @@ export const MoneyPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
-      <div className="flex-1 overflow-clip pb-20">
+      <div className="flex-1 overflow-clip pb-32">
         <div className="px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6">
           {/* 口座セクション */}
           <div data-section-name="口座" className="relative">

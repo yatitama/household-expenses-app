@@ -227,7 +227,7 @@ export const AccountsPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
-      <div ref={containerRef} className="flex-1 overflow-clip pb-20">
+      <div ref={containerRef} className="flex-1 overflow-clip pb-32">
         {accounts.length === 0 ? (
           <div className="p-4">
             <EmptyState
