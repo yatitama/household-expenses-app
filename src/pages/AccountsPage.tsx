@@ -301,43 +301,45 @@ export const AccountsPage = () => {
             {/* 支出セクション */}
             <div data-section-name="支出" className="relative">
               <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
-                {/* 1段目：タイトルとビューモードボタン */}
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingDown size={14} />支出</h3>
-                  <div className="flex items-center gap-0.5">
-                    <button
-                      onClick={() => setExpenseViewMode('category')}
-                      className={`p-1 rounded transition-colors ${expenseViewMode === 'category' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
-                      title="カテゴリ別"
-                    >
-                      <Tag size={13} />
-                    </button>
-                    <button
-                      onClick={() => setExpenseViewMode('payment')}
-                      className={`p-1 rounded transition-colors ${expenseViewMode === 'payment' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
-                      title="支払い元別"
-                    >
-                      <CreditCard size={13} />
-                    </button>
-                    <button
-                      onClick={() => setExpenseViewMode('member')}
-                      className={`p-1 rounded transition-colors ${expenseViewMode === 'member' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
-                      title="メンバー別"
-                    >
-                      <Users size={13} />
-                    </button>
-                  </div>
-                </div>
-                {/* 2段目：金額と前月比 */}
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                    -{formatCurrency(totalExpenses + totalRecurringExpense)}
-                  </p>
-                  {totalPrevExpenses !== 0 && (
-                    <span className={`text-xs font-medium ${expenseMonthlyChangePercent === 0 ? 'text-gray-400 dark:text-gray-500' : expenseMonthlyChangePercent < 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {expenseMonthlyChangePercent === 0 ? '→' : expenseMonthlyChangePercent < 0 ? '↓' : '↑'} {formatCurrency(Math.abs(expenseMonthlyChange))} ({Math.abs(expenseMonthlyChangePercent).toFixed(1)}%)
-                    </span>
-                  )}
+                  {/* 左側：タイトルとビューモードボタン */}
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingDown size={14} />支出</h3>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        onClick={() => setExpenseViewMode('category')}
+                        className={`p-1 rounded transition-colors ${expenseViewMode === 'category' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
+                        title="カテゴリ別"
+                      >
+                        <Tag size={13} />
+                      </button>
+                      <button
+                        onClick={() => setExpenseViewMode('payment')}
+                        className={`p-1 rounded transition-colors ${expenseViewMode === 'payment' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
+                        title="支払い元別"
+                      >
+                        <CreditCard size={13} />
+                      </button>
+                      <button
+                        onClick={() => setExpenseViewMode('member')}
+                        className={`p-1 rounded transition-colors ${expenseViewMode === 'member' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
+                        title="メンバー別"
+                      >
+                        <Users size={13} />
+                      </button>
+                    </div>
+                  </div>
+                  {/* 右側：金額と前月比 */}
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                      -{formatCurrency(totalExpenses + totalRecurringExpense)}
+                    </p>
+                    {totalPrevExpenses !== 0 && (
+                      <span className={`text-xs font-medium whitespace-nowrap ${expenseMonthlyChangePercent === 0 ? 'text-gray-400 dark:text-gray-500' : expenseMonthlyChangePercent < 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        {expenseMonthlyChangePercent === 0 ? '→' : expenseMonthlyChangePercent < 0 ? '↓' : '↑'} {formatCurrency(Math.abs(expenseMonthlyChange))} ({Math.abs(expenseMonthlyChangePercent).toFixed(1)}%)
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="pt-2 pb-3 md:pb-4">
@@ -363,20 +365,20 @@ export const AccountsPage = () => {
             {/* 収入セクション */}
             <div data-section-name="収入" className="relative">
               <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
-                {/* 1段目：タイトル */}
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingUp size={14} />収入</h3>
-                </div>
-                {/* 2段目：金額と前月比 */}
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                    +{formatCurrency(totalIncomes + totalRecurringIncome)}
-                  </p>
-                  {totalPrevIncomes !== 0 && (
-                    <span className={`text-xs font-medium ${incomeMonthlyChangePercent === 0 ? 'text-gray-400 dark:text-gray-500' : incomeMonthlyChangePercent > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {incomeMonthlyChangePercent === 0 ? '→' : incomeMonthlyChangePercent > 0 ? '↑' : '↓'} {formatCurrency(Math.abs(incomeMonthlyChange))} ({Math.abs(incomeMonthlyChangePercent).toFixed(1)}%)
-                    </span>
-                  )}
+                  {/* 左側：タイトル */}
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingUp size={14} />収入</h3>
+                  {/* 右側：金額と前月比 */}
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                      +{formatCurrency(totalIncomes + totalRecurringIncome)}
+                    </p>
+                    {totalPrevIncomes !== 0 && (
+                      <span className={`text-xs font-medium whitespace-nowrap ${incomeMonthlyChangePercent === 0 ? 'text-gray-400 dark:text-gray-500' : incomeMonthlyChangePercent > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        {incomeMonthlyChangePercent === 0 ? '→' : incomeMonthlyChangePercent > 0 ? '↑' : '↓'} {formatCurrency(Math.abs(incomeMonthlyChange))} ({Math.abs(incomeMonthlyChangePercent).toFixed(1)}%)
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="pt-2 pb-3 md:pb-4">
