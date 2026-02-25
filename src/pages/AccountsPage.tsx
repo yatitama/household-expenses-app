@@ -336,6 +336,8 @@ export const AccountsPage = () => {
                   onRecurringClick={() => setIsRecurringExpenseListOpen(true)}
                   emptyMessage="支出なし"
                   month={viewMonth}
+                  prevTransactions={prevMonthExpenses}
+                  prevRecurringPayments={prevUpcomingExpense}
                 />
               </div>
             </div>
@@ -361,6 +363,8 @@ export const AccountsPage = () => {
                   emptyMessage="収入なし"
                   month={viewMonth}
                   displayAbsoluteAmount={true}
+                  prevTransactions={prevMonthIncomes}
+                  prevRecurringPayments={prevUpcomingIncome}
                 />
               </div>
             </div>
