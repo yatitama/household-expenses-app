@@ -22,6 +22,8 @@ interface CardGridSectionProps {
   emptyMessage?: string;
   month?: string; // yyyy-MM
   displayAbsoluteAmount?: boolean;
+  prevTransactions?: Transaction[];
+  prevRecurringPayments?: RecurringPayment[];
 }
 
 export const CardGridSection = ({
@@ -38,6 +40,8 @@ export const CardGridSection = ({
   emptyMessage = '利用なし',
   month = '',
   displayAbsoluteAmount = false,
+  prevTransactions = [],
+  prevRecurringPayments = [],
 }: CardGridSectionProps) => {
   // カテゴリ別グルーピング（取引 + 定期）
   const categoryGrouped = transactions.reduce(
@@ -177,6 +181,101 @@ export const CardGridSection = ({
   const showRecurringTilePayment = unassignedPaymentRecurring.length > 0;
   const showRecurringTileMember = unassignedMemberRecurring.length > 0;
 
+  // 前月のグルーピング（カテゴリ別）
+  const prevCategoryGrouped = prevTransactions.reduce(
+    (acc, t) => {
+      const cat = categories.find((c) => c.id === t.categoryId);
+      const key = t.categoryId || '__none__';
+      if (!acc[key]) {
+        acc[key] = { category: cat, amount: 0, transactions: [] };
+      }
+      acc[key].amount += t.type === 'expense' ? t.amount : -t.amount;
+      acc[key].transactions.push(t);
+      return acc;
+    },
+    {} as Record<string, { category: Category | undefined; amount: number; transactions: Transaction[] }>
+  );
+  for (const rp of prevRecurringPayments) {
+    if (!rp.categoryId) continue;
+    const cat = categories.find((c) => c.id === rp.categoryId);
+    if (!prevCategoryGrouped[rp.categoryId]) {
+      prevCategoryGrouped[rp.categoryId] = { category: cat, amount: 0, transactions: [] };
+    }
+    const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
+    prevCategoryGrouped[rp.categoryId].amount += rp.type === 'expense' ? effectiveAmount : -effectiveAmount;
+  }
+
+  // 前月のグルーピング（支払い元別）
+  const prevPaymentGrouped = prevTransactions.reduce(
+    (acc, t) => {
+      const key = t.paymentMethodId ?? `__account__${t.accountId}`;
+      const pm = paymentMethods.find((p) => p.id === t.paymentMethodId);
+      const linkedAccount = pm
+        ? accounts.find((a) => a.id === pm.linkedAccountId)
+        : accounts.find((a) => a.id === t.accountId);
+      if (!acc[key]) {
+        acc[key] = { paymentMethod: pm, account: linkedAccount, name: pm?.name ?? linkedAccount?.name ?? '現金', amount: 0, transactions: [] };
+      }
+      acc[key].amount += t.type === 'expense' ? t.amount : -t.amount;
+      acc[key].transactions.push(t);
+      return acc;
+    },
+    {} as Record<string, { paymentMethod: PaymentMethod | undefined; account: Account | undefined; name: string; amount: number; transactions: Transaction[] }>
+  );
+  for (const rp of prevRecurringPayments) {
+    const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
+    const signedAmount = rp.type === 'expense' ? effectiveAmount : -effectiveAmount;
+    if (rp.paymentMethodId) {
+      const pm = paymentMethods.find((p) => p.id === rp.paymentMethodId);
+      const linkedAccount = pm ? accounts.find((a) => a.id === pm.linkedAccountId) : undefined;
+      if (!prevPaymentGrouped[rp.paymentMethodId]) {
+        prevPaymentGrouped[rp.paymentMethodId] = { paymentMethod: pm, account: linkedAccount, name: pm?.name ?? '現金', amount: 0, transactions: [] };
+      }
+      prevPaymentGrouped[rp.paymentMethodId].amount += signedAmount;
+    } else if (rp.accountId) {
+      const acc = accounts.find((a) => a.id === rp.accountId);
+      const key = `__account__${rp.accountId}`;
+      if (!prevPaymentGrouped[key]) {
+        prevPaymentGrouped[key] = { paymentMethod: undefined, account: acc, name: acc?.name ?? '口座', amount: 0, transactions: [] };
+      }
+      prevPaymentGrouped[key].amount += signedAmount;
+    }
+  }
+
+  // 前月のグルーピング（メンバー別）
+  const prevMemberGrouped = prevTransactions.reduce(
+    (acc, t) => {
+      const account = accounts.find((a) => a.id === t.accountId);
+      const memberId = account?.memberId || '__unknown__';
+      const member = members.find((m) => m.id === memberId);
+      if (!acc[memberId]) {
+        acc[memberId] = { member, name: member?.name ?? '不明', amount: 0, transactions: [] };
+      }
+      acc[memberId].amount += t.type === 'expense' ? t.amount : -t.amount;
+      acc[memberId].transactions.push(t);
+      return acc;
+    },
+    {} as Record<string, { member: Member | undefined; name: string; amount: number; transactions: Transaction[] }>
+  );
+  for (const rp of prevRecurringPayments) {
+    if (!rp.accountId) continue;
+    const account = accounts.find((a) => a.id === rp.accountId);
+    const memberId = account?.memberId || '__unknown__';
+    const member = members.find((m) => m.id === memberId);
+    if (!prevMemberGrouped[memberId]) {
+      prevMemberGrouped[memberId] = { member, name: member?.name ?? '不明', amount: 0, transactions: [] };
+    }
+    const effectiveAmount = month ? getEffectiveRecurringAmount(rp, month) : rp.amount;
+    prevMemberGrouped[memberId].amount += rp.type === 'expense' ? effectiveAmount : -effectiveAmount;
+  }
+
+  // 前月比計算関数
+  const calculateMonthlyChange = (currentAmount: number, prevAmount: number): { change: number; percent: number } => {
+    const change = currentAmount - prevAmount;
+    const percent = prevAmount !== 0 ? ((change / Math.abs(prevAmount)) * 100) : 0;
+    return { change, percent };
+  };
+
   const hasContent =
     viewMode === 'category'
       ? sortedCategoryEntries.length > 0 || showRecurringTileCategory
@@ -196,10 +295,12 @@ export const CardGridSection = ({
     <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {viewMode === 'category'
-          ? sortedCategoryEntries.map(([, { category, amount, transactions: catTransactions }]) => {
+          ? sortedCategoryEntries.map(([key, { category, amount, transactions: catTransactions }]) => {
               const catRecurring = recurringPayments.filter((rp) => rp.categoryId === category?.id);
               const progress = category?.budget ? Math.min(100, (amount / category.budget) * 100) : 0;
               const gaugeColor = category?.color || '#6b7280';
+              const prevAmount = prevCategoryGrouped[key]?.amount ?? 0;
+              const { change, percent } = calculateMonthlyChange(amount, prevAmount);
               return (
               <button
                 key={category?.id ?? '__none__'}
@@ -228,6 +329,11 @@ export const CardGridSection = ({
                 <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                   {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{category?.budget ? ` / ${formatCurrency(category.budget)}` : ''}
                 </p>
+                {prevAmount !== 0 && (
+                  <p className={`relative z-10 text-right text-xs font-medium ${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                    {change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
+                  </p>
+                )}
               </button>
             );})
           : viewMode === 'payment'
@@ -238,6 +344,8 @@ export const CardGridSection = ({
                 : recurringPayments.filter((rp) => rp.paymentMethodId === key);
               const budget = paymentMethod?.budget;
               const progress = budget ? Math.min(100, (amount / budget) * 100) : 0;
+              const prevAmount = prevPaymentGrouped[key]?.amount ?? 0;
+              const { change, percent } = calculateMonthlyChange(amount, prevAmount);
               return (
                 <button
                   key={key}
@@ -266,6 +374,11 @@ export const CardGridSection = ({
                   <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                     {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                   </p>
+                  {prevAmount !== 0 && (
+                    <p className={`relative z-10 text-right text-xs font-medium ${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      {change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
+                    </p>
+                  )}
                 </button>
               );
             })
@@ -277,6 +390,8 @@ export const CardGridSection = ({
               const memberColor = member?.color || '#6b7280';
               const budget = member?.budget;
               const progress = budget ? Math.min(100, (amount / budget) * 100) : 0;
+              const prevAmount = prevMemberGrouped[key]?.amount ?? 0;
+              const { change, percent } = calculateMonthlyChange(amount, prevAmount);
               return (
               <button
                 key={key}
@@ -305,6 +420,11 @@ export const CardGridSection = ({
                 <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
                   {formatCurrency(displayAbsoluteAmount ? Math.abs(amount) : amount)}{budget ? ` / ${formatCurrency(budget)}` : ''}
                 </p>
+                {prevAmount !== 0 && (
+                  <p className={`relative z-10 text-right text-xs font-medium ${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                    {change >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(change))} ({Math.abs(percent).toFixed(1)}%)
+                  </p>
+                )}
               </button>
             );})}
 
