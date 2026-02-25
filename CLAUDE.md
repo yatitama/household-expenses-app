@@ -64,14 +64,21 @@
 src/
 ├── components/           # UIコンポーネント
 │   ├── accounts/         #   口座・取引関連
-│   │   └── modals/       #     モーダルダイアログ群（16種）
+│   │   ├── GrowthHeader.tsx
+│   │   ├── TrendChart.tsx              # 成長指標
+│   │   ├── MonthComparisonCards.tsx
+│   │   ├── AchievementBadges.tsx
+│   │   ├── SavingsProgressTimeline.tsx
+│   │   ├── CardGridSection.tsx
+│   │   └── modals/                     # モーダルダイアログ群（16種）
 │   ├── feedback/         #   フィードバックUI（ConfirmDialog, ErrorBoundary等）
 │   ├── quickAdd/         #   クイック追加テンプレート
 │   ├── savings/          #   貯金目標
 │   └── search/           #   検索・フィルタUI
 ├── contexts/             # React Context（テーマ）
 ├── hooks/                # カスタムHooks
-│   └── accounts/         #   口座操作系
+│   ├── accounts/         #   口座操作系
+│   └── useGrowthMetrics.ts              # 成長指標計算
 ├── pages/                # ページコンポーネント（5画面）
 ├── services/             # データ永続化・ビジネスロジック
 ├── types/                # TypeScript型定義
