@@ -297,7 +297,7 @@ export const AccountsPage = () => {
             />
           </div>
         ) : (
-          <div ref={contentRef} className={`px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6 ${getAnimationClass()}`}>
+          <div ref={contentRef} className={`px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6 pb-16 md:pb-20 ${getAnimationClass()}`}>
             {/* 支出セクション */}
             <div data-section-name="支出" className="relative">
               <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
