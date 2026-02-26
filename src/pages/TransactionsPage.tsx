@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import toast from 'react-hot-toast';
-import { Receipt, Sliders, ChevronDown, Calendar, LayoutGrid, Wallet, CreditCard, RefreshCw, X } from 'lucide-react';
+import { Receipt, Sliders, ChevronDown, Calendar, LayoutGrid, Wallet, CreditCard, RefreshCw, ChevronsUp, ChevronsDown } from 'lucide-react';
 import { useTransactionFilter } from '../hooks/useTransactionFilter';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { TransactionFilterSheet } from '../components/search/TransactionFilterSheet';
@@ -66,6 +66,18 @@ export const TransactionsPage = () => {
     const currentIndex = groupByOptions.indexOf(groupBy);
     const nextIndex = (currentIndex + 1) % groupByOptions.length;
     setGroupBy(groupByOptions[nextIndex]);
+  };
+
+  // 全て開く/全て閉じるハンドラー
+  const handleToggleAllGroups = () => {
+    if (expandedGroups.size === groupedItems.length) {
+      // 全て開いている状態なら全て閉じる
+      setExpandedGroups(new Set());
+    } else {
+      // それ以外なら全て開く
+      const allKeys = groupedItems.map(([key]) => key);
+      setExpandedGroups(new Set(allKeys));
+    }
   };
 
   // グループ化タイプのラベルとアイコンを取得
@@ -482,22 +494,24 @@ export const TransactionsPage = () => {
               )}
             </button>
 
-            {/* Active filter badge */}
-            {activeFilterCount > 0 ? (
-              <button
-                onClick={resetFilters}
-                className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs text-gray-700 dark:text-gray-300 font-medium flex-shrink-0 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                aria-label="フィルターをリセット"
-              >
-                <span>{activeFilterCount}件の条件</span>
-                <X size={12} />
-              </button>
-            ) : (
-              /* Transaction Count */
-              <p className="text-xs text-gray-600 dark:text-gray-400 font-medium flex-shrink-0">
-                {totalItemCount}件
-              </p>
-            )}
+            {/* Expand/Collapse All Groups Button */}
+            <button
+              onClick={handleToggleAllGroups}
+              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 flex-shrink-0"
+              aria-label={expandedGroups.size === groupedItems.length ? '全セクションを閉じる' : '全セクションを開く'}
+              title={expandedGroups.size === groupedItems.length ? '全て閉じる' : '全て開く'}
+            >
+              {expandedGroups.size === groupedItems.length ? (
+                <ChevronsUp size={18} />
+              ) : (
+                <ChevronsDown size={18} />
+              )}
+            </button>
+
+            {/* Transaction Count */}
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium flex-shrink-0">
+              {totalItemCount}件
+            </p>
           </div>
 
           {/* Right: Summary Card */}
