@@ -308,7 +308,7 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-row gap-2 -mx-3 -mb-3 sm:-mx-4 sm:-mb-4">
+            <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-row gap-2 -mx-2 -mb-3 sm:-mx-2 sm:-mb-4">
               <button
                 onClick={resetFilters}
                 className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium"
