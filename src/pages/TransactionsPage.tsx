@@ -90,7 +90,7 @@ export const TransactionsPage = () => {
       case 'category':
         return { label: 'カテゴリ', icon: <LayoutGrid size={16} /> };
       case 'account':
-        return { label: '口座', icon: <Wallet size={16} /> };
+        return { label: '振込・引落先', icon: <Wallet size={16} /> };
       case 'payment':
         return { label: '支払方法', icon: <CreditCard size={16} /> };
       default:
@@ -244,7 +244,7 @@ export const TransactionsPage = () => {
               const paymentName = getPaymentMethodName(t.paymentMethodId);
               return { key: t.paymentMethodId, label: paymentName || '不明' };
             }
-            return { key: 'direct', label: '口座直接' };
+            return { key: 'direct', label: '振替' };
           }
           default:
             return { key: t.date, label: formatDate(t.date) };
@@ -270,7 +270,7 @@ export const TransactionsPage = () => {
             if (payment.paymentMethodId) {
               return { key: payment.paymentMethodId, label: getPaymentMethodName(payment.paymentMethodId) || '不明' };
             }
-            return { key: 'direct', label: '口座直接' };
+            return { key: 'direct', label: '振替' };
           }
           default:
             return { key: date, label: formatDate(date) };
@@ -292,7 +292,26 @@ export const TransactionsPage = () => {
     const entries = Array.from(groups.entries());
     if (groupBy === 'date') {
       return entries.sort((a, b) => b[0].localeCompare(a[0]));
+    } else if (groupBy === 'category') {
+      // カテゴリの設定画面の順序に合わせてソート
+      return entries.sort((a, b) => {
+        const catA = categories.find((c) => c.id === a[0]);
+        const catB = categories.find((c) => c.id === b[0]);
+        const orderA = catA?.order ?? Infinity;
+        const orderB = catB?.order ?? Infinity;
+        return orderA - orderB;
+      });
+    } else if (groupBy === 'account') {
+      // 口座の設定画面の順序に合わせてソート
+      return entries.sort((a, b) => {
+        const accA = accounts.find((acc) => acc.id === a[0]);
+        const accB = accounts.find((acc) => acc.id === b[0]);
+        const orderA = accA?.order ?? Infinity;
+        const orderB = accB?.order ?? Infinity;
+        return orderA - orderB;
+      });
     } else {
+      // 支払方法（その他）はラベル順でソート
       return entries.sort((a, b) => b[1].label.localeCompare(a[1].label));
     }
   }, [filteredTransactions, recurringOccurrences, groupBy, getCategoryName, getAccountName, getPaymentMethodName]);
