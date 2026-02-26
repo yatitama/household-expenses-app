@@ -95,15 +95,33 @@ export const TransactionFilterSheet = ({
 
               {isExpanded('type') && (
                 <div className="px-2 pb-2 border-t border-gray-200 dark:border-gray-700 pt-2">
-                  <select
-                    value={filters.transactionType}
-                    onChange={(e) => updateFilter('transactionType', e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 text-sm border border-gray-200 dark:border-gray-600 transition-colors"
-                  >
-                    <option value="all">すべて</option>
-                    <option value="income">収入</option>
-                    <option value="expense">支出</option>
-                  </select>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {[
+                      { value: 'all' as const, label: 'すべて' },
+                      { value: 'expense' as const, label: '支出' },
+                      { value: 'income' as const, label: '収入' },
+                    ].map((type) => (
+                      <button
+                        key={type.value}
+                        type="button"
+                        onClick={() => updateFilter('transactionType', type.value)}
+                        className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] ${
+                          filters.transactionType === type.value
+                            ? 'bg-gray-100 dark:bg-gray-700'
+                            : ''
+                        }`}
+                      >
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
+                          {type.label}
+                        </span>
+                        {filters.transactionType === type.value && (
+                          <div className="absolute -top-1 -right-1">
+                            <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
