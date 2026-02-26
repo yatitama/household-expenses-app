@@ -20,51 +20,22 @@ export const DateRangePicker = ({ start, end, onStartChange, onEndChange }: Date
   };
 
   return (
-    <div className="space-y-3">
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-            開始日
-          </label>
-          <div className="relative">
-            <input
-              type="date"
-              value={start}
-              onChange={(e) => onStartChange(e.target.value)}
-              className="w-full rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
-              aria-label="開始日"
-            />
-          </div>
-        </div>
-        <div className="flex-1">
-          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-            終了日
-          </label>
-          <div className="relative">
-            <input
-              type="date"
-              value={end}
-              onChange={(e) => onEndChange(e.target.value)}
-              className="w-full rounded-lg px-2 py-2 text-xs border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-600 appearance-none"
-              aria-label="終了日"
-            />
-          </div>
-        </div>
-      </div>
-
+    <div className="space-y-2">
       {/* Calendar Picker */}
-      <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-gray-50 dark:bg-slate-800 overflow-x-auto">
-        <DayPicker
-          mode="range"
-          selected={{ from: startDate, to: endDate }}
-          onSelect={(range) => {
-            onStartChange(range?.from ? format(range.from, 'yyyy-MM-dd') : '');
-            onEndChange(range?.to ? format(range.to, 'yyyy-MM-dd') : '');
-          }}
-          month={startDate || new Date()}
-          showOutsideDays={false}
-          className="[&_.rdp]:!p-0 [&_.rdp-caption]:!font-semibold [&_.rdp-cell]:!w-8 [&_.rdp-day]:!w-8 [&_.rdp-day]:!h-8 [&_.rdp-day_selected]:!bg-primary-600 [&_.rdp-day_selected]:!text-white [&_.rdp-day_range_middle]:!bg-primary-100 dark:[&_.rdp-day_range_middle]:!bg-primary-900/30"
-        />
+      <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-2 bg-gray-50 dark:bg-slate-800 overflow-x-auto flex justify-center">
+        <div className="text-sm">
+          <DayPicker
+            mode="range"
+            selected={{ from: startDate, to: endDate }}
+            onSelect={(range) => {
+              onStartChange(range?.from ? format(range.from, 'yyyy-MM-dd') : '');
+              onEndChange(range?.to ? format(range.to, 'yyyy-MM-dd') : '');
+            }}
+            month={startDate || new Date()}
+            showOutsideDays={false}
+            className="[&_.rdp]:!p-0 [&_.rdp_caption]:!font-semibold [&_.rdp_cell]:!w-7 [&_.rdp_day]:!w-7 [&_.rdp_day]:!h-7 [&_.rdp_day]:text-xs [&_.rdp_day_selected]:!bg-primary-600 [&_.rdp_day_selected]:!text-white [&_.rdp_day_range_middle]:!bg-primary-100 dark:[&_.rdp_day_range_middle]:!bg-primary-900/30"
+          />
+        </div>
       </div>
 
       {/* Clear Button */}
