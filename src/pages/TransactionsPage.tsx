@@ -351,7 +351,7 @@ export const TransactionsPage = () => {
                   <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg">
                     <button
                       onClick={() => toggleGroupExpanded(key)}
-                      className="sticky w-full px-4 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-[background-color] text-left z-10 rounded-t-lg border-b border-gray-200 dark:border-gray-700"
+                      className="sticky w-full px-4 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-[background-color] text-left z-10 rounded-t-lg"
                       style={{ top: 'max(0px, env(safe-area-inset-top))' }}
                     >
                       <div className="flex items-center gap-2 flex-1">
@@ -390,7 +390,7 @@ export const TransactionsPage = () => {
                       </p>
                     </button>
                     {isExpanded && (
-                      <div className="px-0 pb-0 pt-0">
+                      <div className="border-t border-gray-200 dark:border-gray-700 px-0 pb-0 pt-0">
                         {items.map((item, idx) => {
                           if (item.kind === 'transaction') {
                             const t = item.data;
