@@ -74,8 +74,7 @@ export const FilterPanel = ({
           <DateRangePicker
             start={filters.dateRange.start}
             end={filters.dateRange.end}
-            onStartChange={(v) => updateFilter('dateRange', { ...filters.dateRange, start: v })}
-            onEndChange={(v) => updateFilter('dateRange', { ...filters.dateRange, end: v })}
+            onChange={(start, end) => updateFilter('dateRange', { start, end })}
           />
 
           {/* Categories */}
