@@ -355,7 +355,15 @@ export const TransactionsPage = () => {
                     >
                       <div className="flex items-center gap-2 flex-1">
                         <ChevronDown size={16} className={`text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
-                        <div className="text-gray-600 dark:text-gray-400 flex-shrink-0">
+                        <div className="flex-shrink-0" style={{
+                          color: groupBy === 'category'
+                            ? categories.find((c) => c.id === key)?.color || '#9ca3af'
+                            : groupBy === 'account'
+                            ? accounts.find((a) => a.id === key)?.color || '#9ca3af'
+                            : groupBy === 'payment'
+                            ? paymentMethods.find((p) => p.id === key)?.color || '#9ca3af'
+                            : '#9ca3af'
+                        }}>
                           {groupBy === 'category' ? (
                             getCategoryIcon(getCategoryIconName(key), 16)
                           ) : groupBy === 'account' ? (
