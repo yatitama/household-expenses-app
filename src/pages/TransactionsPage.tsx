@@ -127,10 +127,6 @@ export const TransactionsPage = () => {
     return categories.find((c) => c.id === categoryId)?.name || '不明';
   }, [categories]);
 
-  const getCategoryColor = useCallback((categoryId: string) => {
-    return categories.find((c) => c.id === categoryId)?.color || '#9ca3af';
-  }, [categories]);
-
   const getCategoryIconName = useCallback((categoryId: string) => {
     return categories.find((c) => c.id === categoryId)?.icon || 'MoreHorizontal';
   }, [categories]);
@@ -389,7 +385,8 @@ export const TransactionsPage = () => {
                         {items.map((item, idx) => {
                           if (item.kind === 'transaction') {
                             const t = item.data;
-                            const color = getCategoryColor(t.categoryId);
+                            const paymentMethod = paymentMethods.find((pm) => pm.id === t.paymentMethodId);
+                            const account = accounts.find((a) => a.id === t.accountId);
                             return (
                               <button
                                 key={t.id}
@@ -397,33 +394,36 @@ export const TransactionsPage = () => {
                                   setSelectedTransaction(t);
                                   setIsDetailOpen(true);
                                 }}
-                                className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                                className="w-full flex flex-col gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                               >
-                                <div className="flex items-center gap-2 min-w-0 flex-1">
-                                  <div
-                                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                                    style={{ backgroundColor: `${color}20`, color }}
-                                  >
-                                    {getCategoryIcon(getCategoryIconName(t.categoryId), 12)}
-                                  </div>
-                                  <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
-                                    {getCategoryName(t.categoryId)}
+                                {/* 上段：メモ（またはカテゴリ名）と金額 */}
+                                <div className="flex items-center justify-between gap-2">
+                                  <p className="truncate text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium flex-1">
+                                    {t.memo || getCategoryName(t.categoryId)}
                                   </p>
+                                  <span className={`text-xs md:text-sm font-semibold flex-shrink-0 ${
+                                    t.type === 'income' ? 'text-green-600' : 'text-red-600'
+                                  }`}>
+                                    {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
+                                  </span>
                                 </div>
-                                <span className={`text-gray-900 dark:text-gray-200 font-semibold flex-shrink-0 ${
-                                  t.type === 'income' ? 'text-green-600' : 'text-red-600'
-                                }`}>
-                                  {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
-                                </span>
+                                {/* 下段：日付と支払い手段/口座 */}
+                                <div className="flex items-center justify-between gap-2 text-xs md:text-xs text-gray-600 dark:text-gray-400">
+                                  <span>{formatDate(t.date)}</span>
+                                  <span className="truncate">
+                                    {paymentMethod ? paymentMethod.name : (account ? account.name : getCategoryName(t.categoryId))}
+                                  </span>
+                                </div>
                               </button>
                             );
                           } else {
                             const occ = item.data;
                             const p = occ.payment;
-                            const color = p.categoryId ? getCategoryColor(p.categoryId) : '#9ca3af';
                             const month = occ.date.slice(0, 7); // yyyy-MM形式で抽出
                             const effectiveAmount = getEffectiveRecurringAmount(p, month);
                             const hasOverride = (p.monthlyOverrides ?? {})[month] !== undefined;
+                            const paymentMethod = paymentMethods.find((pm) => pm.id === p.paymentMethodId);
+                            const account = accounts.find((a) => a.id === p.accountId);
                             return (
                               <button
                                 key={`recurring-${p.id}-${occ.date}-${idx}`}
@@ -431,39 +431,36 @@ export const TransactionsPage = () => {
                                   setSelectedRecurring(occ.payment);
                                   setIsRecurringDetailOpen(true);
                                 }}
-                                className="w-full flex items-center justify-between text-xs md:text-sm gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                                className="w-full flex flex-col gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                               >
-                                <div className="flex items-center gap-2 min-w-0 flex-1">
-                                  <div
-                                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                                    style={{ backgroundColor: `${color}20`, color }}
-                                  >
-                                    {p.categoryId
-                                      ? getCategoryIcon(getCategoryIconName(p.categoryId), 12)
-                                      : <RefreshCw size={10} />
-                                    }
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <p className="truncate text-gray-900 dark:text-gray-100 font-medium">
-                                      {p.name}
-                                    </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                                      <RefreshCw size={10} />
-                                      {getPeriodLabel(p)}
-                                    </p>
+                                {/* 上段：メモ（またはカテゴリ/定期名）と金額 */}
+                                <div className="flex items-center justify-between gap-2">
+                                  <p className="truncate text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium flex-1">
+                                    {p.name}
+                                  </p>
+                                  <div className={`font-semibold flex-shrink-0 flex flex-col items-end ${
+                                    p.type === 'income' ? 'text-green-600' : 'text-red-600'
+                                  }`}>
+                                    <span className="text-xs md:text-sm">
+                                      {p.type === 'income' ? '+' : '-'}{formatCurrency(effectiveAmount)}
+                                    </span>
+                                    {hasOverride && (
+                                      <span className="text-xs text-gray-400 line-through">
+                                        {p.type === 'income' ? '+' : '-'}{formatCurrency(p.amount)}
+                                      </span>
+                                    )}
                                   </div>
                                 </div>
-                                <div className={`font-semibold flex-shrink-0 flex flex-col items-end ${
-                                  p.type === 'income' ? 'text-green-600' : 'text-red-600'
-                                }`}>
-                                  <span>
-                                    {p.type === 'income' ? '+' : '-'}{formatCurrency(effectiveAmount)}
+                                {/* 下段：日付と支払い手段/口座 + 定期ラベル */}
+                                <div className="flex items-center justify-between gap-2 text-xs md:text-xs text-gray-600 dark:text-gray-400">
+                                  <div className="flex items-center gap-1">
+                                    <span>{formatDate(occ.date)}</span>
+                                    <RefreshCw size={10} className="flex-shrink-0" />
+                                    <span>{getPeriodLabel(p)}</span>
+                                  </div>
+                                  <span className="truncate">
+                                    {paymentMethod ? paymentMethod.name : (account ? account.name : '—')}
                                   </span>
-                                  {hasOverride && (
-                                    <span className="text-xs text-gray-400 line-through">
-                                      {p.type === 'income' ? '+' : '-'}{formatCurrency(p.amount)}
-                                    </span>
-                                  )}
                                 </div>
                               </button>
                             );
