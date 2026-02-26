@@ -39,7 +39,7 @@ export const DateRangePicker = ({ start, end, onChange }: DateRangePickerProps) 
             value={start}
             max={end || undefined}
             onChange={(e) => handleStartChange(e.target.value)}
-            className="w-full px-2 py-1.5 text-sm bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-600 focus:outline-none"
+            className="w-full px-2 py-2.5 text-sm bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-600 focus:outline-none appearance-none"
           />
         </div>
         <div>
@@ -49,7 +49,7 @@ export const DateRangePicker = ({ start, end, onChange }: DateRangePickerProps) 
             value={end}
             min={start || undefined}
             onChange={(e) => handleEndChange(e.target.value)}
-            className="w-full px-2 py-1.5 text-sm bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-600 focus:outline-none"
+            className="w-full px-2 py-2.5 text-sm bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-600 focus:outline-none appearance-none"
           />
         </div>
       </div>
