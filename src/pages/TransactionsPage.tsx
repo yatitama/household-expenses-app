@@ -67,6 +67,7 @@ export const TransactionsPage = () => {
     const nextIndex = (currentIndex + 1) % groupByOptions.length;
     setGroupBy(groupByOptions[nextIndex]);
     setExpandedGroups(new Set());
+    window.scrollTo(0, 0);
   };
 
   // 全て開く/全て閉じるハンドラー
