@@ -356,7 +356,7 @@ export const TransactionsPage = () => {
                   <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg">
                     <button
                       onClick={() => toggleGroupExpanded(key)}
-                      className={`sticky w-full px-4 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left z-10 rounded-t-lg ${isExpanded ? 'border-b border-gray-200 dark:border-gray-700' : ''}`}
+                      className={`sticky w-full px-4 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-[background-color] text-left z-10 rounded-t-lg ${isExpanded ? 'border-b border-gray-200 dark:border-gray-700' : ''}`}
                       style={{ top: 'max(0px, env(safe-area-inset-top))' }}
                     >
                       <div className="flex items-center gap-2 flex-1">
