@@ -84,13 +84,13 @@ export const TransactionsPage = () => {
   const getGroupByLabel = (type: GroupByType) => {
     switch (type) {
       case 'date':
-        return { label: '日付', icon: <Calendar size={16} /> };
+        return { label: '日付', icon: <Calendar size={20} /> };
       case 'category':
-        return { label: 'カテゴリ', icon: <LayoutGrid size={16} /> };
+        return { label: 'カテゴリ', icon: <LayoutGrid size={20} /> };
       case 'account':
-        return { label: '口座', icon: <Wallet size={16} /> };
+        return { label: '口座', icon: <Wallet size={20} /> };
       case 'payment':
-        return { label: '支払方法', icon: <CreditCard size={16} /> };
+        return { label: '支払方法', icon: <CreditCard size={20} /> };
       default:
         return { label: '', icon: null };
     }
@@ -466,25 +466,15 @@ export const TransactionsPage = () => {
       {/* Fixed Footer with Summary */}
       <div className="fixed left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5 fixed-above-bottom-nav">
         <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-between gap-2">
-          {/* Left: GroupBy, Filter Button and Count */}
-          <div className="flex items-center gap-1 min-w-0 flex-1">
-            {/* GroupBy Button */}
-            <button
-              onClick={handleCycleGroupBy}
-              className="px-2 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 flex-shrink-0 flex items-center gap-1 text-xs font-medium"
-              aria-label="グループ化を変更"
-            >
-              {getGroupByLabel(groupBy).icon}
-              <span>{getGroupByLabel(groupBy).label}</span>
-            </button>
-
+          {/* Left: Filter, Expand/Collapse, and GroupBy Buttons */}
+          <div className="flex items-center gap-0 min-w-0 flex-1">
             {/* Filter Button */}
             <button
               onClick={() => setIsFilterSheetOpen(true)}
               className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 relative flex-shrink-0"
               aria-label="フィルター設定を開く"
             >
-              <Sliders size={18} />
+              <Sliders size={24} />
               {activeFilterCount > 0 && (
                 <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                   {activeFilterCount}
@@ -500,10 +490,20 @@ export const TransactionsPage = () => {
               title={expandedGroups.size === groupedItems.length ? '全て閉じる' : '全て開く'}
             >
               {expandedGroups.size === groupedItems.length ? (
-                <ChevronsUp size={18} />
+                <ChevronsUp size={24} />
               ) : (
-                <ChevronsDown size={18} />
+                <ChevronsDown size={24} />
               )}
+            </button>
+
+            {/* GroupBy Button */}
+            <button
+              onClick={handleCycleGroupBy}
+              className="px-2 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 flex-shrink-0 flex items-center gap-1 text-xs font-medium"
+              aria-label="グループ化を変更"
+            >
+              {getGroupByLabel(groupBy).icon}
+              <span>{getGroupByLabel(groupBy).label}</span>
             </button>
           </div>
 
