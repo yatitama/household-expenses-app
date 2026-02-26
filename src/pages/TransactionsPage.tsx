@@ -66,6 +66,7 @@ export const TransactionsPage = () => {
     const currentIndex = groupByOptions.indexOf(groupBy);
     const nextIndex = (currentIndex + 1) % groupByOptions.length;
     setGroupBy(groupByOptions[nextIndex]);
+    setExpandedGroups(new Set());
   };
 
   // 全て開く/全て閉じるハンドラー
@@ -84,13 +85,13 @@ export const TransactionsPage = () => {
   const getGroupByLabel = (type: GroupByType) => {
     switch (type) {
       case 'date':
-        return { label: '日付', icon: <Calendar size={20} /> };
+        return { label: '日付', icon: <Calendar size={16} /> };
       case 'category':
-        return { label: 'カテゴリ', icon: <LayoutGrid size={20} /> };
+        return { label: 'カテゴリ', icon: <LayoutGrid size={16} /> };
       case 'account':
-        return { label: '口座', icon: <Wallet size={20} /> };
+        return { label: '口座', icon: <Wallet size={16} /> };
       case 'payment':
-        return { label: '支払方法', icon: <CreditCard size={20} /> };
+        return { label: '支払方法', icon: <CreditCard size={16} /> };
       default:
         return { label: '', icon: null };
     }
