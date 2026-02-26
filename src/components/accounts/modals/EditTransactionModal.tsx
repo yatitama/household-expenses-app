@@ -36,11 +36,18 @@ export const EditTransactionModal = ({
     }
     const account = accounts.find((a) => a.id === selectedSourceId);
     const paymentMethod = paymentMethods.find((p) => p.id === selectedSourceId);
+
+    const resolvedAccountId = account?.id || paymentMethod?.linkedAccountId;
+    if (!resolvedAccountId) {
+      toast.error('有効な支払い元を選択してください');
+      return;
+    }
+
     onSave({
       type,
       amount: parseInt(amount, 10),
       categoryId,
-      accountId: account?.id || paymentMethod?.linkedAccountId || '',
+      accountId: resolvedAccountId,
       paymentMethodId: paymentMethod?.id,
       date,
       memo: memo || undefined,

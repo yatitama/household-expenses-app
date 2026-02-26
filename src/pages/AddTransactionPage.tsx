@@ -109,7 +109,7 @@ export const AddTransactionPage = () => {
       type,
       amount: parsedAmount,
       categoryId,
-      accountId: account?.id || '',
+      accountId: account?.id || paymentMethod?.linkedAccountId || '',
       paymentMethodId: paymentMethod?.id,
       date,
       memo: memo || undefined,
