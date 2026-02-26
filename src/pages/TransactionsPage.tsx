@@ -359,6 +359,9 @@ export const TransactionsPage = () => {
                     >
                       <div className="flex items-center gap-2 flex-1">
                         <ChevronDown size={16} className={`text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
+                        <div className="text-gray-600 dark:text-gray-400 flex-shrink-0">
+                          {getGroupByLabel(groupBy).icon}
+                        </div>
                         <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 text-left">{label}</p>
                       </div>
                       <p className={`text-xs md:text-sm font-bold flex-shrink-0 ${
