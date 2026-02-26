@@ -360,7 +360,21 @@ export const TransactionsPage = () => {
                       <div className="flex items-center gap-2 flex-1">
                         <ChevronDown size={16} className={`text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
                         <div className="text-gray-600 dark:text-gray-400 flex-shrink-0">
-                          {getGroupByLabel(groupBy).icon}
+                          {groupBy === 'category' ? (
+                            getCategoryIcon(getCategoryIconName(key), 16)
+                          ) : groupBy === 'account' ? (
+                            (() => {
+                              const account = accounts.find((a) => a.id === key);
+                              return account?.icon ? getCategoryIcon(account.icon, 16) : <Wallet size={16} />;
+                            })()
+                          ) : groupBy === 'payment' ? (
+                            (() => {
+                              const pm = paymentMethods.find((p) => p.id === key);
+                              return pm?.icon ? getCategoryIcon(pm.icon, 16) : <CreditCard size={16} />;
+                            })()
+                          ) : (
+                            getGroupByLabel(groupBy).icon
+                          )}
                         </div>
                         <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 text-left">{label}</p>
                       </div>
