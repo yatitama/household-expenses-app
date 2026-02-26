@@ -575,6 +575,7 @@ export const AccountsPage = () => {
         memberName={expenseViewMode === 'member' ? selectedDisplayName : undefined}
         displayColor={selectedDisplayColor}
         displayIconType={selectedDisplayIconType}
+        month={viewMonth}
       />
 
       {editingTransaction && (
