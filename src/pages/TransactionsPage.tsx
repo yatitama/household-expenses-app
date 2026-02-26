@@ -370,7 +370,7 @@ export const TransactionsPage = () => {
                       </p>
                     </button>
                     {isExpanded && (
-                      <div className="px-0 pb-0 pt-0 divide-y divide-gray-50 dark:divide-gray-700">
+                      <div className="px-0 pb-0 pt-0">
                         {items.map((item, idx) => {
                           if (item.kind === 'transaction') {
                             const t = item.data;
