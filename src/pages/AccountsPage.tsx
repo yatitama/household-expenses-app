@@ -306,24 +306,27 @@ export const AccountsPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
-      {/* 月セレクタ（画面トップ） */}
-      <div className="bg-white dark:bg-slate-900 border-b dark:border-gray-700 p-2">
+      {/* 月セレクタ（固定ヘッダー） */}
+      <div
+        className="sticky bg-white dark:bg-slate-900 z-20 p-3 md:p-4 border-b dark:border-gray-700"
+        style={{ top: 'max(0px, env(safe-area-inset-top))' }}
+      >
         <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-center">
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-2">
             <button
               onClick={handlePrevMonth}
               className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400"
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={20} />
             </button>
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[4rem] text-center">
-              {selectedYear !== now.getFullYear() ? `${selectedYear}年` : ''}{selectedMonth}月
+            <span className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 min-w-[8rem] text-center tabular-nums">
+              {selectedYear}年{selectedMonth}月
             </span>
             <button
               onClick={handleNextMonth}
               className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400"
             >
-              <ChevronRight size={16} />
+              <ChevronRight size={20} />
             </button>
           </div>
         </div>
@@ -513,15 +516,18 @@ export const AccountsPage = () => {
             {getGroupByLabel(viewMode).icon}
             <span>{getGroupByLabel(viewMode).label}</span>
           </button>
-          {/* 右側：合計 */}
-          <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0">
-            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">合計</p>
-            <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
-              {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
-            </p>
-            <p className={`text-xs font-medium mt-1 ${monthlyChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-              {monthlyChange >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(monthlyChange))} ({Math.abs(monthlyChangePercent).toFixed(1)}%)
-            </p>
+          {/* 右側：合計と前月比（一段） */}
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0 flex items-baseline gap-3">
+            <div>
+              <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">合計</p>
+              <p className="text-lg md:text-xl font-bold tabular-nums" style={{ color: 'var(--theme-primary)' }}>
+                {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
+              </p>
+            </div>
+            <div className={`text-xs font-medium tabular-nums ${monthlyChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              <p>{monthlyChange >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(monthlyChange))}</p>
+              <p>({Math.abs(monthlyChangePercent).toFixed(1)}%)</p>
+            </div>
           </div>
         </div>
       </div>
