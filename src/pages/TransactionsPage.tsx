@@ -324,8 +324,6 @@ export const TransactionsPage = () => {
     return income - expense + recurringIncome - recurringExpense;
   }, [filteredTransactions, recurringOccurrences]);
 
-  const totalItemCount = filteredTransactions.length + recurringOccurrences.length;
-
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-900">
       {/* Transaction list */}
@@ -507,11 +505,6 @@ export const TransactionsPage = () => {
                 <ChevronsDown size={18} />
               )}
             </button>
-
-            {/* Transaction Count */}
-            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium flex-shrink-0">
-              {totalItemCount}件
-            </p>
           </div>
 
           {/* Right: Summary Card */}
