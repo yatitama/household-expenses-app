@@ -26,7 +26,7 @@ export const TransactionFilterSheet = ({
   onClose,
 }: TransactionFilterSheetProps) => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set()
+    new Set(['type', 'date', 'category', 'account'])
   );
 
   if (!isOpen) return null;
