@@ -68,12 +68,12 @@ export const TransactionFilterSheet = ({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto min-h-0">
-          <div className="px-2 py-3 sm:py-4">
+          <div className="px-2 py-2">
             {/* 取引種別セクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
               <button
                 onClick={() => toggleSection('type')}
-                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-2.5 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
@@ -94,7 +94,7 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('type') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div className="px-2 pb-2 border-t border-gray-200 dark:border-gray-700 pt-2">
                   <select
                     value={filters.transactionType}
                     onChange={(e) => updateFilter('transactionType', e.target.value as any)}
@@ -109,10 +109,10 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 期間セクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
               <button
                 onClick={() => toggleSection('date')}
-                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-2.5 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
@@ -133,7 +133,7 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('date') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div className="px-2 pb-2 border-t border-gray-200 dark:border-gray-700 pt-2">
                   <DateRangePicker
                     start={filters.dateRange.start}
                     end={filters.dateRange.end}
@@ -146,10 +146,10 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* カテゴリセクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
               <button
                 onClick={() => toggleSection('category')}
-                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-2.5 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
@@ -170,8 +170,8 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('category') && (
-                <div className="px-2 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="grid grid-cols-3 gap-2">
+                <div className="px-2 pb-2 border-t border-gray-200 dark:border-gray-700 pt-2">
+                  <div className="grid grid-cols-3 gap-1.5">
                     {categories.map((category) => {
                       return (
                         <button
@@ -183,7 +183,7 @@ export const TransactionFilterSheet = ({
                               : [...filters.categoryIds, category.id];
                             updateFilter('categoryIds', newIds);
                           }}
-                          className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] ${
+                          className={`relative flex flex-col items-center justify-center gap-1 p-1.5 rounded-lg transition-colors min-h-[60px] ${
                             filters.categoryIds.includes(category.id)
                               ? 'bg-gray-100 dark:bg-gray-700'
                               : ''
@@ -212,10 +212,10 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* 口座・支払方法セクション */}
-            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
               <button
                 onClick={() => toggleSection('account')}
-                className="w-full flex items-center justify-between p-3 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
+                className="w-full flex items-center justify-between p-2.5 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   <ChevronDown
@@ -236,8 +236,8 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('account') && (
-                <div className="px-2 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="grid grid-cols-3 gap-2">
+                <div className="px-2 pb-2 border-t border-gray-200 dark:border-gray-700 pt-2">
+                  <div className="grid grid-cols-3 gap-1.5">
                     {accounts.map((account) => (
                       <button
                         key={account.id}
@@ -308,7 +308,7 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-3 sm:p-4 flex flex-row gap-2 -mx-3 -mb-3 sm:-mx-4 sm:-mb-4">
+            <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-2 flex flex-row gap-2 -mx-2 -mb-2">
               <button
                 onClick={resetFilters}
                 className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium"
