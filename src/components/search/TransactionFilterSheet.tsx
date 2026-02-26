@@ -68,7 +68,7 @@ export const TransactionFilterSheet = ({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto min-h-0">
-          <div className="px-1 py-2">
+          <div className="px-0 py-2">
             {/* 取引種別セクション */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
               <button
@@ -308,7 +308,7 @@ export const TransactionFilterSheet = ({
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-2 flex flex-row gap-2 -mx-1 -mb-2">
+            <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-2 flex flex-row gap-2 -mb-2">
               <button
                 onClick={resetFilters}
                 className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 active:scale-95 transition-all text-sm font-medium"
