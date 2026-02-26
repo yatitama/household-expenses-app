@@ -171,7 +171,7 @@ export const TransactionFilterSheet = ({
 
               {isExpanded('category') && (
                 <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     {categories.map((category) => {
                       return (
                         <button
@@ -183,24 +183,24 @@ export const TransactionFilterSheet = ({
                               : [...filters.categoryIds, category.id];
                             updateFilter('categoryIds', newIds);
                           }}
-                          className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                          className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] ${
                             filters.categoryIds.includes(category.id)
-                              ? 'bg-primary-50 dark:bg-primary-900/30'
+                              ? 'bg-gray-100 dark:bg-gray-700'
                               : ''
                           }`}
                         >
                           <div
-                            className="w-6 h-6 rounded-full flex items-center justify-center"
+                            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                             style={{ backgroundColor: `${category.color}20`, color: category.color }}
                           >
-                            {getCategoryIcon(category.icon, 14)}
+                            {getCategoryIcon(category.icon, 15)}
                           </div>
-                          <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                          <span className="text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                             {category.name}
                           </span>
                           {filters.categoryIds.includes(category.id) && (
                             <div className="absolute -top-1 -right-1">
-                              <Check size={16} className="text-primary-500" strokeWidth={2} />
+                              <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                             </div>
                           )}
                         </button>
@@ -237,7 +237,7 @@ export const TransactionFilterSheet = ({
 
               {isExpanded('account') && (
                 <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     {accounts.map((account) => (
                       <button
                         key={account.id}
@@ -248,24 +248,24 @@ export const TransactionFilterSheet = ({
                             : [...filters.accountIds, account.id];
                           updateFilter('accountIds', newIds);
                         }}
-                        className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                        className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] ${
                           filters.accountIds.includes(account.id)
-                            ? 'bg-primary-50 dark:bg-primary-900/30'
+                            ? 'bg-gray-100 dark:bg-gray-700'
                             : ''
                         }`}
                       >
                         <div
-                          className="w-6 h-6 rounded-full flex items-center justify-center"
+                          className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                           style={{ backgroundColor: `${account.color || '#9ca3af'}20`, color: account.color || '#9ca3af' }}
                         >
                           <Wallet size={16} />
                         </div>
-                        <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                        <span className="text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                           {account.name}
                         </span>
                         {filters.accountIds.includes(account.id) && (
                           <div className="absolute -top-1 -right-1">
-                            <Check size={16} className="text-primary-500" strokeWidth={2} />
+                            <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                           </div>
                         )}
                       </button>
@@ -280,24 +280,24 @@ export const TransactionFilterSheet = ({
                             : [...filters.paymentMethodIds, pm.id];
                           updateFilter('paymentMethodIds', newIds);
                         }}
-                        className={`relative flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-lg transition-colors ${
+                        className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] ${
                           filters.paymentMethodIds.includes(pm.id)
-                            ? 'bg-primary-50 dark:bg-primary-900/30'
+                            ? 'bg-gray-100 dark:bg-gray-700'
                             : ''
                         }`}
                       >
                         <div
-                          className="w-6 h-6 rounded-full flex items-center justify-center"
+                          className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                           style={{ backgroundColor: `${pm.color || '#9ca3af'}20`, color: pm.color || '#9ca3af' }}
                         >
                           <CreditCard size={16} />
                         </div>
-                        <span className="text-[10px] sm:text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                        <span className="text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
                           {pm.name}
                         </span>
                         {filters.paymentMethodIds.includes(pm.id) && (
                           <div className="absolute -top-1 -right-1">
-                            <Check size={16} className="text-primary-500" strokeWidth={2} />
+                            <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                           </div>
                         )}
                       </button>
