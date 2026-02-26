@@ -297,7 +297,15 @@ export const accountService = {
 // PaymentMethod 操作
 export const paymentMethodService = {
   getAll: (): PaymentMethod[] => {
-    return getItems<PaymentMethod>(STORAGE_KEYS.PAYMENT_METHODS);
+    const methods = getItems<PaymentMethod>(STORAGE_KEYS.PAYMENT_METHODS);
+    return methods.sort((a, b) => {
+      if (a.order !== undefined && b.order !== undefined) {
+        return a.order - b.order;
+      }
+      if (a.order !== undefined) return -1;
+      if (b.order !== undefined) return 1;
+      return 0;
+    });
   },
 
   getById: (id: string): PaymentMethod | undefined => {
@@ -307,9 +315,11 @@ export const paymentMethodService = {
   create: (input: PaymentMethodInput): PaymentMethod => {
     const methods = paymentMethodService.getAll();
     const now = getTimestamp();
+    const maxOrder = methods.reduce((max, m) => Math.max(max, m.order ?? -1), -1);
     const newMethod: PaymentMethod = {
       ...input,
       id: generateId(),
+      order: maxOrder + 1,
       createdAt: now,
       updatedAt: now,
     };
@@ -339,6 +349,19 @@ export const paymentMethodService = {
     if (filtered.length === methods.length) return false;
     setItems(STORAGE_KEYS.PAYMENT_METHODS, filtered);
     return true;
+  },
+
+  updateOrders: (orders: { id: string; order: number }[]): void => {
+    const methods = paymentMethodService.getAll();
+    const orderMap = new Map(orders.map((o) => [o.id, o.order]));
+    const updated = methods.map((method) => {
+      const newOrder = orderMap.get(method.id);
+      if (newOrder !== undefined) {
+        return { ...method, order: newOrder, updatedAt: getTimestamp() };
+      }
+      return method;
+    });
+    setItems(STORAGE_KEYS.PAYMENT_METHODS, updated);
   },
 };
 
