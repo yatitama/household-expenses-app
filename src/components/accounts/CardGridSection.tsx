@@ -326,8 +326,11 @@ export const CardGridSection = ({
 
   // 前月比計算関数
   const calculateMonthlyChange = (currentAmount: number, prevAmount: number): { change: number; percent: number } => {
-    const change = currentAmount - prevAmount;
-    const percent = prevAmount !== 0 ? ((change / Math.abs(prevAmount)) * 100) : 0;
+    // 収入の場合、金額が負の値で格納されているため、絶対値に変換してから比較する
+    const absCurrentAmount = Math.abs(currentAmount);
+    const absPrevAmount = Math.abs(prevAmount);
+    const change = absCurrentAmount - absPrevAmount;
+    const percent = absPrevAmount !== 0 ? ((change / absPrevAmount) * 100) : 0;
     return { change, percent };
   };
 
