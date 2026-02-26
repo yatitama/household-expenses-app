@@ -516,15 +516,17 @@ export const AccountsPage = () => {
             {getGroupByLabel(viewMode).icon}
             <span>{getGroupByLabel(viewMode).label}</span>
           </button>
-          {/* 右側：合計と前月比（横並び） */}
-          <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 flex-shrink-0 flex items-center gap-3">
+          {/* 右側：合計と前月比（上下段） */}
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 flex-shrink-0 flex flex-col items-end gap-1">
             <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">合計</p>
-            <p className="text-lg md:text-xl font-bold tabular-nums" style={{ color: 'var(--theme-primary)' }}>
-              {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
-            </p>
-            <div className={`text-xs font-medium tabular-nums flex items-center gap-2 ${monthlyChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-              <p>{monthlyChange >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(monthlyChange))}</p>
-              <p>({Math.abs(monthlyChangePercent).toFixed(1)}%)</p>
+            <div className="flex items-center gap-3 tabular-nums">
+              <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
+                {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
+              </p>
+              <p className={`text-xs font-medium flex items-center gap-1 ${monthlyChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                <span>{monthlyChange >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(monthlyChange))}</span>
+                <span>({Math.abs(monthlyChangePercent).toFixed(1)}%)</span>
+              </p>
             </div>
           </div>
         </div>
