@@ -311,8 +311,19 @@ export const TransactionsPage = () => {
         return orderA - orderB;
       });
     } else {
-      // 支払方法（その他）はラベル順でソート
-      return entries.sort((a, b) => b[1].label.localeCompare(a[1].label));
+      // 支払方法は設定画面の順序に合わせてソート、振替は最後
+      return entries.sort((a, b) => {
+        const isDirectA = a[0] === 'direct';
+        const isDirectB = b[0] === 'direct';
+        if (isDirectA && !isDirectB) return 1;
+        if (!isDirectA && isDirectB) return -1;
+
+        const pmA = paymentMethods.find((pm) => pm.id === a[0]);
+        const pmB = paymentMethods.find((pm) => pm.id === b[0]);
+        const orderA = pmA?.order ?? Infinity;
+        const orderB = pmB?.order ?? Infinity;
+        return orderA - orderB;
+      });
     }
   }, [filteredTransactions, recurringOccurrences, groupBy, getCategoryName, getAccountName, getPaymentMethodName]);
 

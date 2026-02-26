@@ -45,6 +45,7 @@ export interface PaymentMethod {
   color: string;
   icon?: string;
   budget?: number; // Optional monthly budget for payment method
+  order?: number; // Display order in settings
   createdAt: string;
   updatedAt: string;
 }
