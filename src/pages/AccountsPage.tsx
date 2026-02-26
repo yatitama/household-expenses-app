@@ -516,16 +516,18 @@ export const AccountsPage = () => {
             <span>{getGroupByLabel(viewMode).label}</span>
           </button>
           {/* 右側：合計と前月比（上下段） */}
-          <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 pr-3 flex-shrink-0 flex flex-col gap-0.5 min-w-fit">
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 pr-3 flex-shrink-0 min-w-fit">
             <div className="flex items-center justify-between gap-2 tabular-nums">
               <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">合計</p>
-              <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
-                {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
-              </p>
+              <div className="flex items-center gap-1">
+                <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
+                  {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
+                </p>
+                <span className={`text-xs font-medium ${monthlyChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  ({monthlyChange >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(monthlyChange))})
+                </span>
+              </div>
             </div>
-            <p className={`text-xs font-medium text-right ${monthlyChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-              {monthlyChange >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(monthlyChange))}
-            </p>
           </div>
         </div>
       </div>
