@@ -92,7 +92,7 @@ export const TransactionsPage = () => {
       case 'account':
         return { label: '振込・引落先', icon: <Wallet size={16} /> };
       case 'payment':
-        return { label: '支払方法', icon: <CreditCard size={16} /> };
+        return { label: '支払方法・振替', icon: <CreditCard size={16} /> };
       default:
         return { label: '', icon: null };
     }
