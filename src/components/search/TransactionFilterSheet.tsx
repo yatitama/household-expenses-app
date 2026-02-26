@@ -170,7 +170,7 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('category') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div className="px-2 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
                   <div className="grid grid-cols-3 gap-2">
                     {categories.map((category) => {
                       return (
@@ -236,7 +236,7 @@ export const TransactionFilterSheet = ({
               </button>
 
               {isExpanded('account') && (
-                <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div className="px-2 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
                   <div className="grid grid-cols-3 gap-2">
                     {accounts.map((account) => (
                       <button
