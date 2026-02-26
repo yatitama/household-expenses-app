@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { X } from 'lucide-react';
-import { parse, format } from 'date-fns';
+import { parse, format, isAfter, isBefore } from 'date-fns';
 import 'react-day-picker/dist/style.css';
 
 interface DateRangePickerProps {
@@ -14,15 +14,59 @@ interface DateRangePickerProps {
 export const DateRangePicker = ({ start, end, onStartChange, onEndChange }: DateRangePickerProps) => {
   const startDate = start ? parse(start, 'yyyy-MM-dd', new Date()) : undefined;
   const endDate = end ? parse(end, 'yyyy-MM-dd', new Date()) : undefined;
-  const [month, setMonth] = useState(startDate || new Date());
+  const [month, setMonth] = useState(startDate || endDate || new Date());
 
   const handleClear = () => {
     onStartChange('');
     onEndChange('');
   };
 
+  const handleSelectRange = (range: { from?: Date; to?: Date } | undefined) => {
+    if (!range) return;
+
+    const { from, to } = range;
+
+    if (!from) {
+      // 無効な選択
+      return;
+    }
+
+    if (!to) {
+      // 開始日のみが選択された場合
+      onStartChange(format(from, 'yyyy-MM-dd'));
+      onEndChange('');
+      return;
+    }
+
+    // 両日が選択された場合（順序を正規化）
+    if (isAfter(from, to)) {
+      // fromのほうが後ろなので、入れ替える
+      onStartChange(format(to, 'yyyy-MM-dd'));
+      onEndChange(format(from, 'yyyy-MM-dd'));
+    } else {
+      // 正常な順序
+      onStartChange(format(from, 'yyyy-MM-dd'));
+      onEndChange(format(to, 'yyyy-MM-dd'));
+    }
+  };
+
   return (
     <div className="space-y-2">
+      {/* Selection Status Text */}
+      {(start || end) && (
+        <div className="text-xs text-gray-600 dark:text-gray-400 px-3 text-center">
+          {start && !end ? (
+            <span>終了日を選択してください</span>
+          ) : start && end ? (
+            <span>
+              {format(parse(start, 'yyyy-MM-dd', new Date()), 'yyyy年M月d日')}
+              {' ～ '}
+              {format(parse(end, 'yyyy-MM-dd', new Date()), 'yyyy年M月d日')}
+            </span>
+          ) : null}
+        </div>
+      )}
+
       {/* Calendar Picker */}
       <div className="flex justify-center">
         <div
@@ -35,14 +79,25 @@ export const DateRangePicker = ({ start, end, onStartChange, onEndChange }: Date
         >
           <DayPicker
             mode="range"
-            selected={{ from: startDate, to: endDate }}
-            onSelect={(range) => {
-              onStartChange(range?.from ? format(range.from, 'yyyy-MM-dd') : '');
-              onEndChange(range?.to ? format(range.to, 'yyyy-MM-dd') : '');
-            }}
+            selected={
+              startDate && endDate
+                ? { from: startDate, to: endDate }
+                : startDate
+                  ? { from: startDate, to: startDate }
+                  : undefined
+            }
+            onSelect={handleSelectRange}
             month={month}
             onMonthChange={setMonth}
             showOutsideDays={false}
+            disabled={(date) => {
+              // 開始日が設定されており、終了日がまだ選択されていない場合、
+              // 開始日より前の日付を無効化
+              if (startDate && !endDate && isBefore(date, startDate)) {
+                return true;
+              }
+              return false;
+            }}
             className="text-xs [&_.rdp]:!p-0 [&_.rdp_caption]:!justify-center [&_.rdp_caption_label]:!font-medium [&_.rdp_head_cell]:!h-6 [&_.rdp_cell]:!p-0 [&_.rdp_day]:!p-0 [&_.rdp_day]:!h-7 [&_.rdp_day]:!w-7 [&_.rdp_day_selected]:!bg-primary-600 [&_.rdp_day_selected]:!text-white [&_.rdp_day_range_middle]:!bg-primary-100 dark:[&_.rdp_day_range_middle]:!bg-primary-900/30 [&_.rdp_button_reset]:!font-normal"
           />
         </div>
