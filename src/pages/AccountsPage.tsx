@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, ChevronLeft, ChevronRight, Tag, CreditCard, Users, PiggyBank, TrendingDown, TrendingUp } from 'lucide-react';
+import { Wallet, ChevronLeft, ChevronRight, PiggyBank, TrendingDown, TrendingUp, LayoutGrid, CreditCard, Users } from 'lucide-react';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
 import { useAccountOperations } from '../hooks/accounts/useAccountOperations';
@@ -45,6 +45,29 @@ export const AccountsPage = () => {
 
   const { containerRef, contentRef, handlePrevMonth, handleNextMonth, getAnimationClass } = useSwipeMonth(viewMonth, setCurrentMonth);
 
+  // グルーピング機能
+  type GroupByType = 'category' | 'payment' | 'member';
+  const groupByOptions: GroupByType[] = ['category', 'payment', 'member'];
+
+  const handleCycleGroupBy = () => {
+    const currentIndex = groupByOptions.indexOf(viewMode);
+    const nextIndex = (currentIndex + 1) % groupByOptions.length;
+    setViewMode(groupByOptions[nextIndex]);
+  };
+
+  const getGroupByLabel = (type: CardGridViewMode) => {
+    switch (type) {
+      case 'category':
+        return { label: 'カテゴリ', icon: <LayoutGrid size={16} /> };
+      case 'payment':
+        return { label: '支払方法', icon: <CreditCard size={16} /> };
+      case 'member':
+        return { label: 'メンバー', icon: <Users size={16} /> };
+      default:
+        return { label: '', icon: null };
+    }
+  };
+
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [selectedCategoryForModal, setSelectedCategoryForModal] = useState<Category | undefined>(undefined);
   const [categoryModalTransactions, setCategoryModalTransactions] = useState<Transaction[]>([]);
@@ -55,8 +78,7 @@ export const AccountsPage = () => {
   const [selectedDisplayIconType, setSelectedDisplayIconType] = useState<'account' | 'user' | undefined>(undefined);
   const [isRecurringExpenseListOpen, setIsRecurringExpenseListOpen] = useState(false);
   const [isRecurringIncomeListOpen, setIsRecurringIncomeListOpen] = useState(false);
-  const [expenseViewMode, setExpenseViewMode] = useState<CardGridViewMode>('category');
-  const [incomeViewMode, setIncomeViewMode] = useState<CardGridViewMode>('category');
+  const [viewMode, setViewMode] = useState<CardGridViewMode>('category');
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => savingsGoalService.getAll());
   const [selectedGoalForSheet, setSelectedGoalForSheet] = useState<SavingsGoal | null>(null);
   const [selectedRecurringForMonthSheet, setSelectedRecurringForMonthSheet] = useState<RecurringPayment | null>(null);
@@ -303,33 +325,8 @@ export const AccountsPage = () => {
             <div data-section-name="支出" className="relative">
               <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
                 <div className="flex items-center justify-between">
-                  {/* 左側：タイトルとビューモードボタン */}
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingDown size={14} />支出</h3>
-                    <div className="flex items-center gap-0.5">
-                      <button
-                        onClick={() => setExpenseViewMode('category')}
-                        className={`p-1 rounded transition-colors ${expenseViewMode === 'category' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
-                        title="カテゴリ別"
-                      >
-                        <Tag size={13} />
-                      </button>
-                      <button
-                        onClick={() => setExpenseViewMode('payment')}
-                        className={`p-1 rounded transition-colors ${expenseViewMode === 'payment' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
-                        title="支払い元別"
-                      >
-                        <CreditCard size={13} />
-                      </button>
-                      <button
-                        onClick={() => setExpenseViewMode('member')}
-                        className={`p-1 rounded transition-colors ${expenseViewMode === 'member' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
-                        title="メンバー別"
-                      >
-                        <Users size={13} />
-                      </button>
-                    </div>
-                  </div>
+                  {/* 左側：タイトル */}
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingDown size={14} />支出</h3>
                   {/* 右側：金額と前月比 */}
                   <div className="flex flex-col items-end gap-0.5">
                     <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
@@ -350,7 +347,7 @@ export const AccountsPage = () => {
                   paymentMethods={paymentMethods}
                   members={members}
                   accounts={allAccounts}
-                  viewMode={expenseViewMode}
+                  viewMode={viewMode}
                   onCategoryClick={handleCategoryClick}
                   recurringPayments={allUpcomingExpense}
                   recurringLabel="定期支出"
@@ -368,33 +365,8 @@ export const AccountsPage = () => {
             <div data-section-name="収入" className="relative">
               <div className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700">
                 <div className="flex items-center justify-between">
-                  {/* 左側：タイトルとビューモードボタン */}
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingUp size={14} />収入</h3>
-                    <div className="flex items-center gap-0.5">
-                      <button
-                        onClick={() => setIncomeViewMode('category')}
-                        className={`p-1 rounded transition-colors ${incomeViewMode === 'category' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
-                        title="カテゴリ別"
-                      >
-                        <Tag size={13} />
-                      </button>
-                      <button
-                        onClick={() => setIncomeViewMode('payment')}
-                        className={`p-1 rounded transition-colors ${incomeViewMode === 'payment' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
-                        title="入金先別"
-                      >
-                        <CreditCard size={13} />
-                      </button>
-                      <button
-                        onClick={() => setIncomeViewMode('member')}
-                        className={`p-1 rounded transition-colors ${incomeViewMode === 'member' ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-slate-700' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}`}
-                        title="メンバー別"
-                      >
-                        <Users size={13} />
-                      </button>
-                    </div>
-                  </div>
+                  {/* 左側：タイトル */}
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1"><TrendingUp size={14} />収入</h3>
                   {/* 右側：金額と前月比 */}
                   <div className="flex flex-col items-end gap-0.5">
                     <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
@@ -415,7 +387,7 @@ export const AccountsPage = () => {
                   paymentMethods={paymentMethods}
                   members={members}
                   accounts={allAccounts}
-                  viewMode={incomeViewMode}
+                  viewMode={viewMode}
                   onCategoryClick={handleCategoryClick}
                   recurringPayments={allUpcomingIncome}
                   recurringLabel="定期収入"
@@ -509,26 +481,38 @@ export const AccountsPage = () => {
 
       {/* ボトム固定フッター（セーフエリア対応） */}
       <div className="fixed left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5 fixed-above-bottom-nav">
-        <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-between">
-          {/* 月セレクタ */}
-          <div className="flex items-center gap-0.5">
+        <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-between gap-2">
+          {/* 左側：月セレクタ＋グルーピングボタン */}
+          <div className="flex items-center gap-1.5 flex-1">
+            {/* 月セレクタ */}
+            <div className="flex items-center gap-0.5">
+              <button
+                onClick={handlePrevMonth}
+                className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[4rem] text-center">
+                {selectedYear !== now.getFullYear() ? `${selectedYear}年` : ''}{selectedMonth}月
+              </span>
+              <button
+                onClick={handleNextMonth}
+                className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+            {/* グルーピングボタン */}
             <button
-              onClick={handlePrevMonth}
-              className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400"
+              onClick={handleCycleGroupBy}
+              className="px-2 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 flex-shrink-0 flex items-center gap-1 text-xs font-medium"
+              aria-label="グループ化を変更"
             >
-              <ChevronLeft size={16} />
-            </button>
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[4rem] text-center">
-              {selectedYear !== now.getFullYear() ? `${selectedYear}年` : ''}{selectedMonth}月
-            </span>
-            <button
-              onClick={handleNextMonth}
-              className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400"
-            >
-              <ChevronRight size={16} />
+              {getGroupByLabel(viewMode).icon}
+              <span>{getGroupByLabel(viewMode).label}</span>
             </button>
           </div>
-          {/* 合計 */}
+          {/* 右側：合計 */}
           <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0">
             <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">合計</p>
             <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
@@ -571,8 +555,8 @@ export const AccountsPage = () => {
           setRecurringMonthSheetSource('categoryModal');
           handleRecurringItemClick(rp);
         }}
-        paymentMethodName={expenseViewMode === 'payment' ? selectedDisplayName : undefined}
-        memberName={expenseViewMode === 'member' ? selectedDisplayName : undefined}
+        paymentMethodName={viewMode === 'payment' ? selectedDisplayName : undefined}
+        memberName={viewMode === 'member' ? selectedDisplayName : undefined}
         displayColor={selectedDisplayColor}
         displayIconType={selectedDisplayIconType}
         month={viewMonth}
