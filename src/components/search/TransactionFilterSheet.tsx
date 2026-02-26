@@ -68,7 +68,7 @@ export const TransactionFilterSheet = ({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto min-h-0">
-          <div className="p-3 sm:p-4">
+          <div className="px-2 py-3 sm:py-4">
             {/* 取引種別セクション */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-2">
               <button
@@ -195,7 +195,7 @@ export const TransactionFilterSheet = ({
                           >
                             {getCategoryIcon(category.icon, 15)}
                           </div>
-                          <span className="text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                          <span className="text-xs text-gray-900 dark:text-gray-200 w-full text-center truncate">
                             {category.name}
                           </span>
                           {filters.categoryIds.includes(category.id) && (
@@ -260,7 +260,7 @@ export const TransactionFilterSheet = ({
                         >
                           <Wallet size={16} />
                         </div>
-                        <span className="text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                        <span className="text-xs text-gray-900 dark:text-gray-200 w-full text-center truncate">
                           {account.name}
                         </span>
                         {filters.accountIds.includes(account.id) && (
@@ -292,7 +292,7 @@ export const TransactionFilterSheet = ({
                         >
                           <CreditCard size={16} />
                         </div>
-                        <span className="text-xs text-gray-900 dark:text-gray-200 break-words w-full text-center leading-tight">
+                        <span className="text-xs text-gray-900 dark:text-gray-200 w-full text-center truncate">
                           {pm.name}
                         </span>
                         {filters.paymentMethodIds.includes(pm.id) && (
