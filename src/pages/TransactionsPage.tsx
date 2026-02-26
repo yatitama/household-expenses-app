@@ -467,7 +467,7 @@ export const TransactionsPage = () => {
       <div className="fixed left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5 fixed-above-bottom-nav">
         <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-between gap-2">
           {/* Left: GroupBy, Filter Button and Count */}
-          <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          <div className="flex items-center gap-1 min-w-0 flex-1">
             {/* GroupBy Button */}
             <button
               onClick={handleCycleGroupBy}
