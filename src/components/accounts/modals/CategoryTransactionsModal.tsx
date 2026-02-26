@@ -17,6 +17,7 @@ interface CategoryTransactionsModalProps {
   memberName?: string;
   displayColor?: string;
   displayIconType?: 'account' | 'user';
+  month?: string; // yyyy-MM format
 }
 
 const getPeriodLabel = (payment: RecurringPayment): string => {
@@ -41,6 +42,7 @@ export const CategoryTransactionsModal = ({
   memberName,
   displayColor,
   displayIconType,
+  month,
 }: CategoryTransactionsModalProps) => {
   if (!isOpen) return null;
 
@@ -48,15 +50,15 @@ export const CategoryTransactionsModal = ({
 
   const sorted = [...transactions].sort((a, b) => b.date.localeCompare(a.date));
 
-  // 現在月を取得（yyyy-MM形式）
-  const currentMonth = new Date().toISOString().slice(0, 7);
+  // 表示月を取得（渡されなかった場合は現在月）
+  const displayMonth = month || new Date().toISOString().slice(0, 7);
 
   const transactionTotal = transactions.reduce((sum, t) => {
     return sum + (t.type === 'expense' ? t.amount : -t.amount);
   }, 0);
 
   const recurringTotal = recurringPayments.reduce((sum, rp) => {
-    const effectiveAmount = getEffectiveRecurringAmount(rp, currentMonth);
+    const effectiveAmount = getEffectiveRecurringAmount(rp, displayMonth);
     return sum + (rp.type === 'expense' ? effectiveAmount : -effectiveAmount);
   }, 0);
 
@@ -138,8 +140,8 @@ export const CategoryTransactionsModal = ({
                   })}
 
                   {recurringPayments.map((rp) => {
-                    const effectiveAmount = getEffectiveRecurringAmount(rp, currentMonth);
-                    const hasOverride = (rp.monthlyOverrides ?? {})[currentMonth] !== undefined;
+                    const effectiveAmount = getEffectiveRecurringAmount(rp, displayMonth);
+                    const hasOverride = (rp.monthlyOverrides ?? {})[displayMonth] !== undefined;
                     return (
                       <button
                         key={rp.id}
