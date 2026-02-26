@@ -31,9 +31,9 @@ export const DateRangePicker = ({ start, end, onChange }: DateRangePickerProps) 
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="space-y-3">
         <div>
-          <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">開始日</label>
+          <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">いつから</label>
           <input
             type="date"
             value={start}
@@ -43,7 +43,7 @@ export const DateRangePicker = ({ start, end, onChange }: DateRangePickerProps) 
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">終了日</label>
+          <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">いつまで</label>
           <input
             type="date"
             value={end}
