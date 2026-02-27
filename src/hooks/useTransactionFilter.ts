@@ -161,8 +161,18 @@ export const useTransactionFilter = () => {
     setSavedFilters(savedFilterService.getAll());
   }, []);
 
-  const updateSavedFilter = useCallback((filterId: string, name: string) => {
-    savedFilterService.update(filterId, { name });
+  const updateSavedFilter = useCallback((filterId: string, name: string, filterOptions?: Omit<FilterOptions, 'sortBy' | 'sortOrder'>) => {
+    const updateData: Record<string, unknown> = { name };
+    if (filterOptions) {
+      updateData.searchQuery = filterOptions.searchQuery;
+      updateData.dateRange = filterOptions.dateRange;
+      updateData.categoryIds = filterOptions.categoryIds;
+      updateData.transactionType = filterOptions.transactionType;
+      updateData.accountIds = filterOptions.accountIds;
+      updateData.paymentMethodIds = filterOptions.paymentMethodIds;
+      updateData.unsettled = filterOptions.unsettled;
+    }
+    savedFilterService.update(filterId, updateData);
     setSavedFilters(savedFilterService.getAll());
   }, []);
 

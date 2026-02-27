@@ -18,7 +18,7 @@ interface TransactionFilterSheetProps {
   onSaveFilter: (name: string) => void;
   onApplySavedFilter: (filterId: string) => void;
   onDeleteSavedFilter: (filterId: string) => void;
-  onUpdateSavedFilter: (filterId: string, name: string) => void;
+  onUpdateSavedFilter: (filterId: string, name: string, filterOptions?: Omit<FilterOptions, 'sortBy' | 'sortOrder'>) => void;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -61,11 +61,6 @@ export const TransactionFilterSheet = ({
   const handleSaveFilter = (name: string) => {
     onSaveFilter(name);
     setIsSaveModalOpen(false);
-  };
-
-  const handleEditFilter = (filterId: string, name: string) => {
-    onUpdateSavedFilter(filterId, name);
-    setEditingFilter(null);
   };
 
   return (
@@ -420,7 +415,13 @@ export const TransactionFilterSheet = ({
       <EditFilterModal
         filter={editingFilter}
         isOpen={!!editingFilter}
-        onSave={handleEditFilter}
+        categories={categories}
+        accounts={accounts}
+        paymentMethods={paymentMethods}
+        onSave={(filterId, name, filterOptions) => {
+          onUpdateSavedFilter(filterId, name, filterOptions);
+          setEditingFilter(null);
+        }}
         onDelete={onDeleteSavedFilter}
         onClose={() => setEditingFilter(null)}
       />
