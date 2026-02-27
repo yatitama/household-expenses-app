@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { format, startOfMonth, endOfMonth } from 'date-fns';
+import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -35,6 +37,8 @@ interface TrendDataPoint {
 }
 
 interface PieItem {
+  /** カテゴリ/支払元/引落口座の ID。合成キー（__direct__ 等）の場合は遷移ボタンを非表示 */
+  id: string;
   name: string;
   color: string;
   amount: number;
@@ -58,11 +62,12 @@ const mergePieItem = (
   if (existing) {
     existing.amount += amount;
   } else {
-    map.set(key, { name, color, amount });
+    map.set(key, { id: key, name, color, amount });
   }
 };
 
 export const AccountsPage = () => {
+  const navigate = useNavigate();
   const now = useMemo(() => new Date(), []);
 
   const [trendPeriod, setTrendPeriod] = useState<TrendPeriod>('6months');
@@ -224,6 +229,50 @@ export const AccountsPage = () => {
     } else {
       setPieMonth((m) => m + 1);
     }
+  };
+
+  // 凡例アイテムクリック時に履歴画面へ遷移
+  const handleLegendNavigate = (item: PieItem) => {
+    // 合成キー（直接払い・不明）は遷移対象外
+    if (item.id.startsWith('__')) return;
+
+    const monthDate = new Date(pieYear, pieMonth - 1, 1);
+    const dateRange = {
+      start: format(startOfMonth(monthDate), 'yyyy-MM-dd'),
+      end: format(endOfMonth(monthDate), 'yyyy-MM-dd'),
+    };
+
+    // グループ種別に応じてフィルターと groupBy を設定
+    type GroupByType = 'date' | 'category' | 'account' | 'payment';
+    let groupBy: GroupByType = 'date';
+    const statePayload: {
+      filterType: string;
+      dateRange: { start: string; end: string };
+      transactionType: 'expense';
+      categoryIds?: string[];
+      paymentMethodIds?: string[];
+      settlementAccountIds?: string[];
+      initialGroupBy: GroupByType;
+    } = {
+      filterType: 'pie-breakdown',
+      dateRange,
+      transactionType: 'expense',
+      initialGroupBy: groupBy,
+    };
+
+    if (pieGroupMode === 'category') {
+      groupBy = 'category';
+      statePayload.categoryIds = [item.id];
+    } else if (pieGroupMode === 'payment') {
+      groupBy = 'payment';
+      statePayload.paymentMethodIds = [item.id];
+    } else {
+      groupBy = 'account';
+      statePayload.settlementAccountIds = [item.id];
+    }
+    statePayload.initialGroupBy = groupBy;
+
+    navigate('/transactions', { state: statePayload });
   };
 
   const getBarColor = (entry: TrendDataPoint): string => {
@@ -425,6 +474,7 @@ export const AccountsPage = () => {
             <div className="px-4 pb-5 space-y-2.5">
               {pieData.map((item, index) => {
                 const pct = totalPieAmount > 0 ? (item.amount / totalPieAmount) * 100 : 0;
+                const canNavigate = !item.id.startsWith('__');
                 return (
                   <div key={index}>
                     <div className="flex items-center gap-2 mb-1">
@@ -441,6 +491,17 @@ export const AccountsPage = () => {
                       <span className="text-xs font-medium text-gray-900 dark:text-gray-100 flex-shrink-0 tabular-nums w-20 text-right">
                         {formatCurrency(item.amount)}
                       </span>
+                      {canNavigate ? (
+                        <button
+                          onClick={() => handleLegendNavigate(item)}
+                          className="flex-shrink-0 p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                          title="履歴を見る"
+                        >
+                          <ExternalLink size={13} />
+                        </button>
+                      ) : (
+                        <span className="flex-shrink-0 w-[22px]" />
+                      )}
                     </div>
                     <div className="ml-4 h-1 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
                       <div

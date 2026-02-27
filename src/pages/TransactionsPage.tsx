@@ -107,7 +107,18 @@ export const TransactionsPage = () => {
     }
 
     // state からの遷移時にフィルターを設定
-    const state = location.state as { accountId?: string; paymentMethodIds?: string[]; filterType?: string } | undefined;
+    const state = location.state as {
+      accountId?: string;
+      paymentMethodIds?: string[];
+      filterType?: string;
+      // 円グラフ内訳からの遷移用
+      dateRange?: { start: string; end: string };
+      categoryIds?: string[];
+      settlementAccountIds?: string[];
+      transactionType?: 'all' | 'income' | 'expense';
+      initialGroupBy?: GroupByType;
+    } | undefined;
+
     if (state?.filterType === 'unsettled') {
       if (state.accountId) {
         updateFilter('accountIds', [state.accountId]);
@@ -118,6 +129,13 @@ export const TransactionsPage = () => {
       updateFilter('unsettled', true);
     } else if (state?.filterType === 'payment' && state.paymentMethodIds) {
       updateFilter('paymentMethodIds', state.paymentMethodIds);
+    } else if (state?.filterType === 'pie-breakdown') {
+      if (state.dateRange) updateFilter('dateRange', state.dateRange);
+      if (state.transactionType) updateFilter('transactionType', state.transactionType);
+      if (state.categoryIds?.length) updateFilter('categoryIds', state.categoryIds);
+      if (state.paymentMethodIds?.length) updateFilter('paymentMethodIds', state.paymentMethodIds);
+      if (state.settlementAccountIds?.length) updateFilter('settlementAccountIds', state.settlementAccountIds);
+      if (state.initialGroupBy) setGroupBy(state.initialGroupBy);
     }
   }, [searchParams, location, updateFilter]);
 

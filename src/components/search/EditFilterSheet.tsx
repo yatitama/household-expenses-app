@@ -39,6 +39,7 @@ export const EditFilterSheet = ({
     accountIds: [],
     paymentMethodIds: [],
     unsettled: false,
+    settlementAccountIds: [],
   });
 
   useEffect(() => {
@@ -52,6 +53,7 @@ export const EditFilterSheet = ({
         accountIds: filter.accountIds,
         paymentMethodIds: filter.paymentMethodIds,
         unsettled: filter.unsettled,
+        settlementAccountIds: [],
       });
       setShowDateCustom(false);
     }
