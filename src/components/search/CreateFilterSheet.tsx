@@ -10,7 +10,7 @@ interface CreateFilterSheetProps {
   categories: { id: string; name: string; color: string; icon: string }[];
   accounts: { id: string; name: string; color?: string }[];
   paymentMethods: { id: string; name: string; color?: string }[];
-  onSave: (name: string) => void;
+  onSave: (name: string, filterOptions: Omit<FilterOptions, 'sortBy' | 'sortOrder'>) => void;
   onClose: () => void;
 }
 
@@ -54,7 +54,7 @@ export const CreateFilterSheet = ({
 
   const handleSave = () => {
     if (name.trim()) {
-      onSave(name.trim());
+      onSave(name.trim(), filterConditions);
       setName('');
       setFilterConditions({
         searchQuery: '',

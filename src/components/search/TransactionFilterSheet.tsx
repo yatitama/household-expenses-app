@@ -499,7 +499,16 @@ export const TransactionFilterSheet = ({
         categories={categories}
         accounts={accounts}
         paymentMethods={paymentMethods}
-        onSave={(name) => {
+        onSave={(name, filterOptions) => {
+          // Apply filter conditions before saving
+          updateFilter('searchQuery', filterOptions.searchQuery);
+          updateFilter('dateRange', filterOptions.dateRange);
+          updateFilter('categoryIds', filterOptions.categoryIds);
+          updateFilter('transactionType', filterOptions.transactionType);
+          updateFilter('accountIds', filterOptions.accountIds);
+          updateFilter('paymentMethodIds', filterOptions.paymentMethodIds);
+          updateFilter('unsettled', filterOptions.unsettled);
+          // Save with the current filters (which now includes the new conditions)
           onSaveFilter(name);
           setIsCreatingFilter(false);
         }}
