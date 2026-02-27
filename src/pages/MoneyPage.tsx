@@ -59,6 +59,7 @@ export const MoneyPage = () => {
   const [editingPaymentMethod, setEditingPaymentMethod] = useState<PaymentMethod | null>(null);
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
   const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
+  const [isSavingsExpanded, setIsSavingsExpanded] = useState(false);
   const [unsettledCardModal, setUnsettledCardModal] = useState<UnsettledCardModalData | null>(null);
 
   const pendingByPM = getPendingAmountByPaymentMethod();
@@ -114,11 +115,16 @@ export const MoneyPage = () => {
     });
   };
 
+  const isAllExpanded = expandedAccounts.size === sortedAccounts.length &&
+    (savingsGoals.length === 0 || isSavingsExpanded);
+
   const handleToggleAllAccounts = () => {
-    if (expandedAccounts.size === sortedAccounts.length) {
+    if (isAllExpanded) {
       setExpandedAccounts(new Set());
+      setIsSavingsExpanded(false);
     } else {
       setExpandedAccounts(new Set(sortedAccounts.map((a) => a.id)));
+      if (savingsGoals.length > 0) setIsSavingsExpanded(true);
     }
   };
 
@@ -361,53 +367,73 @@ export const MoneyPage = () => {
 
           {/* 貯金セクション */}
           {savingsGoals.length > 0 && (
-            <div data-section-name="貯金" className="relative mt-2 md:mt-3">
-              <div
-                className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    {getCategoryIcon('PiggyBank', 14)}
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">貯金</h3>
+            <div className="mb-3 mt-2 md:mt-3">
+              <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg">
+                {/* セクションヘッダー */}
+                <button
+                  onClick={() => setIsSavingsExpanded(!isSavingsExpanded)}
+                  className="sticky w-full px-3 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-[background-color] text-left z-10 rounded-t-lg"
+                  style={{ top: 'max(0px, env(safe-area-inset-top))' }}
+                >
+                  <div className="flex items-center gap-1 flex-1">
+                    <ChevronDown
+                      size={16}
+                      className={`text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 -ml-1 ${isSavingsExpanded ? 'rotate-180' : ''}`}
+                    />
+                    <div className="flex-shrink-0 text-green-600 dark:text-green-500">
+                      {getCategoryIcon('PiggyBank', 16)}
+                    </div>
+                    <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 text-left">
+                      貯金
+                    </p>
                   </div>
-                  <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
+                  <p className="text-xs md:text-sm font-bold flex-shrink-0 -mr-1 text-gray-900 dark:text-gray-100">
                     -{formatCurrency(totalAccumulatedSavings)}
                   </p>
-                </div>
-              </div>
-              <div className="pt-2 pb-3 md:pb-4">
-                <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 md:p-2">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                </button>
+
+                {/* セクション本体 */}
+                {isSavingsExpanded && (
+                  <div className="border-t border-gray-200 dark:border-gray-700 px-0 pb-0 pt-0">
                     {savingsGoals.map((goal) => {
                       const accumulated = calculateAccumulatedAmount(goal, currentRealMonth);
                       const progress = Math.min(100, goal.targetAmount > 0 ? (accumulated / goal.targetAmount) * 100 : 0);
                       const goalColor = goal.color || '#059669';
                       const IconComponent = SAVINGS_GOAL_ICONS[goal.icon as keyof typeof SAVINGS_GOAL_ICONS] || SAVINGS_GOAL_ICONS.PiggyBank;
                       return (
-                        <div key={goal.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-2.5 md:p-3 flex flex-col gap-2 relative overflow-hidden">
-                          {/* Background Icon */}
-                          <div className="absolute -left-2 -bottom-2 opacity-10 dark:opacity-20 pointer-events-none" style={{ color: goalColor }}>
-                            <IconComponent size={80} />
+                        <div key={goal.id} className="w-full flex flex-col gap-2 p-3">
+                          {/* 上段: アイコン + 目標名 | 積立済み金額 */}
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                              <div className="flex-shrink-0" style={{ color: goalColor }}>
+                                <IconComponent size={14} />
+                              </div>
+                              <p className="truncate text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                {goal.name}
+                              </p>
+                            </div>
+                            <span className="text-xs md:text-sm font-semibold flex-shrink-0 text-red-600">
+                              -{formatCurrency(accumulated)}
+                            </span>
                           </div>
-
-                          {/* Content */}
-                          <div className="relative z-10 flex items-center gap-1.5 px-1 py-0.5">
-                            <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-gray-100 truncate bg-white/50 dark:bg-slate-800/50 px-1 rounded">{goal.name}</p>
-                          </div>
-                          <p className="relative z-10 text-right text-sm md:text-base font-bold text-gray-900 dark:text-gray-100">
-                            ¥{accumulated.toLocaleString()} / ¥{goal.targetAmount.toLocaleString()}
-                          </p>
-                          <div className="relative z-10 w-full bg-gray-200 dark:bg-gray-700 h-1.5">
-                            <div
-                              className="h-1.5"
-                              style={{ width: `${progress}%`, backgroundColor: goalColor }}
-                            />
+                          {/* 下段: プログレスバー + % | 目標金額 */}
+                          <div className="flex items-center justify-between gap-2 text-xs md:text-xs text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <div className="flex-1 bg-gray-200 dark:bg-gray-700 h-1">
+                                <div
+                                  className="h-1"
+                                  style={{ width: `${progress}%`, backgroundColor: goalColor }}
+                                />
+                              </div>
+                              <span className="flex-shrink-0">{Math.round(progress)}%</span>
+                            </div>
+                            <span className="flex-shrink-0 truncate">¥{goal.targetAmount.toLocaleString()}</span>
                           </div>
                         </div>
                       );
                     })}
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}
@@ -454,9 +480,9 @@ export const MoneyPage = () => {
             <button
               onClick={handleToggleAllAccounts}
               className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 flex-shrink-0"
-              aria-label={expandedAccounts.size === sortedAccounts.length ? '全セクションを閉じる' : '全セクションを開く'}
+              aria-label={isAllExpanded ? '全セクションを閉じる' : '全セクションを開く'}
             >
-              {expandedAccounts.size === sortedAccounts.length ? (
+              {isAllExpanded ? (
                 <ChevronsUp size={24} />
               ) : (
                 <ChevronsDown size={24} />
