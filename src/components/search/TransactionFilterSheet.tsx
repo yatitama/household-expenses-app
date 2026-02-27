@@ -1,7 +1,8 @@
-import { X, RotateCcw, ChevronDown, Check, Wallet, CreditCard, Trash2 } from 'lucide-react';
+import { X, RotateCcw, ChevronDown, Check, Wallet, CreditCard, Edit2 } from 'lucide-react';
 import { useState } from 'react';
 import { DateRangePicker } from './DateRangePicker';
 import { SaveFilterNameModal } from './SaveFilterNameModal';
+import { EditFilterModal } from './EditFilterModal';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { FilterOptions } from '../../hooks/useTransactionFilter';
 import type { SavedFilter } from '../../types';
@@ -17,6 +18,7 @@ interface TransactionFilterSheetProps {
   onSaveFilter: (name: string) => void;
   onApplySavedFilter: (filterId: string) => void;
   onDeleteSavedFilter: (filterId: string) => void;
+  onUpdateSavedFilter: (filterId: string, name: string) => void;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -32,6 +34,7 @@ export const TransactionFilterSheet = ({
   onSaveFilter,
   onApplySavedFilter,
   onDeleteSavedFilter,
+  onUpdateSavedFilter,
   isOpen,
   onClose,
 }: TransactionFilterSheetProps) => {
@@ -39,6 +42,7 @@ export const TransactionFilterSheet = ({
     new Set(['type', 'date', 'category', 'account'])
   );
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [editingFilter, setEditingFilter] = useState<SavedFilter | null>(null);
 
   if (!isOpen) return null;
 
@@ -57,6 +61,11 @@ export const TransactionFilterSheet = ({
   const handleSaveFilter = (name: string) => {
     onSaveFilter(name);
     setIsSaveModalOpen(false);
+  };
+
+  const handleEditFilter = (filterId: string, name: string) => {
+    onUpdateSavedFilter(filterId, name);
+    setEditingFilter(null);
   };
 
   return (
@@ -96,22 +105,25 @@ export const TransactionFilterSheet = ({
                     {savedFilters.map((savedFilter) => (
                       <div
                         key={savedFilter.id}
-                        className="relative group"
+                        className="relative h-[60px]"
                       >
                         <button
                           onClick={() => onApplySavedFilter(savedFilter.id)}
-                          className="w-full flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600"
+                          className="w-full h-full flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600"
                         >
-                          <span className="text-xs text-gray-900 dark:text-gray-200 w-full text-center truncate px-0.5" title={savedFilter.name}>
+                          <span className="text-xs text-gray-900 dark:text-gray-200 w-full text-center line-clamp-2" title={savedFilter.name}>
                             {savedFilter.name}
                           </span>
                         </button>
                         <button
-                          onClick={() => onDeleteSavedFilter(savedFilter.id)}
-                          className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-red-500 hover:bg-red-600 rounded-full text-white transition-colors"
-                          title="削除"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingFilter(savedFilter);
+                          }}
+                          className="absolute -top-2 -right-2 w-5 h-5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors z-10"
+                          aria-label="編集"
                         >
-                          <Trash2 size={12} />
+                          <Edit2 size={10} className="text-gray-600 dark:text-gray-300" />
                         </button>
                       </div>
                     ))}
@@ -387,16 +399,10 @@ export const TransactionFilterSheet = ({
               </button>
               <button
                 onClick={() => setIsSaveModalOpen(true)}
-                className="flex-1 py-2 rounded-lg bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium active:scale-95 transition-all text-sm"
-              >
-                保存
-              </button>
-              <button
-                onClick={onClose}
                 className="flex-1 py-2 rounded-lg text-white font-medium active:scale-95 transition-all text-sm"
                 style={{ backgroundColor: 'var(--theme-primary)' }}
               >
-                完了
+                保存
               </button>
             </div>
           </div>
@@ -408,6 +414,15 @@ export const TransactionFilterSheet = ({
         isOpen={isSaveModalOpen}
         onSave={handleSaveFilter}
         onClose={() => setIsSaveModalOpen(false)}
+      />
+
+      {/* Edit Filter Modal */}
+      <EditFilterModal
+        filter={editingFilter}
+        isOpen={!!editingFilter}
+        onSave={handleEditFilter}
+        onDelete={onDeleteSavedFilter}
+        onClose={() => setEditingFilter(null)}
       />
     </>
   );
