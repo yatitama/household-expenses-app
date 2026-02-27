@@ -251,7 +251,7 @@ export const AccountsPage = () => {
       transactionType: 'expense';
       categoryIds?: string[];
       paymentMethodIds?: string[];
-      settlementAccountIds?: string[];
+      accountIds?: string[];
       initialGroupBy: GroupByType;
     } = {
       filterType: 'pie-breakdown',
@@ -268,7 +268,7 @@ export const AccountsPage = () => {
       statePayload.paymentMethodIds = [item.id];
     } else {
       groupBy = 'account';
-      statePayload.settlementAccountIds = [item.id];
+      statePayload.accountIds = [item.id];
     }
     statePayload.initialGroupBy = groupBy;
 
@@ -377,7 +377,7 @@ export const AccountsPage = () => {
       </div>
 
       {/* 支出内訳 円グラフ */}
-      <div className="bg-white dark:bg-slate-800 mx-3 md:mx-4 mb-4 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 mx-3 md:mx-4 mb-4 rounded-xl shadow-sm">
         <div className="px-4 pt-4 pb-3">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300">支出内訳</h2>
@@ -438,6 +438,7 @@ export const AccountsPage = () => {
                     paddingAngle={2}
                     dataKey="amount"
                     nameKey="name"
+                    isAnimationActive={false}
                   >
                     {pieData.map((entry, index) => (
                       <Cell key={index} fill={entry.color} />
