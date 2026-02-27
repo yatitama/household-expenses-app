@@ -82,9 +82,9 @@ export const EditFilterSheet = ({
       />
 
       {/* Sheet */}
-      <div className="fixed inset-x-0 bottom-0 bg-white dark:bg-slate-800 rounded-t-xl sm:rounded-xl shadow-2xl z-[1000] flex flex-col max-h-[90vh]">
+      <div className="fixed inset-x-0 bottom-0 bg-white dark:bg-slate-800 rounded-t-2xl sm:rounded-xl shadow-2xl z-[1000] flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-slate-800 dark:border-gray-700 z-10 p-3 sm:p-4 border-b flex items-center justify-between">
+        <div className="sticky top-0 dark:border-gray-700 z-10 p-3 sm:p-4 border-b flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
               保存済みフィルターを編集
