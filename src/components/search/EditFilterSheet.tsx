@@ -77,17 +77,17 @@ export const EditFilterSheet = ({
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/50 z-[999]"
+        className="fixed inset-0 bg-black/30 z-[999]"
         onClick={onClose}
       />
 
       {/* Sheet */}
-      <div className="fixed inset-x-0 bottom-0 bg-white dark:bg-slate-900 rounded-t-2xl shadow-2xl z-[1000] flex flex-col max-h-[90vh]">
+      <div className="fixed inset-x-0 bottom-0 bg-white dark:bg-slate-800 rounded-t-2xl shadow-2xl z-[1000] flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-slate-900 dark:border-gray-700 z-10 p-3 sm:p-4 border-b flex items-center justify-between">
+        <div className="sticky top-0 bg-white dark:bg-slate-800 dark:border-gray-700 z-10 p-3 sm:p-4 border-b flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
-              フィルター名
+              保存済みフィルターを編集
             </h3>
             <button
               onClick={handleDelete}
@@ -456,7 +456,7 @@ export const EditFilterSheet = ({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-2 -mb-2">
+        <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-800 border-t dark:border-gray-700 p-2 -mb-2">
           <button
             onClick={handleSave}
             disabled={!name.trim()}
