@@ -178,9 +178,6 @@ IntersectionObserverでセクションヘッダーの固定表示状態を検知
 | `settleOverdueTransactions` | `()` | `void` | 引き落とし日を過ぎた取引を自動精算 |
 | `calculateNextRecurringDate` | `(recurring, fromDate?)` | `Date \| null` | 定期取引の次回発生日を計算 |
 | `calculateRecurringNextDate` | `(recurring, fromDate?)` | `Date \| null` | 上記のエイリアス |
-| `getActualPaymentDate` | `(paymentMonthStr, pm)` | `Date \| null` | 支払い月と支払い手段から実際の引き落とし日を取得 |
-| `getBillingPeriod` | `(paymentMonthStr, pm)` | `{start, end} \| null` | 支払い月と支払い手段から利用期間（締め期間）を計算 |
-| `getMonthStartFromBillingDate` | `(paymentMonthStr, paymentMethods)` | `{start, end}` | 支払い手段の締日から月の開始日と終了日を計算 |
 | `getRecurringPaymentsForMonth` | `(year, month)` | `RecurringPayment[]` | 指定月に発生する定期取引を取得 |
 | `getUpcomingRecurringPayments` | `(days?)` | `RecurringPayment[]` | N日以内に発生する定期取引 |
 | `getPendingRecurringSummary` | `(days?)` | `{expense, income}` | 定期取引の支出/収入合計 |

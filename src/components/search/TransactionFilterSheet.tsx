@@ -5,8 +5,6 @@ import { SaveFilterNameModal } from './SaveFilterNameModal';
 import { EditFilterSheet } from './EditFilterSheet';
 import { CreateFilterSheet } from './CreateFilterSheet';
 import { getCategoryIcon } from '../../utils/categoryIcons';
-import { getMonthStartFromBillingDate } from '../../utils/billingUtils';
-import { paymentMethodService } from '../../services/storage';
 import type { FilterOptions } from '../../hooks/useTransactionFilter';
 import type { SavedFilter } from '../../types';
 
@@ -164,90 +162,53 @@ export const TransactionFilterSheet = ({
             {/* 期間セクション */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
               <div className="px-2 pt-2 pb-2">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    期間
-                  </span>
-                  {!showDateCustom && (
-                    <div className="flex items-center gap-1.5">
-                      <label className="flex items-center gap-1">
-                        <input
-                          type="radio"
-                          name="monthStart"
-                          checked={!filters.useMonthStartFromBillingDate}
-                          onChange={() => updateFilter('useMonthStartFromBillingDate', false)}
-                          className="w-4 h-4"
-                        />
-                        <span className="text-xs text-gray-600 dark:text-gray-400">月初</span>
-                      </label>
-                      <label className="flex items-center gap-1">
-                        <input
-                          type="radio"
-                          name="monthStart"
-                          checked={filters.useMonthStartFromBillingDate}
-                          onChange={() => updateFilter('useMonthStartFromBillingDate', true)}
-                          className="w-4 h-4"
-                        />
-                        <span className="text-xs text-gray-600 dark:text-gray-400">締日基準</span>
-                      </label>
-                    </div>
-                  )}
-                </div>
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 block mb-2">
+                  期間
+                </span>
                 <div className="grid grid-cols-3 gap-1.5 mb-2">
                   {(() => {
                     const today = new Date();
-                    const allPaymentMethods = paymentMethodService.getAll();
-
-                    const getMonthRange = (monthDate: Date) => {
-                      if (filters.useMonthStartFromBillingDate) {
-                        const monthStr = format(monthDate, 'yyyy-MM');
-                        return getMonthStartFromBillingDate(monthStr, allPaymentMethods);
-                      } else {
-                        return {
-                          start: format(startOfMonth(monthDate), 'yyyy-MM-dd'),
-                          end: format(endOfMonth(monthDate), 'yyyy-MM-dd'),
-                        };
-                      }
-                    };
-
-                    const getMultiMonthRange = (startDate: Date, endDate: Date) => {
-                      if (filters.useMonthStartFromBillingDate) {
-                        // 開始月の初日から計算
-                        const startMonth = format(startOfMonth(startDate), 'yyyy-MM');
-                        const startRange = getMonthStartFromBillingDate(startMonth, allPaymentMethods);
-                        // 終了月の末日を使用
-                        return {
-                          start: startRange.start,
-                          end: format(endDate, 'yyyy-MM-dd'),
-                        };
-                      } else {
-                        return {
-                          start: format(startDate, 'yyyy-MM-dd'),
-                          end: format(endDate, 'yyyy-MM-dd'),
-                        };
-                      }
-                    };
-
                     const presets = [
                       {
                         label: '今月',
-                        getValue: () => getMonthRange(today),
+                        getValue: () => {
+                          const start = format(startOfMonth(today), 'yyyy-MM-dd');
+                          const end = format(endOfMonth(today), 'yyyy-MM-dd');
+                          return { start, end };
+                        },
                       },
                       {
                         label: '先月',
-                        getValue: () => getMonthRange(subMonths(today, 1)),
+                        getValue: () => {
+                          const lastMonth = subMonths(today, 1);
+                          const start = format(startOfMonth(lastMonth), 'yyyy-MM-dd');
+                          const end = format(endOfMonth(lastMonth), 'yyyy-MM-dd');
+                          return { start, end };
+                        },
                       },
                       {
                         label: '3ヶ月',
-                        getValue: () => getMultiMonthRange(subMonths(today, 3), today),
+                        getValue: () => {
+                          const start = format(subMonths(today, 3), 'yyyy-MM-dd');
+                          const end = format(today, 'yyyy-MM-dd');
+                          return { start, end };
+                        },
                       },
                       {
                         label: '半年',
-                        getValue: () => getMultiMonthRange(subMonths(today, 6), today),
+                        getValue: () => {
+                          const start = format(subMonths(today, 6), 'yyyy-MM-dd');
+                          const end = format(today, 'yyyy-MM-dd');
+                          return { start, end };
+                        },
                       },
                       {
                         label: '1年',
-                        getValue: () => getMultiMonthRange(subMonths(today, 12), today),
+                        getValue: () => {
+                          const start = format(subMonths(today, 12), 'yyyy-MM-dd');
+                          const end = format(today, 'yyyy-MM-dd');
+                          return { start, end };
+                        },
                       },
                       {
                         label: 'カスタム',

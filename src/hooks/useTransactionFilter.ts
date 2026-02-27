@@ -13,7 +13,6 @@ export interface FilterOptions {
   sortBy: 'date' | 'amount' | 'category';
   sortOrder: 'asc' | 'desc';
   unsettled: boolean;
-  useMonthStartFromBillingDate: boolean;
 }
 
 const createDefaultFilters = (): FilterOptions => ({
@@ -26,7 +25,6 @@ const createDefaultFilters = (): FilterOptions => ({
   sortBy: 'date',
   sortOrder: 'desc',
   unsettled: false,
-  useMonthStartFromBillingDate: false,
 });
 
 export const useTransactionFilter = () => {
@@ -139,7 +137,6 @@ export const useTransactionFilter = () => {
       accountIds: opts.accountIds,
       paymentMethodIds: opts.paymentMethodIds,
       unsettled: opts.unsettled,
-      useMonthStartFromBillingDate: opts.useMonthStartFromBillingDate,
     });
     setSavedFilters(savedFilterService.getAll());
   }, [filters]);
@@ -157,7 +154,6 @@ export const useTransactionFilter = () => {
       sortBy: 'date',
       sortOrder: 'desc',
       unsettled: savedFilter.unsettled,
-      useMonthStartFromBillingDate: savedFilter.useMonthStartFromBillingDate ?? false,
     });
   }, []);
 
@@ -176,7 +172,6 @@ export const useTransactionFilter = () => {
       updateData.accountIds = filterOptions.accountIds;
       updateData.paymentMethodIds = filterOptions.paymentMethodIds;
       updateData.unsettled = filterOptions.unsettled;
-      updateData.useMonthStartFromBillingDate = filterOptions.useMonthStartFromBillingDate;
     }
     savedFilterService.update(filterId, updateData);
     setSavedFilters(savedFilterService.getAll());
