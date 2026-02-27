@@ -382,11 +382,11 @@ export const TransactionsPage = () => {
                   <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg">
                     <button
                       onClick={() => toggleGroupExpanded(key)}
-                      className="sticky w-full px-4 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-[background-color] text-left z-10 rounded-t-lg"
+                      className="sticky w-full px-3 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-[background-color] text-left z-10 rounded-t-lg"
                       style={{ top: 'max(0px, env(safe-area-inset-top))' }}
                     >
-                      <div className="flex items-center gap-2 flex-1">
-                        <ChevronDown size={16} className={`text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
+                      <div className="flex items-center gap-1 flex-1">
+                        <ChevronDown size={16} className={`text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 -ml-1 ${isExpanded ? 'rotate-180' : ''}`} />
                         <div className="flex-shrink-0" style={{
                           color: groupBy === 'category'
                             ? categories.find((c) => c.id === key)?.color || '#9ca3af'
@@ -414,7 +414,7 @@ export const TransactionsPage = () => {
                         </div>
                         <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 text-left">{label}</p>
                       </div>
-                      <p className={`text-xs md:text-sm font-bold flex-shrink-0 ${
+                      <p className={`text-xs md:text-sm font-bold flex-shrink-0 -mr-1 ${
                         groupTotal >= 0 ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-gray-100'
                       }`}>
                         {groupTotal >= 0 ? '+' : ''}{formatCurrency(groupTotal)}
