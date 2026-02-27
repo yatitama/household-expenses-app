@@ -24,6 +24,8 @@ import type {
   QuickAddTemplateInput,
   SavingsGoal,
   SavingsGoalInput,
+  SavedFilter,
+  SavedFilterInput,
 } from '../types';
 
 const STORAGE_KEYS = {
@@ -39,6 +41,7 @@ const STORAGE_KEYS = {
   LINKED_PAYMENT_METHODS: 'household_linked_payment_methods',
   QUICK_ADD_TEMPLATES: 'household_quick_add_templates',
   SAVINGS_GOALS: 'household_savings_goals',
+  SAVED_FILTERS: 'household_saved_filters',
   MIGRATION_VERSION: 'household_migration_version',
   APP_SETTINGS: 'household_app_settings',
 } as const;
@@ -932,5 +935,53 @@ export const savingsGoalService = {
     goals[index] = updated;
     setItems(STORAGE_KEYS.SAVINGS_GOALS, goals);
     return updated;
+  },
+};
+
+// SavedFilter 操作
+export const savedFilterService = {
+  getAll: (): SavedFilter[] => {
+    return getItems<SavedFilter>(STORAGE_KEYS.SAVED_FILTERS);
+  },
+
+  getById: (id: string): SavedFilter | undefined => {
+    return savedFilterService.getAll().find((f) => f.id === id);
+  },
+
+  create: (input: SavedFilterInput): SavedFilter => {
+    const filters = savedFilterService.getAll();
+    const now = getTimestamp();
+    const newFilter: SavedFilter = {
+      ...input,
+      id: generateId(),
+      createdAt: now,
+      updatedAt: now,
+    };
+    filters.push(newFilter);
+    setItems(STORAGE_KEYS.SAVED_FILTERS, filters);
+    return newFilter;
+  },
+
+  update: (id: string, input: Partial<SavedFilterInput>): SavedFilter | undefined => {
+    const filters = savedFilterService.getAll();
+    const index = filters.findIndex((f) => f.id === id);
+    if (index === -1) return undefined;
+
+    const updated: SavedFilter = {
+      ...filters[index],
+      ...input,
+      updatedAt: getTimestamp(),
+    };
+    filters[index] = updated;
+    setItems(STORAGE_KEYS.SAVED_FILTERS, filters);
+    return updated;
+  },
+
+  delete: (id: string): boolean => {
+    const filters = savedFilterService.getAll();
+    const filtered = filters.filter((f) => f.id !== id);
+    if (filtered.length === filters.length) return false;
+    setItems(STORAGE_KEYS.SAVED_FILTERS, filtered);
+    return true;
   },
 };

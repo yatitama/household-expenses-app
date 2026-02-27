@@ -202,3 +202,20 @@ export interface SavingsGoal {
 }
 
 export type SavingsGoalInput = Omit<SavingsGoal, 'id' | 'createdAt' | 'updatedAt'>;
+
+// 保存済みフィルター
+export interface SavedFilter {
+  id: string;
+  name: string;
+  searchQuery: string;
+  dateRange: { start: string; end: string };
+  categoryIds: string[];
+  transactionType: 'all' | 'income' | 'expense';
+  accountIds: string[];
+  paymentMethodIds: string[];
+  unsettled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type SavedFilterInput = Omit<SavedFilter, 'id' | 'createdAt' | 'updatedAt'>;
