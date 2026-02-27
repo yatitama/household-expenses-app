@@ -1,5 +1,5 @@
 import { X, RotateCcw, Check, Wallet, CreditCard, Edit2, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns';
 import { SaveFilterNameModal } from './SaveFilterNameModal';
 import { EditFilterSheet } from './EditFilterSheet';
@@ -43,6 +43,26 @@ export const TransactionFilterSheet = ({
   const [editingFilter, setEditingFilter] = useState<SavedFilter | null>(null);
   const [isCreatingFilter, setIsCreatingFilter] = useState(false);
   const [showDateCustom, setShowDateCustom] = useState(false);
+
+  // シートが開いた時、設定済みの日付範囲がプリセットと一致しない場合はカスタム表示にする
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!filters.dateRange.start) return;
+    const today = new Date();
+    const presetRanges = [
+      { start: format(startOfMonth(today), 'yyyy-MM-dd'), end: format(endOfMonth(today), 'yyyy-MM-dd') },
+      { start: format(startOfMonth(subMonths(today, 1)), 'yyyy-MM-dd'), end: format(endOfMonth(subMonths(today, 1)), 'yyyy-MM-dd') },
+      { start: format(subMonths(today, 3), 'yyyy-MM-dd'), end: format(today, 'yyyy-MM-dd') },
+      { start: format(subMonths(today, 6), 'yyyy-MM-dd'), end: format(today, 'yyyy-MM-dd') },
+      { start: format(subMonths(today, 12), 'yyyy-MM-dd'), end: format(today, 'yyyy-MM-dd') },
+    ];
+    const matchesPreset = presetRanges.some(
+      (p) => p.start === filters.dateRange.start && p.end === filters.dateRange.end,
+    );
+    if (!matchesPreset) {
+      setShowDateCustom(true);
+    }
+  }, [isOpen, filters.dateRange]);
 
   if (!isOpen) return null;
 

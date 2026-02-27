@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import toast from 'react-hot-toast';
@@ -45,6 +45,7 @@ export const TransactionsPage = () => {
   const [selectedRecurring, setSelectedRecurring] = useState<RecurringPayment | null>(null);
   const [isRecurringDetailOpen, setIsRecurringDetailOpen] = useState(false);
   const [editingRecurring, setEditingRecurring] = useState<RecurringPayment | null>(null);
+  const expandAllOnceRef = useRef(false);
   const { handleSaveRecurring, handleDeleteRecurring } = useAccountOperations();
   useBodyScrollLock(!!editingTransaction || isDetailOpen || isFilterSheetOpen || isRecurringDetailOpen || !!editingRecurring);
 
@@ -114,7 +115,7 @@ export const TransactionsPage = () => {
       // 円グラフ内訳からの遷移用
       dateRange?: { start: string; end: string };
       categoryIds?: string[];
-      settlementAccountIds?: string[];
+      accountIds?: string[];
       transactionType?: 'all' | 'income' | 'expense';
       initialGroupBy?: GroupByType;
     } | undefined;
@@ -130,11 +131,12 @@ export const TransactionsPage = () => {
     } else if (state?.filterType === 'payment' && state.paymentMethodIds) {
       updateFilter('paymentMethodIds', state.paymentMethodIds);
     } else if (state?.filterType === 'pie-breakdown') {
+      expandAllOnceRef.current = true;
       if (state.dateRange) updateFilter('dateRange', state.dateRange);
       if (state.transactionType) updateFilter('transactionType', state.transactionType);
       if (state.categoryIds?.length) updateFilter('categoryIds', state.categoryIds);
       if (state.paymentMethodIds?.length) updateFilter('paymentMethodIds', state.paymentMethodIds);
-      if (state.settlementAccountIds?.length) updateFilter('settlementAccountIds', state.settlementAccountIds);
+      if (state.accountIds?.length) updateFilter('accountIds', state.accountIds);
       if (state.initialGroupBy) setGroupBy(state.initialGroupBy);
     }
   }, [searchParams, location, updateFilter]);
@@ -373,6 +375,16 @@ export const TransactionsPage = () => {
       }, 0);
     return income - expense + recurringIncome - recurringExpense;
   }, [filteredTransactions, recurringOccurrences]);
+
+  // pie-breakdown 遷移後に全セクションを展開してトップにスクロール
+  useEffect(() => {
+    if (!expandAllOnceRef.current) return;
+    if (groupedItems.length === 0) return;
+    expandAllOnceRef.current = false;
+    const allKeys = groupedItems.map(([key]) => key);
+    setExpandedGroups(new Set(allKeys));
+    window.scrollTo(0, 0);
+  }, [groupedItems]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-900">
