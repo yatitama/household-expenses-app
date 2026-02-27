@@ -117,7 +117,6 @@ export const TransactionFilterSheet = ({
                       aria-label="フィルターを作成"
                     >
                       <Plus size={24} className="text-gray-400 dark:text-gray-500" />
-                      <span className="text-xs text-gray-600 dark:text-gray-400">追加</span>
                     </button>
                   </div>
                 </div>
@@ -461,11 +460,11 @@ export const TransactionFilterSheet = ({
                 リセット
               </button>
               <button
-                onClick={() => setIsSaveModalOpen(true)}
+                onClick={onClose}
                 className="flex-1 py-2 rounded-lg text-white font-medium active:scale-95 transition-all text-sm"
                 style={{ backgroundColor: 'var(--theme-primary)' }}
               >
-                保存
+                閉じる
               </button>
             </div>
           </div>

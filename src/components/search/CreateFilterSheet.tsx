@@ -52,11 +52,21 @@ export const CreateFilterSheet = ({
     }
   }, [isOpen]);
 
-  const handleClose = () => {
+  const handleSave = () => {
     if (name.trim()) {
       onSave(name.trim());
+      setName('');
+      setFilterConditions({
+        searchQuery: '',
+        dateRange: { start: '', end: '' },
+        categoryIds: [],
+        transactionType: 'all',
+        accountIds: [],
+        paymentMethodIds: [],
+        unsettled: false,
+      });
+      onClose();
     }
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -76,7 +86,7 @@ export const CreateFilterSheet = ({
             フィルターを作成
           </h3>
           <button
-            onClick={handleClose}
+            onClick={onClose}
             className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
           >
             <X size={18} />
@@ -89,22 +99,20 @@ export const CreateFilterSheet = ({
             {/* Filter Name Input */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
               <div className="px-2 pt-2 pb-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 block mb-2">
                   フィルター名
-                </label>
+                </span>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && name.trim()) {
-                      onSave(name.trim());
-                      onClose();
+                      handleSave();
                     }
                   }}
                   placeholder="フィルター名を入力"
                   className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-600"
-                  autoFocus
                 />
               </div>
             </div>
@@ -136,7 +144,7 @@ export const CreateFilterSheet = ({
                       </span>
                       {filterConditions.transactionType === type.value && (
                         <div className="absolute -top-1 -right-1">
-                          <div className="w-4 h-4 bg-primary-600 rounded-full" />
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                         </div>
                       )}
                     </button>
@@ -350,7 +358,7 @@ export const CreateFilterSheet = ({
                       </span>
                       {filterConditions.categoryIds.includes(category.id) && (
                         <div className="absolute -top-1 -right-1">
-                          <div className="w-4 h-4 bg-primary-600 rounded-full" />
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                         </div>
                       )}
                     </button>
@@ -393,7 +401,7 @@ export const CreateFilterSheet = ({
                       </span>
                       {filterConditions.accountIds.includes(account.id) && (
                         <div className="absolute -top-1 -right-1">
-                          <div className="w-4 h-4 bg-primary-600 rounded-full" />
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                         </div>
                       )}
                     </button>
@@ -425,7 +433,7 @@ export const CreateFilterSheet = ({
                       </span>
                       {filterConditions.paymentMethodIds.includes(pm.id) && (
                         <div className="absolute -top-1 -right-1">
-                          <div className="w-4 h-4 bg-primary-600 rounded-full" />
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                         </div>
                       )}
                     </button>
@@ -434,6 +442,18 @@ export const CreateFilterSheet = ({
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4">
+          <button
+            onClick={handleSave}
+            disabled={!name.trim()}
+            className="w-full py-2 rounded-lg text-white font-medium transition-all text-sm disabled:opacity-50"
+            style={{ backgroundColor: 'var(--theme-primary)' }}
+          >
+            保存
+          </button>
         </div>
       </div>
     </div>
