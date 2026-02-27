@@ -126,16 +126,17 @@ export const useTransactionFilter = () => {
     return count;
   }, [filters]);
 
-  const saveFilter = useCallback((name: string) => {
+  const saveFilter = useCallback((name: string, filterOptions?: Omit<FilterOptions, 'sortBy' | 'sortOrder'>) => {
+    const opts = filterOptions ?? filters;
     savedFilterService.create({
       name,
-      searchQuery: filters.searchQuery,
-      dateRange: filters.dateRange,
-      categoryIds: filters.categoryIds,
-      transactionType: filters.transactionType,
-      accountIds: filters.accountIds,
-      paymentMethodIds: filters.paymentMethodIds,
-      unsettled: filters.unsettled,
+      searchQuery: opts.searchQuery,
+      dateRange: opts.dateRange,
+      categoryIds: opts.categoryIds,
+      transactionType: opts.transactionType,
+      accountIds: opts.accountIds,
+      paymentMethodIds: opts.paymentMethodIds,
+      unsettled: opts.unsettled,
     });
     setSavedFilters(savedFilterService.getAll());
   }, [filters]);
