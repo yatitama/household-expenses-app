@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { parseISO } from 'date-fns';
-import { transactionService, categoryService, savedFilterService } from '../services/storage';
+import { transactionService, categoryService, savedFilterService, paymentMethodService } from '../services/storage';
 import type { SavedFilter } from '../types';
 
 export interface FilterOptions {
@@ -13,6 +13,8 @@ export interface FilterOptions {
   sortBy: 'date' | 'amount' | 'category';
   sortOrder: 'asc' | 'desc';
   unsettled: boolean;
+  /** 引落口座IDでOR絞り込み。カード取引はlinkedAccountId、直接取引はaccountIdで判定 */
+  settlementAccountIds: string[];
 }
 
 const createDefaultFilters = (): FilterOptions => ({
@@ -25,6 +27,7 @@ const createDefaultFilters = (): FilterOptions => ({
   sortBy: 'date',
   sortOrder: 'desc',
   unsettled: false,
+  settlementAccountIds: [],
 });
 
 export const useTransactionFilter = () => {
@@ -32,6 +35,8 @@ export const useTransactionFilter = () => {
   const [savedFilters, setSavedFilters] = useState<SavedFilter[]>(() => savedFilterService.getAll());
   const allTransactions = transactionService.getAll();
   const categories = categoryService.getAll();
+
+  const allPaymentMethods = paymentMethodService.getAll();
 
   const filteredTransactions = useMemo(() => {
     let result = [...allTransactions];
@@ -83,6 +88,16 @@ export const useTransactionFilter = () => {
       result = result.filter((t) => t.paymentMethodId && !t.settledAt);
     }
 
+    // Settlement account filter (OR logic: card → linkedAccountId, direct → accountId)
+    if (filters.settlementAccountIds.length > 0) {
+      result = result.filter((t) => {
+        const settlementAccId = t.paymentMethodId
+          ? (allPaymentMethods.find((p) => p.id === t.paymentMethodId)?.linkedAccountId ?? t.accountId)
+          : t.accountId;
+        return filters.settlementAccountIds.includes(settlementAccId);
+      });
+    }
+
     // Sort
     result.sort((a, b) => {
       let comparison = 0;
@@ -104,7 +119,7 @@ export const useTransactionFilter = () => {
     });
 
     return result;
-  }, [allTransactions, filters, categories]);
+  }, [allTransactions, filters, categories, allPaymentMethods]);
 
   const updateFilter = useCallback(<K extends keyof FilterOptions>(key: K, value: FilterOptions[K]) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -123,6 +138,7 @@ export const useTransactionFilter = () => {
     if (filters.accountIds.length > 0) count++;
     if (filters.paymentMethodIds.length > 0) count++;
     if (filters.unsettled) count++;
+    if (filters.settlementAccountIds.length > 0) count++;
     return count;
   }, [filters]);
 
@@ -154,6 +170,7 @@ export const useTransactionFilter = () => {
       sortBy: 'date',
       sortOrder: 'desc',
       unsettled: savedFilter.unsettled,
+      settlementAccountIds: [],
     });
   }, []);
 

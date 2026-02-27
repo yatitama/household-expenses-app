@@ -34,6 +34,7 @@ export const CreateFilterSheet = ({
     accountIds: [],
     paymentMethodIds: [],
     unsettled: false,
+    settlementAccountIds: [],
   });
 
   useEffect(() => {
@@ -47,6 +48,7 @@ export const CreateFilterSheet = ({
         accountIds: [],
         paymentMethodIds: [],
         unsettled: false,
+        settlementAccountIds: [],
       });
       setShowDateCustom(false);
     }
@@ -64,6 +66,7 @@ export const CreateFilterSheet = ({
         accountIds: [],
         paymentMethodIds: [],
         unsettled: false,
+        settlementAccountIds: [],
       });
       onClose();
     }
