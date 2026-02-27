@@ -377,7 +377,7 @@ export const AccountsPage = () => {
       </div>
 
       {/* 支出内訳 円グラフ */}
-      <div className="bg-white dark:bg-slate-800 mx-3 md:mx-4 mb-4 rounded-xl shadow-sm">
+      <div className="bg-white dark:bg-slate-800 mx-3 md:mx-4 mb-4 rounded-xl shadow-sm overflow-hidden">
         <div className="px-4 pt-4 pb-3">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300">支出内訳</h2>
