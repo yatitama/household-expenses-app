@@ -217,12 +217,25 @@ export const CreateFilterSheet = ({
                         type="button"
                         onClick={() => {
                           if (preset.isCustom) {
-                            setFilterConditions((prev) => ({ ...prev, dateRange: { start: '', end: '' } }));
-                            setShowDateCustom(true);
+                            if (showDateCustom) {
+                              // 既にカスタム選択中なら外す
+                              setFilterConditions((prev) => ({ ...prev, dateRange: { start: '', end: '' } }));
+                              setShowDateCustom(false);
+                            } else {
+                              // カスタム選択を開く
+                              setFilterConditions((prev) => ({ ...prev, dateRange: { start: '', end: '' } }));
+                              setShowDateCustom(true);
+                            }
                           } else {
                             const { start, end } = preset.getValue();
-                            setFilterConditions((prev) => ({ ...prev, dateRange: { start, end } }));
-                            setShowDateCustom(false);
+                            // 既に選択されているなら外す、そうでなければ選択
+                            if (filterConditions.dateRange.start === start && filterConditions.dateRange.end === end) {
+                              setFilterConditions((prev) => ({ ...prev, dateRange: { start: '', end: '' } }));
+                              setShowDateCustom(false);
+                            } else {
+                              setFilterConditions((prev) => ({ ...prev, dateRange: { start, end } }));
+                              setShowDateCustom(false);
+                            }
                           }
                         }}
                         className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] text-sm font-medium ${

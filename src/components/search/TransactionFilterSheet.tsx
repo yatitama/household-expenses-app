@@ -223,12 +223,25 @@ export const TransactionFilterSheet = ({
                         type="button"
                         onClick={() => {
                           if (preset.isCustom) {
-                            updateFilter('dateRange', { start: '', end: '' });
-                            setShowDateCustom(true);
+                            if (showDateCustom) {
+                              // 既にカスタム選択中なら外す
+                              updateFilter('dateRange', { start: '', end: '' });
+                              setShowDateCustom(false);
+                            } else {
+                              // カスタム選択を開く
+                              updateFilter('dateRange', { start: '', end: '' });
+                              setShowDateCustom(true);
+                            }
                           } else {
                             const { start, end } = preset.getValue();
-                            updateFilter('dateRange', { start, end });
-                            setShowDateCustom(false);
+                            // 既に選択されているなら外す、そうでなければ選択
+                            if (filters.dateRange.start === start && filters.dateRange.end === end) {
+                              updateFilter('dateRange', { start: '', end: '' });
+                              setShowDateCustom(false);
+                            } else {
+                              updateFilter('dateRange', { start, end });
+                              setShowDateCustom(false);
+                            }
                           }
                         }}
                         className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] text-sm font-medium ${
