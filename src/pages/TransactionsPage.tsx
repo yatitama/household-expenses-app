@@ -35,7 +35,7 @@ const getPeriodLabel = (payment: RecurringPayment): string => {
 export const TransactionsPage = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const { filters, filteredTransactions, updateFilter, resetFilters, activeFilterCount, getSavedFilters, saveFilter, applySavedFilter, deleteSavedFilter } = useTransactionFilter();
+  const { filters, filteredTransactions, updateFilter, resetFilters, activeFilterCount, getSavedFilters, saveFilter, applySavedFilter, deleteSavedFilter, updateSavedFilter } = useTransactionFilter();
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -638,6 +638,7 @@ export const TransactionsPage = () => {
           setIsFilterSheetOpen(false);
         }}
         onDeleteSavedFilter={deleteSavedFilter}
+        onUpdateSavedFilter={updateSavedFilter}
         isOpen={isFilterSheetOpen}
         onClose={() => setIsFilterSheetOpen(false)}
       />

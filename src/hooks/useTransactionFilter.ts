@@ -162,6 +162,10 @@ export const useTransactionFilter = () => {
     savedFilterService.delete(filterId);
   }, []);
 
+  const updateSavedFilter = useCallback((filterId: string, name: string) => {
+    savedFilterService.update(filterId, { name });
+  }, []);
+
   return {
     filters,
     filteredTransactions,
@@ -172,5 +176,6 @@ export const useTransactionFilter = () => {
     saveFilter,
     applySavedFilter,
     deleteSavedFilter,
+    updateSavedFilter,
   };
 };
