@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { parseISO } from 'date-fns';
-import { transactionService, categoryService } from '../services/storage';
+import { transactionService, categoryService, savedFilterService } from '../services/storage';
+import type { SavedFilter } from '../types';
 
 export interface FilterOptions {
   searchQuery: string;
@@ -124,11 +125,52 @@ export const useTransactionFilter = () => {
     return count;
   }, [filters]);
 
+  const getSavedFilters = useCallback((): SavedFilter[] => {
+    return savedFilterService.getAll();
+  }, []);
+
+  const saveFilter = useCallback((name: string) => {
+    savedFilterService.create({
+      name,
+      searchQuery: filters.searchQuery,
+      dateRange: filters.dateRange,
+      categoryIds: filters.categoryIds,
+      transactionType: filters.transactionType,
+      accountIds: filters.accountIds,
+      paymentMethodIds: filters.paymentMethodIds,
+      unsettled: filters.unsettled,
+    });
+  }, [filters]);
+
+  const applySavedFilter = useCallback((filterId: string) => {
+    const savedFilter = savedFilterService.getById(filterId);
+    if (!savedFilter) return;
+    setFilters({
+      searchQuery: savedFilter.searchQuery,
+      dateRange: savedFilter.dateRange,
+      categoryIds: savedFilter.categoryIds,
+      transactionType: savedFilter.transactionType,
+      accountIds: savedFilter.accountIds,
+      paymentMethodIds: savedFilter.paymentMethodIds,
+      sortBy: 'date',
+      sortOrder: 'desc',
+      unsettled: savedFilter.unsettled,
+    });
+  }, []);
+
+  const deleteSavedFilter = useCallback((filterId: string) => {
+    savedFilterService.delete(filterId);
+  }, []);
+
   return {
     filters,
     filteredTransactions,
     updateFilter,
     resetFilters,
     activeFilterCount,
+    getSavedFilters,
+    saveFilter,
+    applySavedFilter,
+    deleteSavedFilter,
   };
 };

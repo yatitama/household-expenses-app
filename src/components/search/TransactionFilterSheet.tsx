@@ -1,8 +1,10 @@
-import { X, RotateCcw, ChevronDown, Check, Wallet, CreditCard } from 'lucide-react';
+import { X, RotateCcw, ChevronDown, Check, Wallet, CreditCard, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { DateRangePicker } from './DateRangePicker';
+import { SaveFilterNameModal } from './SaveFilterNameModal';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { FilterOptions } from '../../hooks/useTransactionFilter';
+import type { SavedFilter } from '../../types';
 
 interface TransactionFilterSheetProps {
   filters: FilterOptions;
@@ -11,6 +13,10 @@ interface TransactionFilterSheetProps {
   categories: { id: string; name: string; color: string; icon: string }[];
   accounts: { id: string; name: string; color?: string }[];
   paymentMethods: { id: string; name: string; color?: string }[];
+  savedFilters: SavedFilter[];
+  onSaveFilter: (name: string) => void;
+  onApplySavedFilter: (filterId: string) => void;
+  onDeleteSavedFilter: (filterId: string) => void;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -22,12 +28,17 @@ export const TransactionFilterSheet = ({
   categories,
   accounts,
   paymentMethods,
+  savedFilters,
+  onSaveFilter,
+  onApplySavedFilter,
+  onDeleteSavedFilter,
   isOpen,
   onClose,
 }: TransactionFilterSheetProps) => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(['type', 'date', 'category', 'account'])
   );
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
   if (!isOpen) return null;
 
@@ -42,6 +53,11 @@ export const TransactionFilterSheet = ({
   };
 
   const isExpanded = (section: string) => expandedSections.has(section);
+
+  const handleSaveFilter = (name: string) => {
+    onSaveFilter(name);
+    setIsSaveModalOpen(false);
+  };
 
   return (
     <>
@@ -69,6 +85,41 @@ export const TransactionFilterSheet = ({
         {/* Content */}
         <div className="flex-1 overflow-y-auto min-h-0">
           <div className="px-0 py-2">
+            {/* 保存済みフィルターセクション */}
+            {savedFilters.length > 0 && (
+              <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
+                <div className="px-2 py-2 border-b border-gray-200 dark:border-gray-700">
+                  <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                    保存済みフィルター
+                  </p>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {savedFilters.map((savedFilter) => (
+                      <div
+                        key={savedFilter.id}
+                        className="relative group"
+                      >
+                        <button
+                          onClick={() => onApplySavedFilter(savedFilter.id)}
+                          className="w-full flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600"
+                        >
+                          <span className="text-xs text-gray-900 dark:text-gray-200 w-full text-center truncate px-0.5" title={savedFilter.name}>
+                            {savedFilter.name}
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => onDeleteSavedFilter(savedFilter.id)}
+                          className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-red-500 hover:bg-red-600 rounded-full text-white transition-colors"
+                          title="削除"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* 取引種別セクション */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
               <button
@@ -335,6 +386,12 @@ export const TransactionFilterSheet = ({
                 リセット
               </button>
               <button
+                onClick={() => setIsSaveModalOpen(true)}
+                className="flex-1 py-2 rounded-lg bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium active:scale-95 transition-all text-sm"
+              >
+                保存
+              </button>
+              <button
                 onClick={onClose}
                 className="flex-1 py-2 rounded-lg text-white font-medium active:scale-95 transition-all text-sm"
                 style={{ backgroundColor: 'var(--theme-primary)' }}
@@ -345,6 +402,13 @@ export const TransactionFilterSheet = ({
           </div>
         </div>
       </div>
+
+      {/* Save Filter Name Modal */}
+      <SaveFilterNameModal
+        isOpen={isSaveModalOpen}
+        onSave={handleSaveFilter}
+        onClose={() => setIsSaveModalOpen(false)}
+      />
     </>
   );
 };
