@@ -2,7 +2,7 @@ import { X, RotateCcw, Check, Wallet, CreditCard, Edit2 } from 'lucide-react';
 import { useState } from 'react';
 import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns';
 import { SaveFilterNameModal } from './SaveFilterNameModal';
-import { EditFilterModal } from './EditFilterModal';
+import { EditFilterSheet } from './EditFilterSheet';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { FilterOptions } from '../../hooks/useTransactionFilter';
 import type { SavedFilter } from '../../types';
@@ -468,8 +468,8 @@ export const TransactionFilterSheet = ({
         onClose={() => setIsSaveModalOpen(false)}
       />
 
-      {/* Edit Filter Modal */}
-      <EditFilterModal
+      {/* Edit Filter Sheet */}
+      <EditFilterSheet
         filter={editingFilter}
         isOpen={!!editingFilter}
         categories={categories}
