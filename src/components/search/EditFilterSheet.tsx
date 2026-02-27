@@ -74,17 +74,16 @@ export const EditFilterSheet = ({
   };
 
   return (
-    <>
-      {/* Overlay */}
+    <div
+      className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-[1001]"
+      onClick={onClose}
+    >
       <div
-        className="fixed inset-0 bg-black/30 z-[999]"
-        onClick={onClose}
-      />
-
-      {/* Sheet */}
-      <div className="fixed inset-x-0 bottom-0 bg-white dark:bg-slate-800 rounded-t-2xl sm:rounded-xl shadow-2xl z-[1000] flex flex-col max-h-[90vh]">
+        className="bg-white dark:bg-slate-800 w-full sm:rounded-xl rounded-t-xl flex flex-col max-h-[85vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="sticky top-0 dark:border-gray-700 z-10 p-3 sm:p-4 border-b flex items-center justify-between">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b dark:border-gray-700">
           <div className="flex items-center gap-2">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
               保存済みフィルターを編集
@@ -99,9 +98,9 @@ export const EditFilterSheet = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
+            className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -456,7 +455,7 @@ export const EditFilterSheet = ({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 z-10 bg-white dark:bg-slate-800 border-t dark:border-gray-700 p-2 -mb-2">
+        <div className="border-t dark:border-gray-700 p-3 sm:p-4">
           <button
             onClick={handleSave}
             disabled={!name.trim()}
@@ -467,6 +466,6 @@ export const EditFilterSheet = ({
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
