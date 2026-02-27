@@ -94,8 +94,8 @@ export const MoneyPage = () => {
     () => sortedAccounts.reduce((sum, account) => {
       const scheduled = scheduledAmounts[account.id] ?? 0;
       return sum + account.balance - scheduled;
-    }, 0),
-    [sortedAccounts, scheduledAmounts]
+    }, 0) - totalAccumulatedSavings,
+    [sortedAccounts, scheduledAmounts, totalAccumulatedSavings]
   );
 
   const selectedAccountSchedule = useMemo(
