@@ -632,13 +632,26 @@ export const TransactionsPage = () => {
         accounts={accounts}
         paymentMethods={paymentMethods}
         savedFilters={savedFilters}
-        onSaveFilter={saveFilter}
+        onSaveFilter={(name) => {
+          saveFilter(name);
+          toast.success(`フィルター「${name}」を保存しました`, { duration: 1000 });
+        }}
         onApplySavedFilter={(filterId) => {
+          const filter = savedFilters.find((f) => f.id === filterId);
           applySavedFilter(filterId);
           setIsFilterSheetOpen(false);
+          if (filter) {
+            toast.success(`フィルター「${filter.name}」を適用しました`, { duration: 1000 });
+          }
         }}
-        onDeleteSavedFilter={deleteSavedFilter}
-        onUpdateSavedFilter={updateSavedFilter}
+        onDeleteSavedFilter={(filterId) => {
+          deleteSavedFilter(filterId);
+          toast.success('フィルターを削除しました', { duration: 1000 });
+        }}
+        onUpdateSavedFilter={(filterId, name, filterOptions) => {
+          updateSavedFilter(filterId, name, filterOptions);
+          toast.success(`フィルター「${name}」を更新しました`, { duration: 1000 });
+        }}
         isOpen={isFilterSheetOpen}
         onClose={() => setIsFilterSheetOpen(false)}
       />
