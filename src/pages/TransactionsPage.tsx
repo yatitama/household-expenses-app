@@ -632,8 +632,8 @@ export const TransactionsPage = () => {
         accounts={accounts}
         paymentMethods={paymentMethods}
         savedFilters={savedFilters}
-        onSaveFilter={(name) => {
-          saveFilter(name);
+        onSaveFilter={(name, filterOptions) => {
+          saveFilter(name, filterOptions);
           toast.success(`フィルター「${name}」を保存しました`, { duration: 1000 });
         }}
         onApplySavedFilter={(filterId) => {

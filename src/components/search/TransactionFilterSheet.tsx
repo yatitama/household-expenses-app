@@ -16,7 +16,7 @@ interface TransactionFilterSheetProps {
   accounts: { id: string; name: string; color?: string }[];
   paymentMethods: { id: string; name: string; color?: string }[];
   savedFilters: SavedFilter[];
-  onSaveFilter: (name: string) => void;
+  onSaveFilter: (name: string, filterOptions?: Omit<FilterOptions, 'sortBy' | 'sortOrder'>) => void;
   onApplySavedFilter: (filterId: string) => void;
   onDeleteSavedFilter: (filterId: string) => void;
   onUpdateSavedFilter: (filterId: string, name: string, filterOptions?: Omit<FilterOptions, 'sortBy' | 'sortOrder'>) => void;
@@ -513,16 +513,7 @@ export const TransactionFilterSheet = ({
         accounts={accounts}
         paymentMethods={paymentMethods}
         onSave={(name, filterOptions) => {
-          // Apply filter conditions before saving
-          updateFilter('searchQuery', filterOptions.searchQuery);
-          updateFilter('dateRange', filterOptions.dateRange);
-          updateFilter('categoryIds', filterOptions.categoryIds);
-          updateFilter('transactionType', filterOptions.transactionType);
-          updateFilter('accountIds', filterOptions.accountIds);
-          updateFilter('paymentMethodIds', filterOptions.paymentMethodIds);
-          updateFilter('unsettled', filterOptions.unsettled);
-          // Save with the current filters (which now includes the new conditions)
-          onSaveFilter(name);
+          onSaveFilter(name, filterOptions);
           setIsCreatingFilter(false);
         }}
         onClose={() => setIsCreatingFilter(false)}
