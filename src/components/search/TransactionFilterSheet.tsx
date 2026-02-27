@@ -78,7 +78,7 @@ export const TransactionFilterSheet = ({
             {/* 保存済みフィルターセクション */}
             {savedFilters.length > 0 && (
               <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
-                <div className="px-2 pt-2 pb-2 border-b border-gray-200 dark:border-gray-700">
+                <div className="px-2 pt-2 pb-2">
                   <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
                     保存済みフィルター
                   </p>
@@ -115,7 +115,7 @@ export const TransactionFilterSheet = ({
 
             {/* 取引種別セクション */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
-              <div className="px-2 pt-2 pb-2 border-b border-gray-200 dark:border-gray-700">
+              <div className="px-2 pt-2 pb-2">
                 <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 block mb-2">
                   取引種別
                 </span>
@@ -151,7 +151,7 @@ export const TransactionFilterSheet = ({
 
             {/* 期間セクション */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
-              <div className="px-2 pt-2 pb-2 border-b border-gray-200 dark:border-gray-700">
+              <div className="px-2 pt-2 pb-2">
                 <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 block mb-2">
                   期間
                 </span>
@@ -217,6 +217,7 @@ export const TransactionFilterSheet = ({
                           } else {
                             const { start, end } = preset.getValue();
                             updateFilter('dateRange', { start, end });
+                            setShowDateCustom(false);
                           }
                         }}
                         className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] text-sm font-medium ${
@@ -250,7 +251,7 @@ export const TransactionFilterSheet = ({
 
                 {/* カスタム日付ピッカー */}
                 {showDateCustom && (
-                  <div className="space-y-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                  <div className="space-y-2 pt-2">
                     <div>
                       <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">いつから</label>
                       <div className="relative">
@@ -320,7 +321,7 @@ export const TransactionFilterSheet = ({
 
             {/* カテゴリセクション */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
-              <div className="px-2 pt-2 pb-2 border-b border-gray-200 dark:border-gray-700">
+              <div className="px-2 pt-2 pb-2">
                 <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 block mb-2">
                   カテゴリ
                 </span>
@@ -365,7 +366,7 @@ export const TransactionFilterSheet = ({
 
             {/* 口座・支払方法セクション */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
-              <div className="px-2 pt-2 pb-2 border-b border-gray-200 dark:border-gray-700">
+              <div className="px-2 pt-2 pb-2">
                 <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 block mb-2">
                   口座・支払方法
                 </span>
