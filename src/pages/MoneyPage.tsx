@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, Landmark } from 'lucide-react';
+import { format } from 'date-fns';
+import { Wallet, CreditCard, RefreshCw, ChevronDown, ChevronsUp, ChevronsDown, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useModalManager } from '../hooks/useModalManager';
@@ -10,19 +11,36 @@ import { getPendingAmountByPaymentMethod } from '../utils/billingUtils';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import { SAVINGS_GOAL_ICONS } from '../utils/savingsGoalIcons';
 import { getAccountScheduleGroups } from '../utils/scheduledPaymentsUtils';
-import { AccountGridSection } from '../components/accounts/AccountGridSection';
 import { PaymentMethodCard } from '../components/accounts/PaymentMethodCard';
+import { ACCOUNT_TYPE_LABELS, PM_TYPE_LABELS } from '../components/accounts/constants';
 import { AddTransactionModal } from '../components/accounts/modals/AddTransactionModal';
 import { RecurringPaymentModal } from '../components/accounts/modals/RecurringPaymentModal';
 import { AccountModal } from '../components/accounts/modals/AccountModal';
 import { AccountDetailModal } from '../components/accounts/modals/AccountDetailModal';
 import { PaymentMethodModal } from '../components/accounts/modals/PaymentMethodModal';
+import { UnsettledCardDetailModal } from '../components/accounts/modals/UnsettledCardDetailModal';
 import { ConfirmDialog } from '../components/feedback/ConfirmDialog';
 import { EmptyState } from '../components/feedback/EmptyState';
 import { accountService, paymentMethodService, memberService, savingsGoalService } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
 import { calculateAccumulatedAmount, toYearMonth } from '../utils/savingsUtils';
-import type { Account, AccountInput, RecurringPayment, PaymentMethod, PaymentMethodInput } from '../types';
+import type { Account, AccountInput, RecurringPayment, PaymentMethod, PaymentMethodInput, Transaction } from '../types';
+import type { RecurringItem } from '../utils/scheduledPaymentsUtils';
+
+interface UnsettledCardModalData {
+  pm: PaymentMethod;
+  paymentMonth: string;
+  transactions: Transaction[];
+  recurringItems: RecurringItem[];
+  total: number;
+}
+
+const getPeriodLabel = (payment: RecurringPayment): string => {
+  if (payment.periodType === 'months') {
+    return payment.periodValue === 1 ? '毎月' : `${payment.periodValue}ヶ月ごと`;
+  }
+  return payment.periodValue === 1 ? '毎日' : `${payment.periodValue}日ごと`;
+};
 
 export const MoneyPage = () => {
   const navigate = useNavigate();
@@ -40,11 +58,13 @@ export const MoneyPage = () => {
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [editingPaymentMethod, setEditingPaymentMethod] = useState<PaymentMethod | null>(null);
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
+  const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
+  const [unsettledCardModal, setUnsettledCardModal] = useState<UnsettledCardModalData | null>(null);
 
   const pendingByPM = getPendingAmountByPaymentMethod();
   const unlinkedPMs = paymentMethods.filter((pm) => !pm.linkedAccountId);
-  const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
 
+  const members = useMemo(() => memberService.getAll(), []);
   const currentRealMonth = toYearMonth(new Date());
   const savingsGoals = savingsGoalService.getAll();
   const totalAccumulatedSavings = savingsGoals.reduce((sum, goal) => {
@@ -64,9 +84,17 @@ export const MoneyPage = () => {
     return map;
   }, [accountScheduleGroups]);
 
-  const totalScheduledAmount = useMemo(
-    () => accountScheduleGroups.reduce((sum, g) => sum + g.total, 0),
-    [accountScheduleGroups]
+  const sortedAccounts = useMemo(
+    () => [...accounts].sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity)),
+    [accounts]
+  );
+
+  const totalNet = useMemo(
+    () => sortedAccounts.reduce((sum, account) => {
+      const scheduled = scheduledAmounts[account.id] ?? 0;
+      return sum + account.balance - scheduled;
+    }, 0),
+    [sortedAccounts, scheduledAmounts]
   );
 
   const selectedAccountSchedule = useMemo(
@@ -74,7 +102,27 @@ export const MoneyPage = () => {
     [accountScheduleGroups, selectedAccount]
   );
 
-  useBodyScrollLock(!!activeModal || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen);
+  const toggleAccountExpanded = (accountId: string) => {
+    setExpandedAccounts((prev) => {
+      const next = new Set(prev);
+      if (next.has(accountId)) {
+        next.delete(accountId);
+      } else {
+        next.add(accountId);
+      }
+      return next;
+    });
+  };
+
+  const handleToggleAllAccounts = () => {
+    if (expandedAccounts.size === sortedAccounts.length) {
+      setExpandedAccounts(new Set());
+    } else {
+      setExpandedAccounts(new Set(sortedAccounts.map((a) => a.id)));
+    }
+  };
+
+  useBodyScrollLock(!!activeModal || isAccountDetailModalOpen || isAccountModalOpen || isPaymentMethodModalOpen || !!unsettledCardModal);
 
   const handleAddRecurring = (_target?: { accountId?: string; paymentMethodId?: string }) => {
     openModal({ type: 'recurring', data: { editing: null, target: null } });
@@ -154,56 +202,166 @@ export const MoneyPage = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
       <div className="flex-1 overflow-clip pb-32">
-        <div className="px-1 md:px-2 lg:px-3 pt-2 md:pt-4 lg:pt-6">
-          {/* 口座セクション */}
-          <div data-section-name="口座" className="relative">
-            <div
-              className="sticky bg-white dark:bg-slate-900 z-20 p-2 border-b dark:border-gray-700"
-              style={{ top: 'max(0px, env(safe-area-inset-top))' }}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <Landmark size={14} className="text-gray-900 dark:text-gray-100" />
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">口座</h3>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs font-bold tabular-nums text-gray-900 dark:text-gray-100">
-                    {formatCurrency(totalBalance)}
-                  </p>
-                  {totalScheduledAmount > 0 && (
-                    <div className="flex items-baseline justify-end gap-1 text-gray-500 dark:text-gray-400">
-                      <span className="text-xs">引き落とし予定</span>
-                      <span className="text-xs font-bold tabular-nums">-{formatCurrency(totalScheduledAmount)}</span>
+        <div className="p-2 md:p-4 lg:p-6">
+
+          {/* 口座セクション群 */}
+          {sortedAccounts.length === 0 ? (
+            <EmptyState
+              icon={<Wallet size={32} className="text-gray-500 dark:text-gray-400" />}
+              title="口座がありません"
+              description="設定から口座を追加してください"
+              action={{
+                label: '設定を開く',
+                onClick: () => navigate('/settings'),
+              }}
+            />
+          ) : (
+            <div className="space-y-2 md:space-y-3">
+              {sortedAccounts.map((account) => {
+                const scheduleGroup = accountScheduleGroups.find((g) => g.accountId === account.id) ?? null;
+                const scheduled = scheduledAmounts[account.id] ?? 0;
+                const sectionTotal = account.balance - scheduled;
+                const isExpanded = expandedAccounts.has(account.id);
+                const member = members.find((m) => m.id === account.memberId);
+
+                return (
+                  <div key={account.id} className="mb-3">
+                    <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg">
+                      {/* セクションヘッダー */}
+                      <button
+                        onClick={() => toggleAccountExpanded(account.id)}
+                        className="sticky w-full px-3 py-3 bg-white dark:bg-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-[background-color] text-left z-10 rounded-t-lg"
+                        style={{ top: 'max(0px, env(safe-area-inset-top))' }}
+                      >
+                        <div className="flex items-center gap-1 flex-1">
+                          <ChevronDown
+                            size={16}
+                            className={`text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 -ml-1 ${isExpanded ? 'rotate-180' : ''}`}
+                          />
+                          <div className="flex-shrink-0" style={{ color: account.color }}>
+                            {account.icon ? getCategoryIcon(account.icon, 16) : <Wallet size={16} />}
+                          </div>
+                          <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 text-left">
+                            {account.name}
+                          </p>
+                        </div>
+                        <p className={`text-xs md:text-sm font-bold flex-shrink-0 -mr-1 ${
+                          sectionTotal >= 0 ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-gray-100'
+                        }`}>
+                          {sectionTotal >= 0 ? '+' : ''}{formatCurrency(sectionTotal)}
+                        </p>
+                      </button>
+
+                      {/* セクション本体 */}
+                      {isExpanded && (
+                        <div className="border-t border-gray-200 dark:border-gray-700 px-0 pb-0 pt-0">
+                          {/* 残高 明細 */}
+                          <button
+                            onClick={() => handleAccountClick(account)}
+                            className="w-full flex flex-col gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                <div className="flex-shrink-0" style={{ color: account.color }}>
+                                  <Wallet size={14} />
+                                </div>
+                                <p className="truncate text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                  残高
+                                </p>
+                              </div>
+                              <span
+                                className="text-xs md:text-sm font-semibold flex-shrink-0"
+                                style={{ color: 'var(--theme-primary)' }}
+                              >
+                                +{formatCurrency(account.balance)}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2 text-xs md:text-xs text-gray-600 dark:text-gray-400">
+                              <span>{ACCOUNT_TYPE_LABELS[account.type]}</span>
+                              <span className="truncate">{member?.name || '—'}</span>
+                            </div>
+                          </button>
+
+                          {/* 引き落とし明細 */}
+                          {scheduleGroup && scheduleGroup.entries.flatMap((entry) => {
+                            if (entry.kind === 'card') {
+                              return entry.monthGroup.cards.map((cardEntry) => (
+                                <button
+                                  key={`card-${entry.monthGroup.month}-${cardEntry.pm.id}`}
+                                  onClick={() => setUnsettledCardModal({
+                                    pm: cardEntry.pm,
+                                    paymentMonth: entry.monthGroup.month,
+                                    transactions: cardEntry.transactions,
+                                    recurringItems: cardEntry.recurringItems,
+                                    total: cardEntry.total,
+                                  })}
+                                  className="w-full flex flex-col gap-2 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                                >
+                                  <div className="flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                      <div className="flex-shrink-0" style={{ color: cardEntry.pm.color }}>
+                                        <CreditCard size={14} />
+                                      </div>
+                                      <p className="truncate text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                        {cardEntry.pm.name}
+                                      </p>
+                                    </div>
+                                    <span className="text-xs md:text-sm font-semibold flex-shrink-0 text-red-600">
+                                      -{formatCurrency(cardEntry.total)}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center justify-between gap-2 text-xs md:text-xs text-gray-600 dark:text-gray-400">
+                                    <span>
+                                      {entry.monthGroup.paymentDate
+                                        ? format(entry.monthGroup.paymentDate, 'M月d日')
+                                        : '—'}
+                                    </span>
+                                    <span className="truncate">{PM_TYPE_LABELS[cardEntry.pm.type]}</span>
+                                  </div>
+                                </button>
+                              ));
+                            }
+                            return entry.dateGroup.items.map(({ rp, amount }) => (
+                              <div
+                                key={`recurring-${entry.dateGroup.key}-${rp.id}`}
+                                className="w-full flex flex-col gap-2 p-3"
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                    <div className="flex-shrink-0 text-gray-400 dark:text-gray-500">
+                                      <RefreshCw size={14} />
+                                    </div>
+                                    <p className="truncate text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                      {rp.name}
+                                    </p>
+                                  </div>
+                                  <span className="text-xs md:text-sm font-semibold flex-shrink-0 text-red-600">
+                                    -{formatCurrency(amount)}
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-between gap-2 text-xs md:text-xs text-gray-600 dark:text-gray-400">
+                                  <div className="flex items-center gap-1">
+                                    <span>{entry.dateGroup.date ? format(entry.dateGroup.date, 'M月d日') : '—'}</span>
+                                    <RefreshCw size={10} className="flex-shrink-0" />
+                                    <span>{getPeriodLabel(rp)}</span>
+                                  </div>
+                                  <span>—</span>
+                                </div>
+                              </div>
+                            ));
+                          })}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
+                );
+              })}
             </div>
-            <div className="pt-2 pb-3 md:pb-4">
-              {accounts.length === 0 ? (
-                <EmptyState
-                  icon={<Wallet size={32} className="text-gray-500 dark:text-gray-400" />}
-                  title="口座がありません"
-                  description="設定から口座を追加してください"
-                  action={{
-                    label: "設定を開く",
-                    onClick: () => navigate('/settings')
-                  }}
-                />
-              ) : (
-                <AccountGridSection
-                  accounts={accounts}
-                  scheduledAmounts={scheduledAmounts}
-                  onAccountClick={handleAccountClick}
-                  onAddClick={() => { setEditingAccount(null); setIsAccountModalOpen(true); }}
-                />
-              )}
-            </div>
-          </div>
+          )}
 
           {/* 貯金セクション */}
           {savingsGoals.length > 0 && (
-            <div data-section-name="貯金" className="relative">
+            <div data-section-name="貯金" className="relative mt-2 md:mt-3">
               <div
                 className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700"
               >
@@ -256,7 +414,7 @@ export const MoneyPage = () => {
 
           {/* 紐付未設定のカード */}
           {unlinkedPMs.length > 0 && (
-            <div data-section-name="紐付未設定のカード" className="relative">
+            <div data-section-name="紐付未設定のカード" className="relative mt-2 md:mt-3">
               <div
                 className="bg-white dark:bg-slate-900 p-2 border-b dark:border-gray-700"
               >
@@ -274,7 +432,7 @@ export const MoneyPage = () => {
                           pendingAmount={pendingByPM[pm.id] || 0}
                           recurringPayments={[]}
                           onView={() => navigate('/transactions', { state: { filterType: 'payment', paymentMethodIds: [pm.id] } })}
-                          onAddRecurring={() => handleAddRecurring({ })}
+                          onAddRecurring={() => handleAddRecurring({})}
                           onEditRecurring={handleEditRecurring}
                           onToggleRecurring={handleToggleRecurring}
                         />
@@ -290,14 +448,34 @@ export const MoneyPage = () => {
 
       {/* ボトム固定フッター */}
       <div className="fixed left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t dark:border-gray-700 p-1.5 fixed-above-bottom-nav">
-        <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-end">
+        <div className="max-w-7xl mx-auto px-1 md:px-2 lg:px-3 flex items-center justify-between gap-2">
+          {/* Left: expand/collapse + add account */}
+          <div className="flex items-center gap-0 min-w-0 flex-1">
+            <button
+              onClick={handleToggleAllAccounts}
+              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 flex-shrink-0"
+              aria-label={expandedAccounts.size === sortedAccounts.length ? '全セクションを閉じる' : '全セクションを開く'}
+            >
+              {expandedAccounts.size === sortedAccounts.length ? (
+                <ChevronsUp size={24} />
+              ) : (
+                <ChevronsDown size={24} />
+              )}
+            </button>
+            <button
+              onClick={() => { setEditingAccount(null); setIsAccountModalOpen(true); }}
+              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-600 dark:text-gray-400 flex-shrink-0"
+              aria-label="口座を追加"
+            >
+              <Plus size={24} />
+            </button>
+          </div>
+
+          {/* Right: total */}
           <div className="bg-white dark:bg-slate-900 rounded-lg p-1.5 text-right flex-shrink-0">
-            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">手元残高</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-0.5">合計</p>
             <p className="text-lg md:text-xl font-bold" style={{ color: 'var(--theme-primary)' }}>
-              {(() => {
-                const net = totalBalance - totalScheduledAmount - totalAccumulatedSavings;
-                return `${net >= 0 ? '+' : ''}${formatCurrency(net)}`;
-              })()}
+              {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
             </p>
           </div>
         </div>
@@ -372,6 +550,18 @@ export const MoneyPage = () => {
               setEditingPaymentMethod(null);
             }
           } : undefined}
+        />
+      )}
+
+      {unsettledCardModal && (
+        <UnsettledCardDetailModal
+          paymentMethod={unsettledCardModal.pm}
+          paymentMonth={unsettledCardModal.paymentMonth}
+          transactions={unsettledCardModal.transactions}
+          recurringItems={unsettledCardModal.recurringItems}
+          total={unsettledCardModal.total}
+          isOpen
+          onClose={() => setUnsettledCardModal(null)}
         />
       )}
 
