@@ -20,6 +20,8 @@ import {
   accountService,
 } from '../services/storage';
 import { formatCurrency } from '../utils/formatters';
+import { getRecurringPaymentsForMonth } from '../utils/billingUtils';
+import { getEffectiveRecurringAmount } from '../utils/savingsUtils';
 
 type TrendPeriod = '3months' | '6months' | '1year';
 type TrendType = 'net' | 'expense' | 'income';
@@ -45,6 +47,21 @@ const NET_NEG_COLOR = '#ef4444';
 const GRID_COLOR = 'rgba(107,114,128,0.2)';
 const TICK_COLOR = '#9ca3af';
 
+const mergePieItem = (
+  map: Map<string, PieItem>,
+  key: string,
+  name: string,
+  color: string,
+  amount: number,
+) => {
+  const existing = map.get(key);
+  if (existing) {
+    existing.amount += amount;
+  } else {
+    map.set(key, { name, color, amount });
+  }
+};
+
 export const AccountsPage = () => {
   const now = useMemo(() => new Date(), []);
 
@@ -59,31 +76,57 @@ export const AccountsPage = () => {
   const [paymentMethods] = useState(() => paymentMethodService.getAll());
   const [accounts] = useState(() => accountService.getAll());
 
-  // 収支推移グラフ用データ
+  // 収支推移グラフ用データ（定期支払い含む）
   const trendData = useMemo((): TrendDataPoint[] => {
     const count = trendPeriod === '3months' ? 3 : trendPeriod === '6months' ? 6 : 12;
     const result: TrendDataPoint[] = [];
     for (let i = count - 1; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const month = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      const label = `${d.getMonth() + 1}月`;
-      const txns = allTransactions.filter((t) => t.date.startsWith(month));
-      const income = txns.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-      const expense = txns.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+      const year = d.getFullYear();
+      const monthNum = d.getMonth() + 1;
+      const monthStr = `${year}-${String(monthNum).padStart(2, '0')}`;
+      const label = `${monthNum}月`;
+
+      const txns = allTransactions.filter((t) => t.date.startsWith(monthStr));
+      const txIncome = txns
+        .filter((t) => t.type === 'income')
+        .reduce((s, t) => s + t.amount, 0);
+      const txExpense = txns
+        .filter((t) => t.type === 'expense')
+        .reduce((s, t) => s + t.amount, 0);
+
+      const rps = getRecurringPaymentsForMonth(year, monthNum);
+      const rpIncome = rps
+        .filter((rp) => rp.type === 'income')
+        .reduce((s, rp) => s + getEffectiveRecurringAmount(rp, monthStr), 0);
+      const rpExpense = rps
+        .filter((rp) => rp.type === 'expense')
+        .reduce((s, rp) => s + getEffectiveRecurringAmount(rp, monthStr), 0);
+
+      const income = txIncome + rpIncome;
+      const expense = txExpense + rpExpense;
       result.push({ label, income, expense, net: income - expense });
     }
     return result;
   }, [trendPeriod, allTransactions, now]);
 
-  // 円グラフ用月別支出
+  // 円グラフ用: 通常の支出取引
   const pieViewMonth = `${pieYear}-${String(pieMonth).padStart(2, '0')}`;
   const monthExpenses = useMemo(
     () => allTransactions.filter((t) => t.type === 'expense' && t.date.startsWith(pieViewMonth)),
     [allTransactions, pieViewMonth],
   );
 
+  // 円グラフ用: 定期支出
+  const monthRecurringExpenses = useMemo(
+    () => getRecurringPaymentsForMonth(pieYear, pieMonth).filter((rp) => rp.type === 'expense'),
+    [pieYear, pieMonth],
+  );
+
   const pieData = useMemo((): PieItem[] => {
     const map = new Map<string, PieItem>();
+
+    // 通常取引
     for (const t of monthExpenses) {
       let key: string;
       let name: string;
@@ -102,7 +145,6 @@ export const AccountsPage = () => {
         name = pm?.name ?? '現金・直接引落';
         color = pm?.color ?? '#6b7280';
       } else {
-        // 引落口座: カードの場合はlinkedAccountId、直接の場合はaccountId
         let accId = t.accountId;
         if (t.paymentMethodId) {
           const pm = paymentMethods.find((p) => p.id === t.paymentMethodId);
@@ -114,17 +156,57 @@ export const AccountsPage = () => {
         color = acc?.color ?? '#6b7280';
       }
 
-      const existing = map.get(key);
-      if (existing) {
-        existing.amount += t.amount;
-      } else {
-        map.set(key, { name, color, amount: t.amount });
-      }
+      mergePieItem(map, key, name, color, t.amount);
     }
+
+    // 定期取引
+    for (const rp of monthRecurringExpenses) {
+      const amount = getEffectiveRecurringAmount(rp, pieViewMonth);
+      let key: string;
+      let name: string;
+      let color: string;
+
+      if (pieGroupMode === 'category') {
+        const catId = rp.categoryId ?? '__unknown_cat__';
+        const cat = rp.categoryId ? categories.find((c) => c.id === rp.categoryId) : undefined;
+        key = catId;
+        name = cat?.name ?? '不明';
+        color = cat?.color ?? '#6b7280';
+      } else if (pieGroupMode === 'payment') {
+        key = rp.paymentMethodId ?? '__direct__';
+        const pm = rp.paymentMethodId
+          ? paymentMethods.find((p) => p.id === rp.paymentMethodId)
+          : undefined;
+        name = pm?.name ?? '現金・直接引落';
+        color = pm?.color ?? '#6b7280';
+      } else {
+        let accId = rp.accountId ?? '__unknown_acc__';
+        if (rp.paymentMethodId) {
+          const pm = paymentMethods.find((p) => p.id === rp.paymentMethodId);
+          if (pm) accId = pm.linkedAccountId;
+        }
+        key = accId;
+        const acc = accounts.find((a) => a.id === accId);
+        name = acc?.name ?? '不明';
+        color = acc?.color ?? '#6b7280';
+      }
+
+      mergePieItem(map, key, name, color, amount);
+    }
+
     return [...map.values()].sort((a, b) => b.amount - a.amount);
-  }, [pieGroupMode, monthExpenses, categories, paymentMethods, accounts]);
+  }, [
+    pieGroupMode,
+    monthExpenses,
+    monthRecurringExpenses,
+    pieViewMonth,
+    categories,
+    paymentMethods,
+    accounts,
+  ]);
 
   const totalPieAmount = pieData.reduce((s, d) => s + d.amount, 0);
+  const hasExpenseData = monthExpenses.length > 0 || monthRecurringExpenses.length > 0;
 
   const handlePrevPieMonth = () => {
     if (pieMonth === 1) {
@@ -287,14 +369,15 @@ export const AccountsPage = () => {
           </div>
         </div>
 
-        {monthExpenses.length === 0 ? (
+        {!hasExpenseData ? (
           <div className="py-16 text-center text-gray-400 dark:text-gray-500 text-sm">
             この月の支出データはありません
           </div>
         ) : (
           <>
-            {/* ドーナツ円グラフ */}
-            <div className="relative">
+            {/* ドーナツ円グラフ
+                [&_.recharts-sector]:outline-none でクリック時の青枠フォーカスリングを抑制 */}
+            <div className="relative [&_.recharts-sector]:outline-none">
               <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
                   <Pie
@@ -311,6 +394,7 @@ export const AccountsPage = () => {
                       <Cell key={index} fill={entry.color} />
                     ))}
                   </Pie>
+                  {/* wrapperStyle の zIndex でドーナツ中央ラベルより前面に表示 */}
                   <Tooltip
                     formatter={(value, name) => [
                       formatCurrency(typeof value === 'number' ? value : 0),
@@ -322,10 +406,11 @@ export const AccountsPage = () => {
                       border: '1px solid #e5e7eb',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                     }}
+                    wrapperStyle={{ zIndex: 10 }}
                   />
                 </PieChart>
               </ResponsiveContainer>
-              {/* ドーナツ中央ラベル */}
+              {/* ドーナツ中央ラベル（pointer-events-none でチャートへの操作を妨げない） */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="text-center">
                   <p className="text-xs text-gray-500 dark:text-gray-400">合計</p>
