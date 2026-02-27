@@ -213,6 +213,7 @@ export const TransactionFilterSheet = ({
                         type="button"
                         onClick={() => {
                           if (preset.isCustom) {
+                            updateFilter('dateRange', { start: '', end: '' });
                             setShowDateCustom(true);
                           } else {
                             const { start, end } = preset.getValue();
