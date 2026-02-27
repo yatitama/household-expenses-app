@@ -34,7 +34,6 @@ export const CreateFilterSheet = ({
     accountIds: [],
     paymentMethodIds: [],
     unsettled: false,
-    useMonthStartFromBillingDate: false,
   });
 
   useEffect(() => {
@@ -48,7 +47,6 @@ export const CreateFilterSheet = ({
         accountIds: [],
         paymentMethodIds: [],
         unsettled: false,
-        useMonthStartFromBillingDate: false,
       });
       setShowDateCustom(false);
     }
@@ -66,7 +64,6 @@ export const CreateFilterSheet = ({
         accountIds: [],
         paymentMethodIds: [],
         unsettled: false,
-        useMonthStartFromBillingDate: false,
       });
       onClose();
     }

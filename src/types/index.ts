@@ -214,7 +214,6 @@ export interface SavedFilter {
   accountIds: string[];
   paymentMethodIds: string[];
   unsettled: boolean;
-  useMonthStartFromBillingDate: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,4 +1,4 @@
-import { addMonths, addDays, setDate, lastDayOfMonth, format, isBefore, startOfDay, startOfMonth, endOfMonth } from 'date-fns';
+import { addMonths, addDays, setDate, lastDayOfMonth, format, isBefore, startOfDay } from 'date-fns';
 import type { PaymentMethod, Transaction, RecurringPayment } from '../types';
 import { paymentMethodService, transactionService, accountService, recurringPaymentService } from '../services/storage';
 
@@ -302,47 +302,4 @@ export const getPendingRecurringSummary = (days: number = 31): { expense: number
     },
     { expense: 0, income: 0 }
   );
-};
-
-/**
- * 支払い手段の締日から月の開始日と終了日を計算する
- * paymentMonths: 対象月の年月 (yyyy-MM形式)
- * paymentMethods: 支払い手段のリスト（複数選択時はこのリストから最初に有効な締日を使用）
- * returns: { start: string, end: string } (yyyy-MM-dd形式)、締日が設定されていない場合は通常の月初月末を返す
- */
-export const getMonthStartFromBillingDate = (
-  paymentMonthStr: string,
-  paymentMethods: PaymentMethod[]
-): { start: string; end: string } => {
-  // 対象月のPM（月次精算）かつ closingDay が設定されているものを抽出
-  const validPMs = paymentMethods.filter((pm) => pm.billingType === 'monthly' && pm.closingDay);
-
-  if (validPMs.length === 0) {
-    // 締日が設定されていない場合は通常の月初月末
-    const [y, m] = paymentMonthStr.split('-').map(Number);
-    const monthDate = new Date(y, m - 1, 1);
-    return {
-      start: format(startOfMonth(monthDate), 'yyyy-MM-dd'),
-      end: format(endOfMonth(monthDate), 'yyyy-MM-dd'),
-    };
-  }
-
-  // 最初の有効なPMの締日を使用
-  const pm = validPMs[0];
-  const period = getBillingPeriod(paymentMonthStr, pm);
-
-  if (!period) {
-    // getBillingPeriod が null を返した場合は通常の月初月末
-    const [y, m] = paymentMonthStr.split('-').map(Number);
-    const monthDate = new Date(y, m - 1, 1);
-    return {
-      start: format(startOfMonth(monthDate), 'yyyy-MM-dd'),
-      end: format(endOfMonth(monthDate), 'yyyy-MM-dd'),
-    };
-  }
-
-  return {
-    start: format(period.start, 'yyyy-MM-dd'),
-    end: format(period.end, 'yyyy-MM-dd'),
-  };
 };
