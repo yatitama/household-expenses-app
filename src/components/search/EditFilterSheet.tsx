@@ -110,9 +110,9 @@ export const EditFilterSheet = ({
             {/* Filter Name Input */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
               <div className="px-2 pt-2 pb-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 block mb-2">
                   フィルター名
-                </label>
+                </span>
                 <input
                   type="text"
                   value={name}
