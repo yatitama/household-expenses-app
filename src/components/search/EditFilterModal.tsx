@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Trash2 } from 'lucide-react';
 import type { SavedFilter } from '../../types';
 
 interface EditFilterModalProps {
@@ -54,9 +54,18 @@ export const EditFilterModal = ({
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-sm w-full">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              フィルターを編集
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                フィルターを編集
+              </h3>
+              <button
+                onClick={handleDelete}
+                className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-colors text-red-600 dark:text-red-400"
+                aria-label="削除"
+              >
+                <Trash2 size={18} />
+              </button>
+            </div>
             <button
               onClick={onClose}
               className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
@@ -85,23 +94,11 @@ export const EditFilterModal = ({
           </div>
 
           {/* Footer */}
-          <div className="flex gap-2 p-4 border-t border-gray-200 dark:border-gray-700">
-            <button
-              onClick={handleDelete}
-              className="flex-1 py-2 rounded-lg bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 font-medium transition-all text-sm"
-            >
-              削除
-            </button>
-            <button
-              onClick={onClose}
-              className="flex-1 py-2 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 font-medium transition-all text-sm"
-            >
-              キャンセル
-            </button>
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
             <button
               onClick={handleSave}
               disabled={!name.trim()}
-              className="flex-1 py-2 rounded-lg text-white font-medium transition-all text-sm disabled:opacity-50"
+              className="w-full py-2 rounded-lg text-white font-medium transition-all text-sm disabled:opacity-50"
               style={{ backgroundColor: 'var(--theme-primary)' }}
             >
               保存
