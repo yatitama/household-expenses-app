@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2, Check, Wallet, CreditCard } from 'lucide-react';
+import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
+import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { SavedFilter } from '../../types';
 import type { FilterOptions } from '../../hooks/useTransactionFilter';
 
@@ -28,6 +30,7 @@ export const EditFilterSheet = ({
   useBodyScrollLock(isOpen);
 
   const [name, setName] = useState('');
+  const [showDateCustom, setShowDateCustom] = useState(false);
   const [filterConditions, setFilterConditions] = useState<Omit<FilterOptions, 'sortBy' | 'sortOrder'>>({
     searchQuery: '',
     dateRange: { start: '', end: '' },
@@ -50,6 +53,7 @@ export const EditFilterSheet = ({
         paymentMethodIds: filter.paymentMethodIds,
         unsettled: filter.unsettled,
       });
+      setShowDateCustom(false);
     }
   }, [isOpen, filter]);
 
@@ -120,7 +124,6 @@ export const EditFilterSheet = ({
                     }
                   }}
                   className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-600"
-                  autoFocus
                 />
               </div>
             </div>
@@ -161,6 +164,177 @@ export const EditFilterSheet = ({
               </div>
             </div>
 
+            {/* Date Range Filter */}
+            <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
+              <div className="px-2 pt-2 pb-2">
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 block mb-2">
+                  期間
+                </span>
+                <div className="grid grid-cols-3 gap-1.5 mb-2">
+                  {(() => {
+                    const today = new Date();
+                    const presets = [
+                      {
+                        label: '今月',
+                        getValue: () => {
+                          const start = format(startOfMonth(today), 'yyyy-MM-dd');
+                          const end = format(endOfMonth(today), 'yyyy-MM-dd');
+                          return { start, end };
+                        },
+                      },
+                      {
+                        label: '先月',
+                        getValue: () => {
+                          const lastMonth = subMonths(today, 1);
+                          const start = format(startOfMonth(lastMonth), 'yyyy-MM-dd');
+                          const end = format(endOfMonth(lastMonth), 'yyyy-MM-dd');
+                          return { start, end };
+                        },
+                      },
+                      {
+                        label: '3ヶ月',
+                        getValue: () => {
+                          const start = format(subMonths(today, 3), 'yyyy-MM-dd');
+                          const end = format(today, 'yyyy-MM-dd');
+                          return { start, end };
+                        },
+                      },
+                      {
+                        label: '半年',
+                        getValue: () => {
+                          const start = format(subMonths(today, 6), 'yyyy-MM-dd');
+                          const end = format(today, 'yyyy-MM-dd');
+                          return { start, end };
+                        },
+                      },
+                      {
+                        label: '1年',
+                        getValue: () => {
+                          const start = format(subMonths(today, 12), 'yyyy-MM-dd');
+                          const end = format(today, 'yyyy-MM-dd');
+                          return { start, end };
+                        },
+                      },
+                      {
+                        label: 'カスタム',
+                        getValue: () => ({ start: '', end: '' }),
+                        isCustom: true,
+                      },
+                    ];
+
+                    return presets.map((preset) => (
+                      <button
+                        key={preset.label}
+                        type="button"
+                        onClick={() => {
+                          if (preset.isCustom) {
+                            setFilterConditions((prev) => ({ ...prev, dateRange: { start: '', end: '' } }));
+                            setShowDateCustom(true);
+                          } else {
+                            const { start, end } = preset.getValue();
+                            setFilterConditions((prev) => ({ ...prev, dateRange: { start, end } }));
+                            setShowDateCustom(false);
+                          }
+                        }}
+                        className={`relative flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-h-[60px] text-sm font-medium ${
+                          preset.isCustom
+                            ? showDateCustom
+                              ? 'bg-gray-100 dark:bg-gray-700'
+                              : ''
+                            : filterConditions.dateRange.start === preset.getValue().start &&
+                              filterConditions.dateRange.end === preset.getValue().end
+                            ? 'bg-gray-100 dark:bg-gray-700'
+                            : ''
+                        }`}
+                      >
+                        {preset.label}
+                        {!preset.isCustom &&
+                          filterConditions.dateRange.start === preset.getValue().start &&
+                          filterConditions.dateRange.end === preset.getValue().end && (
+                            <div className="absolute -top-1 -right-1">
+                              <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                            </div>
+                          )}
+                        {preset.isCustom && showDateCustom && (
+                          <div className="absolute -top-1 -right-1">
+                            <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
+                          </div>
+                        )}
+                      </button>
+                    ));
+                  })()}
+                </div>
+
+                {/* Custom Date Picker */}
+                {showDateCustom && (
+                  <div className="space-y-2 pt-2">
+                    <div>
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">いつから</label>
+                      <div className="relative">
+                        <input
+                          type="date"
+                          value={filterConditions.dateRange.start}
+                          max={filterConditions.dateRange.end || undefined}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value && filterConditions.dateRange.end && value > filterConditions.dateRange.end) {
+                              setFilterConditions((prev) => ({ ...prev, dateRange: { start: value, end: '' } }));
+                            } else {
+                              setFilterConditions((prev) => ({ ...prev, dateRange: { start: value, end: prev.dateRange.end } }));
+                            }
+                          }}
+                          className="w-full px-2 py-2.5 text-sm bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-600 focus:outline-none appearance-none pr-8"
+                        />
+                        {filterConditions.dateRange.start && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFilterConditions((prev) => ({ ...prev, dateRange: { start: '', end: prev.dateRange.end } }))
+                            }
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                            aria-label="クリア"
+                          >
+                            <X size={16} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">いつまで</label>
+                      <div className="relative">
+                        <input
+                          type="date"
+                          value={filterConditions.dateRange.end}
+                          min={filterConditions.dateRange.start || undefined}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value && filterConditions.dateRange.start && value < filterConditions.dateRange.start) {
+                              setFilterConditions((prev) => ({ ...prev, dateRange: { start: '', end: value } }));
+                            } else {
+                              setFilterConditions((prev) => ({ ...prev, dateRange: { start: prev.dateRange.start, end: value } }));
+                            }
+                          }}
+                          className="w-full px-2 py-2.5 text-sm bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-600 focus:outline-none appearance-none pr-8"
+                        />
+                        {filterConditions.dateRange.end && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFilterConditions((prev) => ({ ...prev, dateRange: { start: prev.dateRange.start, end: '' } }))
+                            }
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                            aria-label="クリア"
+                          >
+                            <X size={16} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Category Filter */}
             <div className="space-y-0 bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-1">
               <div className="px-2 pt-2 pb-2">
@@ -188,7 +362,7 @@ export const EditFilterSheet = ({
                         className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `${category.color}20`, color: category.color }}
                       >
-                        {/* Icon would go here if needed */}
+                        {getCategoryIcon(category.icon, 15)}
                       </div>
                       <span className="text-xs text-gray-900 dark:text-gray-200 w-full text-center truncate">
                         {category.name}
@@ -231,7 +405,7 @@ export const EditFilterSheet = ({
                         className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `${account.color || '#9ca3af'}20`, color: account.color || '#9ca3af' }}
                       >
-                        {/* Wallet Icon would go here if needed */}
+                        <Wallet size={16} />
                       </div>
                       <span className="text-xs text-gray-900 dark:text-gray-200 w-full text-center truncate">
                         {account.name}
@@ -263,7 +437,7 @@ export const EditFilterSheet = ({
                         className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `${pm.color || '#9ca3af'}20`, color: pm.color || '#9ca3af' }}
                       >
-                        {/* CreditCard Icon would go here if needed */}
+                        <CreditCard size={16} />
                       </div>
                       <span className="text-xs text-gray-900 dark:text-gray-200 w-full text-center truncate">
                         {pm.name}
