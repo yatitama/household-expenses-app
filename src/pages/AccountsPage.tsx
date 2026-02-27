@@ -472,7 +472,7 @@ export const AccountsPage = () => {
             </div>
 
             {/* 凡例リスト */}
-            <div className="px-4 pb-5 space-y-2.5">
+            <div className="px-4 pb-5 space-y-2.5 overflow-hidden">
               {pieData.map((item, index) => {
                 const pct = totalPieAmount > 0 ? (item.amount / totalPieAmount) * 100 : 0;
                 const canNavigate = !item.id.startsWith('__');
