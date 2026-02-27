@@ -60,7 +60,7 @@ export const EditFilterModal = ({
               </h3>
               <button
                 onClick={handleDelete}
-                className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-colors text-red-600 dark:text-red-400"
+                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
                 aria-label="削除"
               >
                 <Trash2 size={18} />

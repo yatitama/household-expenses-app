@@ -29,6 +29,7 @@ const createDefaultFilters = (): FilterOptions => ({
 
 export const useTransactionFilter = () => {
   const [filters, setFilters] = useState<FilterOptions>(createDefaultFilters);
+  const [savedFilters, setSavedFilters] = useState<SavedFilter[]>(() => savedFilterService.getAll());
   const allTransactions = transactionService.getAll();
   const categories = categoryService.getAll();
 
@@ -125,10 +126,6 @@ export const useTransactionFilter = () => {
     return count;
   }, [filters]);
 
-  const getSavedFilters = useCallback((): SavedFilter[] => {
-    return savedFilterService.getAll();
-  }, []);
-
   const saveFilter = useCallback((name: string) => {
     savedFilterService.create({
       name,
@@ -140,6 +137,7 @@ export const useTransactionFilter = () => {
       paymentMethodIds: filters.paymentMethodIds,
       unsettled: filters.unsettled,
     });
+    setSavedFilters(savedFilterService.getAll());
   }, [filters]);
 
   const applySavedFilter = useCallback((filterId: string) => {
@@ -160,10 +158,12 @@ export const useTransactionFilter = () => {
 
   const deleteSavedFilter = useCallback((filterId: string) => {
     savedFilterService.delete(filterId);
+    setSavedFilters(savedFilterService.getAll());
   }, []);
 
   const updateSavedFilter = useCallback((filterId: string, name: string) => {
     savedFilterService.update(filterId, { name });
+    setSavedFilters(savedFilterService.getAll());
   }, []);
 
   return {
@@ -172,7 +172,7 @@ export const useTransactionFilter = () => {
     updateFilter,
     resetFilters,
     activeFilterCount,
-    getSavedFilters,
+    savedFilters,
     saveFilter,
     applySavedFilter,
     deleteSavedFilter,
