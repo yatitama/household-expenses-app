@@ -133,6 +133,10 @@ export const TransactionsPage = () => {
     return categories.find((c) => c.id === categoryId)?.icon || 'MoreHorizontal';
   }, [categories]);
 
+  const getCategoryColor = useCallback((categoryId: string) => {
+    return categories.find((c) => c.id === categoryId)?.color || '#9ca3af';
+  }, [categories]);
+
   const getAccountName = useCallback((accountId: string) => {
     return accounts.find((a) => a.id === accountId)?.name || '';
   }, [accounts]);
@@ -438,9 +442,14 @@ export const TransactionsPage = () => {
                               >
                                 {/* 上段：メモ（またはカテゴリ名）と金額 */}
                                 <div className="flex items-center justify-between gap-2">
-                                  <p className="truncate text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium flex-1">
-                                    {t.memo || getCategoryName(t.categoryId)}
-                                  </p>
+                                  <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                    <div className="flex-shrink-0" style={{ color: getCategoryColor(t.categoryId) }}>
+                                      {getCategoryIcon(getCategoryIconName(t.categoryId), 14)}
+                                    </div>
+                                    <p className="truncate text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                      {t.memo || getCategoryName(t.categoryId)}
+                                    </p>
+                                  </div>
                                   <span className={`text-xs md:text-sm font-semibold flex-shrink-0 ${
                                     t.type === 'income' ? 'text-green-600' : 'text-red-600'
                                   }`}>
@@ -475,9 +484,16 @@ export const TransactionsPage = () => {
                               >
                                 {/* 上段：メモ（またはカテゴリ/定期名）と金額 */}
                                 <div className="flex items-center justify-between gap-2">
-                                  <p className="truncate text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium flex-1">
-                                    {p.name}
-                                  </p>
+                                  <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                    {p.categoryId && (
+                                      <div className="flex-shrink-0" style={{ color: getCategoryColor(p.categoryId) }}>
+                                        {getCategoryIcon(getCategoryIconName(p.categoryId), 14)}
+                                      </div>
+                                    )}
+                                    <p className="truncate text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                      {p.name}
+                                    </p>
+                                  </div>
                                   <div className={`font-semibold flex-shrink-0 flex flex-col items-end ${
                                     p.type === 'income' ? 'text-green-600' : 'text-red-600'
                                   }`}>
