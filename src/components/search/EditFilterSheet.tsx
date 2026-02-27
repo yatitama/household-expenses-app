@@ -154,7 +154,7 @@ export const EditFilterSheet = ({
                       </span>
                       {filterConditions.transactionType === type.value && (
                         <div className="absolute -top-1 -right-1">
-                          <div className="w-4 h-4 bg-primary-600 rounded-full" />
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                         </div>
                       )}
                     </button>
@@ -368,7 +368,7 @@ export const EditFilterSheet = ({
                       </span>
                       {filterConditions.categoryIds.includes(category.id) && (
                         <div className="absolute -top-1 -right-1">
-                          <div className="w-4 h-4 bg-primary-600 rounded-full" />
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                         </div>
                       )}
                     </button>
@@ -411,7 +411,7 @@ export const EditFilterSheet = ({
                       </span>
                       {filterConditions.accountIds.includes(account.id) && (
                         <div className="absolute -top-1 -right-1">
-                          <div className="w-4 h-4 bg-primary-600 rounded-full" />
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                         </div>
                       )}
                     </button>
@@ -443,7 +443,7 @@ export const EditFilterSheet = ({
                       </span>
                       {filterConditions.paymentMethodIds.includes(pm.id) && (
                         <div className="absolute -top-1 -right-1">
-                          <div className="w-4 h-4 bg-primary-600 rounded-full" />
+                          <Check size={14} className="text-gray-600 dark:text-gray-300" strokeWidth={2.5} />
                         </div>
                       )}
                     </button>
