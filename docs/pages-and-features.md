@@ -7,7 +7,6 @@
 | 収支ページ | `AccountsPage.tsx` | `/` | 月別の収支サマリーと内訳表示 |
 | お金ページ | `MoneyPage.tsx` | `/money` | 口座一覧、総資産、貯金目標 |
 | 取引追加ページ | `AddTransactionPage.tsx` | `/add-transaction` | 収入/支出の入力フォーム |
-| 貯金箱ページ | `PiggyBankPage.tsx` | `/piggy-bank` | 貯金箱ビジュアル、総資産表示 |
 | 履歴ページ | `TransactionsPage.tsx` | `/transactions` | 取引一覧、検索・フィルタ |
 | 設定ページ | `SettingsPage.tsx` | `/settings` | 各種マスタ管理、データ管理 |
 
@@ -417,38 +416,3 @@ export const XxxModal = ({ item, onSave, onClose, onDelete }: XxxModalProps) => 
   );
 };
 ```
-
----
-
-## 貯金箱ページ（PiggyBankPage）
-
-**ファイル**: `src/pages/PiggyBankPage.tsx`
-
-貯金の進捗状況を視覚的に確認するページ。貯金箱のイラストで残高と貯金目標の達成度を表示。
-
-### 機能
-- **貯金箱ビジュアル**（`PiggyBankVisualization`）
-  - SVGで描画された豚の貯金箱
-  - 金額に応じて色が段階的に変化
-    - 0円: グレー
-    - 0～100万円: 青
-    - 100～500万円: 紫
-    - 500～1000万円: ピンク
-    - 1000万円以上: 黄
-  - 金額に応じた液体レベル表示（胴体内の楕円で表現）
-  - 目標達成度をパーセンテージで表示（最大1000万円を基準）
-  - ボブアニメーション（優しく上下動）
-- **金額情報カード**
-  - 全口座残高（合計、平均）
-  - 貯金目標累計
-  - 合計資産（グランドトータル）
-- **口座別残高一覧**
-  - プログレスバーで各口座の割合を可視化
-  - 色付けは各口座の設定色に準拠
-
-### 使用モーダル
-なし（情報表示専用）
-
-### コンポーネント
-- `PiggyBankPage` — メインページコンポーネント
-- `PiggyBankVisualization` — 貯金箱ビジュアルコンポーネント
