@@ -8,6 +8,7 @@ import { MoneyPage } from './pages/MoneyPage';
 import { AddTransactionPage } from './pages/AddTransactionPage';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { PiggyBankPage } from './pages/PiggyBankPage';
 import { ErrorBoundary } from './components/feedback/ErrorBoundary';
 import { initializeDefaultData } from './services/initialData';
 import { runMigrations } from './services/storage';
@@ -28,6 +29,7 @@ export const App = () => {
             <Route index element={<AccountsPage />} />
             <Route path="money" element={<MoneyPage />} />
             <Route path="add-transaction" element={<AddTransactionPage />} />
+            <Route path="piggy-bank" element={<PiggyBankPage />} />
             <Route path="transactions" element={<TransactionsPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>

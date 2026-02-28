@@ -72,7 +72,7 @@ src/
 ├── contexts/             # React Context（テーマ）
 ├── hooks/                # カスタムHooks
 │   └── accounts/         #   口座操作系
-├── pages/                # ページコンポーネント（5画面）
+├── pages/                # ページコンポーネント（6画面）
 ├── services/             # データ永続化・ビジネスロジック
 ├── types/                # TypeScript型定義
 └── utils/                # ユーティリティ関数
@@ -84,6 +84,7 @@ src/
 | `/` | `AccountsPage` | 月別収支サマリー・カテゴリ別内訳 |
 | `/money` | `MoneyPage` | 口座一覧・総資産・貯金目標 |
 | `/add-transaction` | `AddTransactionPage` | 取引登録フォーム |
+| `/piggy-bank` | `PiggyBankPage` | 貯金箱ビジュアル・総資産表示 |
 | `/transactions` | `TransactionsPage` | 取引一覧・検索・フィルタ |
 | `/settings` | `SettingsPage` | マスタ管理・データ管理 |
 
