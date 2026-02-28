@@ -483,7 +483,7 @@ export const AccountsPage = () => {
                         className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                         style={{ backgroundColor: item.color }}
                       />
-                      <span className="text-xs text-gray-700 dark:text-gray-300 flex-1 line-clamp-2 min-w-0">
+                      <span className="text-xs text-gray-700 dark:text-gray-300 flex-1 truncate min-w-0">
                         {item.name}
                       </span>
                       <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0 w-9 text-right tabular-nums">
