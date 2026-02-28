@@ -19,7 +19,7 @@
     "expo-status-bar": "^3.0.0",
     "lucide-react-native": "^0.575.0",
     "nativewind": "^4.2.2",
-    "react": "^19.0.0",
+    "react": "19.0.0",
     "react-native": "0.79.7",
     "react-native-gesture-handler": "^2.30.0",
     "react-native-gifted-charts": "^1.4.74",
