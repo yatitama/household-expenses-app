@@ -1,0 +1,221 @@
+// メンバー（家族構成員）
+export interface Member {
+  id: string;
+  name: string;
+  color: string;
+  icon?: string;
+  isDefault?: boolean;
+  budget?: number; // Optional monthly budget for member
+}
+
+// 口座タイプ（資産）
+export type AccountType = 'cash' | 'bank' | 'emoney';
+
+// 支払い手段タイプ
+export type PaymentMethodType = 'credit_card' | 'debit_card';
+
+// 請求タイミング
+export type BillingType = 'immediate' | 'monthly';
+
+// 口座・資産情報
+export interface Account {
+  id: string;
+  name: string;
+  memberId: string;
+  type: AccountType;
+  balance: number;
+  color: string;
+  icon?: string;
+  order?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 支払い手段（クレジットカード・デビットカード）
+export interface PaymentMethod {
+  id: string;
+  name: string;
+  memberId: string;
+  type: PaymentMethodType;
+  linkedAccountId: string;
+  billingType: BillingType;
+  closingDay?: number;
+  paymentDay?: number;
+  paymentMonthOffset?: number;
+  color: string;
+  icon?: string;
+  budget?: number; // Optional monthly budget for payment method
+  order?: number; // Display order in settings
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 取引タイプ
+export type TransactionType = 'income' | 'expense';
+
+// 振替記録（自分の口座間移動）
+export interface Transfer {
+  id: string;
+  date: string;
+  amount: number;
+  fromAccountId: string;
+  toAccountId: string;
+  memo?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type TransferInput = Omit<Transfer, 'id' | 'createdAt' | 'updatedAt'>;
+
+// 取引記録
+export interface Transaction {
+  id: string;
+  date: string;
+  type: TransactionType;
+  amount: number;
+  categoryId: string;
+  accountId: string;
+  paymentMethodId?: string;
+  settledAt?: string;
+  memo?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// カテゴリ情報
+export interface Category {
+  id: string;
+  name: string;
+  type: TransactionType;
+  color: string;
+  icon: string;
+  order?: number;
+  budget?: number; // Optional budget for expense categories
+}
+
+// 月別予算
+export interface Budget {
+  id: string;
+  categoryId: string;
+  month: string;
+  amount: number;
+}
+
+// 定期支払い周期タイプ
+export type RecurringPeriodType = 'months' | 'days';
+
+// 定期支払い
+export interface RecurringPayment {
+  id: string;
+  name: string;
+  amount: number;
+  type: TransactionType;
+  periodType: RecurringPeriodType; // 'months' | 'days'
+  periodValue: number;             // 何ヶ月に一回 or 何日に一回
+  startDate?: string;              // 'yyyy-MM-dd' - 開始日（未指定時は登録日から）
+  endDate?: string;                // 'yyyy-MM-dd' - 終了日（未指定時は無期限）
+  isActive: boolean;
+  categoryId?: string;
+  accountId?: string;
+  paymentMethodId?: string;
+  monthlyOverrides?: Record<string, number>; // 月別金額上書き (yyyy-MM → 金額)
+  createdAt: string;
+  updatedAt: string;
+}
+
+// カード請求情報
+export interface CardBilling {
+  id: string;
+  paymentMethodId: string;
+  month: string;
+  billingAmount: number;
+  dueDate: string;
+  isPaid: boolean;
+  memo?: string;
+}
+
+// 紐付き手段（PaymentMethodと口座を紐付ける）
+export interface LinkedPaymentMethod {
+  id: string;
+  paymentMethodId: string;  // 紐付ける支払い手段
+  accountId: string;         // 紐付け先の口座
+  isActive: boolean;         // 有効/無効
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 新規作成時の入力型（id, createdAt, updatedAtを除く）
+export type MemberInput = Omit<Member, 'id'>;
+export type AccountInput = Omit<Account, 'id' | 'createdAt' | 'updatedAt'>;
+export type PaymentMethodInput = Omit<PaymentMethod, 'id' | 'createdAt' | 'updatedAt'>;
+export type TransactionInput = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt' | 'settledAt'>;
+export type CategoryInput = Omit<Category, 'id'>;
+export type BudgetInput = Omit<Budget, 'id'>;
+export type CardBillingInput = Omit<CardBilling, 'id'>;
+export type RecurringPaymentInput = Omit<RecurringPayment, 'id' | 'createdAt' | 'updatedAt'>;
+export type LinkedPaymentMethodInput = Omit<LinkedPaymentMethod, 'id' | 'createdAt' | 'updatedAt'>;
+
+
+// 共通メンバーID（削除不可）
+export const COMMON_MEMBER_ID = 'common';
+
+// テーマカラータイプ（グレースケール固定）
+export type ThemeColor = 'grayscale';
+
+// テーマ設定
+export interface ThemeSettings {
+  currentTheme: ThemeColor;
+}
+
+// クイック追加テンプレート
+export interface QuickAddTemplate {
+  id: string;
+  name: string;
+  type: TransactionType | 'transfer';
+  categoryId?: string;
+  amount?: number;
+  accountId?: string;
+  paymentMethodId?: string;
+  fromAccountId?: string; // 振替テンプレート: 入金元口座ID
+  fee?: number;           // 振替テンプレート: 手数料
+  date?: string;
+  memo?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type QuickAddTemplateInput = Omit<QuickAddTemplate, 'id' | 'createdAt' | 'updatedAt'>;
+
+// 貯金目標
+export interface SavingsGoal {
+  id: string;
+  name: string;           // 貯金名 (例: ○○旅行貯金)
+  targetAmount: number;   // 目標金額
+  targetDate: string;     // いつまで (yyyy-MM)
+  startMonth: string;     // 開始月 (yyyy-MM, 作成月)
+  excludedMonths: string[]; // 除外した月 (yyyy-MM形式)
+  monthlyOverrides?: Record<string, number>; // 月別金額上書き (yyyy-MM → 金額)
+  icon?: string;          // アイコン名（貯金目標専用）
+  color?: string;         // 色
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type SavingsGoalInput = Omit<SavingsGoal, 'id' | 'createdAt' | 'updatedAt'>;
+
+// 保存済みフィルター
+export interface SavedFilter {
+  id: string;
+  name: string;
+  searchQuery: string;
+  dateRange: { start: string; end: string };
+  categoryIds: string[];
+  transactionType: 'all' | 'income' | 'expense';
+  accountIds: string[];
+  paymentMethodIds: string[];
+  unsettled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type SavedFilterInput = Omit<SavedFilter, 'id' | 'createdAt' | 'updatedAt'>;
