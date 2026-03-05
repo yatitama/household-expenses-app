@@ -125,6 +125,7 @@ src/
 |---|---|
 | `docs/architecture.md` | アーキテクチャ概要、ルーティング、初期化フロー、ディレクトリ構成 |
 | `docs/data-models.md` | 全データモデルの詳細仕様、フィールド定義、ER関係 |
+| `docs/screen-design.md` | 画面設計書：各ページのレイアウト、UI要素、モーダル一覧、共通仕様 |
 | `docs/pages-and-features.md` | 各ページの機能仕様、使用コンポーネント・モーダル一覧 |
 | `docs/services-hooks-utils.md` | サービス層API、カスタムHooks、ユーティリティ関数の詳細 |
 | `docs/account-payment-method-separation.md` | 口座と支払い手段の分離設計（ADR） |
@@ -134,8 +135,9 @@ src/
 ソースコードを修正した際は、以下を必ず確認し、関連するドキュメントを最新の状態に更新すること:
 
 - **型定義・データモデル変更時** → `docs/data-models.md`, `docs/account-payment-method-separation.md`
-- **ページ追加・ルーティング変更時** → `docs/architecture.md`, `docs/pages-and-features.md`, CLAUDE.md のページ構成テーブル
-- **コンポーネント追加・モーダル追加時** → `docs/pages-and-features.md`（情報表示シートの場合は標準仕様セクションの対象一覧も更新）
+- **ページ追加・ルーティング変更時** → `docs/architecture.md`, `docs/screen-design.md`, `docs/pages-and-features.md`, CLAUDE.md のページ構成テーブル
+- **画面レイアウト・UI仕様変更時** → `docs/screen-design.md`, `docs/pages-and-features.md`
+- **コンポーネント追加・モーダル追加時** → `docs/screen-design.md`, `docs/pages-and-features.md`（情報表示シートの場合は標準仕様セクションの対象一覧も更新）
 - **サービス・Hook・ユーティリティ変更時** → `docs/services-hooks-utils.md`
 - **技術スタック・依存関係変更時** → `docs/architecture.md`, CLAUDE.md の技術スタック
 - **ディレクトリ構成変更時** → `docs/architecture.md`, CLAUDE.md のディレクトリ構成
